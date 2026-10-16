@@ -1,0 +1,127 @@
+/* ============================================================
+   SGC COMMAND – Wiki
+   Dark terminal-doc theme. Left sidebar nav + main content.
+   ============================================================ */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--panel:#12121c;--panel2:#16213e;--border:#22304d;
+  --accent:#00ff88;--accent-dim:#0a3d28;--warn:#ffaa00;--danger:#ff5555;
+  --text:#d8dee9;--dim:#7a869a;--link:#4dd2ff;
+  --glow:0 0 12px rgba(0,255,136,.25);
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  line-height:1.65;min-height:100vh;
+}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.035) 2px,rgba(0,0,0,.035) 4px)}
+
+/* ---------- LAYOUT ---------- */
+#layout{display:flex;min-height:100vh}
+#sidebar{
+  width:280px;flex-shrink:0;background:var(--panel);
+  border-right:1px solid var(--border);padding:20px 0;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+#main{flex:1;padding:32px 48px;max-width:1000px}
+
+/* ---------- SIDEBAR ---------- */
+#logo{font-size:1.15em;font-weight:700;color:var(--accent);letter-spacing:2px;
+  padding:0 20px 4px;text-shadow:var(--glow)}
+#logo small{display:block;font-size:.6em;color:var(--dim);letter-spacing:1px;font-weight:400;margin-top:2px}
+.nav-group{margin-top:20px}
+.nav-group-title{font-size:.7em;text-transform:uppercase;letter-spacing:1.5px;
+  color:var(--dim);padding:0 20px 6px}
+.nav-link{
+  display:block;padding:7px 20px;color:var(--text);text-decoration:none;
+  font-size:.9em;border-left:3px solid transparent;transition:all .15s;
+}
+.nav-link:hover{background:var(--panel2);color:#fff}
+.nav-link.active{border-left-color:var(--accent);background:var(--accent-dim);color:var(--accent)}
+.nav-link .ico{display:inline-block;width:18px;margin-right:6px;opacity:.8}
+
+/* ---------- HEADER ---------- */
+#crumbs{font-size:.8em;color:var(--dim);margin-bottom:16px}
+#crumbs a{color:var(--dim);text-decoration:none}
+#crumbs a:hover{color:var(--accent)}
+#crumbs span{margin:0 6px;opacity:.5}
+h1{font-size:2em;color:var(--accent);text-shadow:var(--glow);
+  margin-bottom:8px;letter-spacing:.5px;line-height:1.2}
+.subtitle{color:var(--dim);font-size:1.05em;margin-bottom:28px;font-style:italic}
+h2{font-size:1.4em;color:#fff;margin:36px 0 14px;padding-bottom:8px;
+  border-bottom:1px solid var(--border)}
+h2 .anchor{color:var(--dim);opacity:0;margin-left:8px;font-size:.8em}
+h2:hover .anchor{opacity:1}
+h3{font-size:1.1em;color:var(--accent);margin:24px 0 10px}
+p{margin-bottom:14px}
+ul,ol{margin:0 0 16px 24px}
+li{margin-bottom:6px}
+
+/* ---------- LINKS (wiki cross-refs) ---------- */
+a.wiki{color:var(--link);text-decoration:none;border-bottom:1px dotted rgba(77,210,255,.4)}
+a.wiki:hover{color:#fff;border-bottom-color:#fff}
+a.wiki .tag{font-size:.7em;vertical-align:super;opacity:.6}
+
+/* ---------- CALLOUTS ---------- */
+.callout{background:var(--panel);border-left:3px solid var(--accent);
+  padding:14px 18px;margin:18px 0;border-radius:0 4px 4px 0;font-size:.95em}
+.callout.warn{border-left-color:var(--warn)}
+.callout.danger{border-left-color:var(--danger)}
+.callout .label{font-size:.7em;text-transform:uppercase;letter-spacing:1px;
+  color:var(--accent);font-weight:700;display:block;margin-bottom:6px}
+.callout.warn .label{color:var(--warn)}
+.callout.danger .label{color:var(--danger)}
+
+/* ---------- TABLES ---------- */
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:.88em}
+th{background:var(--panel2);color:var(--accent);text-align:left;
+  padding:10px 12px;font-weight:600;letter-spacing:.5px}
+td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:hover td{background:rgba(0,255,136,.03)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+
+/* ---------- CODE ---------- */
+code{background:var(--panel2);padding:2px 6px;border-radius:3px;
+  font-family:'Courier New',monospace;font-size:.88em;color:var(--accent)}
+pre{background:#0d0d15;border:1px solid var(--border);border-radius:4px;
+  padding:16px;overflow-x:auto;margin:16px 0;font-size:.85em;line-height:1.5}
+pre code{background:none;padding:0;color:var(--text)}
+
+/* ---------- CARDS (character/feind quick-ref) ---------- */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin:18px 0}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:6px;
+  padding:16px;transition:all .2s;text-decoration:none;display:block}
+a.card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--glow)}
+.card .card-title{color:var(--accent);font-weight:600;font-size:1.05em;margin-bottom:4px}
+.card .card-sub{color:var(--dim);font-size:.8em;margin-bottom:10px}
+.card .card-stat{font-size:.82em;color:var(--text)}
+.card .card-stat b{color:var(--accent)}
+
+/* ---------- BADGES ---------- */
+.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:.72em;
+  font-weight:600;letter-spacing:.5px}
+.badge-green{background:rgba(0,255,136,.15);color:var(--accent)}
+.badge-amber{background:rgba(255,170,0,.15);color:var(--warn)}
+.badge-red{background:rgba(255,85,85,.15);color:var(--danger)}
+.badge-blue{background:rgba(77,210,255,.15);color:var(--link)}
+
+/* ---------- STAT BAR ---------- */
+.statbar{height:8px;background:#0d0d15;border-radius:4px;overflow:hidden;margin:4px 0}
+.statbar-fill{height:100%;background:var(--accent);border-radius:4px}
+.statbar-fill.warn{background:var(--warn)}
+.statbar-fill.danger{background:var(--danger)}
+
+/* ---------- FOOTER ---------- */
+#page-footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--border);
+  color:var(--dim);font-size:.85em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+#page-footer a{color:var(--link);text-decoration:none}
+#page-footer a:hover{color:#fff}
+
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:900px){
+  #layout{flex-direction:column}
+  #sidebar{width:100%;height:auto;position:relative;border-right:none;border-bottom:1px solid var(--border)}
+  #main{padding:24px 20px}
+}

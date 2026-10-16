@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art-Toolchain – SGC COMMAND</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="layout">
+  <nav id="sidebar"></nav>
+  <div id="main">
+    <div id="crumbs"><a href="index.html">Start</a> <span>›</span> Art-Toolchain</div>
+    <h1>Art-Toolchain</h1>
+    <p class="subtitle">Wie man Assets generiert, testet und integriert. 100% prozedural – keine Bilddateien, kein <code>drawImage</code> in art2.js.</p>
+
+    <div class="callout">
+      <span class="label">Die harte Grenze</span>
+      <code>art2.js</code> verwendet <strong>nur <code>fillRect</code></strong> (hartkantig, pixel-art). <code>arc</code>, <code>ellipse</code>, <code>drawImage</code> sind verboten – sonst bricht der Raster-Test (er misst nur <code>fillRect</code>).
+    </div>
+
+    <h2 id="dateien">Die Dateien <a class="anchor" href="#dateien">#</a></h2>
+    <table>
+      <tr><th>Datei</th><th>Ort</th><th>Zweck</th></tr>
+      <tr><td><code>art.js</code></td><td><code>game/</code></td><td>Basis-Grafik: LOOKS (15), <code>shade()</code>, <code>drawFace</code>, <code>drawSoldier</code>, Gateroom, Sternenkarte</td></tr>
+      <tr><td><code>art2.js</code></td><td><code>game/</code></td><td>Artist-Erweiterung: Rekruten-Generator, Feind-Gesichter, Waffen, Raum-Icons, Terrain-Tiles, +10 LOOKS, DOSSIERS</td></tr>
+      <tr><td><code>art2.js</code> (Kanon)</td><td><code>incoming/</code></td><td>Artist-Original (Referenz für Diffs). <code>game/art2.js</code> = Kanon + dokumentierter Skaara-Patch</td></tr>
+      <tr><td><code>preview.html</code></td><td><code>incoming/</code></td><td>Visueller Kontaktbogen (Browser): alle Assets, Rekruten-Seed-Input</td></tr>
+      <tr><td><code>rastertest.js</code></td><td><code>incoming/</code></td><td>Headless-Test (Node): Mock-Canvas, Out-of-Bounds, Determinismus</td></tr>
+    </table>
+
+    <h2 id="tests">Die drei Tests <a class="anchor" href="#tests">#</a></h2>
+    <h3>1. Raster-Test (Headless)</h3>
+    <pre><code>cd game && node ../incoming/rastertest.js</code></pre>
+    <p>Ersetzt <code>fillRect</code> durch ein Pixelarray-Raster (1000×860 RGB). Prüft:</p>
+    <ul>
+      <li><strong>Out-of-Bounds:</strong> zeichnet eine Funktion außerhalb ihres Sprite-Bereichs?</li>
+      <li><strong>Negative Rechtecke:</strong> <code>fillRect</code> mit w&lt;0 oder h&lt;0</li>
+      <li><strong>Determinismus:</strong> Seed 7 = Seed 7, Seed 7 ≠ Seed 8</li>
+      <li><strong>Self-Test:</strong> ruft <code>art2SelfTest()</code> auf</li>
+    </ul>
+    <p>Erwartet: <code>selftest bad: []</code> und <code>out-of-bounds/neg issues: none</code></p>
+
+    <h3>2. Browser-Gate-Test</h3>
+    <pre><code>node test-browser.js</code></pre>
+    <p>Simuliert echten Browser-Start: alle 7 Skripte in <code>&lt;script&gt;</code>-Reihenfolge, load-Event, Frame-Loop, DOM-Prüfung. <strong>Jeder Durchgang muss damit grün sein.</strong></p>
+
+    <h3>3. Preview (Visuell)</h3>
+    <p><code>incoming/preview.html</code> im Browser öffnen (braucht <code>art.js</code> + <code>art2.js</code> im selben Ordner). Zeigt: Feind-Gesichter, Waffen, Raum-Icons, benannte Charaktere, Rekruten (Seed-Input zum Durchblättern), Terrain-Kachel-Test.</p>
+
+    <h2 id="generieren">Neue Assets generieren <a class="anchor" href="#generieren">#</a></h2>
+    <h3>Rekruten</h3>
+    <pre><code>const reg = registerRecruit(200, 'fighter');
+// reg = {seed, name, cls, look, dossier, age}
+// LOOKS[reg.name] und DOSSIERS[reg.name] sind jetzt gefüllt
+// portrait({name: reg.name, cls: reg.cls}) funktioniert sofort</code></pre>
+    <p><strong>Seed-Regel:</strong> Projekt nutzt Seed 100–123. Neue Rekruten ab Seed 200 aufwärts. Ab ~100 Rekruten: Kollisions-Check.</p>
+
+    <h3>Feind-Typen</h3>
+    <p>Neuen <code>case</code> in <code>drawEnemyFace</code> (art2.js). Konvention: 32×32, Hintergrund <code>#14202e</code>/<code>#1b2b3d</code>. Test: <code>drawEnemyFace(c, 'neuerTyp', 0, 0, 1)</code> in rastertest.js.</p>
+
+    <h3>Waffen</h3>
+    <p>Neuen <code>case</code> in <code>drawWeapon</code>. Konvention: 32×16, Seitenansicht nach rechts. Anzeigename in <code>_A2WNAME</code> eintragen.</p>
+
+    <h3>Raum-Typen</h3>
+    <p>Neuen <code>case</code> in <code>drawRoomIcon</code>. Konvention: 32×32, Hintergrund <code>#0f1622</code> + Rahmen <code>#243248</code>.</p>
+
+    <h3>Terrain-Themes</h3>
+    <p>Neues Theme in <code>_A2TH</code> + Theme-Branches in <code>drawTile</code>. Konvention: 48×48, nahtlos kachelbar (Rauschen an Weltkoordinaten, Muster-Perioden 8/12/16/24 teilen 48).</p>
+
+    <h3>Benannte Charaktere</h3>
+    <p>In <code>Object.assign(LOOKS, {...})</code> (art2.js, Sektion 4.1). Felder: <code>skin</code>, <code>hair</code>, <code>style</code>, optional: <code>glasses</code>, <code>beard</code>, <code>goatee</code>, <code>scar</code>, <code>band</code>, <code>mark</code> (bool oder Farbstring), <code>crown</code>, <code>glow</code>, <code>stars</code>.</p>
+
+    <h2 id="integration">Integration ins Spiel <a class="anchor" href="#integration">#</a></h2>
+    <h3>Script-Reihenfolge (index.html)</h3>
+    <pre><code>&lt;script src="sound.js"&gt;&lt;/script&gt;
+&lt;script src="art.js"&gt;&lt;/script&gt;      ← LOOKS, shade(), drawFace
+&lt;script src="art2.js"&gt;&lt;/script&gt;     ← NACH art.js (nutzt shade(), LOOKS)
+&lt;script src="engine.js"&gt;&lt;/script&gt;   ← NACH art2.js (ruft registerRecruit beim Parsen)
+&lt;script src="combat.js"&gt;&lt;/script&gt;
+&lt;script src="base.js"&gt;&lt;/script&gt;
+&lt;script src="ui.js"&gt;&lt;/script&gt;</code></pre>
+    <p><strong>Warum:</strong> <code>engine.js</code> baut den POOL beim Parsen auf (24×<code>registerRecruit</code>), also muss <code>art2.js</code> schon geladen sein. <code>art.js</code> referenziert Engine-Globals nur zur Laufzeit → keine Zirkularität.</p>
+
+    <h3>Tile-Cache (Performance)</h3>
+    <p><code>drawTile</code> braucht ~600 Hash-Aufrufe pro Boden-Tile. Ohne Cache: 300 Tiles × 600 = 180.000 Calls pro Frame. Mit Cache: 5 Tiles einmal in ein Offscreen-Canvas, dann <code>drawImage</code> pro Tile. Code in <code>renderCombat</code> (combat.js), <code>C.tileCache</code> pro Mission-Start. <strong>Nicht entfernen.</strong></p>
+
+    <h2 id="grenzen">Bekannte Grenzen <a class="anchor" href="#grenzen">#</a></h2>
+    <table>
+      <tr><th>Thema</th><th>Status</th></tr>
+      <tr><td>Namenskollisionen</td><td>~3000 Kombinationen, bei &gt;50 Rekruten prüfen</td></tr>
+      <tr><td>Umlaute in DOSSIERS</td><td>Artist-Entscheidung (ae/oe/ue statt ä/ö/ü), Encoding-Sicherheit</td></tr>
+      <tr><td>Haarstil-Kombinationen</td><td>Laut Artist: Feinschliff nötig (visuell in preview.html prüfen)</td></tr>
+      <tr><td>Wand-Tiles (city type 2)</td><td>Laut Artist: Feinschliff nötig (Ziegel-Muster)</td></tr>
+      <tr><td>drawImage/arc/ellipse in art2.js</td><td><strong>Verboten</strong> – sonst bricht der Raster-Test</td></tr>
+    </table>
+
+    <h2 id="verwandt">Verwandte Seiten <a class="anchor" href="#verwandt">#</a></h2>
+    <ul>
+      <li><a class="wiki" href="rekruten.html">Rekruten (Generator, POOL) <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="feinde.html">Feind-Typen (Gesichter) <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="basis.html">Basis-Grid (Raum-Icons) <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="kampf.html">Kampf-Grid (Terrain-Tiles) <span class="tag">→</span></a></li>
+    </ul>
+
+    <div id="page-footer"></div>
+  </div>
+</div>
+<script src="wiki.js"></script>
+</body>
+</html>

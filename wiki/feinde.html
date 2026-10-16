@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feind-Typen – SGC COMMAND</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="layout">
+  <nav id="sidebar"></nav>
+  <div id="main">
+    <div id="crumbs"><a href="index.html">Start</a> <span>›</span> <a href="kampf.html">Kampf-Grid</a> <span>›</span> Feind-Typen</div>
+    <h1>Feind-Typen</h1>
+    <p class="subtitle">Von Jaffa-Rekruten bis zur Replikator-Königin. 8 Typen über 5 Kapitel.</p>
+
+    <div class="callout">
+      <span class="label">Skalierung</span>
+      Alle Zahlen = Grundform. Missions-Schwierigkeit skaliert ×0.9 / 1.0 / 1.1 (Kaffee / Standard / "Hammond hat eine Nachricht (schlecht)").
+    </div>
+
+    <h2 id="jaffa">Jaffa <a class="anchor" href="#jaffa">#</a></h2>
+    <p>Die Basis-Feinde. Wie "Mutas" in X-COM – zahlreich, aggressiv, aber einfach.</p>
+
+    <h3>Jaffa (Rekrut)</h3>
+    <table>
+      <tr><th>Stat</th><th>Wert</th></tr>
+      <tr><td>HP</td><td><strong>40</strong></td></tr>
+      <tr><td>Bewegung</td><td>5</td></tr>
+      <tr><td>Schaden</td><td>Beam 7–11 (R.3) · Melee 5–9</td></tr>
+      <tr><td>Spezial</td><td><strong>"Eifer"</strong>: wenn ein Verbündeter in ≤3 Kacheln stirbt: +2 Schaden für 3 Züge</td></tr>
+      <tr><td>Schwäche</td><td>Energie-Schaden +25%, Fassen (Stun 60% / Kill 100%)</td></tr>
+    </table>
+
+    <h3>Jaffa Veteran</h3>
+    <table>
+      <tr><th>Stat</th><th>Wert</th></tr>
+      <tr><td>HP</td><td><strong>55</strong></td></tr>
+      <tr><td>Bewegung</td><td>5</td></tr>
+      <tr><td>Schaden</td><td>Beam 9–13 (R.4) · Melee 6–10</td></tr>
+      <tr><td>Spezial</td><td><strong>"Schild-Blitz"</strong>: erste Attacke pro Zug = abgefangen (+50% Schaden, nächsten Zug)</td></tr>
+      <tr><td>Schwäche</td><td>Nach Blühen: Kopfschuss ×1.5</td></tr>
+    </table>
+
+    <h3>Elite Jaffa (Auserwählte)</h3>
+    <table>
+      <tr><th>Stat</th><th>Wert</th></tr>
+      <tr><td>HP</td><td><strong>70</strong></td></tr>
+      <tr><td>Bewegung</td><td>6</td></tr>
+      <tr><td>Schaden</td><td>Beam 12–16 (R.4) · Melee 8–12</td></tr>
+      <tr><td>Spezial</td><td><strong>"Langer Staff"</strong>: +1 Range (R.5). <strong>"Befehlston"</strong>: Rekrut in ≤2 Kacheln: −1 Moral/Zug</td></tr>
+      <tr><td>Schwäche</td><td>AP-Runde ×1.5, Kopfschuss ×1.5 (doppelt)</td></tr>
+    </table>
+
+    <h2 id="goa">Goa'uld <a class="anchor" href="#goa">#</a></h2>
+    <p>Die "Götter". Boss-Feinde, selten, gefährlich. Wie "Powerslaves" in X-COM.</p>
+
+    <h3>Goa'uld (System Lord)</h3>
+    <table>
+      <tr><th>Stat</th><th>Wert</th></tr>
+      <tr><td>HP</td><td><strong>200–240</strong></td></tr>
+      <tr><td>Bewegung</td><td>3 (+Telekinetik: bewegt sich selten)</td></tr>
+      <tr><td>Schaden</td><td>Wurf 15–22 (R.7, <strong>ignoriert Deckung</strong>) · Melee 12–16</td></tr>
+      <tr><td>Spezial A</td><td><strong>"Aura der Angst"</strong>: Rekrut mit Sichtlinie ≤8: −2 Moral/Zug (SG-1: −1)</td></tr>
+      <tr><td>Spezial B</td><td><strong>"Flug"</strong>: bei Gate-Timer ≤4 oder HP ≤20%: zum Gate, unverwundbar, Wurmloch-Pulser</td></tr>
+      <tr><td>Schwäche</td><td>Physical/Piercing ×1.5, Schwachpunkt Kehle ×1.75 + 10% Stun</td></tr>
+    </table>
+
+    <div class="callout warn">
+      <span class="label">Daniel's "Gottes-wahrer Name"</span>
+      1×/Mission, nach Schwachpunkt-Exposur: Lord hat <strong>1 Zug Pause</strong> (er "hört nicht gut" seinen echten Namen).
+    </div>
+
+    <h2 id="repl">Replikatoren <a class="anchor" href="#repl">#</a></h2>
+    <p>Kapitel 4. Kompletter Feindwechsel. Schwarm-Play, schnell, zahlreich.</p>
+
+    <h3>Replikant</h3>
+    <table>
+      <tr><th>Stat</th><th>Wert</th></tr>
+      <tr><td>HP</td><td><strong>50</strong></td></tr>
+      <tr><td>Bewegung</td><td><strong>7</strong> (schnell)</td></tr>
+      <tr><td>Schaden</td><td>Beam 6–9 (R.3) × <strong>2 pro Zug</strong> · Melee 5–7</td></tr>
+      <tr><td>Spezial</td><td><strong>"Sich teilen"</strong>: bei HP <35: statt tot → 2× Drone</td></tr>
+      <tr><td>Schwäche</td><td>Replikanten-Kanone: Radius 4, 100%, 2–3 Auflade</td></tr>
+    </table>
+
+    <h3>Replikat-Drone</h3>
+    <table>
+      <tr><th>Stat</th><th>Wert</th></tr>
+      <tr><td>HP</td><td><strong>25</strong></td></tr>
+      <tr><td>Bewegung</td><td>7</td></tr>
+      <tr><td>Schaden</td><td>Beam 4–6 (R.2)</td></tr>
+      <tr><td>Spezial</td><td>"Schwarze Gruppe": +3 Schaden pro nächsten 2 (max +6)</td></tr>
+      <tr><td>Schwäche</td><td>Jeder-Burst, Kanone 100%</td></tr>
+    </table>
+
+    <h3>Replikat-Königin (Boss)</h3>
+    <table>
+      <tr><th>Stat</th><th>Wert</th></tr>
+      <tr><td>HP</td><td><strong>320</strong></td></tr>
+      <tr><td>Bewegung</td><td>4</td></tr>
+      <tr><td>Schaden</td><td>Beam 10–14 (R.5) · Melee 12–16</td></tr>
+      <tr><td>Spezial</td><td><strong>"Stockraum"</strong>: alle 2 Züge: +2 Drones (Max 16 units)</td></tr>
+      <tr><td>Unverwundbar</td><td>Während ≥1 Stock-Knoten (3, je 70 HP) auf der Karte</td></tr>
+      <tr><td>Schwäche</td><td>Kanone +100% vs. Königin, Melee ×0.75</td></tr>
+    </table>
+
+    <h2 id="ancient">Ancient Drones (Kapitel 5) <a class="anchor" href="#ancient">#</a></h2>
+    <table>
+      <tr><th>Stat</th><th>Wert</th></tr>
+      <tr><td>HP</td><td><strong>50 + 6 Shield</strong></td></tr>
+      <tr><td>Bewegung</td><td>4</td></tr>
+      <tr><td>Schaden</td><td>Beam 9–13 (R.5) · Melee 7–11 (selten)</td></tr>
+      <tr><td>Spezial</td><td><strong>"Gate-Kopp"</strong>: 1 unit/Mission: Gate-Fenster halbiert (einmalig)</td></tr>
+      <tr><td>Schwäche</td><td>Piercing 100% + Shield −5 (nach 0: +50% für 3 Züge, "splittert")</td></tr>
+    </table>
+
+    <h2 id="beute">Beute-Punkte <a class="anchor" href="#beute">#</a></h2>
+    <p>Punkte machen Rekruten zu mehr (Stufe 1–3, je 3 Upgrades). Punkte machen <strong>nicht</strong> SG-1 zu mehr. (SG-1 ist SG-1. Sie haben keinen Skill-Baum. Sie haben <em>einander</em>.)</p>
+    <table>
+      <tr><th>Feind</th><th class="num">Punkte</th></tr>
+      <tr><td>Jaffa Rekrut</td><td class="num">20</td></tr>
+      <tr><td>Jaffa Veteran</td><td class="num">35</td></tr>
+      <tr><td>Elite Jaffa</td><td class="num">50</td></tr>
+      <tr><td>Goa'uld</td><td class="num">150 (Flucht: 75)</td></tr>
+      <tr><td>Replikant</td><td class="num">30</td></tr>
+      <tr><td>Drone</td><td class="num">15</td></tr>
+      <tr><td>Königin</td><td class="num">250</td></tr>
+      <tr><td>Ancient Drone</td><td class="num">60</td></tr>
+    </table>
+
+    <h2 id="verwandt">Verwandte Seiten <a class="anchor" href="#verwandt">#</a></h2>
+    <ul>
+      <li><a class="wiki" href="kampf.html">Kampf-Grid (Top-Down) <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="kapitel.html">Kapitel & Missionen <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="helden.html">SG-1 (Helden) <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="rekruten.html">Rekruten <span class="tag">→</span></a></li>
+    </ul>
+
+    <div id="page-footer"></div>
+  </div>
+</div>
+<script src="wiki.js"></script>
+</body>
+</html>

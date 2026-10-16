@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SGC COMMAND – Konzept</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="layout">
+  <nav id="sidebar"></nav>
+  <div id="main">
+    <div id="crumbs"><a href="index.html">Start</a></div>
+    <h1>SGC COMMAND</h1>
+    <p class="subtitle">Ein taktisches Grid-Kampfspiel im Stargate-Universum. X-COM-Struktur, Shelter-Basis, Top-Down-Schlachtfeld.</p>
+
+    <div class="callout">
+      <span class="label">Der eine Satz</span>
+      <strong>Das Gate ist die Mechanik.</strong> Kein stummer Hubschrauber – es ist Deckung, Fluchtweg, Missionsziel und Ticking Clock in einem.
+    </div>
+
+    <h2 id="konzept">Das Konzept <a class="anchor" href="#konzept">#</a></h2>
+    <p>SGC COMMAND ist ein <strong>rundenbasiertes Taktikspiel</strong> mit tiefem Basis-Management. Der Spieler leitet das Stargate Command (SGC) unter Cheyenne Mountain und schickt Teams durch das Gate auf Missionen zu fernen Planeten.</p>
+    <p>Das Spiel kombiniert drei bewährte Design-Vorlagen:</p>
+    <ul>
+      <li><strong>X-COM (UFO):</strong> Taktischer Grid-Kampf, AP-System, Deckung, permanenter Tod, Forschung & Fertigung</li>
+      <li><strong>Fallout Shelter:</strong> Grid-Basisbau von der Seite, Räume als Module, Staff-Zuweisung, Produktion</li>
+      <li><strong>Stargate:</strong> Das Gate als zentrales taktisches Element, Goa'uld als "Götter", der Humor der Serie</li>
+    </ul>
+
+    <h2 id="loop">Der Game-Loop <a class="anchor" href="#loop">#</a></h2>
+    <p>Das Spiel folgt einem klaren Zyklus. Details auf der Seite <a class="wiki" href="game-loop.html">Game-Loop <span class="tag">→</span></a>:</p>
+    <pre><code>BASE ──► MISSION_BRIEFING ──► COMBAT ──► DEBRIEF ──► BASE
+ ▲                                                    │
+ └────────────────────────────────────────────────────┘</code></pre>
+    <p>Jede Runde besteht aus einer <strong>Basis-Phase</strong> (Management, Bau, Forschung) und einer <strong>Missions-Phase</strong> (taktischer Kampf auf dem Grid).</p>
+
+    <h2 id="welten">Die zwei Welten <a class="anchor" href="#welten">#</a></h2>
+    <div class="card-grid">
+      <a class="card" href="basis.html">
+        <div class="card-title">▦ Basis (Side-View)</div>
+        <div class="card-sub">Fallout-Shelter-Style</div>
+        <div class="card-stat">8×10 Grid, 11 Raum-Typen, Power-Budget, Staff-Zuweisung, Produktion pro Tag</div>
+      </a>
+      <a class="card" href="kampf.html">
+        <div class="card-title">⊞ Schlachtfeld (Top-Down)</div>
+        <div class="card-sub">X-COM-Style Taktik</div>
+        <div class="card-stat">20×15 Grid, 2 AP pro Unit, Deckung, LOS, Gate-Timer, 8 Terrain-Typen</div>
+      </a>
+      <a class="card" href="gate.html">
+        <div class="card-title">◎ Das Gate</div>
+        <div class="card-sub">Der Biss des Spiels</div>
+        <div class="card-stat">38-Minuten-Timer, Chain-Dial, Gate-Verteidigung, Boss-Flucht</div>
+      </a>
+      <a class="card" href="feinde.html">
+        <div class="card-title">☣ Feinde</div>
+        <div class="card-sub">Von Jaffa bis Königin</div>
+        <div class="card-stat">8 Feind-Typen über 5 Kapitel, steigende Schwierigkeit, Boss-Kämpfe</div>
+      </a>
+    </div>
+
+    <h2 id="helden">Die Helden <a class="anchor" href="#helden">#</a></h2>
+    <p>Das feste Elite-Team <a class="wiki" href="helden.html">SG-1 <span class="tag">→</span></a> besteht aus vier Charakteren, die man aus der Serie kennt:</p>
+    <div class="card-grid">
+      <a class="card" href="char-onell.html">
+        <div class="card-title">Jack O'Neill</div>
+        <div class="card-sub">Veteran-Ansturm</div>
+        <div class="card-stat">HP 80 · "Todesfalte" · Die Knie</div>
+      </a>
+      <a class="card" href="char-tealc.html">
+        <div class="card-title">Teal'c</div>
+        <div class="card-sub">Melee-Spezialist</div>
+        <div class="card-stat">HP 95 · "Wut" · +8 Schaden vs. Jaffa</div>
+      </a>
+      <a class="card" href="char-jackson.html">
+        <div class="card-title">Daniel Jackson</div>
+        <div class="card-sub">Wissenschaftler</div>
+        <div class="card-stat">HP 60 · "Schwachpunkt" · Er liest weiter</div>
+      </a>
+      <a class="card" href="char-carter.html">
+        <div class="card-title">Samantha Carter</div>
+        <div class="card-sub">Tech / Support</div>
+        <div class="card-stat">HP 75 · "Werkzeug" · Gate-Timer +3</div>
+      </a>
+    </div>
+    <p>Zusätzlich gibt es <a class="wiki" href="rekruten.html">Rekruten <span class="tag">→</span></a> – den "echten" X-COM-Kern, die <strong>permanent sterben können</strong>.</p>
+
+    <h2 id="kapitel">Die Kampagne <a class="anchor" href="#kapitel">#</a></h2>
+    <p>5 Akte, 27 Missionen, steigende Schwierigkeit. Übersicht auf <a class="wiki" href="kapitel.html">Kapitel & Missionen <span class="tag">→</span></a>:</p>
+    <table>
+      <tr><th>Akt</th><th>Titel</th><th>Neuer Feind</th><th>Missionen</th></tr>
+      <tr><td>1</td><td>Erste Schritte</td><td>Jaffa Rekrut</td><td class="num">5</td></tr>
+      <tr><td>2</td><td>Das Netz</td><td>Veteran, Elite, SatP</td><td class="num">6</td></tr>
+      <tr><td>3</td><td>Goa'uld</td><td>System Lord (Boss)</td><td class="num">5</td></tr>
+      <tr><td>4</td><td>Replikatoren</td><td>Replikatoren + Königin</td><td class="num">5</td></tr>
+      <tr><td>5</td><td>Das Ende</td><td>Ancient Drones, 3 Lords</td><td class="num">6</td></tr>
+    </table>
+
+    <h2 id="biss">Was macht das Spiel besonders? <a class="anchor" href="#biss">#</a></h2>
+    <ol>
+      <li><strong>Das Gate ist die Mechanik:</strong> Kein stummer Hubschrauber – es ist Deckung, Fluchtweg, Missionsziel und Ticking Clock in einem.</li>
+      <li><strong>Rundenbasiert + taktisch + management-tief:</strong> X-COM-Struktur, aber mit Shelters zugänglicherer Basis-Loop.</li>
+      <li><strong>Karten-Diversität als Identität:</strong> Jeder Planet spielt sich anders (Wüste, Dschungel, Tempel, Stadt, Eis, Lava, Nacht, Ufer).</li>
+      <li><strong>Narrative Bindung:</strong> Goa'uld-Kulte geben dem "Ticking Clock"-Druck ein Gesicht.</li>
+      <li><strong>Tonfall:</strong> Ernst im Taktikteil, leicht im Basis-/Dialogteil – wie die Serie selbst.</li>
+    </ol>
+
+    <div class="callout">
+      <span class="label">Tonfall</span>
+      Hammond isst ein Sandwich. Es wird nie benannt.
+    </div>
+
+    <div id="page-footer"></div>
+  </div>
+</div>
+<script src="wiki.js"></script>
+</body>
+</html>

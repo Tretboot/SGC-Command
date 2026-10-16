@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gate-Mechanik – SGC COMMAND</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="layout">
+  <nav id="sidebar"></nav>
+  <div id="main">
+    <div id="crumbs"><a href="index.html">Start</a> <span>›</span> <a href="game-loop.html">Game-Loop</a> <span>›</span> Gate-Mechanik</div>
+    <h1>Gate-Mechanik (38 Minuten)</h1>
+    <p class="subtitle">Der Biss des Spiels. Das Gate ist keine Deko – es ist die Ticking Clock, der Fluchtweg und das Missionsziel.</p>
+
+    <div class="callout danger">
+      <span class="label">Der eine Satz</span>
+      <strong>Das Gate ist die Mechanik.</strong> Kein stummer Hubschrauber – es ist Deckung, Fluchtweg, Missionsziel und Ticking Clock in einem.
+    </div>
+
+    <h2 id="timer">Der Gate-Timer <a class="anchor" href="#timer">#</a></h2>
+    <p>Jede Mission hat einen <strong>Gate-Timer</strong>, der in <strong>Zügen</strong> gemessen wird (Standard 28–36 Züge ≈ die kanonischen ~38 Minuten).</p>
+    <ul>
+      <li>Timer → 0: <strong>Stranded-Modus</strong> (Nicht-Wipe, aber: Feind-Wellen, Belohnung 0%)</li>
+      <li>Gate schließt in 3 Züge (jeder im Gate = safe, der Wurmloch entschuldigt sich nicht)</li>
+      <li>Strategisch: Letzte-Zug-"nicht-gesammelt" = −1 Belohnung pro Objekt</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Stranded-Modus</span>
+      Wenn der Timer abläuft, ist das Team gestrandet. Der Planet wird hostiler (Wellen 4–6), der Timer resettet auf +12 <strong>wenn</strong> das Gate erreicht wird. Nicht erreicht = Fehlschlag (Belohnung 0%, Tode bleiben).
+    </div>
+
+    <h2 id="chain">Chain-Dial <a class="anchor" href="#chain">#</a></h2>
+    <p>Canon-Mechanik: Der Feind dialt durch ein <strong>offenes Gate</strong>. Das Gate wird zur Waffe.</p>
+    <ul>
+      <li>M2.3: Jaffa kommen über das offene SGC-Gate (Chain-Dial-Verteidigung)</li>
+      <li>M3.4: Doppelt-Gate-Karte – euer Exfil-Gate (A) + ihr Gate (B, öffnet Zug 8)</li>
+      <li>M5.3: Gate-Verteidigung, Gate A (unser) vs. Gate B (ihr, 3 Wellen)</li>
+    </ul>
+    <p><strong>Gates werden Karten. Gates werden Waffen.</strong></p>
+
+    <h2 id="boss">Boss-Flucht <a class="anchor" href="#boss">#</a></h2>
+    <p>Goa'uld (System Lords) fliehen bei <strong>Timer ≤ 4</strong> oder <strong>HP ≤ 20%</strong>:</p>
+    <ul>
+      <li>Flucht-Fenster: 4 Züge</li>
+      <li>Bei Flucht: 50% Belohnung + Log-Text: *"Er ging. (Er sagt: 'Wir sehen uns.' Wir sehen uns. Wir sehen uns alle mit diesen Leuten, am Ende.)"</li>
+      <li>Vor Flucht: 100% Belohnung / Nach Flucht: 75%</li>
+    </ul>
+
+    <h2 id="gate-tiles">Gate-Tiles <a class="anchor" href="#gate-tiles">#</a></h2>
+    <p>Das Gate belegt <strong>2×2 Tiles</strong> auf dem Schlachtfeld:</p>
+    <ul>
+      <li>Begehbar: nein</li>
+      <li>Blockt LOS: ja</li>
+      <li>Deckung: — (das Gate ist kein Deckungselement, es ist das Ziel)</li>
+      <li>In 5 Karten: <strong>vergraben</strong> (Buddeln = 1 Zug, 15% Abdeckung)</li>
+    </ul>
+
+    <h2 id="missionstypen">Gate & Missionstypen <a class="anchor" href="#missionstypen">#</a></h2>
+    <table>
+      <tr><th>Missionstyp</th><th>Gate-Rolle</th></tr>
+      <tr><td><strong>Defense</strong></td><td>Gate ist das Ziel. Schütze es, überlebe 10 Runden.</td></tr>
+      <tr><td><strong>Assault</strong></td><td>Spieler spawn am Gate. Ziel am anderen Ende.</td></tr>
+      <tr><td><strong>Rettung</strong></td><td>Zivilisten/Wissenschaftler müssen zum Gate eskortiert werden.</td></tr>
+      <tr><td><strong>Erkundung</strong></td><td>Scanpunkte erreichen, dann zum Gate zurück.</td></tr>
+      <tr><td><strong>Fassung</strong></td><td>Ziel fassen (nicht töten), zum Gate bringen.</td></tr>
+    </table>
+
+    <h2 id="verwandt">Verwandte Seiten <a class="anchor" href="#verwandt">#</a></h2>
+    <ul>
+      <li><a class="wiki" href="kampf.html">Kampf-Grid (Top-Down) <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="kapitel.html">Kapitel & Missionen <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="feinde.html">Feind-Typen <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="char-carter.html">Samantha Carter (Gate-Genius) <span class="tag">→</span></a></li>
+    </ul>
+
+    <div id="page-footer"></div>
+  </div>
+</div>
+<script src="wiki.js"></script>
+</body>
+</html>

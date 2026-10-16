@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kampf-Grid – SGC COMMAND</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="layout">
+  <nav id="sidebar"></nav>
+  <div id="main">
+    <div id="crumbs"><a href="index.html">Start</a> <span>›</span> <a href="game-loop.html">Game-Loop</a> <span>›</span> Kampf-Grid</div>
+    <h1>Kampf-Grid (Top-Down)</h1>
+    <p class="subtitle">20 × 15 Tiles = 300 Tiles. Tile = 48px → Canvas 960×720px. X-COM-Style Taktik.</p>
+
+    <div class="callout">
+      <span class="label">Design-Vorlage</span>
+      <strong>X-COM (UFO):</strong> Grid-Kampf, AP-System, Deckung, Line of Sight, Flankenbonus. Der Spieler steuert <strong>jede Aktion</strong> – kein Auto-Kampf.
+    </div>
+
+    <h2 id="grid">Das Grid <a class="anchor" href="#grid">#</a></h2>
+    <p>20 Spalten × 15 Zeilen = 300 Tiles. Jedes Tile ist 48px groß. Das Schlachtfeld wird auf einem <strong>Canvas 2D</strong> gerendert (960×720px).</p>
+
+    <h2 id="terrain">Terrain <a class="anchor" href="#terrain">#</a></h2>
+    <table>
+      <tr><th>Terrain</th><th>Begehbar</th><th>Blockt LOS</th><th>Deckung</th></tr>
+      <tr><td>Open (Gras/Fels)</td><td>ja</td><td>nein</td><td>keine</td></tr>
+      <tr><td>Low Cover (Kiste, Felsbrocken)</td><td>ja</td><td>nein</td><td>−25% Treffer</td></tr>
+      <tr><td>High Cover (Mauer, Fels, Wrack)</td><td>nein / ja</td><td>ja</td><td>−50% Treffer</td></tr>
+      <tr><td>Wasser</td><td>nein</td><td>ja</td><td>—</td></tr>
+      <tr><td><strong>Gate (2×2 Tiles)</strong></td><td>nein</td><td>ja</td><td>—</td></tr>
+    </table>
+
+    <h2 id="ap">AP-System <a class="anchor" href="#ap">#</a></h2>
+    <p>Pro Unit pro Kampfrunde: <strong>2 AP</strong>.</p>
+    <table>
+      <tr><th>Aktion</th><th class="num">Kosten</th></tr>
+      <tr><td>1 Tile bewegen</td><td class="num">1 AP</td></tr>
+      <tr><td>Schießen</td><td class="num">1 AP</td></tr>
+      <tr><td>Nachladen</td><td class="num">1 AP</td></tr>
+      <tr><td>Dash (2 Tiles)</td><td class="num">2 AP</td></tr>
+      <tr><td>Granate werfen</td><td class="num">2 AP</td></tr>
+      <tr><td>Turn skip</td><td class="num">0</td></tr>
+    </table>
+    <p><strong>Bewegung:</strong> 8-Wege. 1 Tile = 1 AP, Diagonale = 1 AP (X-COM-Klassik). Mauern/Wasser blocken.</p>
+
+    <h2 id="runden">Rundenstruktur <a class="anchor" href="#runden">#</a></h2>
+    <p>Abwechselnde Phasen:</p>
+    <ol>
+      <li><strong>Player-Phase:</strong> Alle Einheiten, Reihenfolge frei, bis alle 0 AP oder Skip</li>
+      <li><strong>Enemy-Phase:</strong> AI (Greedy: nächstes Ziel, Deckung suchen)</li>
+      <li><strong>Round +1</strong></li>
+    </ol>
+    <p>Kein Auto-Kampf auf Spielerseite – jede Aktion manuell.</p>
+
+    <h2 id="los">Line of Sight <a class="anchor" href="#los">#</a></h2>
+    <p>Bresenham-Raycast von Schütze zu Ziel. Blockiert durch: <strong>Mauern, High Cover</strong>. Low Cover blockt <strong>nicht</strong>.</p>
+
+    <h2 id="treffer">Trefferchance <a class="anchor" href="#treffer">#</a></h2>
+    <ul>
+      <li>Base: <strong>70%</strong> (gleiche Reihe/Spalte), <strong>50%</strong> (Diagonale)</li>
+      <li>Ziel in Low Cover: −25%, in High Cover: −50%</li>
+      <li>Schütze in Cover: +10%</li>
+      <li>Reichweite 1–8 Tiles</li>
+    </ul>
+
+    <h2 id="waffen">Waffen (MVP) <a class="anchor" href="#waffen">#</a></h2>
+    <table>
+      <tr><th>Waffe</th><th class="num">Dmg</th><th class="num">Range</th><th class="num">Mag</th><th class="num">Treffer</th></tr>
+      <tr><td>P90</td><td class="num">25</td><td class="num">6</td><td class="num">30</td><td class="num">70%</td></tr>
+      <tr><td>Shotgun</td><td class="num">40</td><td class="num">2</td><td class="num">6</td><td class="num">90%</td></tr>
+      <tr><td>Granate</td><td class="num">50 (AoE 3×3)</td><td class="num">5</td><td class="num">1</td><td class="num">100%</td></tr>
+    </table>
+
+    <h2 id="gate">Das Gate auf dem Feld <a class="anchor" href="#gate">#</a></h2>
+    <p>Das <a class="wiki" href="gate.html">Gate <span class="tag">→</span></a> ist immer auf dem Schlachtfeld. Zwei Mission-Archetypen:</p>
+    <table>
+      <tr><th>Typ</th><th>Setup</th><th>Sieg</th><th>Niederlage</th></tr>
+      <tr><td><span class="badge badge-red">A — Defense</span></td><td>Gate ist das Ziel. Feind spawn von Kartenrändern.</td><td>Überlebe 10 Runden</td><td>Gate-HP (200) = 0</td></tr>
+      <tr><td><span class="badge badge-blue">B — Assault</span></td><td>Spieler spawn am Gate. Ziel am anderen Ende.</td><td>Artefakt zerstören / Wissenschaftler eskortieren</td><td>Ziel nicht erreicht / Timer abgelaufen</td></tr>
+    </table>
+
+    <h2 id="units">Units <a class="anchor" href="#units">#</a></h2>
+    <ul>
+      <li><strong>Spieler:</strong> Squad max <strong>6</strong> (mind. 2 SG-1 + max. 3 Rekruten + 1 frei), HP 100, 2 AP</li>
+      <li><strong>Feind (MVP, 4 Typen):</strong> Jaffa (HP 80), Drone (HP 40), Elite Jaffa (HP 120), Goa'uld (HP 300, Boss)</li>
+    </ul>
+    <p>Vollständige Feind-Liste: <a class="wiki" href="feinde.html">Feind-Typen <span class="tag">→</span></a></p>
+
+    <h2 id="maps">Maps <a class="anchor" href="#maps">#</a></h2>
+    <p>MVP: 3 hand-crafted Maps (je 1 Defense, 1 Assault, 1 Mixed) + 1 procedural (seeded RNG, damit Saves reproduzierbar sind).</p>
+    <p>8 Terrain-Typen für Karten-Diversität: Wüste, Gras, Eis, Dschungel, Stein-Stadt, Lava, Nacht, Ufer. Jeder Planet spielt sich anders.</p>
+
+    <h2 id="verwandt">Verwandte Seiten <a class="anchor" href="#verwandt">#</a></h2>
+    <ul>
+      <li><a class="wiki" href="gate.html">Gate-Mechanik (38 Min) <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="feinde.html">Feind-Typen <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="helden.html">SG-1 (Helden) <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="rekruten.html">Rekruten <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="game-loop.html">Game-Loop <span class="tag">→</span></a></li>
+    </ul>
+
+    <div id="page-footer"></div>
+  </div>
+</div>
+<script src="wiki.js"></script>
+</body>
+</html>

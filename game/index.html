@@ -1,0 +1,48 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SGC Command v2</title><link rel="stylesheet" href="style.css"></head><body>
+<header><div class="logo">◎ SGC COMMAND</div><div id="chap"></div><div id="res"></div><div id="round"></div>
+<button id="help" class="small" title="Anleitung">❓</button>
+<button id="sound" class="small" title="Sound an/aus">🔊</button>
+<button id="go">▶ Tag beenden</button><button id="reset" class="small">⟲</button></header>
+<nav>
+<button data-tab="base">🏗 Basis</button>
+<button data-tab="map">🗺 Sternenkarte</button>
+<button data-tab="roster">👥 Roster</button>
+<button data-tab="log">📜 Protokoll</button>
+</nav>
+<main>
+<div class="pane" id="pane-base"><div class="split"><canvas id="base-cv" width="640" height="840"></canvas><aside id="base-side"></aside></div></div>
+<div class="pane" id="pane-map"><div class="split"><canvas id="map-cv" width="960" height="540"></canvas><aside id="map-side"></aside></div></div>
+<div class="pane" id="pane-roster"><div id="roster-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:8px"></div></div>
+<div class="pane" id="pane-log"><div id="log-body"></div></div>
+</main>
+<!-- Jagged-Alliance-Style Combat UI (unten) -->
+<div id="combat-ui" style="display:none"></div>
+<!-- Gateroom-Overlay (Übergang) -->
+<div id="gate-overlay" style="display:none;position:fixed;inset:0;background:#000;z-index:5;align-items:center;justify-content:center">
+<canvas id="gate-cv" width="960" height="540" style="max-width:95vw;height:auto"></canvas></div>
+<div id="intro-overlay" style="display:none">
+ <canvas id="intro-cv" width="1280" height="720" aria-label="Cinematic Stargate opening"></canvas>
+ <button id="intro-skip">Überspringen <span>ESC</span></button>
+</div>
+<div id="story-dialogue" role="dialog" aria-modal="true" aria-live="polite"></div>
+<!-- Combat-Overlay -->
+<div id="combat-overlay" style="display:none;position:fixed;inset:0;background:#000;z-index:5;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+<canvas id="combat-cv" width="960" height="720" style="max-width:95vw;height:auto"></canvas>
+<button id="combat-end" style="display:none;padding:10px 24px;font-size:16px">Weiter</button>
+</div>
+<div id="menu" style="display:none">
+ <div class="menu-box">
+  <div class="menu-title">◎ SGC COMMAND</div>
+  <div class="menu-sub">PAUSE</div>
+  <button class="menu-btn" onclick="hideMenu()">▶ Weiterspielen</button>
+     <button class="menu-btn" onclick="showHelp()">📖 Anleitung</button>
+   <div class="menu-diff"><span>⚔ Schwierigkeit</span><select id="menu-diff" onchange="act(setDifficulty(this.value))"><option value="easy">Leicht</option><option value="normal">Normal</option><option value="hard">Hart</option></select></div>
+   <button class="menu-btn" id="menu-sound" onclick="toggleSound()">🔊 Sound</button>
+  <button class="menu-btn" onclick="resetGame(false)">⟲ Neues Spiel</button>
+  <button class="menu-btn dim" onclick="resetGame(true)">⏏ Zurücksetzen (ohne Frage)</button>
+  <div class="menu-foot">ESC = Menü · SGC-Cheyenne-Mountain · v2</div>
+ </div>
+</div>
+<div id="modal"></div><div id="over"></div><div id="toast"></div>
+<script src="sound.js"></script><script src="art.js"></script><script src="art2.js"></script><script src="../content/quests.js"></script><script src="../content/intros.js"></script><script src="../content/scenes.js"></script><script src="engine.js"></script><script src="combat.js"></script><script src="base.js"></script><script src="cinematic.js"></script><script src="ui.js"></script></body></html>

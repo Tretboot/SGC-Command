@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rekruten – SGC COMMAND</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="layout">
+  <nav id="sidebar"></nav>
+  <div id="main">
+    <div id="crumbs"><a href="index.html">Start</a> <span>›</span> <a href="helden.html">Charaktere</a> <span>›</span> Rekruten</div>
+    <h1>Rekruten</h1>
+    <p class="subtitle">Der "echte" X-COM-Kern. 39 Charaktere im POOL, 24 davon generiert. Sie sterben permanent. Ihre Namen stehen auf der Gedenktafel im Gate-Raum.</p>
+
+    <div class="callout danger">
+      <span class="label">Permanenter Tod</span>
+      Rekruten, die im Kampf <strong>down</strong> sind, sterben permanent. <strong>SG-1 stirbt nie</strong> (Duplikat-Klausel: −30 HP, +2 Verletzungen). 2+ Mitglieder down → Auto-Extraktion (50% Beute).
+    </div>
+
+    <h2 id="pool">Der POOL (39 Charaktere) <a class="anchor" href="#pool">#</a></h2>
+    <p>Der POOL in <code>engine.js</code> enthält <strong>39 Charaktere</strong>:</p>
+    <ul>
+      <li><strong>15 bekannt</strong> – handgeschriebene Einträge (SG-1, Hammond, West, Apophis/Ra u.a.)</li>
+      <li><strong>24 generiert</strong> – "Cannon Fodder", deterministisch erzeugt über <code>registerRecruit(seed, cls)</code> aus <code>art2.js</code> (Seed 100–123)</li>
+    </ul>
+
+    <h3>Die 15 bekannten Charaktere</h3>
+    <table>
+      <tr><th>Name</th><th>Klasse</th><th>HP</th><th>Talent</th></tr>
+      <tr><td><strong>Jack O'Neill</strong> <span class="tag">SG-1</span></td><td>Leader</td><td class="num">80</td><td>Chekhov's Pencil: 1×/Mission verhindert Extraktion</td></tr>
+      <tr><td><strong>Samantha Carter</strong> <span class="tag">SG-1</span></td><td>Ingenieur</td><td class="num">75</td><td>Gate-Genius: Gate-Timer +3</td></tr>
+      <tr><td><strong>Daniel Jackson</strong> <span class="tag">SG-1</span></td><td>Wissenschaftler</td><td class="num">60</td><td>Schwachpunkt: +25% Schaden 3 Runden</td></tr>
+      <tr><td><strong>Teal'c</strong> <span class="tag">SG-1</span></td><td>Kämpfer</td><td class="num">95</td><td>Chakram: +8 Schaden vs. Jaffa</td></tr>
+      <tr><td><strong>Teyla Emmagan</strong></td><td>Sanitäter</td><td class="num">70</td><td>Heilung: +10 HP Verbündeter (1×/Mission)</td></tr>
+      <tr><td><strong>Cameron Mitchell</strong></td><td>Kämpfer</td><td class="num">75</td><td>Stoiker: Fatigue-Regen ×2</td></tr>
+      <tr><td><strong>Vala Mal Doran</strong></td><td>Wissenschaftler</td><td class="num">65</td><td>Tech-Beute +40%</td></tr>
+      <tr><td><strong>Ronon Dex</strong></td><td>Kämpfer</td><td class="num">90</td><td>Hammer: +25% Schaden</td></tr>
+      <tr><td><strong>John Sheppard</strong></td><td>Leader</td><td class="num">80</td><td>Improvisation: 1×/Mission +20% Schaden</td></tr>
+      <tr><td><strong>Dr. Beale</strong></td><td>Sanitäter</td><td class="num">70</td><td>MedBay-Boost: +50% Heilung</td></tr>
+      <tr><td><strong>Eli Wallace</strong></td><td>Wissenschaftler</td><td class="num">55</td><td>Forschung ×2</td></tr>
+      <tr><td><strong>Ba'al</strong></td><td>Wissenschaftler</td><td class="num">70</td><td>Goa'uld-Wissen: +25% vs. Goa'uld</td></tr>
+      <tr><td><strong>General Hammond</strong></td><td>Leader</td><td class="num">60</td><td>Sandwich: 1×/Kapitel +20 Morale</td></tr>
+      <tr><td><strong>Major West</strong></td><td>Kämpfer</td><td class="num">75</td><td>Diplomat: −1 Bedrohung neutral</td></tr>
+      <tr><td><strong>Apophis (Ra)</strong></td><td>Leader</td><td class="num">85</td><td>Götter-Charisma: +5% Schaden</td></tr>
+    </table>
+
+    <h3>Die 24 generierten Rekruten</h3>
+    <p>Erzeugt über <code>registerRecruit(seed, cls)</code> – deterministisch, Seed 100–123:</p>
+    <ul>
+      <li><strong>Name:</strong> Rang (Pvt./Cpl./Sgt./Lt.) + Vorname (28) + Nachname (28) – ~3000 Kombinationen</li>
+      <li><strong>Look:</strong> 6 Hauttöne × 6 Haarfarben × 12 Haarstile, Bart (40%), Brille (15%), Narbe (10%), Altersgrau ab 38</li>
+      <li><strong>Klasse:</strong> rotiert (fighter, fighter, medic, engineer, scientist, leader)</li>
+      <li><strong>HP:</strong> 60–80 (seed-abhängig)</li>
+      <li><strong>Waffe:</strong> nach Klasse (fighter/engineer/leader: Rifle, medic/scientist: Pistol)</li>
+      <li><strong>Akte:</strong> automatisch generiert (1–2 Verwandte + Quest-Hook)</li>
+    </ul>
+    <div class="callout">
+      <span class="label">Beispiele (Seed 100–103)</span>
+      Pvt. Tess Ivanova · Pvt. Nora Adeyemi · Cpl. Viktor Petrov · Cpl. Marcus Reyes
+    </div>
+
+    <h2 id="dossiers">Personalakten (DOSSIERS) <a class="anchor" href="#dossiers">#</a></h2>
+    <p>Jeder Charakter hat eine <strong>Personalakte</strong> (📋-Button im Roster-Tab):</p>
+    <ul>
+      <li><strong>15 handgeschriebene</strong> Akten für die bekannten Chars (in <code>art2.js</code>, Sektion 4.2)</li>
+      <li><strong>24 generierte</strong> über <code>genDossier(seed)</code> – 1–2 Verwandte mit Beruf, Ort und Quest-Hook</li>
+    </ul>
+    <p>Jede Akte enthält: Aktennummer (SGC-XXX), Biografie, Besonderheit (Trait), Verwandte mit <strong>Quest-Hooks</strong> (z.B. "Sarah wird entführt (Kap. 3)"). Die Hooks sind das Fundament der Quest-Engine – Details auf <a class="wiki" href="quests.html">Quests & Lore <span class="tag">→</span></a>.</p>
+
+    <h2 id="bueroroster">Rekrutierungsbüro <a class="anchor" href="#bueroroster">#</a></h2>
+    <p>Im Roster-Tab sind <strong>alle 39 Charaktere</strong> sichtbar:</p>
+    <ul>
+      <li><strong>Aktiviert</strong> (recruited=true): volle Karte mit HP/Fatigue/Morale-Bars, Raum-Zuweisung, Dossier-Button</li>
+      <li><strong>Nicht aktiviert:</strong> abgedunkelte Karten im "Rekrutierungsbüro" – sie werden in einer Mission rekrutiert (<code>mission.recruit</code> = POOL-Index)</li>
+    </ul>
+    <p>Start-Team: POOL-Index 0–3 (O'Neill, Carter, Jackson, Teal'c). Die restlichen 35 warten auf ihre Episode.</p>
+
+    <h2 id="tod">Der Tod <a class="anchor" href="#tod">#</a></h2>
+    <p>Wenn ein Rekrut stirbt:</p>
+    <ol>
+      <li><strong>Gedenktafel:</strong> Name wird in <code>S.memorial</strong> eingeprägt (Basis-Tab, roter Rahmen)</li>
+      <li><strong>Morale-Schlag:</strong> alle aktiven Charaktere −10 Morale</li>
+      <li><strong>Permanent:</strong> kein Revive, kein Ersatz. Der POOL ist, was er ist.</li>
+    </ol>
+    <p>SG-1-Mitglieder sterben nie – die <strong>Duplikat-Klausel</strong> greift: −30 HP, +2 Verletzungen, Vermerk im Log. (Das Universum dupliziert sie. Niemand fragt, wie.)</p>
+
+    <h2 id="generator">Der Generator (Technik) <a class="anchor" href="#generator">#</a></h2>
+    <p>Die Generierung lebt in <code>art2.js</code> (Artist-Lieferung):</p>
+    <table>
+      <tr><th>Funktion</th><th>Ergebnis</th></tr>
+      <tr><td><code>genRecruitName(seed)</code></td><td>Rang + Vorname + Nachname (deterministisch)</td></tr>
+      <tr><td><code>genRecruitLook(seed)</code></td><td>Look-Objekt (skin, hair, style, age, beard/glasses/scar)</td></tr>
+      <tr><td><code>genDossier(seed)</code></td><td>Akte (file, relatives, trait, bio)</td></tr>
+      <tr><td><code>registerRecruit(seed, cls)</code></td><td>trägt alles in LOOKS + DOSSIERS ein, gibt {name, look, dossier} zurück</td></tr>
+    </table>
+    <div class="callout warn">
+      <span class="label">Namenskollisionen</span>
+      ~3000 Kombinationen. Bei 24 Rekruten: keine Kollision (getestet). Ab ~100 Rekruten Kollisions-Check nötig. LOOKS ist nach Name indiziert – ein doppelter Name überschreibt den Look.
+    </div>
+    <p>Details zur Art-Pipeline: <a class="wiki" href="art-toolchain.html">Art-Toolchain <span class="tag">→</span></a></p>
+
+    <h2 id="verwandt">Verwandte Seiten <a class="anchor" href="#verwandt">#</a></h2>
+    <ul>
+      <li><a class="wiki" href="helden.html">SG-1 (Helden) <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="quests.html">Quests & Lore (Dossier-Hooks) <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="art-toolchain.html">Art-Toolchain (Generator, Tests) <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="feinde.html">Feind-Typen <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="basis.html">Basis-Grid (Kaserne, MedBay) <span class="tag">→</span></a></li>
+    </ul>
+
+    <div id="page-footer"></div>
+  </div>
+</div>
+<script src="wiki.js"></script>
+</body>
+</html>

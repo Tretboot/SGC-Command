@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quests & Lore – SGC COMMAND</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="layout">
+  <nav id="sidebar"></nav>
+  <div id="main">
+    <div id="crumbs"><a href="index.html">Start</a> <span>›</span> Quests & Lore</div>
+    <h1>Quests & Lore</h1>
+    <p class="subtitle">Jeder Charakter hat eine Personalakte. Jede Akte hat Quest-Hooks. Die Hooks werden zu Quests – das ist das narrative Rückgrat des Spiels.</p>
+
+    <div class="callout">
+      <span class="label">Das Prinzip</span>
+      Goa'uld sind Götter, die Formulare ausfüllen müssen. Replikator-Königinnen vermehren sich in der Kantine. Die Ori haben einen Marketingplan. Aber <strong>Familie ist der eigentliche Feind</strong> – und die Quests drehen sich darum.
+    </div>
+
+    <h2 id="dossiers">Die 15 Dossier-Quest-Hooks <a class="anchor" href="#dossiers">#</a></h2>
+    <p>Jeder der 15 bekannten Charaktere hat eine handgeschriebene Akte mit Verwandten und Quest-Hooks. Die Hooks sind das Fundament der Quest-Engine:</p>
+    <table>
+      <tr><th>Charakter</th><th>Verwandte</th><th>Quest-Hook</th><th>Kapitel</th></tr>
+      <tr><td><strong>Jack O'Neill</strong></td><td>Sarah O'Neill (Tochter, Ärztin in Colorado)</td><td>Sarah wird entführt</td><td class="num">3</td></tr>
+      <tr><td><strong>Samantha Carter</strong></td><td>Dr. Richard Carter (Vater, Physiker, verstorben)</td><td>Seine Forschung wird gefunden</td><td class="num">2</td></tr>
+      <tr><td><strong>Daniel Jackson</strong></td><td>Dr. Melburn Jackson (Großvater, Archäologe, verschollen)</td><td>Hinweis auf Abydos-Ausgrabung</td><td class="num">1</td></tr>
+      <tr><td><strong>Teal'c</strong></td><td>Drey'auc (Ehefrau, Jaffa auf Chulak)</td><td>Befreiungsmission Chulak</td><td class="num">4</td></tr>
+      <tr><td><strong>Teal'c</strong></td><td>Rya'c (Sohn, junger Jaffa-Krieger)</td><td>Will dem Vater folgen</td><td class="num">4</td></tr>
+      <tr><td><strong>Teyla Emmagan</strong></td><td>Charin (Mutter, Heilerin der Athosianer)</td><td>Epidemie auf Athos</td><td class="num">3</td></tr>
+      <tr><td><strong>Cameron Mitchell</strong></td><td>Maj. Dan Mitchell (Bruder, Pilot, Air Force)</td><td>Wird abgeschossen</td><td class="num">3</td></tr>
+      <tr><td><strong>Vala Mal Doran</strong></td><td>Tomin (Ex-Mann, Händler, unzuverlässig)</td><td>Schuldeneintreiber tauchen auf</td><td class="num">2</td></tr>
+      <tr><td><strong>Ronon Dex</strong></td><td>Unbekannt (Volk: Satedaner, ausgelöscht)</td><td>Überlebende auf Sateda gefunden</td><td class="num">5</td></tr>
+      <tr><td><strong>John Sheppard</strong></td><td>David Sheppard (Bruder, Anwalt in Boston)</td><td>Verlangt Akteneinsicht</td><td class="num">2</td></tr>
+      <tr><td><strong>Dr. Beale</strong></td><td>Dr. Anne Beale (Schwester, Chirurgin, Denver)</td><td>Braucht dringend Medizin</td><td class="num">3</td></tr>
+      <tr><td><strong>Eli Wallace</strong></td><td>Mrs. Wallace (Mutter, Lehrerin in Ohio)</td><td>Will wissen, wo ihr Sohn arbeitet</td><td class="num">2</td></tr>
+      <tr><td><strong>Ba'al</strong></td><td>Klone (Selbst, mehrere)</td><td>Ein Klon taucht auf</td><td class="num">4</td></tr>
+      <tr><td><strong>General Hammond</strong></td><td>Kayla Hammond (Enkelin, Studentin in Texas)</td><td>Besucht den Berg</td><td class="num">3</td></tr>
+      <tr><td><strong>Major West</strong></td><td>Col. West sen. (Vater, pensionierter Offizier)</td><td>Mahnt zur Diplomatie</td><td class="num">2</td></tr>
+      <tr><td><strong>Apophis (Ra)</strong></td><td>Amaunet (Ehefrau, Goa'uld, verschollen)</td><td>Taucht wieder auf</td><td class="num">5</td></tr>
+    </table>
+
+    <h2 id="generiert">Generierte Quest-Hooks <a class="anchor" href="#generiert">#</a></h2>
+    <p>Die 24 generierten Rekruten bekommen automatisch 1–2 Verwandte mit Quest-Hooks aus einem Pool:</p>
+    <ul>
+      <li>"Wird in Kap. X entführt"</li>
+      <li>"Hat einen Bruder in der Armee"</li>
+      <li>"Will nach Hause"</li>
+      <li>"Braucht dringend Medizin (Kap. X)"</li>
+      <li>"Schuldet jemandem Geld (Kap. X)"</li>
+      <li>"Verschwindet bei einer Gate-Fehlsteuerung (Kap. X)"</li>
+      <li>"Sucht verschollene Familie auf einem Planeten"</li>
+      <li>"Wird von einem Goa'uld bedroht (Kap. X)"</li>
+    </ul>
+    <p>Verwandte-Beispiele: "Anna Lindqvist (Partnerin) – Pilot/in in Portland: Braucht dringend Medizin (Kap. 1)"</p>
+
+    <h2 id="engine">Die Quest-Engine (Geplant) <a class="anchor" href="#engine">#</a></h2>
+    <p>Die Quest-Hooks sind aktuell <strong>tote Daten</strong> – sie stehen in den Akten, aber das Spiel kann sie noch nicht auslösen. Die Quest-Engine (nächster großer Schritt) wird sie aktivieren:</p>
+    <h3>Architektur (Spezifikation)</h3>
+    <pre><code>S.quests = []  // aktive Quests im Save-State
+
+// Trigger-Punkte:
+// 1. applyCombatResult() – nach jeder Mission
+// 2. endDay() – nach jedem Basis-Tag
+// 3. Kapitel-Wechsel – S.chapter++
+
+// Quest-Schema:
+{
+  id: 'q-onell',
+  char: "Jack O'Neill",
+  chapter: 3,
+  title: 'Die Tochter',
+  intro: '...',
+  goal: '...',
+  steps: ['...', '...', '...'],
+  reward: '...',
+  fail: '...',
+  epilogue: '...',
+  status: 'active' | 'done' | 'failed'
+}</code></pre>
+    <h3>Auslösung</h3>
+    <ul>
+      <li><strong>Start:</strong> Quest wird aktiv, wenn das richtige Kapitel erreicht ist UND der Char rekrutiert ist</li>
+      <li><strong>Fortschritt:</strong> Missionen mit <code>questId</code> schalten Steps frei</li>
+      <li><strong>Abschluss:</strong> Alle Steps geschafft → <code>status: 'done'</code>, Reward, Epilog im Log</li>
+      <li><strong>Fehlschlag:</strong> Char stirbt (Rekrut) oder Timer abgelaufen → <code>status: 'failed'</code>, Fehlschlag-Text</li>
+    </ul>
+    <div class="callout warn">
+      <span class="label">Status</span>
+      Quest-Engine ist <strong>geplant, nicht implementiert</strong>. Die Daten (DOSSIERS) stehen, die Auslösung fehlt. Priorität: Hoch (nächster großer Schritt).
+    </div>
+
+    <h2 id="lore">Lore-Kern <a class="anchor" href="#lore">#</a></h2>
+    <p>Die Lore des Spiels dreht sich um vier Säulen:</p>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">Der Berg</div>
+        <div class="card-sub">Bürokratie als Waffe</div>
+        <div class="card-stat">Formular 27B/6, Hammonds Sandwich, das Pentagon fragt, ob "Gate" auch ohne "Stern" funktioniert</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Die Goa'uld</div>
+        <div class="card-sub">Götter mit schlechtem Lebenslauf</div>
+        <div class="card-stat">System Lords, Jaffa, "Götter-Charisma" als Talent, Akte beschlagnahmt, Ego nicht</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Die Replikator-Königin</div>
+        <div class="card-sub">Vermehrung als Strategie</div>
+        <div class="card-stat">Drohnen, Replikanten, Mine, Knoten, Königin – 5 Kapitel lang</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Die Ori</div>
+        <div class="card-sub">Neue Götter mit Marketingplan</div>
+        <div class="card-stat">Theologie als Waffe, 3 Lords, Super-Gate, Galaxy-Mitte</div>
+      </div>
+    </div>
+    <p>Details: <code>content/lore.md</code> (im Projekt, wird von Lead Story Writer geschrieben).</p>
+
+    <h2 id="verwandt">Verwandte Seiten <a class="anchor" href="#verwandt">#</a></h2>
+    <ul>
+      <li><a class="wiki" href="rekruten.html">Rekruten (POOL, Dossiers) <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="helden.html">SG-1 (Helden) <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="kapitel.html">Kapitel & Missionen <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="feinde.html">Feind-Typen <span class="tag">→</span></a></li>
+    </ul>
+
+    <div id="page-footer"></div>
+  </div>
+</div>
+<script src="wiki.js"></script>
+</body>
+</html>

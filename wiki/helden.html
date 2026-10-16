@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SG-1 (Helden) – SGC COMMAND</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="layout">
+  <nav id="sidebar"></nav>
+  <div id="main">
+    <div id="crumbs"><a href="index.html">Start</a> <span>›</span> <a href="rekruten.html">Charaktere</a> <span>›</span> SG-1</div>
+    <h1>SG-1 (Helden)</h1>
+    <p class="subtitle">Das feste Elite-Team. Kein Team, sondern ein Vertrag. Vier Charaktere, die man aus der Serie kennt.</p>
+
+    <div class="callout">
+      <span class="label">Regel</span>
+      SG-1 hat <strong>keinen Skill-Baum</strong>. Sie werden nicht durch Punkte stärker. Sie haben <em>einander</em>. Ihre Stärke kommt von Synergien, Ausrüstung und der Tatsache, dass sie seit Jahren zusammenarbeiten.
+    </div>
+
+    <h2 id="team">Das Team <a class="anchor" href="#team">#</a></h2>
+    <div class="card-grid">
+      <a class="card" href="char-onell.html">
+        <div class="card-title">Jack O'Neill</div>
+        <div class="card-sub">Veteran-Ansturm · Leader</div>
+        <div class="card-stat">HP <b>80</b> · Bew <b>5</b> · Rifle 9–13 (R.4)<br>"Todesfalte" · Die Knie</div>
+      </a>
+      <a class="card" href="char-tealc.html">
+        <div class="card-title">Teal'c</div>
+        <div class="card-sub">Melee-Spezialist · Fighter</div>
+        <div class="card-stat">HP <b>95</b> · Bew <b>6</b> · Melee 16–22 (+8 vs Jaffa)<br>"Wut" · "Ra'hh"</div>
+      </a>
+      <a class="card" href="char-jackson.html">
+        <div class="card-title">Daniel Jackson</div>
+        <div class="card-sub">Wissenschaftler · Scientist</div>
+        <div class="card-stat">HP <b>60</b> · Bew <b>5</b> · Pistol 7–10 (R.3)<br>"Schwachpunkt" · Er liest weiter</div>
+      </a>
+      <a class="card" href="char-carter.html">
+        <div class="card-title">Samantha Carter</div>
+        <div class="card-sub">Tech / Support · Engineer</div>
+        <div class="card-stat">HP <b>75</b> · Bew <b>5</b> · Rifle 9–12 (R.4)<br>"Werkzeug" · "Schnelle-Putz"</div>
+      </a>
+    </div>
+
+    <h2 id="stats">Stats im Vergleich <a class="anchor" href="#stats">#</a></h2>
+    <table>
+      <tr><th>Charakter</th><th class="num">HP</th><th class="num">Bew</th><th>Waffe</th><th>Spezial</th><th>Schwäche</th></tr>
+      <tr><td><a class="wiki" href="char-onell.html">O'Neill</a></td><td class="num">80</td><td class="num">5</td><td>Rifle 9–13 (R.4)</td><td>Todesfalte (1×/Feind: 100% Treffer, ignoriert Deckung)</td><td>Die Knie (−5 max HP nach 4+ Missionen ohne Ruhe)</td></tr>
+      <tr><td><a class="wiki" href="char-tealc.html">Teal'c</a></td><td class="num">95</td><td class="num">6</td><td>Rifle 8–12 · Melee 16–22</td><td>Wut (alle 2 Züge: doppel Melee), Immune gegen Angst</td><td>Der Oath ("Ra'hh": −1 Melee pro Jaffa-Tod in Base)</td></tr>
+      <tr><td><a class="wiki" href="char-jackson.html">Daniel</a></td><td class="num">60</td><td class="num">5</td><td>Pistol 7–10 (R.3)</td><td>Schwachpunkt (4/M: +25% Schaden), Lesung (Lord: 1-Pause)</td><td>Grabstätten-Kachel: +1 Zug (er liest, jemand muss ihn ziehen)</td></tr>
+      <tr><td><a class="wiki" href="char-carter.html">Carter</a></td><td class="num">75</td><td class="num">5</td><td>Rifle 9–12 (R.4)</td><td>Werkzeug (Gate-Timer +3, Kanone), Schnelle-Putz (25% HP)</td><td>Das Labor (2.+ Reparatur am Tag: 1 Zug Pause)</td></tr>
+    </table>
+
+    <h2 id="synergien">Team-Synergien <a class="anchor" href="#synergien">#</a></h2>
+    <p>SG-1 als komplettes Team (alle 4) erhält:</p>
+    <ul>
+      <li><strong>+10% Morale</strong> (sie kennen sich)</li>
+      <li><strong>+10% Combat Power</strong> (Rollen-Mix: Leader + Fighter + Scientist + Engineer)</li>
+      <li><strong>Chekhov's Pencil:</strong> Wenn Team-HP <30%: 50% Chance, einen kritischen Treffer zu verhindern</li>
+    </ul>
+
+    <h2 id="tod">Können SG-1 sterben? <a class="anchor" href="#tod">#</a></h2>
+    <p><strong>Duplikat-Klausel (Empfehlung der Konferenz):</strong></p>
+    <ul>
+      <li>SG-1 kann <strong>downen</strong> (X-COM-Standard: niedriger, jeder Treffer = Tode-Treffer)</li>
+      <li>≥3 Downs total in 1 Akt → <strong>das Gate öffnet. Die Kopie kommt rein.</strong></li>
+      <li>Die Kopie: identische Stats, identische Logik. <strong>5% schlechterer Humor</strong> für 3 Missionen (wird nicht bemerkt), dann 0.</li>
+      <li>Daniel (im Briefing): <em>"Rechtlich derselbe. (Es ist antikes Recht. Es ist schlecht.)"</em></li>
+      <li>2 SG-1-Downs in 1 Mission = Auto-Exfil + −20% Belohnung</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Warum nicht permanent?</span>
+      365-Folgen-Liebes-Dreier. Daniel tot → keine Übersetzung, keine Logik. Teal'c tot → kein Ra'hh. O'Neill tot → die Fiktion ist O'Neill. Die Frustration wäre zu groß. Die Duplikat-Klausel behält das Gewicht, ohne die Fiktion zu brechen.
+    </div>
+
+    <h2 id="verwandt">Verwandte Seiten <a class="anchor" href="#verwandt">#</a></h2>
+    <ul>
+      <li><a class="wiki" href="char-onell.html">Jack O'Neill <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="char-tealc.html">Teal'c <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="char-jackson.html">Daniel Jackson <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="char-carter.html">Samantha Carter <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="rekruten.html">Rekruten <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="char-hammond.html">Gen. Hammond <span class="tag">→</span></a></li>
+    </ul>
+
+    <div id="page-footer"></div>
+  </div>
+</div>
+<script src="wiki.js"></script>
+</body>
+</html>

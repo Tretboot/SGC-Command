@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Basis-Grid – SGC COMMAND</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="layout">
+  <nav id="sidebar"></nav>
+  <div id="main">
+    <div id="crumbs"><a href="index.html">Start</a> <span>›</span> <a href="game-loop.html">Game-Loop</a> <span>›</span> Basis-Grid</div>
+    <h1>Basis-Grid (Shelter-Style)</h1>
+    <p class="subtitle">Der vertikale Schacht durch Cheyenne Mountain. 8 Spalten × 10 Etagen = 80 Zellen.</p>
+
+    <div class="callout">
+      <span class="label">Design-Vorlage</span>
+      <strong>Fallout Shelter:</strong> Grid von der Seite, Räume als Module, Staff "wohnt" in Räumen, Produktion pro Raum. Visuell: 2D Side-View, klar, sofort lesbar.
+    </div>
+
+    <h2 id="grid">Das Grid <a class="anchor" href="#grid">#</a></h2>
+    <p>Ein vertikaler Schacht mit <strong>10 Etagen</strong> (Etage 10 oben, Etage 1 unten). Pro Etage <strong>8 Zellen</strong> (je 80px). Total: 80 Module-Slots.</p>
+    <ul>
+      <li><strong>Gate-Room:</strong> 2×2, fest, vorbefüllt in Etage 1 (Spalten 3–4). Nicht verschiebbar, nicht abreißbar.</li>
+      <li><strong>Bau:</strong> Leere Zelle anklicken → Room-Dialog → Room belegt w×h Zellen.</li>
+      <li><strong>Power-Budget:</strong> Summe aller Consumer ≤ Summe der Generatoren, sonst gehen Räume offline (kein Output).</li>
+    </ul>
+
+    <h2 id="raeume">Raum-Typen <a class="anchor" href="#raeume">#</a></h2>
+    <p>11 Typen im MVP:</p>
+    <table>
+      <tr><th>Raum</th><th>Größe</th><th class="num">Max</th><th class="num">Power</th><th>Baukosten</th><th>Output/Tag</th><th class="num">Staff</th></tr>
+      <tr><td><strong>Gate-Room</strong></td><td>2×2</td><td class="num">1</td><td class="num">−10</td><td>— (fest)</td><td>Missions-Launch</td><td class="num">—</td></tr>
+      <tr><td><strong>Generator</strong></td><td>1×1</td><td class="num">4</td><td class="num">+10</td><td>300c</td><td>—</td><td class="num">1</td></tr>
+      <tr><td><strong>Lab</strong></td><td>1×1</td><td class="num">3</td><td class="num">−2</td><td>500c + 50m</td><td>+10 RP pro Staff</td><td class="num">2</td></tr>
+      <tr><td><strong>Werkstatt</strong></td><td>1×1</td><td class="num">3</td><td class="num">−3</td><td>400c + 60m</td><td>1 Item pro Staff</td><td class="num">2</td></tr>
+      <tr><td><strong>Kaserne</strong></td><td>1×1</td><td class="num">4</td><td class="num">−1</td><td>300c</td><td>beherbergt 4, +Morale</td><td class="num">4</td></tr>
+      <tr><td><strong>MedBay</strong></td><td>1×1</td><td class="num">2</td><td class="num">−2</td><td>600c + 40m</td><td>+10 HP pro Staff</td><td class="num">2</td></tr>
+      <tr><td><strong>Training</strong></td><td>1×2</td><td class="num">2</td><td class="num">−2</td><td>800c + 80m</td><td>+2 XP pro Staff</td><td class="num">2</td></tr>
+      <tr><td><strong>Armory</strong></td><td>1×2</td><td class="num">1</td><td class="num">−2</td><td>700c + 100m</td><td>1 Waffe-Upgrade/Tag</td><td class="num">1</td></tr>
+      <tr><td><strong>Wasserwerk</strong></td><td>1×1</td><td class="num">2</td><td class="num">−1</td><td>350c + 30m</td><td>Life-Support (Pflicht)</td><td class="num">1</td></tr>
+      <tr><td><strong>Lager</strong></td><td>1×1</td><td class="num">3</td><td class="num">0</td><td>250c</td><td>+500 Kapazität</td><td class="num">0</td></tr>
+      <tr><td><strong>Kantine</strong></td><td>1×1</td><td class="num">2</td><td class="num">−1</td><td>400c</td><td>+Morale</td><td class="num">1</td></tr>
+    </table>
+
+    <h2 id="staffing">Staffing <a class="anchor" href="#staffing">#</a></h2>
+    <p>Charaktere werden in Räume "eingeplant". Details zu den Charakteren: <a class="wiki" href="helden.html">SG-1 <span class="tag">→</span></a> und <a class="wiki" href="rekruten.html">Rekruten <span class="tag">→</span></a>.</p>
+    <ul>
+      <li><strong>Rollen:</strong> <code>Soldier</code>, <code>Scientist</code>, <code>Engineer</code>, <code>Medic</code></li>
+      <li><strong>Einplanen:</strong> Click-Click (Staff in Room ziehen)</li>
+      <li><strong>Output-Formel:</strong> <code>base × staff_count × role_bonus</code> (1 Staff = 100%, 2 Staff = 180%)</li>
+      <li><strong>Rollen-Bonus:</strong> Scientist im Lab = +50% RP, Engineer in Werkstatt = +50% Speed</li>
+      <li><strong>Ungeplante Staff:</strong> 0 Output, −Morale/Tag</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="label">Power-Budget</span>
+      Wenn die Summe der Consumer die der Generatoren übersteigt, gehen Räume <strong>offline</strong> (kein Output). Der Spieler muss Generatoren bauen, bevor er expandiert.
+    </div>
+
+    <h2 id="start">Start-Basis (Tag 1) <a class="anchor" href="#start">#</a></h2>
+    <ul>
+      <li>Gate-Room, 2 Generatoren, 1 Lab, 1 Werkstatt, 1 Kaserne, 1 Wasserwerk</li>
+      <li>Power-Bilanz: +20 −17 = <strong>+3</strong></li>
+      <li>3 Staff: 2 Soldier, 1 Scientist</li>
+    </ul>
+
+    <h2 id="visuell">Visuell <a class="anchor" href="#visuell">#</a></h2>
+    <ul>
+      <li>Schacht mit 10 Etagen, pro Etage 8 Zellen (je 80px)</li>
+      <li>Room = farbiger Block mit Icon + Name + Fortschrittsbalken</li>
+      <li>Staff = kleine Avatar-Punkte im Room</li>
+      <li>Top-Bar: Power (<code>24/30</code>), Ressourcen, Tag-Counter, Mission-Alerts</li>
+    </ul>
+
+    <h2 id="events">Basis-Events <a class="anchor" href="#events">#</a></h2>
+    <p>Zufalls-Events in der Basis (X-COM-Style "Soldat ist depressiv"):
+    <ul>
+      <li><strong>"C. ist 9 Tage lang im Labor"</strong> – O'Neill: "Teal'c, Lunch. (C.)". → Carter +2, Lab +1 (Zufalls-Forschung)</li>
+      <li><strong>"Kaffee aus"</strong> – −5 Moral (3 Tage). Das einzige Event ohne Counter.</li>
+      <li><strong>"Replikant in der Lüftung"</strong> – 1 Drone in der Base, 4 Tage. −1 Moral (alle)</li>
+      <li><strong>"O'Neill's Knie"</strong> – +3 Moral (alle). "Er macht Witze. Die Knie sagen was."</li>
+      <li><strong>"Hammond ist nicht da"</strong> – 3 Tage. −2 Moral. "H. arbeitet."</li>
+      <li><strong>"Kaffee #4"</strong> – +1 Moral (alle). "Es ist #4. Es muss."</li>
+    </ul>
+    </p>
+
+    <div class="callout">
+      <span class="label">HQ-Charakter</span>
+      <a class="wiki" href="char-hammond.html">General Hammond <span class="tag">→</span></a> läuft in der Basis rum. Er sagt eine Zeile pro Mission (Zufall). Jede 5. Mission: Briefing-Bonus (+2 XP). Er ist der "Sprecher" des Reports.
+    </div>
+
+    <h2 id="verwandt">Verwandte Seiten <a class="anchor" href="#verwandt">#</a></h2>
+    <ul>
+      <li><a class="wiki" href="game-loop.html">Game-Loop <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="tech-tree.html">Forschung & Tech-Tree <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="helden.html">SG-1 (Helden) <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="char-hammond.html">General Hammond <span class="tag">→</span></a></li>
+    </ul>
+
+    <div id="page-footer"></div>
+  </div>
+</div>
+<script src="wiki.js"></script>
+</body>
+</html>

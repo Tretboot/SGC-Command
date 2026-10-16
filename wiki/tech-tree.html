@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forschung & Tech-Tree – SGC COMMAND</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="layout">
+  <nav id="sidebar"></nav>
+  <div id="main">
+    <div id="crumbs"><a href="index.html">Start</a> <span>›</span> <a href="basis.html">Basis-Grid</a> <span>›</span> Forschung & Tech-Tree</div>
+    <h1>Forschung & Tech-Tree</h1>
+    <p class="subtitle">10 Nodes in drei Zweigen. Research-Points aus dem Lab, Fertigung in der Werkstatt.</p>
+
+    <h2 id="forschung">Forschung <a class="anchor" href="#forschung">#</a></h2>
+    <p>Research-Points (RP) werden im <a class="wiki" href="basis.html">Lab <span class="tag">→</span></a> erzeugt: <strong>+10 RP pro Staff pro Tag</strong> (Scientist: +50%).</p>
+    <p>RP akkumulieren und werden für Tech-Tree-Node bezahlt. Research dauert Tage (z.B. "P90: 30 RP").</p>
+
+    <h2 id="tree">Der Tech-Tree (10 Nodes) <a class="anchor" href="#tree">#</a></h2>
+
+    <h3>Zweig 1: Waffen</h3>
+    <table>
+      <tr><th>Node</th><th class="num">RP</th><th>Effekt</th></tr>
+      <tr><td><strong>W1: Stunner</strong></td><td class="num">20</td><td>Non-lethal, +Morale, weniger Verletzungen</td></tr>
+      <tr><td><strong>W2: Zat'nik'tel</strong></td><td class="num">40</td><td>Vs. Replicator/Goa'uld (Type-Advantage)</td></tr>
+      <tr><td><strong>W3: Shielded Weapons</strong></td><td class="num">60</td><td>+combatBonus, −gear_loss</td></tr>
+      <tr><td><strong>W4: Orbital Strike</strong></td><td class="num">100</td><td>Mission-Bonus, hoher Schaden, hoher Preis</td></tr>
+    </table>
+
+    <h3>Zweig 2: Rüstung & Überleben</h3>
+    <table>
+      <tr><th>Node</th><th class="num">RP</th><th>Effekt</th></tr>
+      <tr><td><strong>S1: Personal Shields</strong></td><td class="num">30</td><td>Injury-Chance −20%</td></tr>
+      <tr><td><strong>S2: Team Shield</strong></td><td class="num">50</td><td>Team-HP +25% (Kampf-Start)</td></tr>
+      <tr><td><strong>S3: Base Shield</strong></td><td class="num">80</td><td>SGC-Defense gegen Loss-Bedingung</td></tr>
+    </table>
+
+    <h3>Zweig 3: Gate-Tech & Logistik</h3>
+    <table>
+      <tr><th>Node</th><th class="num">RP</th><th>Effekt</th></tr>
+      <tr><td><strong>G1: Gate Stabilisierer</strong></td><td class="num">25</td><td>Gate-Timer +5 Züge</td></tr>
+      <tr><td><strong>G2: Fast Dialing</strong></td><td class="num">45</td><td>Deployment ohne Neglect-Tick</td></tr>
+    </table>
+
+    <h2 id="fertigung">Fertigung <a class="anchor" href="#fertigung">#</a></h2>
+    <p>Die <a class="wiki" href="basis.html">Werkstatt <span class="tag">→</span></a> fertigt Items: <strong>1 Item pro Staff pro Tag</strong> (Engineer: +50% Speed).</p>
+    <p>MVP-Items:</p>
+    <table>
+      <tr><th>Item</th><th>Kategorie</th><th>Effekt</th></tr>
+      <tr><td>P90</td><td>Waffe</td><td>Dmg 25, Range 6, Mag 30</td></tr>
+      <tr><td>Shotgun</td><td>Waffe</td><td>Dmg 40, Range 2, Mag 6</td></tr>
+      <tr><td>Rüstung L1</td><td>Armor</td><td>+10 max HP</td></tr>
+      <tr><td>Rüstung L2</td><td>Armor</td><td>+25 max HP, −10% Schaden</td></tr>
+      <tr><td>Medkit</td><td>Medizin</td><td>+30 HP (einmalig)</td></tr>
+      <tr><td>Granate</td><td>Waffe</td><td>Dmg 50 AoE 3×3, Range 5</td></tr>
+    </table>
+
+    <h2 id="verwandt">Verwandte Seiten <a class="anchor" href="#verwandt">#</a></h2>
+    <ul>
+      <li><a class="wiki" href="basis.html">Basis-Grid (Shelter) <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="kampf.html">Kampf-Grid (Top-Down) <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="gate.html">Gate-Mechanik <span class="tag">→</span></a></li>
+    </ul>
+
+    <div id="page-footer"></div>
+  </div>
+</div>
+<script src="wiki.js"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game-Loop – SGC COMMAND</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="layout">
+  <nav id="sidebar"></nav>
+  <div id="main">
+    <div id="crumbs"><a href="index.html">Start</a> <span>›</span> Game-Loop</div>
+    <h1>Game-Loop</h1>
+    <p class="subtitle">Der Herzschlag des Spiels: Basis → Mission → Ergebnis → Basis.</p>
+
+    <h2 id="zyklus">Der Zyklus <a class="anchor" href="#zyklus">#</a></h2>
+    <pre><code>BASE ──► MISSION_BRIEFING ──► COMBAT ──► DEBRIEF ──► BASE
+ ▲                                                    │
+ └────────────────────────────────────────────────────┘</code></pre>
+    <p>Fünf Zustände, klar getrennt. Der Spieler wechselt zwischen der <a class="wiki" href="basis.html">Basis <span class="tag">→</span></a> und dem <a class="wiki" href="kampf.html">Schlachtfeld <span class="tag">→</span></a>.</p>
+
+    <h2 id="phasen">Die Phasen <a class="anchor" href="#phasen">#</a></h2>
+    <table>
+      <tr><th>Phase</th><th>Was passiert</th><th>Spieler-Input</th></tr>
+      <tr><td><span class="badge badge-green">BASE</span></td><td>Management: Räume bauen, Staff zuweisen, forschen, fertigen, Missionen annehmen</td><td>Voll</td></tr>
+      <tr><td><span class="badge badge-blue">BRIEFING</span></td><td>Mission wählen, Team zusammenstellen (max. 6), Ausrüstung</td><td>Voll</td></tr>
+      <tr><td><span class="badge badge-red">COMBAT</span></td><td>Taktischer Grid-Kampf, AP-System, Gate-Timer läuft</td><td>Voll (jede Aktion)</td></tr>
+      <tr><td><span class="badge badge-amber">DEBRIEF</span></td><td>Ergebnis: Loot, XP, Verletzungen, Tote, Story-Beat</td><td>Lesen</td></tr>
+    </table>
+
+    <h2 id="day">End of Day <a class="anchor" href="#day">#</a></h2>
+    <p>Wenn der Spieler "Next Day" drückt, tickt die Basis automatisch:</p>
+    <ol>
+      <li><strong>Produktion tickt:</strong> Workshop fertigt Items, Lab erzeugt Research-Points</li>
+      <li><strong>Staff tickt:</strong> MedBay heilt, Training gibt XP, Morale ändert sich</li>
+      <li><strong>Passive Income:</strong> +100 Credits, +20 Metal, +5 Deuterium</li>
+      <li><strong>Mission Alerts:</strong> 1–2 neue Missionen spawnen</li>
+      <li><strong>Tag += 1,</strong> Auto-Save</li>
+    </ol>
+
+    <div class="callout">
+      <span class="label">Wichtig</span>
+      <strong>1 Mission = 1 Tag.</strong> Die Basis-Zeit ist während des Kampfs gefroren. Das hält den Rhythmus klar und vermeidet Echtzeit-Druck in der Basis.
+    </div>
+
+    <h2 id="ressourcen">Ressourcen <a class="anchor" href="#ressourcen">#</a></h2>
+    <table>
+      <tr><th>Ressource</th><th>Quelle</th><th>Verwendung</th></tr>
+      <tr><td><strong>Credits (c)</strong></td><td>Passive Income, Mission-Loot</td><td>Räume bauen, Staff bezahlen</td></tr>
+      <tr><td><strong>Metal (m)</strong></td><td>Passive Income, Mission-Loot</td><td>Räume bauen, Items fertigen</td></tr>
+      <tr><td><strong>Deuterium (d)</strong></td><td>Passive Income, Mission-Loot</td><td>Gate-Fuel (Mission-Voraussetzung)</td></tr>
+      <tr><td><strong>Research-Points (RP)</strong></td><td>Lab (pro Staff)</td><td><a class="wiki" href="tech-tree.html">Tech-Tree <span class="tag">→</span></a></td></tr>
+    </table>
+
+    <h2 id="state">State-Management <a class="anchor" href="#state">#</a></h2>
+    <p>Single Source of Truth, Reducer-Pattern, kein Framework:</p>
+    <pre><code>// Alle Spiellogik = pure Funktionen
+(state, action) → newState
+
+// Kein DOM-Zugriff in der Logik → testbar + serialisierbar
+const state = {
+  meta:  { version: 1, day: 1, phase: 'BASE', seed: 12345 },
+  base:  { grid, rooms, staff, resources, research, production, power },
+  mission: { type, mapSeed, tiles, units, round, phase, gateHp }
+};</code></pre>
+
+    <h2 id="save">Save-System <a class="anchor" href="#save">#</a></h2>
+    <ul>
+      <li><code>JSON.stringify(state)</code> → <code>localStorage['sgc_save_v1']</code></li>
+      <li>Save-Points: End of Day, nach Debrief, manuell</li>
+      <li><strong>Inklusive Mission-State</strong> → Save & Quit mitten im Kampf möglich</li>
+      <li><code>meta.seed</code> für reproduzierbare procedural Maps</li>
+    </ul>
+
+    <h2 id="verwandt">Verwandte Seiten <a class="anchor" href="#verwandt">#</a></h2>
+    <ul>
+      <li><a class="wiki" href="basis.html">Basis-Grid (Shelter) <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="kampf.html">Kampf-Grid (Top-Down) <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="gate.html">Gate-Mechanik (38 Min) <span class="tag">→</span></a></li>
+      <li><a class="wiki" href="tech-tree.html">Forschung & Tech-Tree <span class="tag">→</span></a></li>
+    </ul>
+
+    <div id="page-footer"></div>
+  </div>
+</div>
+<script src="wiki.js"></script>
+</body>
+</html>
