@@ -10,6 +10,7 @@ const RES_DE={ore:'Erz',tech:'Tech',medicine:'Medizin',food:'Nahrung'};
 const TYPE_DE={hostile:'feindlich',neutral:'neutral',allied:'verbündet',empty:'unbewohnt',base:'Basis',space:'Orbit'};
 const ENEMY_DE={jaffa:'Jaffa',veteran:'Veteran',elite:'Elite',goauld:"Goa'uld",repl:'Replikant',drone:'Drone',queen:'Königin'};
 let GATE_STATE=null;
+let combatPanDrag=null;
 // sfx() kommt aus combat.js (global) – hier NICHT erneut deklarieren!
 // Waffen-Sprite-Cache für das Combat-Panel (drawWeapon aus art2.js, 1× pro Waffe)
 const _wCache={};
@@ -38,6 +39,13 @@ function showMenu(){if(UI.menuOpen)return;UI.menuOpen=true;$('menu').style.displ
  const sel=$('menu-diff');if(sel)sel.value=S.difficulty||'easy';sfx('click');}
 function hideMenu(){UI.menuOpen=false;$('menu').style.display='none';}
 function toggleMenu(){if(UI.menuOpen)hideMenu();else showMenu();}
+function replayOpeningCinematic(){
+ hideMenu();
+ startOpeningCinematic(()=>{
+  S.introSeen=true;save();
+  if(!S.pilotBriefingSeen&&!S.done.includes('1-1')&&S.day===1)showPilotOpening();
+ });
+}
 
 function showHelp(){
  hideMenu();
@@ -58,11 +66,10 @@ function showHelp(){
    <div><b>2.</b> Klicke ein <span style="color:#4fc3f7">BLAUES FELD</span> → sie bewegt sich (1 AP).</div>
    <div><b>3.</b> Klicke einen <span style="color:#ef4444">ROTEN GEGNER (✛)</span> → sie <b>SCHIESST</b> (1 AP).</div>
    <div><b>4.</b> <b>⏸ Warten</b> → übergib den Rest der AP an die nächste Einheit.</div>
-   <div style="margin-top:6px">Jede Einheit hat <b>2 AP</b> pro Runde. Du kannst also z.B. laufen + schießen,
-   oder zweimal schießen (wenn Reichweite). <b>Deckung</b> (Kisten/Mauern) senkt die Trefferchance der Gegner.</div>
-    <div style="margin-top:6px">🌀 <b>One-Way-Gate:</b> Ihr kommt durchs Gate auf den Planeten. Zum Zurückkehren müsst ihr das Gate <b>neu wählen</b> (Extrahieren).<br>
-    <b>Mission-Ende:</b> Sieg = alle Gegner besiegt (100% Beute) · Extraktion = ganzes Team am Gate (50% Beute).<br>
-    Es gibt <b>keine Zeit-Begrenzung</b> – Runden laufen, bis die Mission fertig ist.</div>
+   <div style="margin-top:6px">Jede Einheit hat <b>2 AP</b> pro Runde. Leichte Deckung gibt von vorn −20, schwere Deckung −40 Prozentpunkte auf gegnerische Treffer; Angriffe von hinten umgehen den Schutz (+15 Prozentpunkte). Gelb markierte Kisten und Trümmer können beschossen und zerstört werden.</div>
+   <div>Die Einsatzkarte füllt das Browserfenster oberhalb der Aktionsleiste. Verschiebe die Ansicht mit <b>Pfeiltasten, WASD, Ziehen oder der Minimap</b>. Beim Auswählen einer Einheit außerhalb des Sichtfensters springt die Kamera zu ihr.</div>
+   <div><b>Friedlicher Erstkontakt:</b> Klicke auf die gold markierte Person. Dein Team nähert sich ohne Gewalt; schließe anschließend den Dialog ab.</div>
+    ${C.active&&C.mission.peaceful?'<div style="margin-top:6px"><b>Erstkontakt:</b> Klicke die gold markierte Person an, nähere dich ihr und schließe den Dialog ab. Es gibt keine Gegner und keine Extraktion.</div>':'<div style="margin-top:6px">🌀 <b>One-Way-Gate:</b> Ihr kommt durchs Gate auf den Planeten. Zum Zurückkehren müsst ihr das Gate <b>neu wählen</b> (Extrahieren).<br><b>Mission-Ende:</b> Sieg = alle Gegner besiegt (100% Beute) · Extraktion = ganzes Team am Gate (50% Beute).<br>Es gibt <b>keine Zeit-Begrenzung</b> – Runden laufen, bis die Mission fertig ist.</div>'}
     <h4>⚔ SCHWIERIGKEIT</h4>
     <div><b>Leicht</b> (Default) · <b>Normal</b> · <b>Hart</b> – im Pause-Menü (ESC) änderbar, gilt ab der nächsten Mission.
     Die Missionen werden zusätzlich von Kapitel zu Kapitel schwerer.</div>
@@ -71,7 +78,7 @@ function showHelp(){
    2+ SG-1-Mitglieder down → Auto-Extraktion (50% Beute).</div>
    <h4>TIPS</h4>
        <div>• Teal'c kommt nach der 1. Mission dazu (Chakram: +8 vs Jaffa). • Carter: Gate-Genius (Talent).
-    • Deckung nutzen (Kisten = −25% Treffer). • Nicht alle 6 schicken – 3 SG-1 + Rekruten reicht oft.
+    • Deckung mit Blickrichtung halten; Flanken vermeiden. • Nicht alle 6 schicken – 3 SG-1 + Rekruten reicht oft.
     • Willst du abbrechen? Ganzes Team zum Gate bringen → <b>🌀 Extrahieren</b>.</div>
   </div>
   <button onclick="$('modal').style.display='none'">Verstanden</button>
@@ -93,7 +100,22 @@ function renderHeader(){
 // ===================== Basis (Shelter-Grid) =====================
 function renderBaseSide(){
  const pw=powerGen(),pu=powerUse(),ok=pw>=pu;
- let h=`<h3>Power-Budget</h3><div class="gbox">Produktion <b style="color:${ok?'#4ade80':'#ef4444'}">${pw}</b> · Verbrauch <b>${pu}</b> ${ok?'✔':'⚠ OFFLINE'}</div>`;
+ const headlines=[
+  'Kantine meldet: Kaffeeversorgung stabil. Mitarbeitende widersprechen.',
+  'Aufzugverkehr normal. Niemand hat den Knopf zum 28. Stock gefunden.',
+  'Forschung dementiert ein Gerücht über empfindungsfähigen Wackelpudding.',
+  'Sicherheitsstufe bleibt gleich. Die Formulare wurden trotzdem verdoppelt.',
+  'Wurmloch-Team bittet darum, den blauen Ereignishorizont nicht anzufassen.'
+ ];
+ const headline=headlines[(Math.max(1,S.day)-1)%headlines.length];
+ const activeStaff=S.roster.filter(m=>m.recruited&&!m.dead).length;
+ let h=`<section class="base-news" aria-label="Mountain Network Nachrichten">
+  <div class="base-news-head"><span>⦿ MOUNTAIN NETWORK</span><b><i></i> NACHRICHTEN</b></div>
+  <div class="base-news-tag">AUSGABE ${String(S.day).padStart(2,'0')} · CHEYENNE MOUNTAIN</div>
+  <div class="base-news-title">${headline}</div>
+  <div class="base-news-footer"><span>PERSONAL <b>${activeStaff}</b></span><span>AUFZUG <b>BETRIEBSBEREIT</b></span></div>
+ </section>`;
+ h+=`<h3>Power-Budget</h3><div class="gbox">Produktion <b style="color:${ok?'#4ade80':'#ef4444'}">${pw}</b> · Verbrauch <b>${pu}</b> ${ok?'✔':'⚠ OFFLINE'}</div>`;
  h+=`<h3>Bau</h3>`;
  if(B.buildMode){
   h+=`<div class="warnbox item">Baumodus: <b>${ROOMS[B.buildType].name}</b> – klicke auf ein freies Feld. <button onclick="B.buildMode=false;renderAll()">Abbrechen</button></div>`;
@@ -180,7 +202,7 @@ function renderMapSide(){
  const ms=openMissions().filter(m=>m.planet===MAP.sel);
  if(ms.length){
   ms.forEach(m=>{
-       h+=`<div class="item"><b>${m.name}</b><br><small>${m.goal}<br>Gegner: ${Object.entries(m.enemies).map(e=>e[1]+'× '+ENEMY_DE[e[0]]).join(', ')}<br>${m.tutorial?'Tutorial: Bewegung · Deckung · Schießen · Aktionspunkte · Teal’c':'Ende: Sieg (100%) oder Extraktion am Gate (50%)'}<br>Beute: ${Object.entries(m.reward).map(e=>RES_ICON[e[0]]+e[1]).join(' ')||'–'}</small></div>`;
+       h+=`<div class="item"><b>${m.name}</b><br><small>${m.goal}<br>${m.peaceful?'Missionstyp: Friedlicher Erstkontakt · keine Feinde':`Gegner: ${Object.entries(m.enemies).map(e=>e[1]+'× '+ENEMY_DE[e[0]]).join(', ')||'keine'}`}<br>${m.peaceful?'Zivilisten ansprechen und den Dialog abschließen.':m.tutorial?'Tutorial: Bewegung · Deckung · Schießen · Aktionspunkte · Teal’c':'Ende: Sieg (100%) oder Extraktion am Gate (50%)'}<br>Beute: ${Object.entries(m.reward).map(e=>RES_ICON[e[0]]+e[1]).join(' ')||'–'}</small></div>`;
   });
   const avail=S.roster.filter(m=>m.recruited&&!m.dead);
   h+=`<h3>Team-Auswahl <small>(max 6)</small></h3><div id="team-pick">`+
@@ -212,6 +234,7 @@ function activateMission(mission,teamIds){
  playGate([mission.planet],[{planet:mission.planet,members:teamIds}],()=>{
   $('gate-overlay').style.display='none';
   startCombat(mission,teamIds);
+  document.body.style.overflow='hidden';
   $('combat-overlay').style.display='flex';
   $('combat-end').style.display='none';
   renderAll();
@@ -253,7 +276,9 @@ function playCombatScene(trigger){
  const scenes=MISSION_SCENES&&MISSION_SCENES[C.mission.id],lines=scenes&&scenes[trigger];
  if(!lines||C.sceneFlags[trigger])return;
  C.sceneFlags[trigger]=true;
- showStorySequence(lines,`${PLANETS[C.mission.planet].name} · ${C.mission.name}`,'Weiter',()=>{},'field');
+ showStorySequence(lines,`${PLANETS[C.mission.planet].name} · ${C.mission.name}`,'Weiter',()=>{
+  if(trigger==='contact'){C.contactComplete=true;checkEnd();renderCombatUI();resizeCombatViewport();}
+ },'field');
 }
 function showPilotOpening(){
  const lines=[
@@ -265,30 +290,59 @@ function showPilotOpening(){
  },'briefing','Ein unbekanntes Signal führt SG-1 zu einer Entscheidung, die das Team verändern wird.');
 }
 function combatClick(e){
+ if(C.justPanned){C.justPanned=false;return;}
  if(!C.active||C.result)return;
  const cv=$('combat-cv'),r=cv.getBoundingClientRect(),sx=cv.width/r.width,sy=cv.height/r.height;
  const mx=(e.clientX-r.left)*sx,my=(e.clientY-r.top)*sy;
- const tx=Math.floor(mx/TILE),ty=Math.floor(my/TILE);
+ const tx=Math.floor(mx/TILE)+C.cameraX,ty=Math.floor(my/TILE)+C.cameraY;
  if(!inB(tx,ty))return;
  const u=unitAt(tx,ty);
+ if(u&&u.side==='neutral'){interactWithContact(u);return;}
  if(u&&u.side==='player'&&!u.downed&&u.ap>0){playerSelect(u);sfx('click');return;}
  if(C.selected){
   if(C.moveRange.some(p=>p.x===tx&&p.y===ty)){playerMove(C.selected,tx,ty);return;}
   if(u&&u.side==='enemy'&&C.atkRange.includes(u)){playerAttack(C.selected,u);return;}
-  if(u&&u.side==='enemy'&&dist(C.selected.x,C.selected.y,tx,ty)<=1&&C.selected.melee&&C.selected.ap>0&&tutorialAllowsAttack(C.selected)){const sel=C.selected;if(C.tutorial&&C.tutorial.step===2&&sel.charId===0)C.tutorial.step=3;sel.ap--;C.firstHint=false;doMelee(sel,u);C.selected=null;C.moveRange=[];C.atkRange=[];checkEnd();if(!C.result&&sel.ap<=0)nextUnit();return;}
-  C.selected=null;C.moveRange=[];C.atkRange=[];
+  if(u&&u.side==='enemy'&&dist(C.selected.x,C.selected.y,tx,ty)<=1&&C.selected.melee&&C.selected.ap>0&&tutorialAllowsAttack(C.selected)){const sel=C.selected;if(C.tutorial&&C.tutorial.step===2&&sel.charId===0)C.tutorial.step=3;sel.facing=facingToward(sel,u);sel.ap--;C.firstHint=false;doMelee(sel,u);C.selected=null;C.moveRange=[];C.atkRange=[];C.coverRange=[];checkEnd();if(!C.result&&sel.ap<=0)nextUnit();return;}
+  if(C.coverRange.some(p=>p.x===tx&&p.y===ty)){playerAttackTerrain(C.selected,tx,ty);return;}
+  C.selected=null;C.moveRange=[];C.atkRange=[];C.coverRange=[];
  }
 }
 function combatHover(e){
  if(!C.active)return;
  const cv=$('combat-cv'),r=cv.getBoundingClientRect(),sx=cv.width/r.width,sy=cv.height/r.height;
  const mx=(e.clientX-r.left)*sx,my=(e.clientY-r.top)*sy;
- C.hover={x:Math.floor(mx/TILE),y:Math.floor(my/TILE)};
+ C.hover={x:Math.floor(mx/TILE)+C.cameraX,y:Math.floor(my/TILE)+C.cameraY};
+}
+function combatPan(dx,dy){
+ if(!C.active)return;
+ panCombatCamera(C.cameraX+dx,C.cameraY+dy);
+}
+function combatPointerDown(e){
+ if(!C.active||C.result)return;
+ combatPanDrag={id:e.pointerId,x:e.clientX,y:e.clientY,cameraX:C.cameraX,cameraY:C.cameraY,moved:false};
+ if(e.target.setPointerCapture)e.target.setPointerCapture(e.pointerId);
+}
+function combatPointerMove(e){
+ combatHover(e);
+ if(!combatPanDrag||combatPanDrag.id!==e.pointerId)return;
+ const cv=$('combat-cv'),rect=cv.getBoundingClientRect();
+ const dx=e.clientX-combatPanDrag.x,dy=e.clientY-combatPanDrag.y;
+ if(Math.abs(dx)+Math.abs(dy)>6)combatPanDrag.moved=true;
+ if(combatPanDrag.moved){
+  panCombatCamera(combatPanDrag.cameraX-Math.round(dx*cv.width/rect.width/TILE),
+   combatPanDrag.cameraY-Math.round(dy*cv.height/rect.height/TILE));
+  e.preventDefault();
+ }
+}
+function combatPointerUp(e){
+ if(!combatPanDrag||combatPanDrag.id!==e.pointerId)return;
+ C.justPanned=combatPanDrag.moved;combatPanDrag=null;
 }
 function combatEnd(){
  if(!C.result)return;
  applyCombatResult();
  $('combat-overlay').style.display='none';
+ document.body.style.overflow='';
  $('combat-end').style.display='none';
  showReport();
 }
@@ -335,8 +389,8 @@ function renderCombatUI(){
   const g=gateReady();
   const gReady=g.at===g.total&&g.total>0;
   h+=`<div class="cui-right">
-   <div class="cui-gate">${C.mission&&C.mission.tutorial?'🎯 Ziel: Teal’c sicher herausbringen':`🌀 Gate: <b style="color:${gReady?'#4ade80':'#8a9ab0'}">${g.at}/${g.total}</b> ${gReady?'bereit':'am Gate'}`}</div>
-   ${gReady&&!(C.mission&&C.mission.tutorial)?`<button class="cui-btn cui-btn-go" onclick="extract()">🌀 Extrahieren (50%)</button>`:''}
+   <div class="cui-gate">${C.mission&&C.mission.peaceful?`🤝 Erstkontakt: ${C.contactComplete?'hergestellt':'goldene Person ansprechen'}`:C.mission&&C.mission.tutorial?'🎯 Ziel: Teal’c sicher herausbringen':`🌀 Gate: <b style="color:${gReady?'#4ade80':'#8a9ab0'}">${g.at}/${g.total}</b> ${gReady?'bereit':'am Gate'}`}</div>
+   ${gReady&&!(C.mission&&(C.mission.tutorial||C.mission.peaceful))?`<button class="cui-btn cui-btn-go" onclick="extract()">🌀 Extrahieren (50%)</button>`:''}
    <div class="cui-log">${C.log.slice(0,4).map(l=>`<div class="${/✔|💀|🌀/.test(l)?'ok':/⚠|⚡/.test(l)?'bad':''}">${l}</div>`).join('')}</div>
   </div>`;
  panel.innerHTML=h;
@@ -414,6 +468,7 @@ function renderAll(){
  else if(UI.tab==='roster'){renderRoster();}
  else if(UI.tab==='log'){renderLog();}
  renderCombatUI();
+ resizeCombatViewport();
  const ov=$('over');
  if(S.over){ov.style.display='flex';ov.innerHTML=`<div><h2>${S.over==='win'?'🏆 Kampagne gewonnen':'💀 SGC verloren'}</h2><p>${S.over==='win'?'SG-1 verliert nie. Der Papierkram wird dennoch Jahre dauern.':'Die Integrität des SGC ist erschöpft.'}</p><button onclick="resetGame(true)">Neues Spiel</button></div>`;}
  else ov.style.display='none';
@@ -426,7 +481,7 @@ function doDay(){
 }
 function resetGame(force){
  if(!force&&!confirm('Neues Spiel starten? Der Spielstand geht verloren.'))return;
- newGame();save();$('modal').style.display='none';$('combat-overlay').style.display='none';hideMenu();MAP.sel=null;setTab('base');
+ newGame();save();$('modal').style.display='none';$('combat-overlay').style.display='none';document.body.style.overflow='';hideMenu();MAP.sel=null;setTab('base');
  startOpeningCinematic(()=>{S.introSeen=true;save();showPilotOpening();});
 }
 function toggleSound(){
@@ -442,6 +497,7 @@ function frame(now){
  if(C.active){
   renderCombat($('combat-cv'));
   renderCombatUI();
+  resizeCombatViewport();
   $('combat-end').style.display=C.result?'inline-block':'none';
  }
  else if(GR.phase!=='idle'&&GATE_STATE){drawGateroom($('gate-cv'),now,GATE_STATE);}
@@ -453,6 +509,8 @@ function frame(now){
 // ===================== Init =====================
 function init(){
  if(!load())newGame();
+ resizeCombatViewport();
+ window.addEventListener('resize',resizeCombatViewport);
  document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
  $('go').onclick=doDay;$('reset').onclick=()=>resetGame(false);
  $('gate-cv').onclick=()=>skipGate();
@@ -461,11 +519,24 @@ function init(){
   const hit=MAP.nodes.find(n=>Math.hypot(n.x-x,n.y-y)<n.r);MAP.sel=hit?hit.id:null;renderAll();};
  $('combat-cv').onclick=combatClick;
  $('combat-cv').onmousemove=combatHover;
+ $('combat-cv').onpointerdown=combatPointerDown;
+ $('combat-cv').onpointermove=combatPointerMove;
+ $('combat-cv').onpointerup=combatPointerUp;
+ $('combat-cv').onpointercancel=combatPointerUp;
+ $('combat-minimap').onclick=panCombatToMinimap;
+ $('combat-minimap').onpointerdown=panCombatToMinimap;
+ $('combat-minimap').onpointermove=e=>{if(e.buttons)panCombatToMinimap(e);};
  $('combat-end').onclick=combatEnd;
  if($('help'))$('help').onclick=showHelp;
  if($('sound'))$('sound').onclick=toggleSound;
  // Escape = Pause-Menü (außer in Eingabefeldern)
  document.addEventListener('keydown',e=>{
+  if(C.active&&!C.result&&!C.dialogueActive&&!UI.menuOpen){
+   const pans={ArrowLeft:[-2,0],a:[-2,0],A:[-2,0],ArrowRight:[2,0],d:[2,0],D:[2,0],
+    ArrowUp:[0,-2],w:[0,-2],W:[0,-2],ArrowDown:[0,2],s:[0,2],S:[0,2]};
+   const pan=pans[e.key];
+   if(pan){e.preventDefault();combatPan(pan[0],pan[1]);return;}
+  }
   if((e.key==='Enter'||e.key===' ')&&$('story-dialogue').style.display==='flex'){
    e.preventDefault();$('story-next')?.click();return;
   }
@@ -475,9 +546,12 @@ function init(){
   }
  });
  setTab('base');
- if(!S.done.includes('1-1')&&S.day===1&&!S.introSeen){
+ if(!S.introSeen){
   MAP.sel='chulak';setTab('map');
-  startOpeningCinematic(()=>{S.introSeen=true;save();showPilotOpening();});
+  startOpeningCinematic(()=>{
+   S.introSeen=true;save();
+   if(!S.pilotBriefingSeen&&!S.done.includes('1-1')&&S.day===1)showPilotOpening();
+  });
  } else if(!S.pilotBriefingSeen&&!S.done.includes('1-1')&&S.day===1){
   MAP.sel='chulak';setTab('map');showPilotOpening();
  }

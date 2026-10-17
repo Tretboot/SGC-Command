@@ -10,7 +10,13 @@ The project is a browser game built with plain HTML, CSS, and JavaScript. It has
 
 ## Play
 
-Use a local web server to serve the `game` folder:
+Open [`game/index.html`](game/index.html) directly in a modern browser. No server is required to play:
+
+```text
+Open game/index.html
+```
+
+The game loads its scripts and styles from neighboring project folders. If your browser restricts local files or you want more reliable save storage across sessions, an optional local server can serve the `game` folder:
 
 ```powershell
 python -m http.server 8080 --directory game
@@ -18,12 +24,18 @@ python -m http.server 8080 --directory game
 
 Then open <http://localhost:8080> in a modern browser. If `python` is not available, try `py -m http.server 8080 --directory game`.
 
-The game saves progress in the browser's `localStorage`. Use the in-game reset controls to start over.
+The opening cinematic plays on a fresh game and can be replayed from the pause menu. The game saves progress in the browser's `localStorage`; file-based browser storage behavior can vary by browser. Use the in-game reset controls to start over.
+
+## Reference and inspiration
+
+The base cutaway takes broad organizational inspiration from the [Cheyenne Mountain Complex reference](https://www.rdanderson.com/stargate/cheyenne/index.htm): a layered view of the facility and its levels. The game uses its own schematic, UI, writing, and procedural art; no images or text from the reference page are included.
 
 ## Features
 
 - Base management, staffing, research, and campaign progression
 - Turn-based tactical combat with terrain, cover, action points, and extraction
+- Full-screen 64×48 tactical worlds with a clickable minimap, forests, rivers, bridges, and villages
+- Peaceful first-contact missions with field dialogue alongside combat missions
 - Story briefings, field dialogue, and a skippable procedural Stargate opening
 - Procedurally rendered maps, characters, terrain, and sound effects
 - German-language interface and campaign content

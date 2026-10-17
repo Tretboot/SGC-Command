@@ -100,7 +100,8 @@ const PLANETS={
  flag:{name:"Apophis' Flaggschiff",x:910,y:440,type:'space',ch:4},
 };
 
-// Karten: 15 Zeilen × 20 Spalten. . offen, l Deckung, H hohe Deckung, # Wand, ~ Wasser, G Gate
+// Kompakte Startsektoren, die der Combat-Renderer um Landschaft und Wege erweitert.
+// . offen, l leichte Deckung, H schwere Deckung, # Wand/Gebäude, ~ Wasser/Gefahr, b Trümmer, G Gate
 const MAPS={
  // Abydos-Ruinen: Tempel-Zentrum, Felsformationen, Oase, klare Pfade
  desert:[
@@ -189,39 +190,39 @@ const MAPS={
 const CHAPTERS=[
  {title:'Kapitel 1 – Erste Schritte',sub:'Ein Tor, eine Basis, ein Gott mit schlechtem Lebenslauf.',missions:[
      {id:'1-1',name:'Der erste Schritt',planet:'chulak',goal:'SG-1 durch Chulak führen und Teal’cs Seitenwechsel ermöglichen',map:'chulak',theme:'jungle',type:'assault',enemies:{jaffa:3},enemySpawns:[{x:4,y:6},{x:15,y:6},{x:4,y:9}],tutorial:true,timer:30,reward:{ore:30,tech:5},recruit:3,text:'Teal’c schließt sich SG-1 an'},
-   {id:'1-2',name:'Zuerst Kaffee, dann Planet',planet:'abydos',goal:'Zivilisten retten',map:'jungle',type:'defense',enemies:{jaffa:10},timer:28,reward:{ore:25,medicine:5},recruit:4,text:'Dossier Apophis'},
-   {id:'1-3',name:'Stand Orders',planet:'p2x416',goal:'Halte-Mission 10 Runden',map:'desert',type:'defense',enemies:{jaffa:12},timer:28,reward:{ore:30,tech:5},recruit:12,text:'Jaffa-Anatomie I'},
-   {id:'1-4',name:'Steuern beim Schatzamt',planet:'abydos',goal:'Steuereintreiber fassen',map:'city',type:'assault',enemies:{jaffa:8,elite:1},timer:28,reward:{ore:20,tech:10},recruit:9,text:'Trelak befreit'},
-   {id:'1-5',name:'38 Minuten',planet:'orbit1',goal:'Thor reparieren, Raid abwehren',map:'sgc',type:'defense',enemies:{jaffa:12,veteran:2,elite:1},timer:17,reward:{tech:15,ore:20},recruit:5,text:'Dock Thor, Asgard-Deckung'},
+   {id:'1-2',name:'Das Dorf am Fluss',planet:'abydos',goal:'Friedlichen Erstkontakt herstellen und Vertrauen gewinnen',map:'village',theme:'jungle',type:'contact',peaceful:true,contact:{id:'village-elder',name:'Siedlungssprecher',x:22,y:13},enemies:{},reward:{ore:25,medicine:5},text:'Ein neuer Verbündeter auf Abydos'},
+   {id:'1-3',name:'Stand Orders',planet:'p2x416',goal:'Halte-Mission 10 Runden',map:'desert',theme:'desert',type:'defense',enemies:{jaffa:12},timer:28,reward:{ore:30,tech:5},recruit:12,text:'Jaffa-Anatomie I'},
+   {id:'1-4',name:'Steuern beim Schatzamt',planet:'abydos',goal:'Steuereintreiber fassen',map:'city',theme:'city',type:'assault',enemies:{jaffa:8,elite:1},timer:28,reward:{ore:20,tech:10},recruit:9,text:'Trelak befreit'},
+   {id:'1-5',name:'38 Minuten',planet:'orbit1',goal:'Thor reparieren, Raid abwehren',map:'asgard',theme:'asgard',type:'defense',enemies:{jaffa:12,veteran:2,elite:1},timer:17,reward:{tech:15,ore:20},recruit:5,text:'Dock Thor, Asgard-Deckung'},
  ]},
  {title:'Kapitel 2 – Das Netz wächst',sub:'Das Telefon hat jetzt mehrere Leitungen.',missions:[
-  {id:'2-1',name:'Netz',planet:'p2u744',goal:'Jaffa-Nachbasis sabotieren',map:'jungle',type:'assault',enemies:{jaffa:8,veteran:4},timer:28,reward:{tech:15,ore:10},recruit:6,text:'Antiquitäten-Lizenz'},
-  {id:'2-2',name:'Serenno',planet:'alpha',goal:'Wissenschaftler retten',map:'city',type:'defense',enemies:{veteran:8,elite:4,jaffa:6},timer:30,reward:{ore:25,food:10},recruit:13,text:'Alpha-Gemeinschaft'},
+  {id:'2-1',name:'Netz',planet:'p2u744',goal:'Jaffa-Nachbasis sabotieren',map:'jungle',theme:'jungle',type:'assault',enemies:{jaffa:8,veteran:4},timer:28,reward:{tech:15,ore:10},recruit:6,text:'Antiquitäten-Lizenz'},
+  {id:'2-2',name:'Serenno',planet:'alpha',goal:'Friedlichen Kontakt mit der Alpha-Gemeinschaft herstellen',map:'village',theme:'jungle',type:'contact',peaceful:true,contact:{id:'alpha-envoy',name:'Koloniegesandte',x:10,y:13},enemies:{},reward:{ore:25,food:10},recruit:13,text:'Alpha-Gemeinschaft'},
   {id:'2-3',name:'Alpha',planet:'p7j989',goal:'Chain-Dial-Verteidigung',map:'sgc',type:'defense',enemies:{jaffa:4,veteran:4,elite:2},timer:28,reward:{ore:20,tech:10},text:'+1 Dial-Kapazität'},
-  {id:'2-4',name:'Das Auge',planet:'mobius',goal:'Lens-Grundstation zerstören',map:'desert',type:'assault',enemies:{veteran:10,elite:4},timer:28,reward:{tech:20},recruit:10,text:'Gate-Netzwerk I'},
-  {id:'2-5',name:'Das besteuerte Reich',planet:'newground',goal:'Zwei-Schicht-Army vernichten',map:'city',type:'assault',enemies:{jaffa:14,veteran:6,elite:2},timer:32,reward:{food:20,ore:15},recruit:8,text:'Bündnis New Ground'},
-  {id:'2-6',name:'Der erste Gott',planet:'p5c353',goal:'Khepra besiegen',map:'desert',type:'assault',enemies:{veteran:8,elite:10,goauld:1},timer:22,reward:{tech:25,ore:20},text:'Khepra tot'},
+  {id:'2-4',name:'Das Auge',planet:'mobius',goal:'Lens-Grundstation zerstören',map:'jungle',theme:'jungle',type:'assault',enemies:{veteran:10,elite:4},timer:28,reward:{tech:20},recruit:10,text:'Gate-Netzwerk I'},
+  {id:'2-5',name:'Das besteuerte Reich',planet:'newground',goal:'Zwei-Schicht-Army vernichten',map:'city',theme:'city',type:'assault',enemies:{jaffa:14,veteran:6,elite:2},timer:32,reward:{food:20,ore:15},recruit:8,text:'Bündnis New Ground'},
+  {id:'2-6',name:'Der erste Gott',planet:'p5c353',goal:'Khepra besiegen',map:'hatak',theme:'hatak',type:'assault',enemies:{veteran:8,elite:10,goauld:1},timer:22,reward:{tech:25,ore:20},text:'Khepra tot'},
  ]},
  {title:'Kapitel 3 – Bedrohungen',sub:'Jetzt hat jeder die Telefonnummer.',missions:[
   {id:'3-1',name:'Gärten des Pharao',planet:'p5u666',goal:'Kalender beschaffen',map:'city',type:'assault',enemies:{veteran:10,elite:4},timer:28,reward:{tech:20},recruit:7,text:'Asgard-Karte'},
   {id:'3-2',name:'Sohn des Pharao',planet:'ennui',goal:'Prinz Kaelo befreien',map:'jungle',type:'defense',enemies:{veteran:8,elite:6},timer:30,reward:{ore:25,medicine:5},text:'Kaelo als Reservist'},
-  {id:'3-3',name:'Die Schlange',planet:'kern',goal:'Symbiont fassen',map:'city',type:'assault',enemies:{elite:12,veteran:2},timer:28,reward:{tech:25},text:'2 Gate-Adressen'},
+  {id:'3-3',name:'Die Schlange',planet:'kern',goal:'Symbiont fassen',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:12,veteran:2},timer:28,reward:{tech:25},text:'2 Gate-Adressen'},
   {id:'3-4',name:'Überfall',planet:'sgc',goal:'Doppelt-Gate-Verteidigung',map:'sgc',type:'defense',enemies:{veteran:8,elite:8},timer:28,reward:{ore:30,tech:15},text:'Gate-Verteidigung'},
-  {id:'3-5',name:'Apophis',planet:'flag',goal:'Apophis besiegen',map:'city',type:'assault',enemies:{elite:8,veteran:12,goauld:1},timer:32,reward:{tech:30,ore:25},text:'Apophis tot'},
+  {id:'3-5',name:'Apophis',planet:'flag',goal:'Apophis besiegen',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:8,veteran:12,goauld:1},timer:32,reward:{tech:30,ore:25},text:'Apophis tot'},
  ]},
  {title:'Kapitel 4 – Replikatoren',sub:'Strand, Sand, Drohnen, das Geräusch.',missions:[
   {id:'4-1',name:'B-612',planet:'p5u666',goal:'Scan + Exfil',map:'desert',type:'assault',enemies:{drone:6,repl:4},timer:30,reward:{tech:15},text:'Replikat-Studie'},
   {id:'4-2',name:'Die Wehr',planet:'ennui',goal:'Dorf verteidigen',map:'jungle',type:'defense',enemies:{drone:10,repl:6},timer:28,reward:{ore:25,food:10},text:'Jaffa befreit'},
   {id:'4-3',name:'Die Höhle',planet:'kern',goal:'Mine sichern',map:'city',type:'assault',enemies:{repl:4,drone:8},timer:28,reward:{tech:20},text:'Replikat-Kanone'},
   {id:'4-4',name:'Der Stock',planet:'p7j989',goal:'Knoten zerstören',map:'desert',type:'assault',enemies:{repl:6,drone:8},timer:28,reward:{tech:25},text:'Stock-Knoten'},
-  {id:'4-5',name:'Die Königin',planet:'nexus',goal:'Königin besiegen',map:'city',type:'assault',enemies:{repl:6,drone:8,queen:1},timer:32,reward:{tech:30,ore:25},text:'Königin tot'},
+  {id:'4-5',name:'Die Königin',planet:'nexus',goal:'Königin besiegen',map:'hatak',theme:'hatak',type:'assault',enemies:{repl:6,drone:8,queen:1},timer:32,reward:{tech:30,ore:25},text:'Königin tot'},
  ]},
  {title:'Kapitel 5 – Das Ende',sub:'Neue Götter mit Marketingplan.',missions:[
-  {id:'5-1',name:'Die Sitzung',planet:'ori',goal:'3 Lords besiegen',map:'city',type:'assault',enemies:{elite:8,goauld:3},timer:32,reward:{tech:30},text:'Lords besiegt'},
+  {id:'5-1',name:'Die Sitzung',planet:'ori',goal:'3 Lords besiegen',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:8,goauld:3},timer:32,reward:{tech:30},text:'Lords besiegt'},
   {id:'5-2',name:'Das zweite Gate',planet:'flag',goal:'Gate-Knoten B zerstören',map:'sgc',type:'defense',enemies:{veteran:8,elite:10},timer:28,reward:{tech:25,ore:20},text:'Gate-Verteidigung'},
-  {id:'5-3',name:'Antiker Tor',planet:'p5u666',goal:'Antike Tür öffnen',map:'jungle',type:'assault',enemies:{elite:8},timer:28,reward:{tech:30},text:'Antike Tür'},
-  {id:'5-4',name:'Galaxy-Mitte',planet:'kern',goal:'Amon besiegen',map:'desert',type:'assault',enemies:{elite:10,goauld:1},timer:32,reward:{tech:30,ore:25},text:'Amon tot'},
-  {id:'5-5',name:'Der Plan',planet:'nexus',goal:'Super-Gate überlasten',map:'city',type:'assault',enemies:{elite:12,goauld:2},timer:32,reward:{tech:35},text:'Super-Gate'},
+  {id:'5-3',name:'Antiker Tor',planet:'p5u666',goal:'Antike Tür öffnen',map:'jungle',theme:'jungle',type:'assault',enemies:{elite:8},timer:28,reward:{tech:30},text:'Antike Tür'},
+  {id:'5-4',name:'Galaxy-Mitte',planet:'kern',goal:'Amon besiegen',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:10,goauld:1},timer:32,reward:{tech:30,ore:25},text:'Amon tot'},
+  {id:'5-5',name:'Der Plan',planet:'nexus',goal:'Super-Gate überlasten',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:12,goauld:2},timer:32,reward:{tech:35},text:'Super-Gate'},
   {id:'5-6',name:'Home',planet:'sgc',goal:'Zuhause',map:'desert',type:'defense',enemies:{veteran:12},timer:30,reward:{},text:'Zuhause'},
  ]},
 ];
@@ -251,9 +252,17 @@ const EVENTS=[
  'O\'Neill\'s Knie. +3 Morale (alle). "Er macht Witze."',
 ];
 
+const BASE_COLS=8,BASE_LEVELS=28;
+const BASE_ROOM_LEVEL={
+ gate:{level:28,x:3},generator:{level:9,x:0},lab:{level:19,x:2},
+ workshop:{level:16,x:2},barracks:{level:25,x:2},medbay:{level:21,x:2},
+ training:{level:18,x:4},armory:{level:16,x:5},water:{level:4,x:2},
+ storage:{level:4,x:4},canteen:{level:3,x:2},
+};
+
 // Raum-Typen (Shelter-Basis)
 const ROOMS={
- gate:{name:'Gate-Room',w:2,h:2,power:-10,staff:0,cost:{},icon:'◎',desc:'Missions-Launch (fest)'},
+ gate:{name:'Gate-Room',w:2,h:1,power:-10,staff:0,cost:{},icon:'◎',desc:'Missions-Launch (fest)'},
  generator:{name:'Generator',w:1,h:1,power:10,staff:1,cost:{ore:300},icon:'⚡',desc:'+10 Power'},
  lab:{name:'Labor',w:1,h:1,power:-2,staff:2,cost:{ore:500,tech:50},icon:'🔬',desc:'+10 RP/Staff'},
  workshop:{name:'Werkstatt',w:1,h:1,power:-3,staff:2,cost:{ore:400,tech:60},icon:'🛠',desc:'+Erz/Staff'},
@@ -276,14 +285,14 @@ function newGame(){
     lvl:1,xp:0,morale:85,fatigue:0,injuries:0,dead:false,room:-1,
     recruited:START.includes(i)
   }));
-  const base={grid:Array(80).fill(null),rooms:{},nextId:1};
+  const base={grid:Array(BASE_COLS*BASE_LEVELS).fill(null),rooms:{},nextId:1};
   addRoom(base,'gate',3,0);
-  addRoom(base,'generator',0,1);
-  addRoom(base,'generator',1,1);
-  addRoom(base,'lab',5,1);
-  addRoom(base,'workshop',6,1);
-  addRoom(base,'barracks',0,2);
-  addRoom(base,'water',1,2);
+  addRoom(base,'generator',0,BASE_LEVELS-9);
+  addRoom(base,'generator',1,BASE_LEVELS-9);
+  addRoom(base,'lab',2,BASE_LEVELS-19);
+  addRoom(base,'workshop',2,BASE_LEVELS-16);
+  addRoom(base,'barracks',2,BASE_LEVELS-25);
+  addRoom(base,'water',2,BASE_LEVELS-4);
   S={
     v:4,day:1,chapter:0,integrity:100,
     res:{ore:100,tech:20,medicine:10,food:30},
@@ -304,7 +313,7 @@ function addRoom(base,type,x,y){
   const id=base.nextId++;
   base.rooms[id]={id,type,x,y,w:R.w,h:R.h,staff:[]};
   for(let dy=0;dy<R.h;dy++)for(let dx=0;dx<R.w;dx++){
-    base.grid[(y+dy)*8+(x+dx)]=id;
+    base.grid[(y+dy)*BASE_COLS+(x+dx)]=id;
   }
   return id;
 }
@@ -315,13 +324,44 @@ function load(){
     const s=JSON.parse(localStorage.getItem(SAVE_KEY));
     if(s&&s.v===4){
       S=s;
+      migrateBaseLevels();
       if(!S.planets)S.planets={};
       for(const id in PLANETS)if(!S.planets[id])S.planets[id]={disc:PLANETS[id].ch<=(S.chapter||0)};
       if(S.pilotBriefingSeen===undefined)S.pilotBriefingSeen=false;
-      if(S.introSeen===undefined)S.introSeen=true;
+      if(S.introSeen===undefined)S.introSeen=false;
       return true;
     }
-  }catch(e){}
+    function migrateBaseLevels(){
+      if(!S.base||S.base.grid.length===BASE_COLS*BASE_LEVELS)return;
+      const grid=Array(BASE_COLS*BASE_LEVELS).fill(null);
+      const rooms=Object.values(S.base.rooms).sort((a,b)=>a.id-b.id);
+      rooms.forEach(r=>{
+        const spec=ROOMS[r.type],preferred=BASE_ROOM_LEVEL[r.type]||{level:Math.max(1,BASE_LEVELS-Math.round((r.y||0)*2)),x:r.x||0};
+        if(spec){r.w=spec.w;r.h=spec.h;}
+        const preferredY=BASE_LEVELS-preferred.level;
+        let placed=false;
+        for(let radius=0;radius<BASE_LEVELS&&!placed;radius++){
+          const rows=radius===0?[preferredY]:[preferredY-radius,preferredY+radius];
+          for(const y of rows){
+            if(y<0||y+r.h>BASE_LEVELS)continue;
+            for(let offset=0;offset<BASE_COLS&&!placed;offset++){
+              const x=(preferred.x+offset)%BASE_COLS;
+              if(x+r.w>BASE_COLS)continue;
+              let clear=true;
+              for(let dy=0;dy<r.h;dy++)for(let dx=0;dx<r.w;dx++)if(grid[(y+dy)*BASE_COLS+x+dx]!==null)clear=false;
+              if(!clear)continue;
+              r.x=x;r.y=y;placed=true;
+              for(let dy=0;dy<r.h;dy++)for(let dx=0;dx<r.w;dx++)grid[(y+dy)*BASE_COLS+x+dx]=r.id;
+            }
+          }
+        }
+        if(!placed)throw new Error(`Could not migrate base room ${r.id} (${r.type}) into the 28-level layout.`);
+      });
+      S.base.grid=grid;
+    }
+  }catch(e){
+    if(typeof console!=='undefined'&&console.error)console.error('Spielstand konnte nicht geladen werden; ein neues Spiel wird gestartet.',e);
+  }
   return false;
 }
 function note(t){const l=`[T${S.day}] ${t}`;S.log.unshift(l);if(S.log.length>200)S.log.pop();S.rlog.push(t);}
@@ -442,9 +482,9 @@ function assignRoom(id,roomId){
 function buildRoom(type,x,y){
   const RT=ROOMS[type];
   if(!RT||type==='gate')return R(false,'Nicht baubar.');
-  if(x<0||y<0||x+RT.w>8||y+RT.h>10)return R(false,'Außerhalb des Grids.');
+  if(x<0||y<0||x+RT.w>BASE_COLS||y+RT.h>BASE_LEVELS)return R(false,'Außerhalb des Grids.');
   for(let dy=0;dy<RT.h;dy++)for(let dx=0;dx<RT.w;dx++){
-    if(S.base.grid[(y+dy)*8+(x+dx)]!==null)return R(false,'Zelle belegt.');
+    if(S.base.grid[(y+dy)*BASE_COLS+(x+dx)]!==null)return R(false,'Zelle belegt.');
   }
   for(const k in RT.cost)if(S.res[k]<RT.cost[k])return R(false,`Nicht genug ${k}.`);
   for(const k in RT.cost)S.res[k]-=RT.cost[k];
@@ -456,7 +496,7 @@ function demolishRoom(roomId){
   const r=S.base.rooms[roomId];
   if(!r||r.type==='gate')return R(false,'Nicht abreißbar.');
   for(let dy=0;dy<r.h;dy++)for(let dx=0;dx<r.w;dx++){
-    S.base.grid[(r.y+dy)*8+(r.x+dx)]=null;
+    S.base.grid[(r.y+dy)*BASE_COLS+(r.x+dx)]=null;
   }
   r.staff.forEach(id=>{S.roster[id].room=-1;});
   delete S.base.rooms[roomId];

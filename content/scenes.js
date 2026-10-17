@@ -10,10 +10,19 @@ const MISSION_BRIEFINGS={
   ]
  },
  '1-2':{
-  objective:'Abydos · Eine Siedlung sichern und die Zivilisten in Sicherheit bringen.',
+  objective:'Abydos · Friedlichen Erstkontakt herstellen und Vertrauen gewinnen.',
   lines:[
-   {speaker:'General Hammond',role:'Einsatzleitung · SGC',portraitId:12,text:'Ein Notruf aus Abydos ist abgebrochen, bevor die Bewohner ihren Standort nennen konnten. SG-1, findet sie und bringt sie aus der Gefahrenzone.'},
-   {speaker:'Daniel Jackson',role:'Archäologe · SG-1',portraitId:2,text:'Die Tempelanlage ist bewohnt. Wenn wir die Wege zwischen den Höfen offenhalten, können die Familien zum Gate gelangen.'}
+   {speaker:'General Hammond',role:'Einsatzleitung · SGC',portraitId:12,text:'Ein Dorf auf Abydos hat unser Aufklärungsteam entdeckt. Es gibt keinen Hinweis auf eine unmittelbare Bedrohung. Ihr Auftrag ist Kontakt, nicht Konfrontation.'},
+   {speaker:'Daniel Jackson',role:'Archäologe · SG-1',portraitId:2,text:'Ihre Sprache und Bräuche ähneln denen anderer Siedlungen, aber wir sollten nichts voraussetzen. Ich bitte um die erste Audienz.'},
+   {speaker:"Jack O'Neill",role:'Teamführung · SG-1',portraitId:0,text:'Waffen gesichert, Daniel spricht zuerst. Falls jemand fragt: Wir sind Reisende mit sehr ungewöhnlichem Gepäck.'}
+  ]
+ },
+ '2-2':{
+  objective:'Serenno · Friedlichen Kontakt mit der Alpha-Gemeinschaft herstellen.',
+  lines:[
+   {speaker:'General Hammond',role:'Einsatzleitung · SGC',portraitId:12,text:'Die Bewohner der Alpha-Kolonie haben unser Team bemerkt. Es gibt keine feindlichen Signaturen. Hören Sie sich ihre Anliegen an und bieten Sie Zusammenarbeit an.'},
+   {speaker:'Samantha Carter',role:'Wissenschaftliche Offizierin',portraitId:1,text:'Die Kolonie betreibt ein eigenes Labor. Ein Austausch könnte beiden Seiten helfen, aber die Entscheidung liegt bei ihnen.'},
+   {speaker:"Jack O'Neill",role:'Teamführung · SG-1',portraitId:0,text:'Wir lassen die Waffen gesichert und die Erwartungen niedrig. Ein guter Anfang wäre, nicht gleich etwas kaputtzumachen.'}
   ]
  },
  '2-6':{
@@ -58,10 +67,22 @@ const MISSION_SCENES={
  },
  '1-2':{
   arrival:[
-   {speaker:'Daniel Jackson',role:'Archäologe · SG-1',portraitId:2,text:'Die Bewohner haben die Tempelgänge als Schutzraum genutzt. Lasst uns die Zugänge freimachen, bevor die nächste Patrouille zurückkommt.'}
+   {speaker:'Samantha Carter',role:'Wissenschaftliche Offizierin',portraitId:1,text:'Keine bewaffneten Signaturen in Reichweite. Das ist wohl zum ersten Mal heute eine gute Nachricht.'}
   ],
-  firstKill:[
-   {speaker:'Jack O’Neill',role:'Teamführung · SG-1',portraitId:0,text:'Ein Gegner weniger. Carter, prüf den Weg nach vorn; Daniel, bleib bei den Leuten.'}
+  contact:[
+   {speaker:'Daniel Jackson',role:'Archäologe · SG-1',portraitId:2,text:'Wir kommen in Frieden und möchten verstehen, wer hier lebt. Das Sternentor verbindet unsere Welten, aber wir entscheiden selbst, was diese Verbindung bedeutet.'},
+   {speaker:'Siedlungssprecher',role:'Stimme des Dorfes',portraitId:4,text:'Ihr seid durch den alten Ring gekommen und habt eure Waffen gesenkt. Setzt euch zu uns. Wir werden einander zuhören, bevor wir über Fremde urteilen.'},
+   {speaker:"Jack O'Neill",role:'Teamführung · SG-1',portraitId:0,text:'Abgemacht. Wir teilen Informationen, keine Überraschungen. Daniel, ich glaube, das zählt als guter erster Tag.'}
+  ]
+ },
+ '2-2':{
+  arrival:[
+   {speaker:'Daniel Jackson',role:'Archäologe · SG-1',portraitId:2,text:'Die Kolonie hat sich ihren Alltag selbst aufgebaut. Wir sollten erklären, woher wir kommen, und fragen, was sie brauchen.'}
+  ],
+  contact:[
+   {speaker:'Daniel Jackson',role:'Archäologe · SG-1',portraitId:2,text:'Wir reisen durch das Tor und suchen keine Herrschaft über andere Welten. Wenn ihr möchtet, können wir Wissen und Hilfe anbieten, ohne euch etwas vorzuschreiben.'},
+   {speaker:'Koloniegesandte',role:'Vertretung der Alpha-Gemeinschaft',portraitId:13,text:'Wir werden selbst entscheiden, wie viel wir teilen. Dass ihr zuerst gefragt habt, ist ein guter Anfang. Lasst uns weiterreden.'},
+   {speaker:'Samantha Carter',role:'Wissenschaftliche Offizierin',portraitId:1,text:'Einverstanden. Wir stellen unsere Forschung offen vor und halten uns an die Regeln der Kolonie.'}
   ]
  },
  '2-6':{

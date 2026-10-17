@@ -4,7 +4,7 @@ Der Kampagnenstart bekommt einen filmischen Auftakt und die Story-Missionen mehr
 
 ## Neuer Ablauf
 
-1. Bei einem neuen Spiel öffnet ein eigens gezeichneter Canvas-Auftakt den Blick auf ein Stargate im pseudo-räumlichen Zoom. Überspringen ist jederzeit möglich; vorhandene Spielstände sehen das Intro nicht nachträglich.
+1. Bei einem neuen Spiel öffnet ein eigens gezeichneter Canvas-Auftakt den Blick auf ein Stargate im pseudo-räumlichen Zoom. Überspringen ist jederzeit möglich; ältere Spielstände ohne Intro-Marker holen es einmalig nach. Das Intro lässt sich auch im Pausemenü wiederholen.
 2. Hammonds Eröffnungsbesprechung führt zum ersten Chulak-Einsatz.
 3. Vor ausgewählten Schlüsselszenarien vermittelt ein Einsatzbriefing Auftrag und Teamlage, bevor das Gate angewählt wird.
 4. Im Kampf erscheinen kurze Feldszenen bei der Ankunft und beim ersten ausgeschalteten Gegner. Die Eingabe pausiert bis zum Weiterschalten.

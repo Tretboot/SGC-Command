@@ -11,7 +11,7 @@
 <button data-tab="log">📜 Protokoll</button>
 </nav>
 <main>
-<div class="pane" id="pane-base"><div class="split"><canvas id="base-cv" width="640" height="840"></canvas><aside id="base-side"></aside></div></div>
+<div class="pane" id="pane-base"><div class="split"><div class="base-canvas-scroll"><canvas id="base-cv" width="720" height="1134"></canvas></div><aside id="base-side"></aside></div></div>
 <div class="pane" id="pane-map"><div class="split"><canvas id="map-cv" width="960" height="540"></canvas><aside id="map-side"></aside></div></div>
 <div class="pane" id="pane-roster"><div id="roster-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:8px"></div></div>
 <div class="pane" id="pane-log"><div id="log-body"></div></div>
@@ -27,8 +27,9 @@
 </div>
 <div id="story-dialogue" role="dialog" aria-modal="true" aria-live="polite"></div>
 <!-- Combat-Overlay -->
-<div id="combat-overlay" style="display:none;position:fixed;inset:0;background:#000;z-index:5;flex-direction:column;align-items:center;justify-content:center;gap:8px">
-<canvas id="combat-cv" width="960" height="720" style="max-width:95vw;height:auto"></canvas>
+<div id="combat-overlay" style="display:none;position:fixed;inset:0;background:#000;z-index:5;flex-direction:column;align-items:stretch;justify-content:stretch;gap:0">
+<canvas id="combat-cv" width="960" height="720" aria-label="Taktische Einsatzkarte" style="touch-action:none;cursor:grab"></canvas>
+<canvas id="combat-minimap" width="256" height="192" aria-label="Minimap: anklicken, um die Kartenansicht zu verschieben"></canvas>
 <button id="combat-end" style="display:none;padding:10px 24px;font-size:16px">Weiter</button>
 </div>
 <div id="menu" style="display:none">
@@ -37,6 +38,7 @@
   <div class="menu-sub">PAUSE</div>
   <button class="menu-btn" onclick="hideMenu()">▶ Weiterspielen</button>
      <button class="menu-btn" onclick="showHelp()">📖 Anleitung</button>
+   <button class="menu-btn" onclick="replayOpeningCinematic()">🎬 Intro erneut ansehen</button>
    <div class="menu-diff"><span>⚔ Schwierigkeit</span><select id="menu-diff" onchange="act(setDifficulty(this.value))"><option value="easy">Leicht</option><option value="normal">Normal</option><option value="hard">Hart</option></select></div>
    <button class="menu-btn" id="menu-sound" onclick="toggleSound()">🔊 Sound</button>
   <button class="menu-btn" onclick="resetGame(false)">⟲ Neues Spiel</button>

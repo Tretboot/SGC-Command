@@ -9,8 +9,22 @@ button:hover:not(:disabled){background:#243650}button:disabled{opacity:.4;cursor
 nav{display:flex;gap:2px;background:#0b111c;padding:4px 10px 0}nav button{border-radius:6px 6px 0 0;border-bottom:none;background:#101826}nav button.on{background:#1b2a42;border-color:#4fc3f7;color:#4fc3f7}
 main{padding:10px}.pane{display:none}.split{display:grid;grid-template-columns:minmax(0,960px) 320px;gap:10px}
 canvas{width:100%;height:auto;background:#000;border:2px solid #243248;border-radius:6px;display:block}
+#combat-overlay{overflow:hidden}
+#combat-cv{display:block;flex:1 1 auto;width:100%;height:100%;min-width:0;min-height:0;max-width:none;max-height:none;border:0;border-radius:0;image-rendering:pixelated}
+#combat-minimap{position:absolute;right:16px;bottom:16px;z-index:7;width:min(220px,28vw);height:auto;aspect-ratio:4/3;border:2px solid #8db8cc;border-radius:5px;background:#09131c;box-shadow:0 4px 20px rgba(0,0,0,.7);cursor:crosshair}
+#combat-end{position:absolute;left:50%;bottom:12px;z-index:8;transform:translateX(-50%)}
+.base-canvas-scroll{min-width:0;overflow-x:auto}
 aside,#team-list,#roster-grid,#base-body,#log-body{background:#0f1622;border:1px solid #243248;border-radius:6px;padding:10px}
 aside{max-height:600px;overflow:auto}h3{margin:6px 0;color:#e8b040;font-size:15px;letter-spacing:1px}h3 small{color:#7f90a6;font-weight:normal}h4{margin:4px 0;color:#4fc3f7}
+.base-news{position:relative;overflow:hidden;margin:0 0 14px;padding:12px;background:linear-gradient(145deg,#15283a,#0b121d 72%);border:1px solid #35516b;border-left:3px solid #4fc3f7;border-radius:6px;box-shadow:inset 0 0 22px rgba(79,195,247,.06)}
+.base-news-head,.base-news-footer{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.base-news-head{font:bold 11px monospace;letter-spacing:1.2px;color:#6bd5ff}
+.base-news-head b{font-size:9px;color:#cbd8e4}
+.base-news-head i{display:inline-block;width:7px;height:7px;margin-right:4px;border-radius:50%;background:#e36d59;box-shadow:0 0 8px rgba(227,109,89,.8)}
+.base-news-tag{margin-top:9px;color:#71869b;font:9px monospace;letter-spacing:1px}
+.base-news-title{margin:5px 0 11px;color:#e3ebf3;font-size:14px;font-weight:bold;line-height:1.45}
+.base-news-footer{padding-top:8px;border-top:1px solid #26394c;color:#8193a6;font:9px monospace;letter-spacing:.5px}
+.base-news-footer b{color:#b4c7d8;font-weight:normal}
 .item{background:#0a101a;border:1px solid #243248;border-radius:4px;padding:6px;margin:5px 0}.warnbox{border-color:#ef4444}.dim{color:#6b7a90}small{color:#8a9ab0}
 .gl{display:flex;align-items:center;gap:7px;padding:3px 4px;cursor:pointer;border-radius:3px}.gl:hover{background:#1a2535}.gl i{width:10px;height:10px;border-radius:50%;display:inline-block}.gl small{margin-left:auto}
 .gbox{background:#0a101a;border:1px solid #243248;border-radius:4px;padding:6px;margin:6px 0}
@@ -90,6 +104,8 @@ a{color:#4fc3f7}
 .mbox.help .mbody div{line-height:1.5;margin:2px 0}
 @media(max-width:1100px){.split,.split2{grid-template-columns:1fr}.tree{grid-template-columns:1fr}#combat-ui{flex-wrap:wrap;min-height:auto}}
 @media(max-width:600px){.story-box{padding:16px}.story-line{padding-left:0;font-size:14px}.story-controls{align-items:flex-start;flex-direction:column}.story-controls button{width:100%}.story-objective{align-items:flex-start;flex-direction:column;gap:5px}#intro-skip{right:14px;bottom:14px}}
+@media(max-width:600px){#pane-base .base-canvas-scroll #base-cv{width:720px;max-width:none}}
+@media(max-width:600px){#combat-minimap{right:8px;bottom:8px;width:min(150px,34vw)}}
 /* ===================== Pause-Menü (Escape) ===================== */
 #menu{position:fixed;inset:0;background:rgba(4,7,12,.82);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:30}
 .menu-box{background:linear-gradient(#141c2a,#0d1320);border:2px solid #2a6fa8;border-radius:10px;padding:28px 36px;width:min(360px,90vw);display:flex;flex-direction:column;gap:10px;box-shadow:0 0 40px rgba(79,195,247,.15)}

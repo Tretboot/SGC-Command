@@ -1,5 +1,9 @@
 # 📖 SGC COMMAND – Anleitung
 
+## Starten
+
+`index.html` kann direkt aus dem Ordner `game` im Browser geöffnet werden; ein lokaler Server ist zum Spielen nicht nötig. Der Server ist optional, falls der Browser lokale Dateien oder deren `localStorage` einschränkt.
+
 ## Was ist das?
 
 Ein taktisches Grid-Kampfspiel im Stargate-Universum. Du leitest das SGC unter Cheyenne Mountain, baust deine Basis aus, forschst, und schickst Teams durch das Gate auf Missionen. Der Kampf ist **rundenbasiert und taktisch** (X-COM-Style) – du steuerst jede Aktion.
@@ -13,9 +17,11 @@ Ein taktisches Grid-Kampfspiel im Stargate-Universum. Du leitest das SGC unter C
 ### 🏗 Basis (Cheyenne Mountain)
 Die Basis ist ein **Berg**:
 - **Oben:** Himmel, Parkplatz, Eingangsbau („SGC – Cheyenne Mountain")
-- **Rechts:** Fahrstuhl-Schacht (fährt hoch/runter)
-- **Mitte:** 8 Spalten × 10 Etagen = 80 Zellen für Räume
-- **Unten:** der **Gateraum** (E1)
+- **Rechts:** Fahrstuhl-Schacht; er fährt nur gelegentlich, wenn ein Mini-NPC mitfährt.
+- **News-Desk:** Tagesmeldungen aus dem SGC mit Status zu Personal und Aufzug.
+- **Mitte:** ein 8-spaltiger Querschnitt durch 28 nummerierte Ebenen mit leeren, pixeligen Räumen, Türen und Verbindungstunneln. Rekrutierte Figuren bewegen sich durch die Korridore.
+- **Oben nach unten:** Level 1 bis 28; Level 28 liegt am tiefsten und enthält den **Gateraum**.
+- Die Ebenenbelegung ist an einer Fan-Rekonstruktion orientiert und keine offizielle oder kanonische SGC-Bauzeichnung.
 
 - Baue Räume (Labor, Werkstatt, MedBay, Kaserne, …): rechts Raum-Typ wählen → freies Feld anklicken
 - Weise Staff zu (Roster-Tab → Dropdown)
@@ -24,20 +30,26 @@ Die Basis ist ein **Berg**:
 
 ### 🗺 Sternenkarte
 - Ein überspringbares Stargate-Intro öffnet ein neues Spiel; anschließend führt Hammonds Einsatzbesprechung nach **Chulak**.
+- Das Intro kann im Pausemenü unter **„Intro erneut ansehen“** wiederholt werden.
 - Vor wichtigen Story-Missionen gibt es ein Briefing mit Auftrag und Teamstimmen; im Kampf werden kurze Dialoge an Ankunft und erstem Feindkontakt eingeblendet.
 - Kampagnenmissionen werden der Reihe nach freigeschaltet.
 - Wähle dein Team (max. 6; SG-1 ist in der Pilotmission vorausgewählt)
 - **„Mission starten"** → Story-Briefing (falls vorhanden) → Gateroom-Animation (mit Whoosh) → Kampf
 
 ### ⚔ Kampf (Top-Down Grid)
-- **20×15 Tiles**, 2 AP pro Einheit pro Runde
+- **Große Einsatzkarten (64×48 Tiles)**; die Karte füllt das Browserfenster oberhalb der Aktionsleiste. Die Minimap zeigt die ganze Welt und verschiebt die Kamera bei Klick; alternativ gehen Pfeiltasten, WASD oder Ziehen auf der Karte.
+- Jede Einsatzkarte erhält eine eigene Kulisse und Terrain-Art: Chulaks bewachsene Außenbereiche, Abydos-Sandstein und Wüste, bewohnte Stadtblöcke, SGC-Technik sowie dunkle Goa'uld-Ha'tak- und helle Asgard-Schiffskorridore.
+- **Natur und Siedlungen:** Wälder, Flussläufe mit Brücken, Wege und kleine Dörfer machen die Außenbereiche lesbarer und abwechslungsreicher.
+- **Friedlicher Erstkontakt:** Die Dorfmission auf Abydos und die Kolonie-Mission auf Serenno laufen ohne Feinde. Nähere dich der gold markierten Kontaktperson und schließe den Dialog ab.
+- **2 AP pro Einheit pro Runde**
 - **Klicke auf eine Einheit** → Bewegungsbereich (blau) + **Angriffsziele (rot ✛) erscheinen sofort**
 - **Klicke auf ein blaues Feld** → bewegen (1 AP)
 - **Chulak-Tutorial:** Jack wird nach dem ersten Bewegungsschritt zum Schießen freigegeben; danach erscheinen seine Angriffsziele wie gewohnt.
 - **Klicke auf einen roten Gegner (✛)** → **schießen** (1 AP)
 - **Klicke auf benachbarten Gegner** → Melee (Chakram etc., 1 AP)
 - **⏸ Warten** → Rest-AP an nächste Einheit
-- **Deckung:** Kisten (−25% Treffer), Mauern (−50%)
+- **Deckung:** Leichte Deckung reduziert gegnerische Trefferchance von vorn um 20 Prozentpunkte, schwere Deckung um 40; Flankenangriffe umgehen den Schutz und geben +15 Prozentpunkte Trefferchance. Eigene Deckung verbessert das Zielen leicht.
+- **Zerstörbare Deckung:** Gelb markierte Kisten und Trümmer können beschossen und entfernt werden; Wandsegmente blockieren Sicht und Bewegung.
 - **Einbahn-Gate:** Keine Runden-Uhr; extrahiere am Gate oder gewinne den Kampf.
 
 ---
@@ -78,8 +90,10 @@ Alles **prozedural** (Web-Audio, keine Dateien):
 
 ### Trefferchance
 - Base: 70% (gleiche Reihe/Spalte), 50% (Diagonale)
-- Ziel in Deckung: −25% (Kiste) / −50% (Mauer)
-- Schütze in Deckung: +10% / +15%
+- Ziel in leichter Deckung und zum Angreifer blickend: −20 Prozentpunkte
+- Ziel in schwerer Deckung und zum Angreifer blickend: −40 Prozentpunkte
+- Angriff von hinter dem Ziel: +15 Prozentpunkte; Deckung bringt dem Schützen zusätzlich einen kleinen Zielbonus
+- Treffer auf zerstörbare Deckungsfelder reduzieren ihre Strukturpunkte; bei null verschwinden sie
 
 ### Tod
 - **Rekruten:** sterben permanent. Gedenktafel in der Basis.
@@ -128,6 +142,9 @@ Alles **prozedural** (Web-Audio, keine Dateien):
 | ⏸ Warten (Panel) | Rest-AP an nächste Einheit |
 | ❓ (Header/Panel) | Anleitung öffnen |
 | 🔊 (Header) | Sound an/aus |
+| Pfeiltasten / WASD oder Karte ziehen | Einsatzkarte verschieben |
+| Minimap anklicken | Ansicht auf die gewählte Kartenposition verschieben |
+| Goldene Kontaktperson anklicken | Friedlichen Erstkontakt beginnen |
 | Klick auf Gate (Gateroom) | Animation überspringen |
 
 ---
@@ -139,7 +156,8 @@ Alles **prozedural** (Web-Audio, keine Dateien):
 - **Save:** `localStorage` (auto nach jedem Tag)
 - **Sound:** Web-Audio-API, prozedural, kein Download nötig
 - **Grafik:** 100% prozedural (Canvas-API). `art.js` = Basis, `art2.js` = Artist-Erweiterung (Rekruten, Feinde, Waffen, Icons, Terrain, Akten)
-- **Kampf-Terrain:** Biome werden zellweise aus `drawTile()` gerendert. Der Offscreen-Cache behält Weltkoordinaten für die prozeduralen Details bei; pro Karte gibt es genau ein Gate-Feld.
+- **Alt-Spielstände:** Vorhandene 8×10-Basen werden beim Laden in das 8×28-Levelraster übertragen; Raum-IDs und Personalzuweisungen bleiben erhalten.
+- **Kampf-Terrain:** 64×48-Weltkarten werden zellweise aus `drawTile()` gerendert; die Kameragröße passt sich der verfügbaren Fensterfläche oberhalb der Aktionsleiste an. Die Minimap zeigt Terrain, Einheiten und Sichtfenster. Pro Karte gibt es genau ein Gate-Feld. `hatak` und `asgard` besitzen eigene Raumaufteilungen und Tilesets.
 - **Keine Bilddateien, kein drawImage in art2.js** – nur `fillRect` (hartkantig, pixel-art)
 
 ## Art-Toolchain (für Entwickler)

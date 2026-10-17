@@ -51,7 +51,7 @@ nie `zip -r` in der Konsole.
 | `game/art2.js` | 30,9 KB | **Artist-Erweiterung:** Rekruten-Generator, Feind-Gesichter, Waffen, Raum-Icons, Terrain-Tiles, +10 LOOKS, DOSSIERS, `registerRecruit`, `art2SelfTest` |
 | `game/engine.js` | 21,7 KB | Spiellogik: POOL (39 Chars), PLANETS, MAPS, CHAPTERS (27 Missionen), TECH, ROOMS, Save/Load, `newGame`, `note` |
 | `game/combat.js` | 21,9 KB | Taktischer Kampf: Grid, LOS, Bewegung, Angriff, AI, FX, Screen-Shake, Terrain-Render (Tile-Cache), `drawEnemyBody` |
-| `game/base.js` | 7,1 KB | Cheyenne-Mountain-Cutaway (640×840), Parkplatz, Fahrstuhl, 8×10-Grid vertikal gespiegelt |
+| `game/base.js` | – | Prozeduraler Cheyenne-Mountain-Cutaway mit 28 Levels, Korridoren, Mini-NPCs und Lift |
 | `game/ui.js` | 22,5 KB | UI: Tabs, Header, Basis-Side, Sternenkarte-Side, Mission-Flow, Combat-Panel (Jagged-Alliance-Style), Roster, Dossier-Modal, Hilfe-Modal |
 | `game/index.html` | 2,3 KB | Einstieg. **Script-Reihenfolge ist kritisch** (siehe 5.1) |
 | `game/style.css` | 6,3 KB | Styling (Theme: #070b12 / #4fc3f7 / #e8b040) |
@@ -138,9 +138,10 @@ Tile-Typ einmal in ein Offscreen-Canvas, dann `drawImage` pro Tile.
 **Nicht entfernen** – Performance-Killer (180.000 Calls/Frame ohne Cache).
 
 ### 5.4 Base-Grid vertikal gespiegelt
-`S.base.grid` 80 Zellen: Zeile 0 = Gate-Ebene = **unten** im Rendering.
-`cellPx(x,y)` spiegelt y; `baseClick` spiegelt zurück (`y=ROWS-1-gy`).
-**Datenlayout nicht ändern** – nur Rendering.
+`S.base.grid` hat 8×28 Zellen. Grid-Zeile 0 liegt unten im Rendering auf Level 28
+(Gateroom); Level 1 ist oben. `baseClick` spiegelt die angeklickte Canvas-Zeile
+zurück auf das Datenlayout (`y=ROWS-1-gy`). Alte 8×10-Spielstände werden beim
+Laden in das neue Raster migriert.
 
 ### 5.5 Save-Version
 `SAVE_KEY='sgc-command-v4'`, `load()` prüft `s.v===4`.
