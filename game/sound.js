@@ -562,6 +562,9 @@ const STRUDEL={
   get currentCode(){
     return this.lastCode||(this.patterns[this.currentTrack]||'');
   },
+  set currentCode(v){
+    this.lastCode=String(v||'');
+  },
   noteToFreq(tok){const m=_parseNoteToken(tok);return m!==null?_midiToFreq(m):0;},
   parseMini(expr,cycle=0){return parseMiniNotation(expr,cycle);},
   compilePattern(code){const v=this.compile(code);return {cps:this.cps,voices:v};},
@@ -637,6 +640,17 @@ const STRUDEL={
         st.register('piano',pat=>pat.s('piano'));
         st.register('rlp',(x,pat)=>pat.lpf(x));
         st.register('sb',(p,fn,pat)=>pat.sometimesBy(p,fn));
+        st.register('phaser',(rate,depth,pat)=>{
+          const r=(typeof rate==='number')?rate:4;
+          const d=(typeof depth==='number')?depth:1600;
+          return pat.lpf(st.sine?st.sine.slow(r).range(380,380+d):(380+d)).lpq(4.5);
+        });
+        st.Pattern.prototype.phaser=function(rate=4,depth=1600){
+          if(st&&typeof st.sine==='object'&&typeof st.sine.slow==='function'){
+            return this.lpf(st.sine.slow(rate).range(380,380+depth)).lpq(4.5);
+          }
+          return this.lpf(1600).lpq(4.5);
+        };
         // 2. Evaluate Switch Angel's prebake (1).strudel
         if(typeof SWITCH_ANGEL_PREBAKE==='string'){
           await repl.evaluate(SWITCH_ANGEL_PREBAKE,false);
@@ -821,29 +835,30 @@ const STRUDEL={
 
   // ===================== Generative Pattern-Mutation & Dynamischer Missions-Soundtrack =====================
   mutateCode(code,intensity=0.5){
-    let src=String(code||this.currentCode||'');
+    let src=String(code||this.currentCode||'').trim();
     if(!src)return src;
     this.mutationCount++;
-    const scales=['e:minor','f:minor','c:minor','d:phrygian','g:minor:pentatonic','a2:minor','b:minor','d:major:pentatonic','a:dorian','e:phrygian'];
+    const scales=['d:dorian','d:phrygian','b:minor','e:minor','g:minor:pentatonic','f:major','a:dorian','c:minor'];
     const pickScale=scales[(this.mutationCount+Math.floor(Math.random()*scales.length))%scales.length];
 
-    // 1. Mutate scale
-    src=src.replace(/(setScale|\.scale)\(\s*["'][^"']+["']\s*\)/g,`$1("${pickScale}")`);
+    // 1. Skalen-Modulation
+    if(/(?:setScale|\.scale)\(\s*["'][^"']+["']\s*\)/.test(src)){
+      src=src.replace(/(setScale|\.scale)\(\s*["'][^"']+["']\s*\)/g,`$1("${pickScale}")`);
+    } else if(src.includes('setCpm(')){
+      src=src.replace(/(setCpm\([^\)]+\))/, `$1\nsetScale("${pickScale}")`);
+    }
 
-    // 2. Randomly Mute / Un-Mute tracks ($VOICE: ⇄ _$VOICE:)
+    // 2. Stimmen stummschalten / aktivieren ($VOICE: ⇄ _$VOICE:)
     const lines = src.split('\n');
     let mutedCount = 0;
     for(let i=0; i<lines.length; i++){
       const l = lines[i];
-      // Already muted track: _$FOO: -> 55% chance to un-mute
       if(/^\s*_\$([A-Z0-9_]+)\s*:/.test(l)){
-        if(Math.random() < 0.55){
+        if(Math.random() < 0.6){
           lines[i] = l.replace(/^\s*_\$([A-Z0-9_]+)\s*:/, '$$$1:');
         }
-      }
-      // Active track: $FOO: -> 28% chance to mute
-      else if(/^\s*\$([A-Z0-9_]+)\s*:/.test(l)){
-        if(Math.random() < 0.28 && mutedCount < 2){
+      } else if(/^\s*\$([A-Z0-9_]+)\s*:/.test(l)){
+        if(Math.random() < 0.3 && mutedCount < 2){
           lines[i] = l.replace(/^\s*\$([A-Z0-9_]+)\s*:/, '_$$$1:');
           mutedCount++;
         }
@@ -851,73 +866,49 @@ const STRUDEL={
     }
     src = lines.join('\n');
 
-    // 3. Ribbon injection / randomization
-    const hasRib = /\.rib\s*\(\s*\d+/.test(src);
-    if(hasRib){
-      src=src.replace(/\.rib\(\s*\d+\s*,\s*\d+\s*\)/g, ()=>{
-        const rSeed = 1 + Math.floor(Math.random()*64);
+    // 3. Ribbon-Parametrisierung (Seed & Länge permutieren)
+    if(/\.rib\s*\(\s*\d+/.test(src)){
+      src=src.replace(/\.rib\(\s*\d+\s*,\s*\d+(?:\s*\/\s*\d+)?\s*\)/g, ()=>{
+        const rSeed = 1 + Math.floor(Math.random()*99);
         const rLen = [2, 4, 8, 16][Math.floor(Math.random()*4)];
         return `.rib(${rSeed}, ${rLen})`;
       });
-    } else {
-      let injected = false;
-      src = src.replace(/(\$(?:THEME|BASS|KICK|PATRON_BASS|SYNTH|LEAD)[^;\n]+\.s\([^)]+\))/g, (match)=>{
-        if(!injected && Math.random() < 0.85){
-          injected = true;
-          const rSeed = 1 + Math.floor(Math.random()*64);
-          const rLen = [2, 4, 8][Math.floor(Math.random()*3)];
-          return `${match}.rib(${rSeed}, ${rLen})`;
-        }
-        return match;
-      });
     }
 
-    // 4. Random Scramble / Rev / Shuffle / Trancegate
-    if(Math.random() < 0.45 && !src.includes('.rev()')){
-      src = src.replace(/(\$THEME[^;\n]+)/, '$1.rev()');
-    }
-    if(Math.random() < 0.40 && !src.includes('.scramble()')){
-      src = src.replace(/(\$BASS[^;\n]+)/, '$1.scramble()');
-    }
+    // 4. Slider dynamisch variieren (Filter Cutoff, Acid Drive, Resonance, Reverb)
+    src=src.replace(/slider\(\s*(0?\.\d+|\d+(?:\.\d+)?)/g,(_,v)=>{
+      const cur=parseFloat(v)||0.5;
+      const delta=(Math.random()-0.45)*0.24+(intensity-0.5)*0.16;
+      const next=Math.max(0.18,Math.min(0.96,cur+delta));
+      return `slider(${next.toFixed(3)}`;
+    });
 
-    // 5. Randomly shuffle/permute numeric degree tokens inside n("<...>") or note("<...>")
-    src=src.replace(/(?:n|note)\(\s*"<([^"<>]+)>"/g,(full,inner)=>{
-      const tokens = inner.trim().split(/\s+/);
-      if(tokens.length > 2 && Math.random() < 0.7){
-        const mutatedTokens = tokens.map(tok => {
-          if(/^\d+$/.test(tok) && Math.random() < 0.5){
-            const val = parseInt(tok, 10);
-            const shift = [-3, -2, -1, 1, 2, 3, 5][Math.floor(Math.random()*7)];
-            return String(Math.max(0, val + shift));
-          }
-          return tok;
-        });
-        if(Math.random() < 0.4){
-          for(let k=mutatedTokens.length-1; k>0; k--){
-            const j=Math.floor(Math.random()*(k+1));
-            [mutatedTokens[k], mutatedTokens[j]] = [mutatedTokens[j], mutatedTokens[k]];
-          }
+    // 5. Tempo fein anpassen (BPM um +/- 6 BPM nuancieren)
+    src=src.replace(/setCpm\(\s*(\d+(?:\.\d+)?)\s*\/\s*4\s*\)/g,(_,bpm)=>{
+      const base=parseFloat(bpm)||130;
+      const mod=Math.round(Math.max(72,Math.min(170,base+(Math.random()-0.5)*12)));
+      return `setCpm(${mod}/4)`;
+    });
+
+    // 6. Safe Note / Pitch transpose in mini-notation (<...>)
+    src=src.replace(/([n|note]\s*\(\s*[`"'])(<[^`"']+>)([`"']\s*\))/g,(full,p1,inner,p3)=>{
+      if(Math.random() < 0.65){
+        const tokens = inner.slice(1, -1).trim().split(/\s+/);
+        if(tokens.length > 2){
+          const mutated = tokens.map(tok=>{
+            if(/^\d+$/.test(tok) && Math.random()<0.45){
+              const shift = [-2, -1, 1, 2, 7][Math.floor(Math.random()*5)];
+              return String(Math.max(0, parseInt(tok,10)+shift));
+            }
+            return tok;
+          });
+          return `${p1}<${mutated.join(' ')}>${p3}`;
         }
-        return full.replace(inner, mutatedTokens.join(' '));
       }
       return full;
     });
 
-    // 6. Mutate slider(val) values toward mission intensity
-    src=src.replace(/slider\(\s*(0?\.\d+|\d+(?:\.\d+)?)/g,(_,v)=>{
-      const cur=parseFloat(v)||0.5;
-      const delta=(Math.random()-0.42)*0.22+(intensity-0.5)*0.18;
-      const next=Math.max(0.12,Math.min(0.98,cur+delta));
-      return `slider(${next.toFixed(3)}`;
-    });
-
-    // 7. Adjust setCpm(bpm/4) dynamically
-    src=src.replace(/setCpm\(\s*(\d+(?:\.\d+)?)\s*\/\s*4\s*\)/g,(_,bpm)=>{
-      const base=parseFloat(bpm)||138;
-      const mod=Math.round(Math.max(96,Math.min(182,base+(intensity-0.4)*18+(Math.random()-0.5)*12)));
-      return `setCpm(${mod}/4)`;
-    });
-
+    this.currentCode=src;
     return src;
   },
 
@@ -1198,11 +1189,20 @@ const SFX={
         const origConnect=AudioNode.prototype.connect;
         const self=this;
         AudioNode.prototype.connect=function(dest,...args){
-          if(dest&&self&&self.ctx&&dest===self.ctx.destination&&this!==self.analyser&&this!==self.master){
+          if(dest&&self&&self.ctx&&(!this.context||this.context===self.ctx)&&dest===self.ctx.destination&&this!==self.analyser&&this!==self.master){
             return origConnect.call(this,self.master,...args);
           }
           return origConnect.call(this,dest,...args);
         };
+      }
+
+      if(typeof window!=='undefined'&&window.strudel){
+        if(typeof window.strudel.setDefaultAudioContext==='function'){
+          try{window.strudel.setDefaultAudioContext(this.ctx);}catch(e){}
+        }
+        if(typeof window.strudel.setAudioContext==='function'){
+          try{window.strudel.setAudioContext(this.ctx);}catch(e){}
+        }
       }
 
       this.musicGain=this.ctx.createGain();
@@ -1246,11 +1246,14 @@ const SFX={
   },
 
   resume(){
+    if(!this.ctx)this.init();
     if(!this.ctx)return Promise.resolve();
     const resumed=this.ctx.state==='suspended'?this.ctx.resume():Promise.resolve();
     return resumed.then(()=>{
-      if(!STRUDEL.playing&&this.musicEnabled&&!this.muted){
-        this.playTrack(STRUDEL.currentTrack||'sa_lets_talk');
+      if(this.musicEnabled&&!this.muted){
+        if(!STRUDEL.playing||(this.ctx&&this.ctx.currentTime<0.1)){
+          this.playTrack(STRUDEL.currentTrack||'theme_remix_0');
+        }
       }
     });
   },
@@ -1306,6 +1309,10 @@ const SFX={
   },
 
   playTrack(trackKey){
+    if(!this.ctx)this.init();
+    if(this.ctx&&this.ctx.state==='suspended'){
+      try{this.ctx.resume();}catch(e){}
+    }
     STRUDEL.paused=false;
     STRUDEL.loadCustomTracksFromSave();
     if(trackKey==='custom'&&STRUDEL.customCode){
@@ -1314,8 +1321,8 @@ const SFX={
       if(typeof updateWinampDisplay==='function')updateWinampDisplay();
       return;
     }
-    const tr=STRUDEL_TRACKS[trackKey]||STRUDEL_TRACKS.sa_lets_talk||STRUDEL_TRACKS.base;
-    STRUDEL.currentTrack=STRUDEL_TRACKS[trackKey]?trackKey:'base';
+    const tr=STRUDEL_TRACKS[trackKey]||STRUDEL_TRACKS.theme_remix_0||STRUDEL_TRACKS.sa_lets_talk||STRUDEL_TRACKS.base;
+    STRUDEL.currentTrack=STRUDEL_TRACKS[trackKey]?trackKey:'theme_remix_0';
     STRUDEL.evaluate(tr.code,!this.muted&&this.musicEnabled);
     if(typeof updateWinampDisplay==='function')updateWinampDisplay();
   },
@@ -1330,20 +1337,18 @@ const SFX={
   },
 
   syncContext(contextKey){
-    // Sternenkarte teilt die Hintergrundmusik der Basis (kein störender Musikwechsel beim Wechsel auf die Karte)
-    if(contextKey==='map')contextKey='base';
     this._lastContext=contextKey;
     if(STRUDEL.mode!=='auto')return;
     // Map contextKey ('base', 'map', 'planet', 'gate', 'combat', 'peaceful', 'boss') to Switch Angel or SGC track
     let target=contextKey;
     if(STRUDEL.useSwitchAngelAuto&&typeof SWITCH_ANGEL_TRACKS!=='undefined'){
       const roleMap={
-        base:['sa_lets_talk','sa_patronbeat','sa_waning_pad','theme_remix_lofi'],
-        map:['sa_lets_talk','sa_patronbeat','sa_waning_pad','theme_remix_lofi'],
+        base:['theme_remix_0'], // Basis: Remix 1 (Stargate × Switch Angel Remix 1)
+        map:['theme_remix_2'],  // Sternenkarte: Remix 3 (Stargate × Switch Angel Remix 3)
         planet:['sa_canyonhopper','sa_openup','sa_mutek4am','sa_sentimental_dnb'],
         gate:['sa_in_the_beginning','theme_fanfare'],
-        combat:['theme_remix_2','theme_remix_cnc','sa_autotomatone','sa_extra_slippy','sa_909workout','sa_hotroller','sa_generative_jungle','sa_amen_infinity'],
-        peaceful:['theme_remix_lofi','sa_curiosity_piano'],
+        combat:['theme_remix_cnc','sa_autotomatone','sa_extra_slippy','sa_909workout','sa_hotroller','sa_generative_jungle','sa_amen_infinity'],
+        peaceful:['theme_remix_lofi','theme_remix_melancholy','sa_curiosity_piano'],
         boss:['theme_remix_cnc','sa_did_i_make_this','sa_whoneedsa303','sa_dubstepacid']
       };
       const pool=roleMap[contextKey];

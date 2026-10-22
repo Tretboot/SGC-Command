@@ -500,6 +500,55 @@ $WARM_SUB: note("<[d2 ~ d2 ~] [g2 ~ g2 ~] [c2 ~ c2 ~] [bb1 ~ bb1 ~]>")
 
 $TAPE_VINYL: s("pink").lpf(850).gain(.06)
 `;
+  },
+  melancholyCode(){
+    return `//@title Stargate × Melancholic Ambient Phaser Remix @by SGC Deep Space Lab
+// 74 BPM Melancholic Atmospheric Stargate Theme with Resonant Analog Phaser Sweeps, Ambient Tape Warmth & Warm Rhodes
+setCpm(74/4)
+setScale("d:dorian")
+const phaserRate = slider(0.380)
+const phaserDepth = slider(0.720)
+const volume = slider(0.920)
+all(x => x.mul(postgain(volume)))
+
+$PHASER_THEME: n("<[9 ~ ~ ~ ~ ~ 8 9] [10 ~ ~ ~ 9 ~ 8 ~] [9 ~ ~ ~ ~ ~ ~ ~] [~ ~ 8 ~ 7 ~ 4 ~] [~ ~ ~ ~ ~ ~ ~ ~] [9 ~ ~ ~ 11 ~ ~ ~] [10 ~ ~ ~ 9 ~ ~ ~] [8 ~ ~ ~ ~ ~ ~ ~]>").sc()
+  .s("supersaw")
+  .detune(sine.slow(5).range(0.25, 0.55))
+  .lpf(sine.slow(6).range(380, 2400))
+  .lpq(4.8)
+  .room(0.85).roomsize(5).gain(0.78)
+  .delay(0.55).delaytime(0.375).delayfeedback(0.5)
+  .o(4)
+
+$ATMOSPHERE_CHORDS: note("<[[d3,f3,a3,c4]@4 ~] [[bb2,d3,f3,a3]@4 ~] [[g2,bb2,d3,f3]@4 ~] [[a2,c#3,e3,g3]@4 ~]>")
+  .s("piano")
+  .lpf(1400)
+  .room(0.9)
+  .gain(0.68)
+  .delay(0.4)
+  .o(3)
+
+$SUB_CELLOBASS: note("<[d2 ~ d2 ~] [bb1 ~ bb1 ~] [g1 ~ g1 ~] [a1 ~ a1 ~]>")
+  .s("sawtooth")
+  .sub(12)
+  .lpf(sine.slow(8).range(120, 260))
+  .gain(0.82)
+  .o(4)
+
+$SLOW_PULSE: s("sbd ~ ~ ~ ~ ~ sbd ~").dec(0.45).gain(0.72).o(2)
+
+$SHIMMER_ECHO: s("<[~ hh]*4 [~ hh:2]*4>").gain(0.32).lpf(3400).delay(0.45).o(1)
+
+$SOLITARY_BELL: n("<[14 ~ ~ ~] [~ 16 ~ ~] [15 ~ ~ ~] [~ 12 ~ ~]>").sc()
+  .s("sine")
+  .add(24)
+  .gain(0.26)
+  .delay(0.65)
+  .room(0.95)
+  .o(5)
+
+$COSMIC_WIND: s("pink").lpf(sine.slow(12).range(300, 950)).gain(0.045)
+`;
   }
 };
 
@@ -514,6 +563,7 @@ function registerThemeTracks(){
   }
   STRUDEL_TRACKS.theme_remix_cnc={name:'🪖 Stargate × C&C Hell March Industrial Remix',artist:'SGC Heavy Industrial',role:'boss',code:THEME_MIDI.cncCode()};
   STRUDEL_TRACKS.theme_remix_lofi={name:'☕ Stargate × Midnight Lo-Fi Chillhop Remix',artist:'SGC Midnight Lab',role:'peaceful',code:THEME_MIDI.lofiCode()};
+  STRUDEL_TRACKS.theme_remix_melancholy={name:'🌌 Stargate × Melancholic Ambient Phaser Remix',artist:'SGC Deep Space Lab',role:'peaceful',code:THEME_MIDI.melancholyCode()};
   if(typeof STRUDEL!=='undefined'&&STRUDEL.patterns){
     Object.keys(STRUDEL_TRACKS).forEach(k=>{STRUDEL.patterns[k]=STRUDEL_TRACKS[k].code;});
   }

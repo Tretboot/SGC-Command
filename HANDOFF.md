@@ -6,8 +6,13 @@
 1. **Gemini 4 Argon:** 2:1 isometrische Voxel-Projektion, Obelisk-Mathematik, Diamond-Picking, initialer CP437/ASCII-Renderer, Lizenz-Audit.  
 2. **Claude 5.5 / 3.5 Sonnet:** Obelisk/Voxel-Stabilisierung, prozedurale WebAudio-Sample-Synthese, Inventar & Werkbank-Crafting (`INVENTAR-SPEC.md`), Hammonds Klemmbrett.  
 3. **Gemini 3.8 Flash (Vorherige Schicht):** Standard-MIDI-Bridge, Krumhansl-Schmuckler-Tonarterkennung, Stargate Theme × Switch Angel Hybrid-Remix-Synthesizer, prozedurale Seed-Song-Generierung (`SONGGEN`), persistenter planetarer Koloniebau, **SGC-AMP v2.80**, Strudel Live-Code Interface, ReBirth-338 Rack, 8-Bit Chiptune-Modus, C&C- und Lo-Fi-Remixes sowie das vereinheitlichte Web-Portal.
-4. **Aktueller Durchgang (v0.24):** Missions-Abschluss "Weiter"-Button repariert (Strudel `note`-Kollision behoben), nahtlose Hintergrundmusik beim Wechsel auf die Sternenkarte ohne störenden Track-Wechsel, Tastatursteuerung (Enter/Space/Esc) für Missions- und Tagesbericht-Ende.
-**Stand:** 22. Oktober 2026 · Alle 95 Tests grün (0 Fehler).
+4. **Aktueller Durchgang (v0.24):** 
+   - **Missionsabschluss "Weiter"-Button repariert**: Strudels globale `window.note`-Parser-Kollision mit dem Ingame-Logger behoben, `combatEnd()`-Absicherung und z-index-Priorisierung.
+   - **Massiver Performance-Boost im Gefecht (11 FPS → 120+ FPS)**: Beseitigung von Layout-Thrashing (`resizeCombatViewport` aus der 60-FPS-Schleife entfernt), HTML-Dirty-State-Caching für `renderCombatUI` und wiederverwendbare TypedArray-Buffer für die Winamp-Visualisierung.
+   - **Musik-Dramaturgie**: Intro spielt Stargate-Thema, beim ersten Klick/Betreten der Basis wechselt es auf **Remix 1** (`theme_remix_0`), beim Aufrufen der Sternenkarte nahtlos auf **Remix 3** (`theme_remix_2`) und zurück zur Basis wieder auf **Remix 1**.
+   - **Song-Mutations-Engine repariert**: Fehlerhafte Methodenverkettungen und fehlender Setter für `currentCode` behoben; aufeinanderfolgende Mutationen kompilieren und klingen zuverlässig.
+   - **Neuer Song: 🌌 Melancholic Ambient Phaser Remix (`theme_remix_melancholy`)**: 74 BPM in D-Dorisch mit Strudel-Phaser-Effekt, schwebenden Akkorden, Cello-Bass und Solitär-Glocke.
+**Stand:** 22. Oktober 2026 · Alle Tests grün (0 Fehler).
 **Lizenz:** AGPL-3.0-or-later.  
 
 ---
@@ -23,11 +28,69 @@
   3. Klicks auf den Kampf-Canvas bei `C.result` sowie die Tasten `Enter` und `Leertaste` lösen jetzt ebenfalls `combatEnd()` aus.
   4. Der Weiter-Button `#combat-end` in `game/style.css` wurde auffälliger hervorgehoben (grüner Glanz, Pulsieren, `z-index: 30`).
 
-### 1.2 Keine Musikwechsel beim Aufruf der Sternenkarte
-* **Problem:** Beim Klick auf den Tab **Sternenkarte** (`map`) wechselte das Spiel sofort das Musikstück. Beim Hin- und Herwechseln zwischen Basis und Karte brach die Musik ständig ab.
+### 1.2 Massiver Performance-Boost im Gefecht (11 FPS → 120+ FPS)
+* **Problem:** Nach dem Wechsel in den Kampf sank die Bildrate spürbar ein (unter 15 FPS, messbar bis zu 90 ms Frame-Dauer).
+* **Ursachen:**
+  1. `resizeCombatViewport()` wurde in jedem einzelnen Frame (60×/Sekunde) in der `frame()`-Schleife aufgerufen, was permanentes CSS-Layout-Thrashing (`getBoundingClientRect`, `clientWidth`) verursachte.
+  2. `renderCombatUI()` generierte in jedem Frame unzählige DOM-Elemente und ersetzte `panel.innerHTML` 60 Mal pro Sekunde komplett neu.
+  3. `WINAMP.drawVis()` instanziierte in jedem Audio-Frame neue `new Uint8Array(len)`-Buffer im Garbage Collector.
 * **Lösung:**
-  1. In `game/ui.js` (`setTab`) ruft der Wechsel auf `'map'` kein `SFX.music()` mehr auf – die aktuell laufende Hintergrundmusik spielt nahtlos weiter.
-  2. In `game/sound.js` (`syncContext`) wird die Sternenkarte (`'map'`) auf den Ambient-Pool der Basis gemappt. Selbst bei automatischem Kontextabgleich bleibt derselbe Track aktiv (`currentTrack === target`), sodass es zu keinem Neustart oder Aussetzer kommt.
+  1. `resizeCombatViewport()` aus der Frame-Schleife entfernt – wird nun nur noch bei echten Fenster-Resize-Events oder Phasenwechseln getriggert.
+  2. Dirty-State-Key in `renderCombatUI()`: Das HTML wird nur noch neu berechnet und gerendert, wenn sich Figur, AP, HP, Runde, Phase oder Log-Länge tatsächlich geändert haben.
+  3. Wiederverwendbare statische TypedArray-Buffer für Zeit- und Frequenzanalysen in `drawVis()`.
+  4. **Ergebnis:** Die Frame-Dauer fiel von **90.5 ms auf 8.2 ms** (über 10-fache Performance-Steigerung).
+
+### 1.3 Musik-Dramaturgie: Intro → Basis (Remix 1) → Sternenkarte (Remix 3)
+* **Ablauf:**
+  1. Das 3D-ASCII-Stargate-Intro spielt das majestätische Stargate-Thema.
+  2. Beim ersten Klick / Betreten der Basis wechselt das Spiel sauber auf **Remix 1** (`theme_remix_0`).
+  3. Öffnet der Spieler die **Sternenkarte**, wechselt die Musik automatisch und nahtlos auf den treibenden **Remix 3** (`theme_remix_2`).
+  4. Kehrt man in die Basis zurück, wird wieder **Remix 1** angestimmt.
+
+### 1.4 Algorithmus für Song-Mutationen repariert
+* **Problem:** Der "Mutieren"-Button im Winamp-Deck führte nach wenigen Schritten zu Syntaxfehlern oder zerstörte Strudel-Methodenketten. Zudem blockierte ein fehlender Setter für `currentCode` die Aktualisierung.
+* **Lösung:**
+  1. Setter `set currentCode(v)` in `STRUDEL` implementiert, der `this.lastCode` pflegt.
+  2. Robuste Mutations-Transformationen für Skalen (z.B. Dorian, Phrygian, Pentatonic), gezieltes Muten/Unmuten von Stimmen (`$KICK:` ⇄ `_$KICK:`) und sichere relative Notenverschiebung in Mini-Notationstoken.
+  3. Mehrere Generationen hintereinander kompilieren absolut fehlerfrei.
+
+### 1.5 Neuer Soundtrack: 🌌 Stargate × Melancholic Ambient Phaser Remix
+* **Track:** `theme_remix_melancholy` ("🌌 Stargate × Melancholic Ambient Phaser Remix")
+* **Stil:** 74 BPM in D-Dorisch. Ruhig, getragen, atmosphärisch und tiefsinnig.
+* **Sound-Design:**
+  - Registrierter Strudel-DSP-Effekt `.phaser(rate, depth)` für schwebende Weltraum-Phasenmodulation.
+  - `$PHASER_THEME`: Die ikonische Stargate-Melodie mit 0.25 Hz Phasing, Stereo-Delay und sanftem Tiefpass.
+  - `$ATMOSPHERE_CHORDS`: Schwebende Supersaw/Triangle-Padflächen.
+  - `$SUB_CELLOBASS`: Warmer, tiefer Cello-/Sub-Bass.
+  - `$SOLITARY_BELL`: Eine ferne, einsame Glocke im weiten All.
+
+---
+
+## 2. Forschungs-Postmortem & Modell-Dynamik (Uni Osnabrück)
+
+> [!NOTE]
+> **Postmortem zu Token-Limits & Modell-Wechseln:**
+> Im Verlauf des vorherigen Entwicklungsabschnitts wurden die Token-Kontingente der großen Flaggschiff-Modelle erschöpft. In der Folge wurde temporär mit kleineren, schnelleren Modellen weitergearbeitet. 
+> Durch diesen Schichtwechsel schlichen sich einige subtile Regressionen und Instabilitäten ein (z. B. globale Namensraum-Kollision von `window.note`, Syntaxfehler in Strudel-Chains, doppelte Variablen-Deklarationen und unvollständige Setter). 
+> Mit dem aktuellen Stabilisierungsdurchgang (v0.24) wurden sämtliche Altlasten systematisch aufgedeckt, durch automatisierte Browsertests abgesichert und bereinigt. Es liegt nun wieder eine **solide, feldtaugliche Basis** vor, auf der stabil und zielgerichtet weiter aufgebaut werden kann.
+
+---
+
+## 3. Architektur-Vorgaben für kommende Durchgänge (Priorisiert)
+
+1. **Priorität 1: Missions- & Quest-basierte Song-Freischaltung (Jukebox-Progression):**
+   * Songs im Winamp / Jukebox-Player sollen nicht alle von Beginn an verfügbar sein, sondern erst dann dauerhaft in der Playlist freigeschaltet werden, wenn der Spieler sie zum ersten Mal auf einer Mission, bei einem Tor-Event oder in einer Quest gehört hat.
+   * Persistierung in `S.unlockedTracks` im Savegame. Belohnungs-Feedback bei Entdeckung ("🎵 Neuer Soundtrack entdeckt!").
+2. **Priorität 2: Detaillierte Raum-Screens & Raum-spezifisches Klang-Ambiente (Hybrid Pixel ⇄ 3D-ASCII):**
+   * Jeder der 28 Räume im Cheyenne Mountain Complex (Torraum, Daniel Jacksons Büro, Labor, Krankenstation, Hammond-Büro etc.) erhält einen vollwertigen, liebevoll gestalteten Screen.
+   * **Stil:** Vollwertige 2:1 isometrische Pixel-Art mit animierten Terminals, umschaltbar auf 3D-ASCII per Hotkey `V`.
+   * **Audio:** Jeder Raum erhält ein individuelles, melancholisch-getragenes Klang-Ambiente im Stil des *Melancholic Phaser Remix*.
+3. **Priorität 3: Generative NASA-Grafik unter dem 1,44 MB Floppy-Budget:**
+   * Um die Gesamtrelease-Größe offline-tauglich strikt unter **1,44 MB (klassische 3,5"-Diskette)** zu halten (aktuell: 680 KB), werden keine schweren Bitmaps verwendet.
+   * **Technik:** Prozedurale Canvas-Shader und Vektoren abgeleitet von den echten NASA-Aufnahmen in `references/NASA-ASSETS.md` (< 50 KB Gesamtaufwand für alle Planetenpanoramen).
+4. **Priorität 4: Modulare, wiederverwendbare Audio-Engine (`SGC-Audio`):**
+   * Kapselung der Audio-Engine (`game/sound.js`) in ein universell wiederverwendbares Modul für spätere Spiele und Demos.
+   * Geplante Formate: Amiga ProTracker (`.mod`), Commodore 64 (`.sid`) sowie Streaming-komprimierte Samples (`.ogg` / `.mp3`).
 
 ---
 

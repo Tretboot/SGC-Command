@@ -33,11 +33,11 @@
 </div>
 <div id="story-dialogue" role="dialog" aria-modal="true" aria-live="polite"></div>
 <!-- Combat-Overlay (Canvas oben flex:1, Jagged-Alliance UI unten angedockt) -->
-<div id="combat-overlay" style="display:none;position:fixed;inset:0;background:#000;z-index:20;flex-direction:column;align-items:stretch;justify-content:stretch;overflow:hidden">
+<div id="combat-overlay" onclick="if(typeof C!=='undefined'&&C.result)combatEnd()" style="display:none;position:fixed;inset:0;background:#000;z-index:20;flex-direction:column;align-items:stretch;justify-content:stretch;overflow:hidden">
  <div class="combat-viewport-wrap" style="flex:1;position:relative;overflow:hidden;width:100%;min-height:0">
   <canvas id="combat-cv" width="960" height="720" aria-label="Taktische Einsatzkarte" style="touch-action:none;cursor:grab;width:100%;height:100%;display:block"></canvas>
   <canvas id="combat-minimap" width="256" height="192" aria-label="Minimap: anklicken, um die Kartenansicht zu verschieben"></canvas>
-  <button id="combat-end" style="display:none;padding:10px 24px;font-size:16px">Weiter</button>
+  <button id="combat-end" onclick="combatEnd()" style="display:none;padding:12px 32px;font-size:16px;cursor:pointer">Weiter</button>
  </div>
  <div id="combat-ui" style="display:none;flex:0 0 auto"></div>
 </div>
@@ -60,4 +60,4 @@
  </div>
 </div>
 <div id="modal"></div><div id="over"></div><div id="toast"></div>
-<script src="vendor/strudel-web.js"></script><script src="switch-angel.js"></script><script src="midi-data.js"></script><script src="sound.js"></script><script src="midi.js"></script><script src="art.js"></script><script src="art2.js"></script><script src="../content/quests.js"></script><script src="../content/intros.js"></script><script src="../content/scenes.js"></script><script src="engine.js"></script><script src="iso.js"></script><script src="combat.js"></script><script src="base.js"></script><script src="cinematic.js"></script><script src="ui.js"></script></body></html>
+<script src="vendor/strudel-web.js?v=0.24"></script><script src="switch-angel.js?v=0.24"></script><script src="midi-data.js?v=0.24"></script><script src="sound.js?v=0.24"></script><script src="midi.js?v=0.24"></script><script src="art.js?v=0.24"></script><script src="art2.js?v=0.24"></script><script src="../content/quests.js?v=0.24"></script><script src="../content/intros.js?v=0.24"></script><script src="../content/scenes.js?v=0.24"></script><script src="engine.js?v=0.24"></script><script src="iso.js?v=0.24"></script><script src="combat.js?v=0.24"></script><script src="base.js?v=0.24"></script><script src="cinematic.js?v=0.24"></script><script src="ui.js?v=0.24"></script></body></html>

@@ -402,15 +402,56 @@ for(const fn of loadFns){
   assert(els['modal'].style.display === 'none', 'Modal Weiter action closes report modal cleanly');
 }
 
-// 19. Test Star Map Music Continuity (No disruptive music change on map)
+// 19. Test Music Progression: Intro -> Base (Remix 1) -> Star Map (Remix 3)
 {
   setTab('base');
   SFX.music('base');
-  const baseTrack = STRUDEL.currentTrack;
+  assert(STRUDEL.currentTrack === 'theme_remix_0', 'Entering base plays Remix 1 (theme_remix_0)');
   setTab('map');
-  assert(STRUDEL.currentTrack === baseTrack, 'Switching to Sternenkarte tab (map) preserves active background music');
-  SFX.music('map');
-  assert(STRUDEL.currentTrack === baseTrack, 'SFX.music("map") syncs to base context without changing active track');
+  assert(STRUDEL.currentTrack === 'theme_remix_2', 'Switching to Sternenkarte plays Remix 3 (theme_remix_2)');
+  setTab('base');
+  assert(STRUDEL.currentTrack === 'theme_remix_0', 'Returning to base switches back to Remix 1 (theme_remix_0)');
+}
+
+// 20. Test Melancholic Ambient Phaser Remix
+{
+  assert(STRUDEL_TRACKS.theme_remix_melancholy, 'Theme Remix Melancholy registered in STRUDEL_TRACKS');
+  const mel = STRUDEL_TRACKS.theme_remix_melancholy;
+  assert(mel.name.includes('Melancholic') && mel.name.includes('Phaser'), 'Track title contains Melancholic & Phaser');
+  assert(mel.code.includes('setCpm(74/4)') && mel.code.includes('setScale("d:dorian")'), 'Melancholic remix runs at 74 BPM in D Dorian');
+  assert(mel.code.includes('$PHASER_THEME') && mel.code.includes('$ATMOSPHERE_CHORDS') && mel.code.includes('$SUB_CELLOBASS'), 'Includes resonant phaser theme, atmospheric chords, and cello bass');
+  const compiledMel = STRUDEL.compile(mel.code);
+  assert(compiledMel && compiledMel.length >= 4, 'Melancholic Phaser Remix compiles cleanly in Strudel (' + compiledMel.length + ' voices)');
+}
+
+// 21. Test Algorithm Mutation Engine (Multiple successive mutations compile cleanly)
+{
+  let cur = STRUDEL_TRACKS.theme_remix_0.code;
+  let allCompiled = true;
+  for (let i = 0; i < 5; i++) {
+    cur = STRUDEL.mutateCode(cur, 0.65);
+    const voices = STRUDEL.compile(cur);
+    if (!voices || voices.length === 0) { allCompiled = false; break; }
+  }
+  assert(allCompiled, 'Successive algorithmic mutations compile without syntax errors (5 generations)');
+}
+
+// 22. Test Winamp Spectrum Analyzer & Oscilloscope
+{
+  WINAMP.visMode = 'spectrum';
+  let specErr = null;
+  try {
+    WINAMP.drawVis();
+  } catch (e) { specErr = e; }
+  assert(!specErr, 'WINAMP.drawVis renders Spectrum mode without errors');
+  assert(WINAMP._peaks && WINAMP._peaks.length === 26, 'Spectrum mode allocates 26 floating peak caps');
+
+  WINAMP.visMode = 'wave';
+  let waveErr = null;
+  try {
+    WINAMP.drawVis();
+  } catch (e) { waveErr = e; }
+  assert(!waveErr, 'WINAMP.drawVis renders Oscilloscope mode without errors');
 }
 
 for(let i=0;i<5;i++){

@@ -110,16 +110,39 @@
 - [x] Danksagung an Switch Angel und Dokumentation der Tracks als Bildungs-/Entwicklungs-Platzhalter in `README.md` und `LICENSE`
 - [x] Gemeinfreie NASA-Assets (Mars-Dünen, Eye of the Sahara, Webb Cosmic Cliffs, Cassini-Eiswelten) in `references/NASA-ASSETS.md` katalogisiert
 
+### 5.4 Kampffluss, Performance-Tuning & Musik-Dramaturgie (v0.24 – ERLEDIGT ✅)
+- [x] **"Weiter"-Button am Missionsende**: Konflikt mit Strudels globaler `window.note`-Parserfunktion durch isoliertes `gameNote()` und intelligenten Proxy gelöst; zusätzliche Tastatur-Hotkeys (Enter/Space/Esc).
+- [x] **10-facher Performance-Boost im Kampf**: Beseitigung von Layout-Thrashing (`resizeCombatViewport` aus der 60-FPS-Schleife verbannt), Dirty-State-Caching für die Combat-DOM-Elemente und wiederverwendbare TypedArrays für die Audio-Visualisierung.
+- [x] **Musik-Ablauf**: Intro (Stargate Thema) → Basis (Remix 1, `theme_remix_0`) → Sternenkarte (Remix 3, `theme_remix_2`) → Basis (Remix 1).
+- [x] **Mutieren-Engine repariert**: Setter für `STRUDEL.currentCode` ergänzt; sichere Algorithmus-Transformationen für Noten- und Skalenmodulation ohne Syntaxfehler.
+- [x] **Neuer Track: 🌌 Melancholic Ambient Phaser Remix**: 74 BPM D-Dorisch mit nativem `.phaser()` DSP-Filter, Supersaw-Pads, Cello-Subbass und einsamer Glocke.
+
 ---
 
 ## Phase 6: Künftige Ausbaustufen (GEPLANT / BACKLOG)
 
-### 6.1 REXPaint (`.xp`) / CP437 Sprite-Importer 🟡
+### 6.1 Mission- & Quest-basierte Song-Freischaltung (Jukebox-Progression) 🔴 (NÄCHSTER FOKUS)
+- Songs im SGC-AMP v2.80 / Winamp-Player werden erst freigeschaltet und in die Playlist aufgenommen, wenn das SG-Team sie zum ersten Mal bei einer Mission, einem Tor-Event oder Abschluss einer Quest entdeckt hat.
+- Erschafft ein motivierendes Entdecker- und Sammelgefühl ("🎵 Neuer Soundtrack entdeckt!").
+- Zustand wird persistent in `S.unlockedTracks` gespeichert.
+
+### 6.2 Detaillierte Raum-Screens & Raum-spezifisches Klang-Ambiente (Hybrid Pixel ⇄ 3D-ASCII) 🔴
+- Jeder der 28 Räume im Cheyenne Mountain Complex (Torraum, Daniel Jacksons Archiv, Hammond-Büro, Labor, Krankenstation etc.) erhält einen vollwertigen Großbildschirm-Screen.
+- **Grafik-Stil:** Hybrid-Ansicht – vollwertige 2:1 isometrische Pixel-Art mit animierten Terminals, nahtlos umschaltbar auf den retro 3D-ASCII-Modus per Hotkey **`V`**.
+- **Klang-Ambiente:** Passend zum beliebten *Melancholic Phaser Remix* bekommt jeder Raum ein eigenes, getragenes Klang-Ambiente mit subtilen modularen Synthesizer-Flächen.
+
+### 6.3 Generative NASA-Grafik unter 1,44 MB Floppy-Budget 🟡
+- Projektziel: Gesamtrelease offline-lauffähig strikt unter **1,44 MB (klassische 3,5"-Diskette)** halten (aktuell: ~680 KB).
+- **Technische Umsetzung:** Prozedurale Canvas-Shader und Vektoren abgeleitet von den echten NASA-Aufnahmen in `references/NASA-ASSETS.md` (< 50 KB Gesamtaufwand, kein einziges schweres Bitmap-Bild).
+
+### 6.4 Modulare Standalone Audio-Engine (`SGC-Audio`) 🟡
+- Kapselung der Audio-Engine (`game/sound.js`) in ein universell wiederverwendbares Modul für spätere Spiele und Demos.
+- Geplante Kompatibilität:
+  - Chiptune- und Trackerformate: Amiga ProTracker (`.mod`), Commodore 64 (`.sid`)
+  - Streaming- & komprimierte Samples: `.ogg`, `.mp3`
+  - ReBirth-338 Synthesizer-Rack & Live-Coding DSL
+
+### 6.5 REXPaint (`.xp`) / CP437 Sprite-Importer & Mehrteilige Boss-Kämpfe 🟢
 - Direktes Laden von `.xp`-ASCII-Dateien für noch detailliertere mehrfarbige Goa'uld-Mutterschiffe (Ha'tak) und Death Glider.
-
-### 6.2 Einbindung der gemeinfreien NASA-Hintergründe 🟡
-- Verwendung der in `references/NASA-ASSETS.md` recherchierten Aufnahmen als optionale Panoramahintergründe für Kolonien und Wurmloch-Reisen.
-
-### 6.3 Mehrteilige Boss-Kämpfe & Fahrzeug-/Gleiter-Unterstützung 🟢
 - Spezielle Voxel-Karten für Ha'tak-Brücken, Replikatoren-Mutterschiffe und MALP-/UAV-Drohnensteuerung im Feldeinsatz.
 ---

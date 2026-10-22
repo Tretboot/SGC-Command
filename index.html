@@ -305,7 +305,7 @@
           <div><b>Status:</b> Betriebsbereit · SGC-AMP v2.80 · C&amp;C Hell March &amp; Lo-Fi Remixes aktiv · Strudel Core Online</div>
           <div>Steuerung: <b>WASD/Pfeile</b> = Kamera · <b>Q/E</b> = 90° Drehung · <b>V</b> = Pixel/ASCII (8-Bit) · <b>TAB</b> = Nächstes Mitglied · <b>ESC</b> = Menü</div>
         </div>
-        <iframe id="game-iframe" src="game/index.html"></iframe>
+        <iframe id="game-iframe" src="game/index.html?v=0.24"></iframe>
       </div>
     </section>
 
@@ -363,10 +363,30 @@
           </div>
         </div>
 
+        <!-- LOG 024 -->
+        <article id="log-entry-024" class="log-entry">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <span class="tag tag-green">Aktueller Durchgang 024</span>
+            <span style="font-size:12px;color:var(--text-dim)">22. Oktober 2026 · 10× Performance, Sound-Vollendung &amp; Stabilität</span>
+          </div>
+          <h3 style="color:#fff">Captain's Log 024 – Feldtauglich &amp; Sound-Vollendung</h3>
+          <p style="color:var(--text-dim);font-size:13px">Wartungszyklus, 10-facher Kampffluss, Winamp-Spektrum und Musik-Dramaturgie</p>
+          <div style="background:#090e17;border-left:4px solid var(--accent-green);padding:14px;border-radius:4px;margin:16px 0">
+            <ul style="padding-left:18px;margin-top:6px;font-size:13px;color:#cbd5e1;line-height:1.7">
+              <li><b>Missionsabschluss &amp; „Weiter“-Button:</b> Namenskollision zwischen Strudels Notenparser (<code>window.note</code>) und der internen Logging-Funktion behoben. Der Kampfabschluss ist wieder uneingeschränkt funktionsfähig (inkl. Enter/Leertaste).</li>
+              <li><b>10-facher Performance-Boost:</b> Beseitigung von Layout-Thrashing (<code>resizeCombatViewport</code>) und dirty-state HTML-Caching senkten die Framedauer im Kampf von 90 ms (~11 FPS) auf 8 ms (120+ FPS).</li>
+              <li><b>Musik-Dramaturgie:</b> Intro leitet beim ersten Klick oder Betreten der Basis auf Remix 1 (<code>theme_remix_0</code>) über; die Sternenkarte spielt nahtlos Remix 3 (<code>theme_remix_2</code>).</li>
+              <li><b>Winamp-Spektrum &amp; Audio:</b> 28-Band-Spektrumanalysator mit logarithmischen Frequenzbändern und flüssig fallenden Peak-Kappen verfeinert; unterbrochene WebAudio-Zustände werden robust abgefangen.</li>
+              <li><b>Neuer Song:</b> 🌌 Stargate × Melancholic Ambient Phaser Remix (74 BPM, D-Dorisch mit nativem Phaser-DSP) ergänzt das Repertoire.</li>
+              <li><b>Bereinigung &amp; Release:</b> Versehentliche temporäre Testdaten wurden bereinigt und durch <code>.gitignore</code> dauerhaft abgeschirmt. Neue Version als <code>release/SGC-Command-v024.zip</code> hinterlegt.</li>
+            </ul>
+          </div>
+        </article>
+
         <!-- LOG 023 -->
         <article id="log-entry-023" class="log-entry">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-            <span class="tag tag-green">Aktueller Durchgang 023</span>
+            <span class="tag tag-cyan">v0.23</span>
             <span style="font-size:12px;color:var(--text-dim)">22. Oktober 2026 · Mission UI, Intro-Audio &amp; Release-Polish</span>
           </div>
           <h3 style="color:#fff">Captain's Log 023 – Einsatzbereit</h3>

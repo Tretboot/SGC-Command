@@ -94,6 +94,7 @@ function finishOpeningCinematic(){
   introTimeout = 0;
   const overlay = document.getElementById('intro-overlay');
   if(overlay) overlay.style.display = 'none';
+  if(typeof SFX !== 'undefined') SFX.music('base');
   const done = introFinish;
   introFinish = null;
   if(done) done();

@@ -32,9 +32,12 @@ function setTab(t){UI.tab=t;sfx('click');
  document.querySelectorAll('.pane').forEach(p=>p.style.display=p.id==='pane-'+t?'block':'none');
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
  if(typeof SFX!=='undefined'&&!C.active){
-  // Musik beim Wechsel auf die Sternenkarte nicht wechseln, um Unterbrechungen zu vermeiden
-  if(t!=='map'){
-   SFX.music(t==='colonies'?'planet':'base');
+  if(t==='map'){
+   SFX.music('map'); // Sternenkarte: Remix 3
+  }else if(t==='base'||t==='roster'||t==='log'){
+   SFX.music('base'); // Basis: Remix 1
+  }else if(t==='colonies'){
+   SFX.music('planet');
   }
  }
  renderAll();}
@@ -225,54 +228,91 @@ const WINAMP = {
 
     if(this.visMode==='spectrum'){
       const bins=26;
-      let freq=analyser?new Uint8Array(analyser.frequencyBinCount):new Uint8Array(64);
-      let isFlat=true;
+      if(!this._freqBuf||(analyser&&this._freqBuf.length!==analyser.frequencyBinCount)){
+        this._freqBuf=new Uint8Array(analyser?analyser.frequencyBinCount:64);
+      }
+      if(!this._peaks||this._peaks.length!==bins){
+        this._peaks=new Float32Array(bins);
+      }
+      const freq=this._freqBuf;
+      let hasSignal=false;
       if(analyser){
         analyser.getByteFrequencyData(freq);
-        for(let i=0;i<Math.min(32,freq.length);i++)if(freq[i]>2){isFlat=false;break;}
-      }
-      if(isFlat){
-        const nowMs=performance.now()*0.006;
-        for(let i=0;i<bins;i++){
-          const harmonic=Math.sin(nowMs*2 + i*0.4)*0.5 + 0.5;
-          const falloff=Math.max(0.1, 1 - (i/bins)*0.7);
-          freq[i]=Math.round(255 * harmonic * falloff * this.beatPulse);
+        for(let i=0;i<Math.min(64,freq.length);i++){
+          if(freq[i]>3){hasSignal=true;break;}
         }
       }
       const barW=Math.floor(w/bins);
+      const totalBins=analyser?analyser.frequencyBinCount:64;
+      const maxUsable=Math.min(totalBins,Math.floor(totalBins*0.72));
+
       for(let i=0;i<bins;i++){
-        const v=(freq[Math.floor(i*freq.length/bins)]||0)/255;
+        let v=0;
+        if(hasSignal){
+          const startRatio=Math.pow(i/bins,1.7);
+          const endRatio=Math.pow((i+1)/bins,1.7);
+          const b0=Math.floor(startRatio*maxUsable);
+          const b1=Math.max(b0+1,Math.min(maxUsable,Math.ceil(endRatio*maxUsable)));
+          let sum=0,count=0;
+          for(let b=b0;b<b1;b++){
+            sum+=freq[b]||0;
+            count++;
+          }
+          v=(count>0?(sum/count):(freq[b0]||0))/255;
+          v=Math.min(1.0,v*(1.0+(i/bins)*0.8));
+        }else{
+          const nowMs=performance.now()*0.005;
+          const harmonic=Math.sin(nowMs*2.5+i*0.45)*0.5+0.5;
+          const falloff=Math.max(0.12,1.0-(i/bins)*0.6);
+          const pulse=Math.max(0.35,this.beatPulse||0.4);
+          v=Math.min(1.0,harmonic*falloff*pulse);
+        }
+
         const bH=Math.max(2,Math.floor(v*(h-4)));
         const grad=ctx.createLinearGradient(0,h,0,0);
-        grad.addColorStop(0,'#22c55e');
-        grad.addColorStop(0.65,'#eab308');
-        grad.addColorStop(1,'#ef4444');
+        grad.addColorStop(0,'#16a34a');
+        grad.addColorStop(0.55,'#eab308');
+        grad.addColorStop(0.88,'#ef4444');
         ctx.fillStyle=grad;
         ctx.fillRect(i*barW+1,h-bH,barW-2,bH);
-        // Peak cap
-        ctx.fillStyle='#86efac';
-        ctx.fillRect(i*barW+1,Math.max(0,h-bH-2),barW-2,1);
+
+        // Authentic Winamp floating peak cap with gravity decay
+        let curPeak=this._peaks[i]||0;
+        if(bH>=curPeak){
+          curPeak=bH;
+        }else{
+          curPeak=Math.max(0,curPeak-0.65);
+        }
+        this._peaks[i]=curPeak;
+
+        if(curPeak>2){
+          ctx.fillStyle=curPeak>(h*0.72)?'#fca5a5':'#86efac';
+          ctx.fillRect(i*barW+1,Math.max(0,h-Math.round(curPeak)-2),barW-2,1);
+        }
       }
     }else{
       // Oscilloscope Mode (authentic cathode phosphor trace)
-      let timeData=analyser?new Uint8Array(analyser.fftSize):new Uint8Array(256);
-      let isFlat=true;
+      if(!this._timeBuf||(analyser&&this._timeBuf.length!==analyser.fftSize)){
+        this._timeBuf=new Uint8Array(analyser?analyser.fftSize:256);
+      }
+      const timeData=this._timeBuf;
+      let hasSignal=false;
       if(analyser){
         analyser.getByteTimeDomainData(timeData);
-        for(let i=0;i<timeData.length;i++){
-          if(Math.abs(timeData[i]-128)>2){isFlat=false;break;}
+        for(let i=0;i<timeData.length;i+=4){
+          if(Math.abs(timeData[i]-128)>3){hasSignal=true;break;}
         }
       }
-      if(isFlat){
+      if(!hasSignal){
         const nowMs=performance.now();
-        const pulse=this.beatPulse;
+        const pulse=Math.max(0.35,this.beatPulse||0.4);
         const cutoffMod=(typeof SFX!=='undefined'&&SFX.rebirth)?(SFX.rebirth.cutoff||2400)/2400:1;
         for(let i=0;i<timeData.length;i++){
           const t=i/timeData.length;
-          const f1=Math.sin(t*8*Math.PI + nowMs*0.012)*32*pulse;
-          const f2=Math.sin(t*20*Math.PI*cutoffMod - nowMs*0.022)*18*pulse;
-          const noise=(Math.random()-0.5)*5*pulse;
-          timeData[i]=Math.max(0,Math.min(255,Math.round(128 + f1 + f2 + noise)));
+          const f1=Math.sin(t*8*Math.PI+nowMs*0.012)*28*pulse;
+          const f2=Math.sin(t*18*Math.PI*cutoffMod-nowMs*0.022)*16*pulse;
+          const noise=(Math.random()-0.5)*4*pulse;
+          timeData[i]=Math.max(0,Math.min(255,Math.round(128+f1+f2+noise)));
         }
       }
 
@@ -327,7 +367,7 @@ function getWinampTracksForTab(tab, search=''){
   if(tab==='sa'){
     list=Object.keys(STRUDEL_TRACKS).filter(k=>k.startsWith('sa_'));
   }else if(tab==='theme'){
-    list=['theme_midi','theme_fanfare','theme_remix_0','theme_remix_1','theme_remix_2','theme_remix_3'];
+    list=['theme_midi','theme_fanfare','theme_remix_0','theme_remix_1','theme_remix_2','theme_remix_3','theme_remix_cnc','theme_remix_lofi','theme_remix_melancholy'];
   }else if(tab==='core'){
     list=['base','map','planet','gate','combat','peaceful','boss'];
   }else if(tab==='seed'){
@@ -800,13 +840,18 @@ function generateNewSongFromContext(){
 function mutateCurrentSong(){
   if(typeof STRUDEL==='undefined'||typeof STRUDEL.mutateCode!=='function')return;
   const ed=$('strudel-editor');
-  const curCode=(ed&&ed.value.trim())?ed.value:(STRUDEL.currentCode||'');
+  const fallback = STRUDEL.currentCode || (STRUDEL_TRACKS[STRUDEL.currentTrack] ? STRUDEL_TRACKS[STRUDEL.currentTrack].code : '');
+  const curCode=(ed&&ed.value.trim())?ed.value:fallback;
+  if(!curCode){
+    toast('⚠ Kein Song zum Mutieren aktiv.');
+    return;
+  }
   const mutated=STRUDEL.mutateCode(curCode, 0.65);
   STRUDEL.customCode=mutated;
   STRUDEL.currentCode=mutated;
   if(ed)ed.value=mutated;
   STRUDEL.evaluate(mutated, true);
-  toast('🧬 Soundtrack mutiert: Stimmen gemixt, Ribbon & Rhythmus gewürfelt!');
+  toast('🎲 Soundtrack mutiert: Stimmen gemixt, Ribbon & Rhythmus gewürfelt!');
   if(typeof updateWinampDisplay==='function')updateWinampDisplay();
 }
 
@@ -1289,20 +1334,33 @@ function combatPointerUp(e){
 }
 function combatEnd(){
  if(!C.result)return;
- applyCombatResult();
+ try{
+  applyCombatResult();
+ }catch(err){
+  console.error('[combatEnd] Error in applyCombatResult:', err);
+ }
+ C.active=false;
  $('combat-overlay').style.display='none';
  document.body.style.overflow='';
  $('combat-end').style.display='none';
- if(typeof SFX!=='undefined')SFX.music('base');
+ if(typeof SFX!=='undefined')SFX.music(UI.tab==='map'?'map':'base');
  showReport();
 }
 
 // ===================== Jagged-Alliance-Style Combat UI + C&C Offworld Build =====================
-function renderCombatUI(){
+let _lastCombatUIKey = '';
+function renderCombatUI(force=false){
  const panel=$('combat-ui');if(!panel)return;
- if(!C.active||C.result){panel.style.display='none';return;}
- panel.style.display='flex';
+ if(!C.active||C.result){
+  if(panel.style.display!=='none')panel.style.display='none';
+  _lastCombatUIKey='';
+  return;
+ }
  const sel=C.selected;
+ const key=`${sel?sel.charId:'none'}_${sel?sel.ap:0}_${sel?sel.hp:0}_${sel?sel.specialUsed:0}_${C.round}_${C.phase}_${C.log.length}_${C.buildType}_${typeof getGfxMode==='function'?getGfxMode():'pixel'}`;
+ if(!force && key===_lastCombatUIKey && panel.style.display==='flex') return;
+ _lastCombatUIKey=key;
+ panel.style.display='flex';
  let h='';
  if(sel){
   const m=S.roster[sel.charId];
@@ -1610,7 +1668,6 @@ function frame(now){
  if(C.active){
   renderCombat($('combat-cv'));
   renderCombatUI();
-  resizeCombatViewport();
   $('combat-end').style.display=C.result?'inline-block':'none';
  }
  else if(GR.phase!=='idle'&&GATE_STATE){drawGateroom($('gate-cv'),now,GATE_STATE);}
@@ -1718,7 +1775,6 @@ function init(){
  startOpeningCinematic(()=>{
   S.introSeen=true;save();
   if(!S.pilotBriefingSeen&&!S.done.includes('1-1')&&S.day===1){
-   MAP.sel='chulak';setTab('map');
    showPilotOpening();
   }
  });
