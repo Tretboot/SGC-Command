@@ -9,12 +9,12 @@
 // FX-System: Schadenszahlen, Treffer-Flash, Mündungsfeuer, Tracer, Tod.
 // Sound: SFX (sound.js). UX: Angriffsziele SOFORT bei Auswahl sichtbar.
 
-const C={active:false,map:[],units:{},nextId:1,round:1,phase:'player',gatePos:null,objective:null,selected:null,moveRange:[],atkRange:[],coverRange:[],result:null,log:[],mission:null,teamIds:[],hover:null,fx:[],shake:0,firstHint:true,firstJaffa:false,tutorial:null,dialogueActive:false,sceneFlags:{},cameraX:0,cameraY:0,mapVersion:0,
+const C={active:false,map:[],units:{},nextId:1,round:1,phase:'player',gatePos:null,objective:null,selected:null,moveRange:[],atkRange:[],coverRange:[],result:null,log:[],mission:null,teamIds:[],hover:null,fx:[],shake:0,firstHint:true,firstJaffa:false,tutorial:null,dialogueActive:false,sceneFlags:{},cameraX:0,cameraY:0,mapVersion:0,loot:[],
  distance(x0,y0,x1,y1){return Math.max(Math.abs(x1-x0),Math.abs(y1-y0));}};
 const TILE=48;
 let VIEW_W=20,VIEW_H=15;
 let GW=VIEW_W,GH=VIEW_H;
-const sfx=n=>{if(typeof SFX!=='undefined'&&SFX[n])SFX[n]();};
+const sfx=n=>{if(typeof SFX!=='undefined'&&SFX[n]){try{SFX[n]();}catch(e){}}};
 
 function facingToward(from,to){
  return {x:Math.sign(to.x-from.x),y:Math.sign(to.y-from.y)};
@@ -36,8 +36,8 @@ function createShipMap(theme){
  const set=(x,y,ch)=>{if(x>=0&&y>=0&&x<width&&y<height)tiles[y][x]=ch;};
  for(let x=0;x<width;x++){set(x,0,'#');set(x,height-1,'#');}
  for(let y=0;y<height;y++){set(0,y,'#');set(width-1,y,'#');}
- for(const x of [20,42])for(let y=1;y<height-1;y++)if(![5,6,14,15,23,24,32,33,41,42].includes(y))set(x,y,'#');
- for(const y of [15,31])for(let x=1;x<width-1;x++)if(![5,6,19,20,31,32,41,42,56,57].includes(x))set(x,y,'#');
+ for(const x of [20,42])for(let y=1;y<height-1;y++)if(![4,5,6,7,13,14,15,16,22,23,24,25,31,32,33,34,40,41,42,43].includes(y))set(x,y,'#');
+ for(const y of [15,31])for(let x=1;x<width-1;x++)if(![4,5,6,7,18,19,20,21,30,31,32,33,40,41,42,43,55,56,57,58].includes(x))set(x,y,'#');
  for(const [x,y]of[[5,5],[9,5],[25,5],[33,5],[47,5],[55,5],[5,23],[16,23],[25,23],[37,23],[47,23],[56,23],[5,40],[16,40],[25,40],[37,40],[47,40],[56,40]])set(x,y,'l');
  for(const [x,y]of[[7,8],[27,8],[37,8],[53,8],[7,26],[27,26],[37,26],[53,26],[7,37],[27,37],[37,37],[53,37]])set(x,y,'H');
  set(31,23,'G');
@@ -47,7 +47,7 @@ function createVillageMap(){
  const width=32,height=24,tiles=Array.from({length:height},()=>Array(width).fill('.'));
  const set=(x,y,ch)=>{if(x>=0&&y>=0&&x<width&&y<height)tiles[y][x]=ch;};
  for(let x=1;x<width-1;x++){set(x,7,'w');set(x,8,'w');}
- for(let x=14;x<=17;x++){set(x,7,'=');set(x,8,'=');}
+ for(const x of [5,6,7, 14,15,16,17, 24,25,26]){set(x,7,'=');set(x,8,'=');}
  for(let y=0;y<height;y++){set(15,y,'p');set(16,y,'p');}
  for(let x=0;x<width;x++)set(x,13,'p');
  for(const [hx,hy]of[[3,3],[8,3],[22,3],[27,3],[3,17],[8,17],[22,17],[27,17]]){
@@ -106,11 +106,22 @@ function expandBattleMap(rows,mapName){
    if(ridge>.88&&n>.44)t=n>.81?2:1;
    else if(n>.986)t=6;
   }else if(theme==='city'){
-   const isRoad=(x%8===0||y%7===0);
-   const nearBlock=(x%8>=1&&x%8<=3&&y%7>=1&&y%7<=4);
-   if(isRoad)t=10;
-   else if(nearBlock&&n>.35)t=n>.81?3:2;
-   else if(n>.985)t=6;
+   const isMainRoad=(x%12<=2||y%10<=2);
+   const isPlaza=(x>=22&&x<=42&&y>=16&&y<=32);
+   if(isPlaza){
+    t=10;
+    if(n>.88)t=1;
+    else if(n>.96)t=2;
+   }else if(isMainRoad){
+    t=10;
+    if(n>.94)t=1;
+   }else{
+    const isWallEdge=((x%12===4||x%12===10||y%10===4||y%10===8)&&!(x%6===0||y%5===0));
+    if(isWallEdge&&n>.35)t=3;
+    else if(n>.78)t=1;
+    else if(n>.93)t=2;
+    else if(n>.985)t=6;
+   }
   }else if(theme==='hatak'){
    if(n>.90)t=n>.975?2:1;
   }else if(theme==='sgc'){
@@ -232,6 +243,7 @@ function startCombat(mission,teamIds){
   C.tutorial=mission.tutorial?{step:0}:null;
   C.dialogueActive=false;C.sceneFlags={};
   C.firstHint=!mission.tutorial&&!mission.peaceful;
+  spawnBattlefieldLoot(mission);
   C.firstJaffa=false;
   if(typeof SFX!=='undefined'&&SFX.syncContext){
     const isBoss=mission.enemies&&(mission.enemies.goauld||mission.enemies.queen);
@@ -280,10 +292,22 @@ function startCombat(mission,teamIds){
       downed:false,dead:false,charId:m.id,specialUsed:false,facing:{x:0,y:1}};
   });
   if(mission.peaceful&&mission.contact){
-    const contactPos={x:mission.contact.x+world.offsetX,y:mission.contact.y+world.offsetY};
-    if(!isWalkable(contactPos.x,contactPos.y)||unitAt(contactPos.x,contactPos.y))throw new Error(`Invalid peaceful contact spawn for ${mission.id}.`);
+    let cx=mission.contact.x+world.offsetX,cy=mission.contact.y+world.offsetY;
+    if(!isWalkable(cx,cy)||unitAt(cx,cy)){
+      let found=null;
+      for(let r=1;r<=6&&!found;r++){
+        for(let dy=-r;dy<=r&&!found;dy++){
+          for(let dx=-r;dx<=r&&!found;dx++){
+            const tx=cx+dx,ty=cy+dy;
+            if(isWalkable(tx,ty)&&!unitAt(tx,ty)){found={x:tx,y:ty};}
+          }
+        }
+      }
+      if(found){cx=found.x;cy=found.y;}
+      else{cx=gatePos.x+2;cy=gatePos.y+2;}
+    }
     const uid=C.nextId++;
-    C.units[uid]={id:uid,side:'neutral',type:'civilian',name:mission.contact.name,x:contactPos.x,y:contactPos.y,
+    C.units[uid]={id:uid,side:'neutral',type:'civilian',name:mission.contact.name,x:cx,y:cy,
       hp:1,maxHp:1,move:0,ap:0,downed:false,dead:false,facing:{x:0,y:1},contactId:mission.contact.id};
   }
   const eCount=mission.enemies,edges=getSpawnEdges(),scriptedSpawns=(mission.enemySpawns||[]).map(p=>({x:p.x+world.offsetX,y:p.y+world.offsetY}));
@@ -521,7 +545,7 @@ function killUnit(u){
   if(u.side==='enemy'){
     u.dead=true;spawnDeath(u.x,u.y);sfx('death');clog(`💀 ${u.name} zerstört.`);
     // Jaffa-Toten: Zähler + einmaliger „First Blood"-Bonus (der erste Jaffa ist etwas Besonderes).
-    if(u.type&&u.type.startsWith('jaffa')){
+    if(u.type&&(u.type.startsWith('jaffa')||u.type==='veteran'||u.type==='elite'||u.type==='goauld')){
       S.jaffaKills=(S.jaffaKills||0)+1;
       if(S.jaffaKills===1){
         clog('★ Erster Jaffa besiegt! +30 XP, +10 Morale (Team).');
@@ -536,11 +560,131 @@ function checkDowned(){
   const downed=Object.values(C.units).filter(u=>u.side==='player'&&u.downed);
   if(downed.length>=2&&!C.result){C.result='extracted';clog('⚡ 2+ Mitglieder down → Auto-Extraktion!');}
 }
+
+// ---------- Taktisches Beutesystem (XCOM/Jagged Alliance Caches & Banter) ----------
+function spawnBattlefieldLoot(mission){
+  C.loot=[];
+  if(!C.gatePos)return;
+  const count=mission.map==='city'?3:2;
+  const candidates=[];
+  for(let y=3;y<GH-3;y++){
+    for(let x=3;x<GW-3;x++){
+      if(!isWalkable(x,y))continue;
+      const d=C.distance(C.gatePos.x,C.gatePos.y,x,y);
+      if(d>=4&&d<=26){
+        const isCover=coverRating({x,y})>0;
+        candidates.push({x,y,d,score:(isCover?3:1)+Math.random()*2});
+      }
+    }
+  }
+  candidates.sort((a,b)=>b.score-a.score);
+
+  const lootTypes=[
+    {
+      type:'crate',
+      name:"Goa'uld-Vorratskiste",
+      res:{ore:45+Math.floor(Math.random()*25),tech:15+Math.floor(Math.random()*15)},
+      item:Math.random()<0.4?'medkit':null,
+      dialog:[
+        {portraitId:0,speaker:"Jack O'Neill",role:"SG-1 Commander",text:"Daniel, fass das nicht an, bevor wir wissen, ob es explodiert."},
+        {portraitId:3,speaker:"Teal'c",role:"Jaffa-Krieger",text:"Es ist eine versiegelte Goa'uld-Vorratskiste. Unberührt von Apophis' Patrouillen."},
+        {portraitId:0,speaker:"Jack O'Neill",role:"SG-1 Commander",text:"In der Tat. Einpacken und mitnehmen!"}
+      ]
+    },
+    {
+      type:'naquadah',
+      name:"Naquadah-Behälter",
+      res:{ore:85+Math.floor(Math.random()*45),tech:20},
+      item:null,
+      dialog:[
+        {portraitId:1,speaker:"Samantha Carter",role:"Astrophysikerin",text:"Sir! Ein schwerer Druckbehälter mit hochreinem Naquadah!"},
+        {portraitId:0,speaker:"Jack O'Neill",role:"SG-1 Commander",text:"Ausgezeichnet, Carter. Das SGC-Budget dankt es Ihnen."},
+        {portraitId:1,speaker:"Samantha Carter",role:"Astrophysikerin",text:"Das sichert den Energiebedarf für die Basis auf Wochen."}
+      ]
+    },
+    {
+      type:'artifact',
+      name:"Antiker-Datenkristall",
+      res:{tech:55+Math.floor(Math.random()*35),ore:20},
+      item:Math.random()<0.5?'shield':'emp',
+      dialog:[
+        {portraitId:2,speaker:"Daniel Jackson",role:"Archäologe",text:"Faszinierend! Ein intakter Speicherkristall der Antiker mit proto-babylonischen Inschriften!"},
+        {portraitId:0,speaker:"Jack O'Neill",role:"SG-1 Commander",text:"Daniel... bitte nicht vorlesen. Einfach in den Rucksack packen."},
+        {portraitId:2,speaker:"Daniel Jackson",role:"Archäologe",text:"Das könnte der Schlüssel zu den Schild-Codes sein, Jack!"}
+      ]
+    },
+    {
+      type:'zat',
+      name:"Jaffa-Waffenkiste",
+      res:{tech:30,ore:40},
+      item:'zat',
+      dialog:[
+        {portraitId:3,speaker:"Teal'c",role:"Jaffa-Krieger",text:"Eine Reserve an Zat'nik'tels. Ein Schuss betäubt, zwei töten."},
+        {portraitId:0,speaker:"Jack O'Neill",role:"SG-1 Commander",text:"Und der dritte lässt die Leiche verschwinden, ich weiß. Gute Arbeit, Teal'c."},
+        {portraitId:3,speaker:"Teal'c",role:"Jaffa-Krieger",text:"In der Tat."}
+      ]
+    }
+  ];
+
+  const picked=[];
+  for(let i=0;i<count;i++){
+    const cand=candidates.find(c=>!picked.some(p=>C.distance(p.x,p.y,c.x,c.y)<5));
+    if(cand){
+      picked.push(cand);
+      const def=lootTypes[i%lootTypes.length];
+      C.loot.push({
+        id:'loot_'+(i+1),
+        x:cand.x,
+        y:cand.y,
+        type:def.type,
+        name:def.name,
+        res:{...def.res},
+        item:def.item,
+        dialog:def.dialog,
+        collected:false
+      });
+    }
+  }
+}
+
+function collectCombatLoot(unit,loot){
+  if(!loot||loot.collected)return;
+  loot.collected=true;
+  sfx('craft');
+  triggerHapticFeedback(0.5,180);
+  if(loot.res){
+    for(const k in loot.res){
+      S.res[k]=(S.res[k]||0)+loot.res[k];
+    }
+  }
+  if(loot.item&&S.inventory&&S.inventory.special){
+    S.inventory.special[loot.item]=(S.inventory.special[loot.item]||0)+1;
+  }
+  spawnDamage(loot.x,loot.y,`+${loot.name}`,'#f59e0b');
+  clog(`📦 ${unit.name} birgt ${loot.name}! (+${loot.res.ore||0} Erz, +${loot.res.tech||0} Tech${loot.item?', +'+loot.item:''})`);
+  if(loot.dialog&&typeof showStorySequence==='function'&&!C.tutorial){
+    showStorySequence(loot.dialog,`BERGETEAM · ${loot.name.toUpperCase()}`,'Verstanden',null,'field');
+  }
+}
+
+function checkLootPickup(unit,x,y){
+  if(!C.loot||!C.loot.length)return;
+  const item=C.loot.find(l=>!l.collected&&l.x===x&&l.y===y);
+  if(item)collectCombatLoot(unit,item);
+}
+
 // ---------- Spieler-Aktionen ----------
 function playerSelect(unit){
-  if(unit.side!=='player'||unit.dead||unit.downed||unit.ap<=0)return;
+  if(unit.side!=='player'||unit.dead||unit.downed)return;
   if(C.tutorial&&C.tutorial.step===0&&unit.charId===0)C.tutorial.step=1;
-  C.selected=unit;focusCombatUnit(unit);C.moveRange=moveRange(unit);C.atkRange=tutorialAllowsAttack(unit)?attackTargets(unit):[];C.coverRange=tutorialAllowsAttack(unit)?coverTargets(unit):[];
+  C.selected=unit;focusCombatUnit(unit);
+  if(unit.ap>0){
+    C.moveRange=moveRange(unit);
+    C.atkRange=tutorialAllowsAttack(unit)?attackTargets(unit):[];
+    C.coverRange=tutorialAllowsAttack(unit)?coverTargets(unit):[];
+  }else{
+    C.moveRange=[];C.atkRange=[];C.coverRange=[];
+  }
 }
 function interactWithContact(contact){
  if(!C.mission.peaceful||C.contactComplete||C.dialogueActive)return;
@@ -564,7 +708,7 @@ function playerMove(unit,x,y){
   if(C.tutorial&&C.tutorial.step<=1&&unit.charId===0)C.tutorial.step=2;
   unit.facing=facingToward(unit,{x,y});
   unit._animFrom={x:unit.x,y:unit.y};unit._animT0=performance.now();
-  unit.x=x;unit.y=y;unit.ap--;C.firstHint=false;
+  unit.x=x;unit.y=y;unit.ap--;C.firstHint=false;checkLootPickup(unit,x,y);
   if(unit.ap>0){C.selected=unit;C.moveRange=moveRange(unit);C.atkRange=attackTargets(unit);C.coverRange=coverTargets(unit);}
   else{C.selected=null;C.moveRange=[];C.atkRange=[];C.coverRange=[];nextUnit();}
 }
@@ -683,17 +827,31 @@ function checkEnd(){
   if(C.objective.type==='survive'&&C.round>C.objective.rounds){C.result='victory';sfx('victory');clog('✔ Halte-Mission erfolgreich!');return;}
 }
 // One-Way-Gate: Extraktion = das Gate NEU WÄHLEN, um zurück zu kommen.
-// Funktioniert nur, wenn das ganze (überlebende) Team in Gate-Nähe steht.
+// Funktioniert, wenn alle noch mobilen Teammitglieder am Gate stehen.
+// Verwundete/downed Mitglieder werden dabei evakuiert!
 function gateReady(){
   const players=Object.values(C.units).filter(u=>u.side==='player'&&!u.dead);
-  return {at:players.filter(p=>C.distance(p.x,p.y,C.gatePos.x,C.gatePos.y)<=2).length,total:players.length};
+  const conscious=players.filter(p=>!p.downed);
+  if(conscious.length===0)return {at:0,total:1,downed:players.length};
+  const atGate=conscious.filter(p=>C.distance(p.x,p.y,C.gatePos.x,C.gatePos.y)<=2);
+  return {at:atGate.length,total:conscious.length,downed:players.length-conscious.length};
 }
-function extract(){
+function extract(forceEmergency=false){
   if(C.result)return false;
   const g=gateReady();
-  if(g.at<g.total){clog(`⚠ Extraktion nicht möglich: nur ${g.at}/${g.total} am Gate.`);return false;}
-  C.result='extracted';sfx('gate');clog('🌀 Gate neu gewählt – Team extrahiert. (50% Beute)');
+  if(!forceEmergency&&g.at<g.total){clog(`⚠ Extraktion nicht möglich: nur ${g.at}/${g.total} mobile Einheiten am Gate.`);return false;}
+  C.result='extracted';sfx('gate');
+  if(g.downed>0||forceEmergency){
+    clog(`🚨 NOT-EVAKUIERUNG! Team extrahiert unter Deckung (${g.downed||0} Verwundete geborgen).`);
+  } else {
+    clog('🌀 Gate neu gewählt – Team extrahiert. (50% Beute)');
+  }
   return true;
+}
+function emergencyRetreat(){
+  if(!C.active||C.result)return;
+  extract(true);
+  if(typeof combatEnd==='function')combatEnd();
 }
 function clog(t){C.log.unshift(t);if(C.log.length>100)C.log.pop();}
 function applyCombatResult(){
@@ -841,6 +999,24 @@ function renderCombat(cv){
     c.fillStyle='#ef4444';c.font='bold 16px sans-serif';c.textAlign='center';c.fillText('✛',u.x*TILE+TILE/2,u.y*TILE+TILE/2+5);});
   C.coverRange.forEach(tile=>{c.strokeStyle='rgba(255,205,86,.9)';c.lineWidth=2;c.strokeRect(tile.x*TILE+5,tile.y*TILE+5,TILE-10,TILE-10);
     c.fillStyle='#ffd166';c.fillRect(tile.x*TILE+TILE/2-2,tile.y*TILE+TILE/2-2,4,4);});
+  // Taktische Beute-Caches (C.loot)
+  if(C.loot&&C.loot.length){
+    const pn=performance.now();
+    for(const l of C.loot){
+      if(l.collected)continue;
+      const lx=l.x*TILE,ly=l.y*TILE;
+      const pulse=0.5+0.5*Math.sin(pn/260+l.x*2+l.y*3);
+      c.fillStyle=`rgba(245,158,11,${0.18+0.12*pulse})`;
+      c.beginPath();c.arc(lx+TILE/2,ly+TILE/2,16+3*pulse,0,Math.PI*2);c.fill();
+      c.fillStyle='#78350f';c.fillRect(lx+10,ly+14,TILE-20,TILE-24);
+      c.fillStyle='#f59e0b';c.fillRect(lx+12,ly+16,TILE-24,TILE-28);
+      c.fillStyle='#fbbf24';c.fillRect(lx+10,ly+20,TILE-20,3);
+      c.fillRect(lx+TILE/2-2,ly+19,5,6);
+      c.fillStyle='#fde047';c.font='bold 11px monospace';c.textAlign='center';
+      c.fillText('📦',lx+TILE/2,ly+12-2*pulse);
+    }
+  }
+
   // Gate-Marker: pulsierender Portal-Ring + Label. Das Team kommt hierher,
   // um zu extrahieren (One-Way: Gate neu wählen). performance.now() inline,
   // da die gemeinsame `now`-Variable erst weiter unten deklariert wird.

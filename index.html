@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SGC Command – Stargate Command v0.23 ("Einsatzbereit")</title>
+  <title>SGC Command – Stargate Command v0.28 ("Krankenstation Ebene 21 & Dr. Janet Fraiser")</title>
   <style>
     :root {
       --bg-dark: #070a10;
@@ -275,7 +275,7 @@
       <div class="brand-logo">◎</div>
       <div>
         <div class="brand-title">SGC COMMAND</div>
-        <div class="brand-sub">Stargate Command · v0.23 · "Einsatzbereit"</div>
+        <div class="brand-sub">Stargate Command · v0.27 · "Trotz Contentrot – Unautorisierte Toraktivierung"</div>
       </div>
     </div>
     <nav class="hub-nav">
@@ -291,7 +291,7 @@
     <section id="tab-game" class="tab-section active">
       <div class="card" style="margin-bottom:12px;padding:12px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
         <div>
-          <b>🎮 SGC Command v0.23 Live-Instanz</b>
+          <b>🎮 SGC Command v0.28 Live-Instanz</b>
           <span style="color:var(--text-dim);font-size:13px;margin-left:8px">Dual-Engine: Isometrisch Voxel (Pixel-Art) ⇄ 3D-ASCII (CP437, Taste [V]) · SGC-AMP v2.80</span>
         </div>
         <div style="display:flex;gap:8px">
@@ -356,12 +356,47 @@
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:16px">
           <h2>📜 SGC Captain's Log Archive</h2>
           <div style="display:flex;gap:8px">
+            <button class="btn btn-outline" onclick="showLogEntry('log027')">Log 027 (Trotz Contentrot)</button>
+            <button class="btn btn-outline" onclick="showLogEntry('log026')">Log 026 (In der Tat)</button>
             <button class="btn btn-outline" onclick="showLogEntry('log023')">Log 023 (Mission-UI &amp; Intro-Audio)</button>
             <button class="btn btn-outline" onclick="showLogEntry('log022')">Log 022 (Soundtrack Fett &amp; Polish)</button>
-            <button class="btn btn-outline" onclick="showLogEntry('log021')">Log 021 (Winamp &amp; 8-Bit)</button>
-            <button class="btn btn-outline" onclick="showLogEntry('log020')">Log 020 (Voxel Dual-Gfx &amp; Civ)</button>
           </div>
         </div>
+
+        <!-- LOG 027 -->
+        <article id="log-entry-027" class="log-entry">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <span class="tag tag-green">Aktueller Durchgang 027</span>
+            <span style="font-size:12px;color:var(--text-dim)">23. Oktober 2026 · SGC Krisen-System, Woolsey-Audit, Replikatoren &amp; Contentrot</span>
+          </div>
+          <h3 style="color:#fff">Captain's Log 027 – „Trotz Contentrot – Unautorisierte Toraktivierung“</h3>
+          <p style="color:var(--text-dim);font-size:13px">Dramatischer Tagesabschluss mit Notfall-Krisen, Richard Woolsey NID-Revision, Replikator-Alarm und Winamp-Eastereggs</p>
+          <div style="background:#090e17;border-left:4px solid var(--accent-green);padding:14px;border-radius:4px;margin:16px 0">
+            <ul style="padding-left:18px;margin-top:6px;font-size:13px;color:#cbd5e1;line-height:1.7">
+              <li><b>SGC Krisen- &amp; Vorfall-System bei Tag-Ende:</b> ~55% Chance auf dramatische Zwischenfälle mit Entscheidungsauswahl: Unautorisierte Toraktivierung (Iris schließen vs. SG-3 Feuerschutz), Richard Woolseys NID-Revision (blauer Wackelpudding vs. Daniels Steuervortrag), Replikator-Invasion in den WebAudio-Leitungen und Altair-Harlans Duplikate („Comtrya!“).</li>
+              <li><b>Meta-AI Humor &amp; Eastereggs:</b> Contentrot-Notizen, Reese' Replikator-Spielzeug, Zitate von O'Neill &amp; Teal'c sowie geheime Klick-Eastereggs auf dem Winamp-LCD-Display.</li>
+              <li><b>Stabilität &amp; Budget:</b> 172 automatisierte Tests grün (0 Fehler), Release-Paket mit ~625 KB strikt unter der 1,44 MB Floppy-Disk-Grenze.</li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- LOG 026 -->
+        <article id="log-entry-026" class="log-entry">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <span class="tag tag-green">Aktueller Durchgang 026</span>
+            <span style="font-size:12px;color:var(--text-dim)">23. Oktober 2026 · Taktische Level-Überarbeitung, Beutesystem &amp; Level-Editor</span>
+          </div>
+          <h3 style="color:#fff">Captain's Log 026 – „In der Tat – Fast ein Spiel“</h3>
+          <p style="color:var(--text-dim);font-size:13px">Stadt-Plaza-Design, X-COM/JA2-Deckungslogik, taktische Beutekisten mit Team-Banter &amp; SGC Level Editor</p>
+          <div style="background:#090e17;border-left:4px solid var(--accent-green);padding:14px;border-radius:4px;margin:16px 0">
+            <ul style="padding-left:18px;margin-top:6px;font-size:13px;color:#cbd5e1;line-height:1.7">
+              <li><b>Taktische Level-Überarbeitung (Stadt &amp; Welten):</b> Enge 1-Kachel-Engpässe im Stadtsektor beseitigt. Neues Design mit 3-Kachel-Boulevards, offenem Marktplatz (Plaza), Ruinen mit Fenstern/Türen und doppelten Flussbrücken für echte Flankenmanöver.</li>
+              <li><b>In-Combat Beutesystem &amp; Team-Banter:</b> Prozedural platzierte Goa'uld-Vorratskisten, Naquadah-Kanister und Antiker-Datenkristalle auf dem Schlachtfeld. Bergung triggert authentische Stargate-Felddialoge (O'Neill, Carter, Jackson, Teal'c) und belohnt mit Ressourcen und Spezials.</li>
+              <li><b>SGC Tactical Level Editor (<code>tools/leveleditor.html</code>):</b> Vollwertiges Autorenwerkzeug mit 2:1 Isometrie- &amp; 2D-Rasteransicht, Terrain-/Deckungs-Pinsel, Höhenverstellung (+1/-1 Z), Presets und sofortigem <code>MAPS[]</code>-Code-Export.</li>
+              <li><b>Rundenabschluss &amp; Outro-Audio:</b> Rundenende per Enter/Button und Stargate Outro Theme beim Tagesabschluss mit SGC-Tagesbericht und Logbuch-Geschichten.</li>
+            </ul>
+          </div>
+        </article>
 
         <!-- LOG 024 -->
         <article id="log-entry-024" class="log-entry">
@@ -378,7 +413,7 @@
               <li><b>Musik-Dramaturgie:</b> Intro leitet beim ersten Klick oder Betreten der Basis auf Remix 1 (<code>theme_remix_0</code>) über; die Sternenkarte spielt nahtlos Remix 3 (<code>theme_remix_2</code>).</li>
               <li><b>Winamp-Spektrum &amp; Audio:</b> 28-Band-Spektrumanalysator mit logarithmischen Frequenzbändern und flüssig fallenden Peak-Kappen verfeinert; unterbrochene WebAudio-Zustände werden robust abgefangen.</li>
               <li><b>Neuer Song:</b> 🌌 Stargate × Melancholic Ambient Phaser Remix (74 BPM, D-Dorisch mit nativem Phaser-DSP) ergänzt das Repertoire.</li>
-              <li><b>Bereinigung &amp; Release:</b> Versehentliche temporäre Testdaten wurden bereinigt und durch <code>.gitignore</code> dauerhaft abgeschirmt. Neue Version als <code>release/SGC-Command-v024.zip</code> hinterlegt.</li>
+              <li><b>Bereinigung &amp; Release:</b> Versehentliche temporäre Testdaten wurden bereinigt und durch <code>.gitignore</code> dauerhaft abgeschirmt. Neue Version als <code>release/SGC-Command-v026.zip</code> hinterlegt.</li>
             </ul>
           </div>
         </article>
@@ -477,6 +512,7 @@
         <div class="subnav-bar">
           <button id="subnav-btn-soundlab" class="subnav-btn active" onclick="showAboutSection('soundlab')">🎵 Strudel &amp; Winamp Lab</button>
           <button id="subnav-btn-study" class="subnav-btn" onclick="showAboutSection('study')">📄 Forschungsnotizen &amp; Architektur</button>
+          <button id="subnav-btn-editor" class="subnav-btn" onclick="showAboutSection('editor')">🗺️ Level-Editor</button>
           <button id="subnav-btn-downloads" class="subnav-btn" onclick="showAboutSection('downloads')">📦 Offline-Paket &amp; Download</button>
           <button id="subnav-btn-license" class="subnav-btn" onclick="showAboutSection('license')">⚖️ Lizenzen &amp; Danksagung</button>
         </div>
@@ -597,6 +633,26 @@ Ergebnis: G-Dur (Root 7), 165 BPM, 35 Takte, 1.380 Events</pre>
           <p>Der Versuch belegt, dass deterministische Test-Harnische (<code>node test-browser.js</code> mit aktuell 74 Assertions) und strukturierte Übergabe-Dokumente (<code>HANDOFF.md</code>) die kritischen Erfolgsfaktoren für multi-modale LLM-Softwareprojekte darstellen. Durch die Zero-Dependency-Architektur bleibt das Projekt zu 100 % wartbar, quelloffen und ohne externe Abhängigkeitsrisiken lokal lauffähig.</p>
         </div>
 
+        <!-- SUBPANEL E: LEVEL EDITOR -->
+        <div id="about-editor" class="about-subpanel">
+          <h2>🗺️ SGC Tactical Level Editor (Toolchain)</h2>
+          <p>Ein vollwertiges, browserbasiertes Autorenwerkzeug zur Erstellung, visuellen Prüfung und dynamischen Skriptierung taktischer Gefechtskarten nach X-COM- und Jagged-Alliance-Prinzipien (Deckungs-Klassen, breite Boulevards, Flankenwege, Missions-Spawns und Beute-Caches).</p>
+          <div style="background:#0d1522;border:1px solid var(--border);border-radius:6px;padding:20px;margin:16px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+            <div>
+              <div style="font-weight:bold;font-size:15px;color:#fff;display:flex;align-items:center;gap:8px">
+                <span>📐 Dual-Mode: 2:1 Isometrie &amp; 2D-Raster</span>
+                <span class="badge" style="background:#0284c7;color:#fff;font-size:11px;padding:2px 8px;border-radius:4px">Standalone Tool</span>
+              </div>
+              <div style="color:var(--text-dim);font-size:13px;margin-top:6px;line-height:1.6">
+                Unterstützt Pinsel-Malen, Flutfüllen, Höhenstufen (+1/-1 Z), Deckungs-Hierarchie (Halb-/Voll-Deckung), Stargate-Platzierung, taktische Beute-Kisten und sofortigen Export als <code>MAPS[]</code>-JavaScript-Array.
+              </div>
+            </div>
+            <a href="tools/leveleditor.html" target="_blank" class="btn btn-primary" style="text-decoration:none;display:inline-flex;align-items:center;gap:8px;padding:10px 18px">
+              <span>🚀 Level-Editor im Vollbild öffnen</span>
+            </a>
+          </div>
+        </div>
+
         <!-- SUBPANEL C: DOWNLOADS -->
         <div id="about-downloads" class="about-subpanel">
           <h2>📦 Offline-Paket &amp; Download</h2>
@@ -604,10 +660,10 @@ Ergebnis: G-Dur (Root 7), 165 BPM, 35 Takte, 1.380 Events</pre>
 
           <div style="background:#0d1522;border:1px solid var(--border);border-radius:6px;padding:20px;margin:16px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
             <div>
-              <div style="font-size:16px;font-weight:bold;color:#fff">SGC-Command-v023.zip</div>
-              <div style="font-size:12px;color:var(--text-dim)">Schlankes Release · Mission-UI-Fix · Intro-Musik · SGC-AMP v2.80 · Dual-Gfx &amp; Doku</div>
+              <div style="font-size:16px;font-weight:bold;color:#fff">SGC-Command-v027.zip</div>
+              <div style="font-size:12px;color:var(--text-dim)">Schlankes Release · SGC-Krisen · Level-Editor · Winamp Eastereggs · Dual-Gfx &amp; Doku</div>
             </div>
-            <a href="SGC-Command-v023.zip" class="btn btn-gold" download>⬇ Release ZIP Herunterladen</a>
+            <a href="SGC-Command-v027.zip" class="btn btn-gold" download>⬇ Release ZIP Herunterladen</a>
           </div>
 
           <h3>Installation &amp; Schnellstart</h3>
@@ -643,7 +699,7 @@ Ergebnis: G-Dur (Root 7), 165 BPM, 35 Takte, 1.380 Events</pre>
   </main>
 
   <footer>
-    <div>◎ STARGATE COMMAND · SGC COMMAND v0.23 · "Einsatzbereit"</div>
+    <div>◎ STARGATE COMMAND · SGC COMMAND v0.27 · "Trotz Contentrot – Unautorisierte Toraktivierung"</div>
     <div style="margin-top:4px">Entwickelt im autonomen Multi-Agenten-Pair-Programming (Gemini 4 Argon · Claude 5.5 · Gemini 3.8 Flash) · Lizenziert unter AGPL-3.0-or-later</div>
   </footer>
 

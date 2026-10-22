@@ -11,6 +11,7 @@
 <button data-tab="base">🏗 Basis</button>
 <button data-tab="map">🗺 Sternenkarte</button>
 <button data-tab="colonies">🪐 Kolonien</button>
+<button data-tab="medbay">🏥 Krankenstation</button>
 <button data-tab="roster">👥 Roster &amp; Arsenal</button>
 <button data-tab="log">📜 Protokoll</button>
 </nav>
@@ -18,6 +19,7 @@
 <div class="pane" id="pane-base"><div class="split"><div class="base-canvas-scroll"><canvas id="base-cv" width="720" height="1134"></canvas></div><aside id="base-side"></aside></div></div>
 <div class="pane" id="pane-map"><div class="split"><canvas id="map-cv" width="960" height="540"></canvas><aside id="map-side"></aside></div></div>
 <div class="pane" id="pane-colonies"><div class="split"><canvas id="colony-cv" width="960" height="540"></canvas><aside id="colony-side"></aside></div></div>
+<div class="pane" id="pane-medbay"><div id="medbay-body"></div></div>
 <div class="pane" id="pane-roster"><div id="roster-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:8px"></div></div>
 <div class="pane" id="pane-log"><div id="log-body"></div></div>
 </main>
@@ -25,6 +27,20 @@
 <div id="gate-overlay" style="display:none;position:fixed;inset:0;background:#000;z-index:15;align-items:center;justify-content:center;cursor:pointer">
  <button id="gate-skip" class="gate-skip-btn" style="position:absolute;top:18px;right:22px;z-index:9;background:#0f172a;border:1px solid #38bdf8;color:#e0f2fe;font-family:monospace;font-weight:bold;padding:8px 16px;border-radius:4px;cursor:pointer;box-shadow:0 0 12px rgba(56,189,248,.35)">Überspringen <span>ESC / Klick</span></button>
  <canvas id="gate-cv" width="960" height="540" style="max-width:95vw;height:auto"></canvas>
+</div>
+<!-- Boot-Screen (Garantiert WebAudio-Aktivierung für Intro & Spiel) -->
+<div id="boot-screen" data-boot="true" style="display:none;position:fixed;inset:0;background:#030712;z-index:9999;align-items:center;justify-content:center;cursor:pointer;flex-direction:column;font-family:monospace;color:#38bdf8;user-select:none">
+ <div style="border:2px solid #0284c7;padding:32px 40px;border-radius:8px;background:rgba(15,23,42,0.96);box-shadow:0 0 40px rgba(56,189,248,0.4);max-width:580px;text-align:center">
+  <div style="font-size:20px;font-weight:bold;letter-spacing:4px;color:#93c5fd;margin-bottom:10px">◎ SGC COMMAND TERMINAL</div>
+  <div style="font-size:12px;color:#64748b;letter-spacing:2px;margin-bottom:20px">CHEYENNE MOUNTAIN COMPLEX · SUB-EBENE 28</div>
+  <div style="font-size:13px;color:#cbd5e1;line-height:1.7;margin-bottom:26px">
+   TORRAUM-STATUS: ENERGIE BEREIT<br>
+   AUDIO-SUBSYSTEM &amp; WEBAUDIO-SYNTHESIZER INITIALISIERT
+  </div>
+  <button id="boot-btn" style="background:#0284c7;border:1px solid #7dd3fc;color:#fff;font-family:monospace;font-size:16px;font-weight:bold;padding:14px 28px;border-radius:6px;cursor:pointer;box-shadow:0 0 20px rgba(2,132,199,0.7)">
+   ▶ KLICKEN / TASTE DRÜCKEN ZUM EINWÄHLEN
+  </button>
+ </div>
 </div>
 <div id="intro-overlay" style="display:none">
  <canvas id="intro-cv" width="1280" height="720" aria-label="Cinematic Stargate opening"></canvas>
@@ -49,6 +65,7 @@
   <div class="menu-diff"><span>🖥 Grafik-Engine</span><select id="menu-gfx" onchange="act(setGfxMode(this.value))"><option value="pixel">Isometrisch Voxel (Pixel-Art)</option><option value="ascii">ASCII-3D (asciiid / asciicker)</option><option value="topdown">Klassisch 2D Top-Down</option></select></div>
   <div class="menu-diff"><span>⚔ Schwierigkeit</span><select id="menu-diff" onchange="act(setDifficulty(this.value))"><option value="easy">Leicht</option><option value="normal">Normal</option><option value="hard">Hart</option></select></div>
   <button class="menu-btn" onclick="hideMenu();showStrudelModal()">🎵 Strudel Sound-Engine &amp; Live-Code</button>
+  <button class="menu-btn" onclick="hideMenu();WINAMP.tab='midi';showStrudelModal()">🎛 MIDI Controller (Akai Setup)</button>
   <button class="menu-btn" onclick="hideMenu();showKeybindModal()">⌨ Tastatur &amp; Tastenbelegung</button>
   <button class="menu-btn" onclick="hideMenu();showClipboardModal()">📋 Hammonds Klemmbrett (Personal)</button>
   <button class="menu-btn" onclick="showHelp()">📖 Anleitung</button>
@@ -60,4 +77,4 @@
  </div>
 </div>
 <div id="modal"></div><div id="over"></div><div id="toast"></div>
-<script src="vendor/strudel-web.js?v=0.24"></script><script src="switch-angel.js?v=0.24"></script><script src="midi-data.js?v=0.24"></script><script src="sound.js?v=0.24"></script><script src="midi.js?v=0.24"></script><script src="art.js?v=0.24"></script><script src="art2.js?v=0.24"></script><script src="../content/quests.js?v=0.24"></script><script src="../content/intros.js?v=0.24"></script><script src="../content/scenes.js?v=0.24"></script><script src="engine.js?v=0.24"></script><script src="iso.js?v=0.24"></script><script src="combat.js?v=0.24"></script><script src="base.js?v=0.24"></script><script src="cinematic.js?v=0.24"></script><script src="ui.js?v=0.24"></script></body></html>
+<script src="vendor/strudel-web.js?v=0.27"></script><script src="switch-angel.js?v=0.27"></script><script src="midi-data.js?v=0.27"></script><script src="sound.js?v=0.27"></script><script src="midi.js?v=0.27"></script><script src="midi-controller.js?v=0.27"></script><script src="art.js?v=0.27"></script><script src="art2.js?v=0.27"></script><script src="../content/quests.js?v=0.27"></script><script src="../content/intros.js?v=0.27"></script><script src="../content/scenes.js?v=0.27"></script><script src="engine.js?v=0.27"></script><script src="iso.js?v=0.27"></script><script src="combat.js?v=0.27"></script><script src="base.js?v=0.27"></script><script src="cinematic.js?v=0.27"></script><script src="ui.js?v=0.27"></script></body></html>

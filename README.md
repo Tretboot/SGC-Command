@@ -2,7 +2,7 @@
 >
 > **License scope:** The MIT License in this repository applies only to the original program code identified in [LICENSE](LICENSE). It does not grant any rights to Stargate, its universe, names, characters, settings, story elements, dialogue, trademarks, or any artwork, audio, screenshots, or other non-code material. Rights to third-party materials remain with their respective owners.
 
-### SGC Command v0.23 ("Einsatzbereit")
+### SGC Command v0.28 ("Krankenstation Ebene 21 & Dr. Janet Fraiser")
 
 An experimental, non-commercial fan-made tactical strategy game prototype. Manage a remote base, assemble a team, build offworld colonies, and take turn-based missions through the Stargate — backed by a high-octane algorithmic Strudel live-coding sound engine.
 
@@ -35,10 +35,10 @@ Open index.html (or hub.html)
 ```
 
 The Web Hub provides an integrated suite combining:
-1. **Interactive Game Player:** Full-featured embedded view of *SGC Command v0.23*.
+1. **Interactive Game Player:** Full-featured embedded view of *SGC Command v0.27*.
 2. **SGC Wiki & Lore Database:** Lore, planet telemetry, weapons, SG-teams, and colony structures.
-3. **Captain's Log Archive:** Multi-agent development logs ([Log 023](blog/captains-log-023.md), [Log 022](blog/captains-log-022.md), and [Log 021](blog/captains-log-021.md)).
-4. **Über & Labor:** Integrated sub-portal combining the Strudel & Winamp Sound Lab, academic pair-programming research notes, and clean offline release downloads (`SGC-Command-v023.zip`).
+3. **Captain's Log Archive:** Multi-agent development logs ([Log 027](blog/captains-log-027.md), [Log 026](blog/captains-log-026.md), [Log 025](blog/captains-log-025.md), [Log 024](blog/captains-log-024.md)).
+4. **Über & Labor:** Integrated sub-portal combining the SGC Tactical Level Editor ([`tools/leveleditor.html`](tools/leveleditor.html)), Strudel & Winamp Sound Lab, academic research notes, and clean offline release downloads (`SGC-Command-v027.zip`).
 
 If an optional local HTTP server is preferred:
 
@@ -93,10 +93,15 @@ Live coding and procedural audio synthesis are powered by [`@strudel/web`](https
   - Dedicated lightweight Strudel voices: French Horn / Trumpet fanfare (`$MELODY`), driving electric bass (`$BASS`), power brass harmony (`$HARMONY`), and orchestral timpani/kit (`$DRUMS`).
   - **🪖 Stargate × C&C Hell March Industrial Remix (`theme_remix_cnc`):** 132 BPM, Frank-Klepacki-style industrial cyber-metal with distorted TB-303/saw guitar chug, driving Roland TR-909 kick, and cutting brass fanfares for combat and boss battles.
   - **☕ Stargate × Midnight Lo-Fi Chillhop Remix (`theme_remix_lofi`):** 84 BPM, mellow tape-saturated Rhodes electric piano, warm sub-bass, vinyl dust crackle, and lazy swing groove for base management and offworld colony construction.
-  - 4 additional hybrid remixes fusing Stargate fanfares with Switch Angel acid bass, trancegates, and ducking aesthetics.
-- **Switch Angel Live-Coding Library & Runtime Fixes (`game/switch-angel.js`):**
-  - 20 integrated tracks by Switch Angel (including `extra_slippy`, `Lets_Talk`, `MUTEK4am`, `did_i_make_this`, and `AUTOTOMATONE`) fully stabilized via AST/regex normalization and defensive prototype patching.
-  - Special thanks to Switch Angel (`https://github.com/switchangel`)! Her tracks serve as educational development benchmarks and placeholders showcasing the sound engine's real-time synthesis performance.
+  - **🌊 Stargate Atlantis Main Theme (`theme_atlantis`):** 112 BPM, heroic French Horn fanfare, 12/8 rolling orchestral strings, noble double-bass, and ethereal Pegasus choir.
+  - **🛸 Asgard & Thor Theme (`theme_asgard`):** 72 BPM in D minor, ancient mystical flute motif, shimmering crystal teleport beam harmonics, and deep hypnotic drone.
+  - **🕊 Fallen Heroes Memorial Theme (`theme_funeral`):** 58 BPM in A minor, mournful solo horn, chamber strings, muffled military snare, and solitary cemetery bell.
+  - **🎖 Medal of Valor Promotion Fanfare (`theme_promotion`):** 128 BPM in C major, triumphant brass clarion call, military parade snare rolls, and regal orchestra hits.
+  - **🎖 Stargate SG-1 Outro & End Credits Fanfare (`theme_outro` & `theme_outro_ambient`):** 134 BPM Joel Goldsmith / David Arnold credits fanfare with 16th-note string ostinato, brass lead, and marching timpani.
+  - 4 additional hybrid blends combining Stargate fanfares with live-coding techniques (Patreon Codevault Blends 1–4).
+- **Live-Coding Codevault Collection (`game/switch-angel.js`):**
+  - 20 integrated experimental live-coding patterns adapted from Switch Angel's public Patreon codevault (including `extra_slippy`, `Lets_Talk`, `MUTEK4am`, `did_i_make_this`, and `AUTOTOMATONE`) fully stabilized via AST/regex normalization and defensive prototype patching.
+  - *Clarification:* These are community live-coding patterns adapted from the Patreon codevault for research and benchmarking purposes, not official commissioned remixes.
 - **Public Domain NASA Space Imagery (`references/NASA-ASSETS.md`):**
   - Curated collection of high-resolution, public domain (PD-USGov / CC0) imagery from NASA, JPL, Hubble, and James Webb for Abydos sand dunes, exoplanet vistas, Carina Nebula deep fields, and icy moons.
 - **Procedural Mission Song Generator (`SONGGEN`):**

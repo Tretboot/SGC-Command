@@ -34,7 +34,7 @@ function setTab(t){UI.tab=t;sfx('click');
  if(typeof SFX!=='undefined'&&!C.active){
   if(t==='map'){
    SFX.music('map'); // Sternenkarte: Remix 3
-  }else if(t==='base'||t==='roster'||t==='log'){
+  }else if(t==='base'||t==='roster'||t==='log'||t==='medbay'){
    SFX.music('base'); // Basis: Remix 1
   }else if(t==='colonies'){
    SFX.music('planet');
@@ -76,12 +76,21 @@ function showClipboardModal(){
     <h3 style="margin:0;color:#e8b040">📋 KOMMANDO-KLEMMBRETT · LEVEL 27 BÜRO</h3>
     <small>Kommandant: <b style="color:${cmd.color}">${cmd.name}</b> (${cmd.title}) · Bonus: ${cmd.bonus}</small>
    </div>
-   <select onchange="act(setCommander(this.value));showClipboardModal()" style="background:#0f1622;border-color:#e8b040">
+   <select onchange="act(setCommander(this.value));if(typeof SFX!=='undefined'&&SFX.playTrack)SFX.playTrack('theme_promotion');toast('🎖 Zeremonie: Neuer Kommandant ernannt!');showClipboardModal()" style="background:#0f1622;border-color:#e8b040">
     ${Object.values(COMMANDERS).map(c=>`<option value="${c.id}" ${S.commander===c.id?'selected':''}>🎖 ${c.name}</option>`).join('')}
    </select>
   </div>
   <div class="mbody">
    <div style="background:#101824;border-left:3px solid ${cmd.color};padding:8px 12px;margin:6px 0;font-style:italic;color:#cbd8e4">${cmd.quote}</div>
+   ${(S.memorial&&S.memorial.length)?`
+    <div style="background:#1c0b13;border:1px solid #e11d48;border-radius:4px;padding:8px 12px;margin:6px 0;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <b style="color:#fda4af">🕊 GEDENKTAFEL FÜR GEFALLENE HELDEN:</b>
+        <span style="color:#fecdd3;margin-left:6px">${S.memorial.join(', ')}</span>
+      </div>
+      <button class="winamp-btn" style="background:#4c0519;border-color:#f43f5e;color:#fff;padding:4px 8px;font-size:11px" onclick="if(typeof SFX!=='undefined'&&SFX.playTrack)SFX.playTrack('theme_funeral');toast('🕊 Gedenkzeremonie: Daniel\\'s Farewell')">🕊 Trauermusik</button>
+    </div>
+   `:''}
    <h4>🎖 Aktive SG-Teams</h4>
    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px;margin-bottom:8px">
     ${Object.entries(SG_TEAMS).map(([tid,tinfo])=>{
@@ -123,7 +132,7 @@ function showClipboardModal(){
 // ===================== SGC AMP v2.80 — Winamp Retro Audio Player =====================
 const WINAMP = {
   visMode: 'wave', // 'wave' | 'spectrum'
-  tab: 'sa',       // 'sa' | 'theme' | 'core' | 'seed' | 'settings'
+  tab: 'theme',    // 'theme' | 'core' | 'sa' | 'seed' | 'midi' | 'settings'
   searchQuery: '',
   shuffle: false,
   loop: true,
@@ -367,7 +376,23 @@ function getWinampTracksForTab(tab, search=''){
   if(tab==='sa'){
     list=Object.keys(STRUDEL_TRACKS).filter(k=>k.startsWith('sa_'));
   }else if(tab==='theme'){
-    list=['theme_midi','theme_fanfare','theme_remix_0','theme_remix_1','theme_remix_2','theme_remix_3','theme_remix_cnc','theme_remix_lofi','theme_remix_melancholy'];
+    list=[
+      'theme_fanfare',
+      'theme_atlantis',
+      'theme_asgard',
+      'theme_funeral',
+      'theme_promotion',
+      'theme_outro',
+      'theme_outro_ambient',
+      'theme_remix_melancholy',
+      'theme_remix_cnc',
+      'theme_remix_lofi',
+      'theme_midi',
+      'theme_remix_0',
+      'theme_remix_1',
+      'theme_remix_2',
+      'theme_remix_3'
+    ];
   }else if(tab==='core'){
     list=['base','map','planet','gate','combat','peaceful','boss'];
   }else if(tab==='seed'){
@@ -388,6 +413,121 @@ function getWinampTracksForTab(tab, search=''){
 }
 
 function renderWinampPlaylistHTML(curTrack){
+  if(WINAMP.tab==='midi'){
+    const midiObj=(typeof SGC_MIDI!=='undefined')?SGC_MIDI:null;
+    const isConn=midiObj&&midiObj.connected;
+    const devName=(midiObj&&midiObj.inputs.length>0)?midiObj.inputs.map(i=>i.name).join(', '):'Kein Hardware-MIDI-Gerät erkannt (Web MIDI bereit)';
+    const isLearning=midiObj&&!!midiObj.learningParam;
+    const kv=(midiObj&&midiObj.knobValues)||{cutoff:2400,resonance:6.0,volume:0.65,distortion:0.20,delay:0.28,tension:0.25,tempoBpm:140,decay:0.28};
+    const lastEv=(midiObj&&midiObj.lastEvent)?
+      (midiObj.lastEvent.type==='cc'?`CC #${midiObj.lastEvent.cc} = ${midiObj.lastEvent.val}`:
+       midiObj.lastEvent.type==='noteon'?`Note ON #${midiObj.lastEvent.note} (Vel ${midiObj.lastEvent.vel})`:
+       `Note OFF #${midiObj.lastEvent.note}`):'Bereit';
+
+    const pads=[
+      {note:36,label:'Pad 1: 909 Kick',sound:'bd'},
+      {note:37,label:'Pad 2: Rimshot',sound:'rim'},
+      {note:38,label:'Pad 3: Snare',sound:'sd'},
+      {note:39,label:'Pad 4: Clap',sound:'cp'},
+      {note:40,label:'Pad 5: Closed Hat',sound:'hh'},
+      {note:41,label:'Pad 6: Open Hat',sound:'oh'},
+      {note:42,label:'Pad 7: Crash',sound:'cr'},
+      {note:43,label:'Pad 8: TB-303 Acid',sound:'tb303'}
+    ];
+
+    const knobs=[
+      {key:'cutoff',label:'Filter Cutoff',val:Math.round(kv.cutoff)+' Hz',min:80,max:9200,unit:'Hz'},
+      {key:'resonance',label:'Resonanz / Q',val:Number(kv.resonance).toFixed(1),min:0.5,max:18,unit:''},
+      {key:'volume',label:'Master Volume',val:Math.round(kv.volume*100)+' %',min:0.0,max:1.0,unit:'%'},
+      {key:'distortion',label:'Distortion / Drive',val:Math.round(kv.distortion*100)+' %',min:0.0,max:1.0,unit:'%'},
+      {key:'delay',label:'Delay / Echo',val:Number(kv.delay).toFixed(2),min:0.0,max:0.85,unit:''},
+      {key:'tension',label:'Spannung / Dyn',val:Number(kv.tension).toFixed(2),min:0.0,max:1.0,unit:''},
+      {key:'tempoBpm',label:'Tempo / BPM',val:Math.round(kv.tempoBpm)+' BPM',min:65,max:175,unit:'BPM'},
+      {key:'decay',label:'Hüllkurve / Decay',val:Number(kv.decay).toFixed(2)+' s',min:0.05,max:1.2,unit:'s'}
+    ];
+
+    return `<div style="padding:12px;background:#090d14;margin:8px;border:1px solid #1e293b;border-radius:4px;display:flex;flex-direction:column;gap:12px">
+      <!-- Status & Preset Bar -->
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-bottom:1px solid #1e293b;padding-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${isConn?'#22c55e':'#eab308'};box-shadow:0 0 8px ${isConn?'#22c55e':'#eab308'}"></span>
+          <span style="font-weight:bold;color:#f8fafc;font-size:12px">HARDWARE MIDI:</span>
+          <span style="color:#94a3b8;font-size:12px">${devName}</span>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="winamp-btn" onclick="if(window.SGC_MIDI)SGC_MIDI.resetDefaultAkaiPreset('plus');showStrudelModal()" title="Standard-Belegung für Akai MPK mini Plus (CC 70..77)">🎛 Akai MPK Plus</button>
+          <button class="winamp-btn" onclick="if(window.SGC_MIDI)SGC_MIDI.resetDefaultAkaiPreset('mk2');showStrudelModal()" title="Standard-Belegung für Akai MPK mini mk2 (CC 1..8)">🎛 Akai MPK mk2</button>
+          <button class="winamp-btn" onclick="if(window.SGC_MIDI)SGC_MIDI.init().then(()=>showStrudelModal())" title="Geräte neu scannen">🔄 Scan</button>
+        </div>
+      </div>
+
+      <!-- MIDI Learn Status Banner -->
+      ${isLearning?`
+        <div style="padding:8px 12px;background:rgba(234,179,8,0.18);border:1px solid #eab308;color:#fef08a;border-radius:4px;display:flex;justify-content:space-between;align-items:center;font-size:12px">
+          <span>🎯 <b>MIDI LEARN AKTIV:</b> Drehe jetzt den gewünschten Hardware-Regler für <u>${midiObj.learningParam.label}</u>...</span>
+          <button class="winamp-btn" onclick="if(window.SGC_MIDI)SGC_MIDI.cancelLearn();showStrudelModal()">Abbrechen</button>
+        </div>
+      `:''}
+
+      <!-- 8 Rotary Knobs Section -->
+      <div>
+        <div style="font-size:11px;color:#93c5fd;font-weight:bold;margin-bottom:6px;letter-spacing:1px">8 DREHREGLER (CONTINUOUS CC / FILTER / PARAMETER)</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px">
+          ${knobs.map((k,idx)=>{
+            return `<div style="background:#0f172a;border:1px solid #1e293b;border-radius:4px;padding:6px 8px;display:flex;flex-direction:column;gap:4px">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:11px;font-weight:bold;color:#e2e8f0">${k.label}</span>
+                <span style="font-size:11px;color:#38bdf8;font-family:monospace">${k.val}</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px">
+                <span style="font-size:10px;color:#64748b">KNOB #${idx+1}</span>
+                <button class="winamp-btn" style="font-size:10px;padding:2px 6px" onclick="if(window.SGC_MIDI)SGC_MIDI.startLearn('${k.key}','${k.label}',${k.min},${k.max},'${k.unit}');showStrudelModal()">🎯 Learn</button>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- 8 Drum Pads Section -->
+      <div>
+        <div style="font-size:11px;color:#f472b6;font-weight:bold;margin-bottom:6px;letter-spacing:1px">8 DRUM PADS (BANK A: NOTES 36..43 / CH 10 ODER 1)</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+          ${pads.map(p=>{
+            return `<button class="winamp-btn" style="padding:10px 4px;text-align:center;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:4px" onclick="if(typeof SFX!=='undefined'&&SFX.triggerDrum)SFX.triggerDrum('${p.sound}',0.85);if(typeof toast==='function')toast('🥁 ${p.label}');">
+              <span style="font-weight:bold;color:#fbcfe8">${p.label}</span>
+              <span style="font-size:10px;color:#64748b">MIDI Note ${p.note}</span>
+            </button>`;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- Live Keys & Monitor Footer -->
+      <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #1e293b;padding-top:8px;font-size:11px;color:#94a3b8">
+        <span>🎹 <b>25-Tasten Keyboard:</b> Live spielbar! Tasten werden direkt über den Synthesizer eingemischt.</span>
+        <span style="font-family:monospace;color:#67e8f9">Signal: ${lastEv}</span>
+      </div>
+
+      <!-- Interactive MIDI Testing Guide -->
+      <div style="background:#0c1322;border:1px solid #1d4ed8;border-radius:4px;padding:8px 12px;font-size:11px;color:#cbd5e1">
+        <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="const g=document.getElementById('midi-test-guide');if(g)g.style.display=(g.style.display==='none'?'block':'none')">
+          <span style="font-weight:bold;color:#60a5fa">📖 TEST-ANLEITUNG: Wie teste ich mein MIDI-Keyboard &amp; Akai MPK?</span>
+          <span style="color:#93c5fd;font-size:10px">[ Klicken zum Öffnen / Schließen ]</span>
+        </div>
+        <div id="midi-test-guide" style="display:block;margin-top:8px;line-height:1.6;color:#94a3b8;border-top:1px solid #1e293b;padding-top:6px">
+          <div><b style="color:#e2e8f0">1. Sofort-Test ohne Hardware:</b> Klicke oben einfach auf die 8 Drum-Pads (Pad 1–8) – sie spielen sofort TR-909/808 Kick, Snare, Hi-Hats und TB-303 Acid-Bass ab!</div>
+          <div style="margin-top:4px"><b style="color:#e2e8f0">2. Mit USB-Hardware (z.B. Akai MPK mini Plus / mk2):</b>
+            <br>• <b>Anschließen &amp; Browser-Rechte:</b> Stecke dein Keyboard per USB an. Bestätige bei Nachfrage im Browser (Chrome/Edge/Brave) <i>"MIDI-Geräte zulassen"</i>.
+            <br>• <b>Preset wählen:</b> Klicke oben auf <i>[ 🎛 Akai MPK Plus ]</i> (CC 70..77) oder <i>[ 🎛 Akai MPK mk2 ]</i> (CC 1..8).
+            <br>• <b>Drehregler testen:</b> Drehe an den 8 Hardware-Knobs → Die Werte (Cutoff, Resonanz, Volume) ändern sich live oben in den Feldern!
+            <br>• <b>Drum-Pads testen:</b> Schlage auf die 8 Hardware-Pads (Bank A) → Die Drums ertönen synchron zum Strudel-Beat.
+            <br>• <b>25 Tasten spielen:</b> Drücke Tasten auf der Klaviatur → Der Synthesizer spielt Live-Töne auf den laufenden Soundtrack.
+            <br>• <b>MIDI Learn:</b> Klicke neben einem beliebigen Regler auf <i>[ 🎯 Learn ]</i> und drehe am gewünschten Hardware-Regler → Der Parameter wird dauerhaft gebunden und im Browser gespeichert!
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
   if(WINAMP.tab==='settings'){
     const danceOn=typeof S!=='undefined'&&S&&S.audioDance!==false;
     const rumbleOn=typeof S!=='undefined'&&S&&S.controllerVibration!==false;
@@ -415,10 +555,12 @@ function renderWinampPlaylistHTML(curTrack){
       const tr=STRUDEL_TRACKS[k]||{name:k,artist:'SGC',bpm:140,style:'Synth'};
       const isCur=(curTrack===k);
       const num=String(idx+1).padStart(2,'0');
-      return `<div class="winamp-item ${isCur?'current':''}" data-track="${k}" onclick="SFX.playTrack('${k}');">
+      const isUnlocked=(!S||!S.unlockedTracks||S.unlockedTracks.includes(k));
+      return `<div class="winamp-item ${isCur?'current':''}" data-track="${k}" onclick="SFX.playTrack('${k}');if(typeof unlockTrack==='function')unlockTrack('${k}');">
         <div>
           <span style="color:#64748b;margin-right:6px">[${num}]</span>
           <b>${isCur?'▶ ':''}${tr.title||tr.name||k}</b>
+          ${isUnlocked?'<span style="color:#facc15;font-size:10px;margin-left:4px" title="Im Spiel freigeschaltet!">⭐</span>':''}
           <span style="color:#94a3b8;font-size:11px;margin-left:6px">· ${tr.artist||'SGC'}</span>
         </div>
         <div style="font-size:11px;color:#64748b">
@@ -641,7 +783,7 @@ function showStrudelModal(){
 
     <!-- Main Deck: LCD & Oscilloscope -->
     <div class="winamp-display">
-      <div class="winamp-lcd">
+      <div class="winamp-lcd" onclick="triggerWinampEasterEgg()" style="cursor:pointer" title="Klicken für SGC-Easteregg &amp; Zitate!">
         <div id="winamp-marquee" class="winamp-marquee">▶ [${tr.artist||'SGC'}] ${tr.title||tr.name||curTrack} · ${tr.style||'Strudel'} (${tr.bpm||140} BPM)</div>
         <div class="winamp-stats-row">
           <span id="winamp-time" class="winamp-time">00:00</span>
@@ -788,10 +930,11 @@ function showStrudelModal(){
 
     <!-- Playlist Tabs -->
     <div class="winamp-tabs">
-      <button class="winamp-tab ${WINAMP.tab==='sa'?'on':''}" onclick="WINAMP.tab='sa';showStrudelModal()">⚡ Switch Angel (20)</button>
-      <button class="winamp-tab ${WINAMP.tab==='theme'?'on':''}" onclick="WINAMP.tab='theme';showStrudelModal()">🎺 Theme &amp; MIDI (6)</button>
-      <button class="winamp-tab ${WINAMP.tab==='core'?'on':''}" onclick="WINAMP.tab='core';showStrudelModal()">🏛 SGC Core (7)</button>
-      <button class="winamp-tab ${WINAMP.tab==='seed'?'on':''}" onclick="WINAMP.tab='seed';showStrudelModal()">💾 Eigene &amp; Seed</button>
+      <button class="winamp-tab ${WINAMP.tab==='theme'?'on':''}" onclick="WINAMP.tab='theme';showStrudelModal()">🎺 Stargate Themes (15)</button>
+      <button class="winamp-tab ${WINAMP.tab==='core'?'on':''}" onclick="WINAMP.tab='core';showStrudelModal()">📡 SGC Einsatz-Ambiente (7)</button>
+      <button class="winamp-tab ${WINAMP.tab==='sa'?'on':''}" onclick="WINAMP.tab='sa';showStrudelModal()" title="Experimentelle Live-Coding Patterns adaptiert aus Switch Angels öffentlichem Patreon Codevault">📦 Codevault Tracks (20)</button>
+      <button class="winamp-tab ${WINAMP.tab==='seed'?'on':''}" onclick="WINAMP.tab='seed';showStrudelModal()">🌱 Eigene &amp; Seed</button>
+      <button class="winamp-tab ${WINAMP.tab==='midi'?'on':''}" onclick="WINAMP.tab='midi';showStrudelModal()">🎛 MIDI Controller</button>
       <button class="winamp-tab ${WINAMP.tab==='settings'?'on':''}" onclick="WINAMP.tab='settings';showStrudelModal()">⚙ Haptik &amp; Tanz</button>
       <div style="flex:1"></div>
       <input type="text" id="winamp-search" placeholder="🔍 Suchen..." value="${WINAMP.searchQuery}" oninput="WINAMP.searchQuery=this.value;renderWinampPlaylistItems()" style="background:#0b111a;color:#fff;border:1px solid #374151;font-size:11px;padding:2px 6px;border-radius:3px;max-width:140px">
@@ -811,6 +954,16 @@ function showStrudelModal(){
 
   WINAMP.startVis();
 }
+
+window.updateMidiStatusUI = function(){
+  if(typeof WINAMP!=='undefined'&&WINAMP.tab==='midi'&&$('modal')&&$('modal').style.display==='flex'){
+    const container=$('winamp-playlist-container');
+    if(container){
+      const curTrack=(typeof STRUDEL!=='undefined'&&STRUDEL.currentTrack)||'base';
+      container.innerHTML=renderWinampPlaylistHTML(curTrack);
+    }
+  }
+};
 
 function generateNewSongFromContext(){
   if(typeof SONGGEN==='undefined'||!SONGGEN.generate)return;
@@ -989,6 +1142,7 @@ function renderHeader(){
   gb.textContent=gm==='ascii'?'⌨ ASCII':gm==='topdown'?'🗺 2D':'🖥 PIXEL';
  }
  $('go').disabled=!!S.over||C.active||GR.phase!=='idle';
+ $('go').title=S.over?'Spiel beendet':C.active?'Einsatz läuft':GR.phase!=='idle'?'Sternentor aktiv':'Tag abschließen und Ressourcen generieren';
 }
 
 // ===================== Basis (Shelter-Grid + Raum-Innenansicht + Crafting) =====================
@@ -1050,7 +1204,8 @@ function renderBaseSide(){
   return `<div class="item ${B.selRoom===r.id?'warnbox':''}" style="cursor:pointer" onclick="B.selRoom=${r.id};renderAll()">
    <b>${R.icon} ${R.name}</b> ${r.type!=='gate'?`<button class="small" style="float:right" onclick="event.stopPropagation();act(demolishRoom(${r.id}))">✕</button>`:''}
    <br><small>Staff ${staff.length}/${R.staff} ${out?`· Output ${out}`:''}
-   ${staff.length?'<br>'+staff.map(m=>`<span class="tag" style="background:#1a2535;color:#4fc3f7">${m.name.split(' ')[0]}</span>`).join(' '):''}</small></div>`;
+   ${staff.length?'<br>'+staff.map(m=>`<span class="tag" style="background:#1a2535;color:#4fc3f7">${m.name.split(' ')[0]}</span>`).join(' '):''}</small>
+   ${r.type==='medbay'?`<button class="small" style="background:#134e4a;border-color:#2dd4bf;color:#ccfbf1;margin-top:6px;width:100%" onclick="event.stopPropagation();setTab('medbay')">🏥 Krankenstation öffnen (Ebene 21)</button>`:''}</div>`;
  }).join('');
  const q=S.research.queue&&TECH.find(t=>t[0]===S.research.queue);
  h+=`<h3>Forschung</h3><p>${q?`Aktuell: <b>${q[1]}</b> ${bar(S.research.rp/q[3]*100,'#4fc3f7')} ${Math.floor(S.research.rp)}/${q[3]}`:'Keine Forschung gewählt.'}</p><div class="tree">`;
@@ -1061,7 +1216,7 @@ function renderBaseSide(){
   }).join('')+'</div>';});
  h+='</div>';
  if(S.memorial.length){
-  h+=`<h3>Gedenktafel</h3><div class="gbox" style="border-color:#ef4444">${S.memorial.map(n=>`<div>🕯 ${n}</div>`).join('')}</div>`;
+  h+=`<h3>Gedenktafel</h3><div class="gbox" style="border-color:#ef4444">${S.memorial.map(n=>`<div>🕯 ${n}</div>`).join('')}<button class="btn small" style="margin-top:6px;width:100%;background:#3b1e2a;border-color:#f43f5e;color:#fecdd3" onclick="if(typeof SFX!=='undefined'&&SFX.playTrack)SFX.playTrack('theme_funeral');toast('🕊 Gedenkmusik: Daniel\\'s Farewell')">🕊 Trauermusik abspielen</button></div>`;
  }
  $('base-side').innerHTML=h;
  if(B.selRoom&&S.base.rooms[B.selRoom]&&typeof drawRoomInteriorCanvas==='function'){
@@ -1199,7 +1354,11 @@ function activateMission(mission,teamIds){
   }catch(err){
    console.error('[MISSION] Failed entering combat:', err);
    $('gate-overlay').style.display='none';
-   $('combat-overlay').style.display='flex';
+   $('combat-overlay').style.display='none';
+   document.body.style.overflow='';
+   C.active=false;
+   GR.phase='idle';
+   if(typeof toast==='function')toast('Fehler beim Missionsstart: '+(err.message||err));
    renderAll();
   }
  }, false);
@@ -1292,13 +1451,13 @@ function combatClick(e){
  }
  const u=unitAt(tx,ty);
  if(u&&u.side==='neutral'){interactWithContact(u);return;}
- if(u&&u.side==='player'&&!u.downed&&u.ap>0){playerSelect(u);sfx('click');return;}
+ if(u&&u.side==='player'&&!u.downed){playerSelect(u);sfx('click');renderCombatUI(true);return;}
  if(C.selected){
   if(C.moveRange.some(p=>p.x===tx&&p.y===ty)){playerMove(C.selected,tx,ty);return;}
   if(u&&u.side==='enemy'&&C.atkRange.includes(u)){playerAttack(C.selected,u);return;}
   if(u&&u.side==='enemy'&&C.distance(C.selected.x,C.selected.y,tx,ty)<=1&&C.selected.melee&&C.selected.ap>0&&tutorialAllowsAttack(C.selected)){const sel=C.selected;if(C.tutorial&&C.tutorial.step===2&&sel.charId===0)C.tutorial.step=3;sel.facing=facingToward(sel,u);sel.ap--;C.firstHint=false;doMelee(sel,u);C.selected=null;C.moveRange=[];C.atkRange=[];C.coverRange=[];checkEnd();if(!C.result&&sel.ap<=0)nextUnit();return;}
   if(C.coverRange.some(p=>p.x===tx&&p.y===ty)){playerAttackTerrain(C.selected,tx,ty);return;}
-  C.selected=null;C.moveRange=[];C.atkRange=[];C.coverRange=[];
+  if(!u){C.selected=null;C.moveRange=[];C.atkRange=[];C.coverRange=[];renderCombatUI(true);}
  }
 }
 function combatHover(e){
@@ -1343,7 +1502,11 @@ function combatEnd(){
  $('combat-overlay').style.display='none';
  document.body.style.overflow='';
  $('combat-end').style.display='none';
- if(typeof SFX!=='undefined')SFX.music(UI.tab==='map'?'map':'base');
+ if(C.result==='victory'){
+  if(typeof SFX!=='undefined'&&SFX.playTrack)SFX.playTrack('theme_outro');
+ }else{
+  if(typeof SFX!=='undefined')SFX.music(UI.tab==='map'?'map':'base');
+ }
  showReport();
 }
 
@@ -1384,14 +1547,19 @@ function renderCombatUI(force=false){
   h+=`<div class="cui-left"><div class="cui-info"><div class="cui-name" style="color:#6b7a90">Keine Einheit ausgewählt</div><div class="cui-class">Klicke auf einen Agenten (Q/E = Kamera · V = Pixel/ASCII)</div></div></div>`;
  }
  h+=`<div class="cui-actions">`;
- h+=`<button class="cui-btn" style="border-color:#4fc3f7;color:#4fc3f7;font-weight:bold" onclick="cycleSGMember(1)" title="Nächstes Team-Mitglied auswählen [TAB]">⏭ Nächstes SG-Mitglied [TAB]</button>`;
+ if(C.phase==='player'&&!C.result){
+  h+=`<button class="cui-btn end-turn-btn" style="border-color:#f59e0b;color:#fde68a;font-weight:bold;background:rgba(245,158,11,0.22)" onclick="endPlayerPhase()" title="Spielerzug beenden und Feindphase einleiten (Enter)">⏭ Runde beenden [Enter]</button>`;
+ }
+ h+=`<button class="cui-btn" style="border-color:#4fc3f7;color:#4fc3f7;font-weight:bold" onclick="cycleSGMember(1)" title="Nächstes Team-Mitglied auswählen [TAB]">⇥ Nächstes SG-Mitglied [TAB]</button>`;
  if(sel&&sel.ap>0&&!C.result){
-  h+=`<button class="cui-btn" onclick="if(C.selected)playerWait(C.selected)">⏸ Warten</button>`;
+  h+=`<button class="cui-btn" onclick="if(C.selected)playerWait(C.selected)" title="Aktionspunkte abgeben">⏳ Warten</button>`;
   h+=`<button class="cui-btn" onclick="if(C.selected)playerSelect(C.selected)">🔄 Neu wählen</button>`;
   if(sel.special&&!sel.specialUsed&&SPECIALS[sel.special]){
    const sp=SPECIALS[sel.special];
    h+=`<button class="cui-btn" style="border-color:#38bdf8;color:#38bdf8" onclick="if(C.selected){act(useSpecial(C.selected));renderCombatUI();}" title="${sp.desc}">${sp.icon} ${sp.name}</button>`;
   }
+ } else if(sel&&sel.ap<=0&&!C.result){
+  h+=`<span style="color:#94a3b8;font-size:11px;align-self:center;padding:0 4px">0 AP übrig</span>`;
  }
  // Offworld Base Building (C&C / SimCity Feld-Pionierbau)
  if(typeof OFFWORLD_BUILDINGS!=='undefined'&&!C.mission.peaceful){
@@ -1411,8 +1579,9 @@ function renderCombatUI(force=false){
  const g=gateReady();
  const gReady=g.at===g.total&&g.total>0;
  h+=`<div class="cui-right">
-  <div class="cui-gate">${C.mission&&C.mission.peaceful?`🤝 Erstkontakt: ${C.contactComplete?'hergestellt':'goldene Person ansprechen'}`:C.mission&&C.mission.tutorial?'🎯 Ziel: Teal’c sicher herausbringen':`🌀 Gate: <b style="color:${gReady?'#4ade80':'#8a9ab0'}">${g.at}/${g.total}</b> ${gReady?'bereit':'am Gate'}`}</div>
+  <div class="cui-gate">${C.mission&&C.mission.peaceful?`🤝 Erstkontakt: ${C.contactComplete?'hergestellt':'goldene Person ansprechen'}`:C.mission&&C.mission.tutorial?'🎯 Ziel: Teal’c sicher herausbringen':`🌀 Gate: <b style="color:${gReady?'#4ade80':'#8a9ab0'}">${g.at}/${g.total}</b> ${gReady?'bereit':'am Gate'}${g.downed?` <span style="color:#ef4444">(🩹 ${g.downed})</span>`:''}`}</div>
   ${gReady&&!(C.mission&&(C.mission.tutorial||C.mission.peaceful))?`<button class="cui-btn cui-btn-go" onclick="extract()">🌀 Extrahieren (50%)</button>`:''}
+  ${!C.result&&!(C.mission&&C.mission.tutorial)?`<button class="cui-btn" style="background:#4a151b;border-color:#ef4444;color:#fca5a5;padding:4px 8px;font-size:11px" onclick="if(confirm('Not-Rückzug einleiten? Team evakuiert die Verwundeten sofort durch das Sternentor.'))emergencyRetreat()">🚨 Not-Rückzug</button>`:''}
   <div class="cui-log">${C.log.slice(0,4).map(l=>`<div class="${/✔|💀|🌀/.test(l)?'ok':/⚠|⚡/.test(l)?'bad':''}">${l}</div>`).join('')}</div>
  </div>`;
  panel.innerHTML=h;
@@ -1490,6 +1659,7 @@ function renderRoster(){
      }).join('')}
     </select>
     ${dos?`<button class="small" onclick="showDossier(${m.id})" title="Personalakte öffnen">📋 Akte</button>`:`<span></span>`}
+    ${m.hp<m.maxHp||(m.injuries||0)>0?`<button class="small" style="background:#4a151b;border-color:#ef4444;color:#fca5a5;grid-column:span 2" onclick="setTab('medbay')">🏥 In Krankenstation behandeln (${m.hp}/${m.maxHp} HP)</button>`:''}
    </div>
   </div></div>`;
  }).join('');
@@ -1502,6 +1672,217 @@ function renderRoster(){
     <small class="tal">${m.talent}</small></div></div>`).join('');
  }
  $('roster-body').innerHTML=topHtml+cardsHtml+waitHtml;
+}
+
+// ===================== Krankenstation (Ebene 21 / Dr. Janet Fraiser) =====================
+function renderMedbayView(){
+  const body = $('medbay-body');
+  if(!body) return;
+
+  const medbayRoom = Object.values(S.base.rooms).find(r => r.type === 'medbay');
+  const hasMedbay = !!medbayRoom;
+  const staff = (medbayRoom ? medbayRoom.staff.map(id => S.roster[id]).filter(m => m && m.recruited && !m.dead) : []);
+  const medBoost = 1 + (staff.length * 0.5);
+
+  const fraiserPortrait = portrait({name: 'Dr. Janet Fraiser', cls: 'medic'});
+  const rec = S.roster.filter(m => m.recruited && !m.dead);
+  const wounded = rec.filter(m => m.hp < m.maxHp || (m.injuries || 0) > 0 || (m.fatigue || 0) > 0);
+  const critical = rec.filter(m => m.hp < 25 || (m.injuries || 0) >= 2);
+
+  let fraiserQuote = '';
+  if(critical.length > 0){
+    fraiserQuote = `„NOTFALL AUF EBENE 21! ${critical.map(m=>m.name.split(' ')[0]).join(', ')} schwebt in Lebensgefahr. Wir müssen sofort operieren oder das Antike Heilgerät einsetzen!“`;
+  } else if(wounded.length > 0){
+    fraiserQuote = `„Willkommen auf Ebene 21, Commander. Wir haben ${wounded.length} verwundete Soldaten auf Station. Die Betten sind vorbereitet – eine Erstversorgung mit Medizin oder Bettruhe wird sie schnell wieder auf die Beine bringen.“`;
+  } else {
+    fraiserQuote = `„Gute Nachrichten, Commander: Alle SG-Teams sind vollkommen gesund und diensttauglich! Unsere Bestände an Verbandsmaterial und Tretonin sind aufgestockt.“`;
+  }
+
+  let h = `
+  <div style="background:#0f1622;border:1px solid #243248;border-radius:6px;padding:12px;margin-bottom:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;border-bottom:1px solid #1f2c3f;padding-bottom:10px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <img src="${fraiserPortrait}" style="width:48px;height:48px;image-rendering:pixelated;border:2px solid #ef4444;border-radius:4px;background:#14202e">
+        <div>
+          <div style="font-size:16px;font-weight:bold;color:#f8fafc;letter-spacing:1px">🏥 KRANKENSTATION · EBENE 21</div>
+          <div style="font-size:12px;color:#94a3b8">CHEFÄRZTIN DR. JANET FRAISER · CHEYENNE MOUNTAIN KOMPLEX</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;font-family:monospace;font-size:13px;background:#090d14;padding:8px 14px;border-radius:4px;border:1px solid #1e293b">
+        <span>✚ Medizin: <b style="color:#4ade80">${S.res.medicine||0}</b></span>
+        <span>⚙ Tech: <b style="color:#38bdf8">${S.res.tech||0}</b></span>
+        <span>⛏ Erz: <b style="color:#fbbf24">${S.res.ore||0}</b></span>
+      </div>
+    </div>
+
+    <!-- EKG & Status Monitor -->
+    <div style="display:flex;align-items:center;justify-content:space-between;background:#071018;border:1px solid #164e63;padding:8px 14px;border-radius:4px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px #22c55e"></span>
+        <span style="font-family:monospace;font-size:12px;color:#38bdf8">BIO-TELEMETRIE: ♥ 72 BPM · NORMALER SINUSRHYTHMUS · SCHWINGUNG STABIL</span>
+      </div>
+      <div style="font-size:12px;color:#94a3b8">
+        Stations-Heilung: <b style="color:#4ade80">+${Math.round(35*medBoost)} HP/Tag</b> ${staff.length?`(Ärzte: ${staff.map(s=>s.name.split(' ')[0]).join(', ')})`:'(Kein Arzt zugewiesen)'}
+      </div>
+    </div>
+
+    <!-- Dr. Fraiser Briefing -->
+    <div style="background:#131c2a;border-left:4px solid #ef4444;padding:10px 14px;border-radius:0 4px 4px 0;margin-bottom:14px;color:#cbd5e1;font-size:13px;line-height:1.5">
+      ${fraiserQuote}
+    </div>
+
+    <!-- Schnellauswahl-Aktionen -->
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px">
+      <button class="btn" style="background:#166534;border-color:#4ade80;color:#fff" ${wounded.length===0||(S.res.medicine||0)<15?'disabled':''} onclick="act(healAllEmergency())">
+        💊 Alle Verwundeten erstversorgen (-15 ✚ pro Soldat)
+      </button>
+      <button class="btn" style="background:#1e293b;border-color:#38bdf8;color:#e0f2fe" onclick="showMedbayIncidentModal()">
+        ☣ Stargate-Medizinvorfall simulieren (Broca / Symbiont / Heilwürfel)
+      </button>
+      <button class="btn" style="background:#0f172a;border-color:#64748b;color:#cbd5e1" onclick="setTab('base')">
+        🏢 Zur Basisansicht (Ebene 21 ausbauen)
+      </button>
+    </div>
+  </div>`;
+
+  // Patienten-Bereich
+  h += `<h3 style="margin-bottom:10px">🩺 Patientenakte &amp; Stationäre Belegung (${wounded.length} Verwundete)</h3>`;
+
+  if(wounded.length === 0){
+    h += `
+    <div style="background:#0f1622;border:1px dashed #22c55e;border-radius:6px;padding:24px;text-align:center;color:#86efac;margin-bottom:16px">
+      <div style="font-size:24px;margin-bottom:8px">✔ Keine Patienten auf Station</div>
+      <div style="font-size:13px;color:#94a3b8">Alle Teammitglieder von SG-1 und den Unterstützungseinheiten sind voll einsatzfähig und haben 100% HP.</div>
+    </div>`;
+  } else {
+    h += `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:10px;margin-bottom:16px">`;
+    wounded.forEach(m => {
+      const inBed = m.room >= 0 && S.base.rooms[m.room] && S.base.rooms[m.room].type === 'medbay';
+      const isCritical = m.hp < 25 || (m.injuries || 0) >= 2;
+      const borderCol = isCritical ? '#ef4444' : inBed ? '#38bdf8' : '#f59e0b';
+
+      h += `
+      <div style="background:#0f1622;border:2px solid ${borderCol};border-radius:6px;padding:10px;display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:10px">
+          ${pic(m, 'pt big')}
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <b>${m.name}</b>
+              <span class="tag" style="background:${inBed?'#0369a1':'#374151'};color:#fff">${inBed?'🛏 Im Krankenbett':'Ambulant'}</span>
+            </div>
+            <small style="color:#94a3b8">${CLASS_DE[m.cls]||m.cls} · Lv ${m.lvl}</small>
+          </div>
+        </div>
+
+        <div style="background:#090d14;padding:6px 10px;border-radius:4px;font-size:12px;font-family:monospace">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span>Gesundheit (HP):</span>
+            <b style="color:${m.hp<30?'#ef4444':'#4ade80'}">${m.hp} / ${m.maxHp}</b>
+          </div>
+          ${bar(m.hp/m.maxHp*100, m.hp<30?'#ef4444':'#4ade80')}
+          <div style="display:flex;justify-content:space-between;margin-top:4px">
+            <span>Verletzungen: <b style="color:${m.injuries>0?'#ef4444':'#4ade80'}">${m.injuries||0}</b></span>
+            <span>Erschöpfung: <b>${m.fatigue||0}%</b></span>
+            <span>Moral: <b>${m.morale||0}%</b></span>
+          </div>
+        </div>
+
+        <!-- Behandlungs-Buttons -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:2px">
+          ${inBed ? `
+            <button class="small" style="background:#334155;color:#e2e8f0;grid-column:span 2" onclick="act(assignRoom(${m.id},-1))">
+              🚶 Aus dem Krankenbett entlassen
+            </button>
+          ` : `
+            <button class="small" style="background:#0369a1;color:#fff;grid-column:span 2" onclick="act(healPatient(${m.id},'rest'))">
+              🛏 Stationär aufnehmen (+${Math.round(35*medBoost)} HP/Tag)
+            </button>
+          `}
+          
+          <button class="small" style="background:#1e293b;border-color:#22c55e;color:#bbf7d0" ${(S.res.medicine||0)<15?'disabled':''} onclick="act(healPatient(${m.id},'medicine'))" title="15 ✚ Medizin: +35 HP, 1 Verletzung heilen">
+            💊 Erstversorgung (15 ✚)
+          </button>
+
+          <button class="small" style="background:#1e293b;border-color:#38bdf8;color:#bae6fd" ${(S.res.tech||0)<20||(S.res.ore||0)<15?'disabled':''} onclick="act(healPatient(${m.id},'tech_goauld'))" title="20 ⚙ Tech, 15 ⛏ Erz: 100% HP & alle Verletzungen entfernen">
+            ✨ Heilgerät (20⚙, 15⛏)
+          </button>
+
+          <button class="small" style="background:#1e293b;border-color:#a855f7;color:#e9d5ff" ${(S.res.medicine||0)<10||(S.res.tech||0)<10?'disabled':''} onclick="act(healPatient(${m.id},'tretonin'))" title="10 ✚, 10 ⚙: +50 HP, +5 MaxHP, +15 Moral">
+            🧪 Tretonin (10✚, 10⚙)
+          </button>
+
+          <button class="small" style="background:${isCritical?'#7f1d1d':'#374151'};border-color:#ef4444;color:#fecaca" ${(S.res.medicine||0)<25||(S.res.tech||0)<10?'disabled':''} onclick="act(healPatient(${m.id},'surgery'))" title="25 ✚, 10 ⚙: Not-Operation durch Dr. Fraiser (HP auf 85%, alle Wunden heilen)">
+            💉 Not-OP Fraiser (25✚)
+          </button>
+        </div>
+      </div>`;
+    });
+    h += `</div>`;
+  }
+
+  // Gesunder Kader
+  const healthy = rec.filter(m => m.hp >= m.maxHp && (m.injuries||0) === 0);
+  h += `<h3 style="margin-top:16px;margin-bottom:8px">🎖 Diensttaugliches Personal (${healthy.length} Soldaten einsatzbereit)</h3>`;
+  h += `<div style="display:flex;flex-wrap:wrap;gap:8px">`;
+  healthy.forEach(m => {
+    h += `
+    <div style="background:#090d14;border:1px solid #1e293b;border-radius:4px;padding:6px 10px;display:flex;align-items:center;gap:8px">
+      ${pic(m, 'pt')}
+      <div>
+        <div style="font-size:12px;font-weight:bold;color:#f1f5f9">${m.name}</div>
+        <div style="font-size:11px;color:#22c55e">✔ Voll einsatzbereit (${m.hp}/${m.maxHp} HP)</div>
+      </div>
+    </div>`;
+  });
+  h += `</div>`;
+
+  body.innerHTML = h;
+}
+
+function showMedbayIncidentModal(forcedIdx=null){
+  const inc = (forcedIdx!==null&&MEDBAY_INCIDENTS[forcedIdx]) ? MEDBAY_INCIDENTS[forcedIdx] : MEDBAY_INCIDENTS[Math.floor(Math.random()*MEDBAY_INCIDENTS.length)];
+  const m = $('modal');
+  if(!m) return;
+  _activeIncident = inc;
+  m.style.display = 'flex';
+  m.innerHTML = `
+  <div class="modal-box" style="max-width:620px;border:2px solid ${inc.color};background:rgba(10,14,24,0.98);box-shadow:0 0 35px ${inc.color}66;padding:24px;border-radius:8px;font-family:monospace">
+    <div style="color:${inc.color};font-weight:bold;font-size:11px;letter-spacing:2px;margin-bottom:4px">${inc.kicker}</div>
+    <h2 style="color:#fff;margin:0 0 14px 0;font-size:18px;border-bottom:1px solid #243248;padding-bottom:10px">${inc.title}</h2>
+    
+    <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:16px;background:#070d17;padding:12px;border-radius:6px;border-left:4px solid ${inc.color}">
+      <img src="${portrait({name:inc.speaker,cls:'medic'})}" style="width:48px;height:48px;image-rendering:pixelated;border:1px solid ${inc.color};border-radius:4px">
+      <div style="flex:1">
+        <div style="font-weight:bold;color:#f8fafc;margin-bottom:4px">${inc.speaker} <small style="color:#94a3b8;font-weight:normal">(${inc.role})</small></div>
+        <div style="color:#e2e8f0;font-size:13px;line-height:1.5;font-style:italic">${inc.text}</div>
+      </div>
+    </div>
+
+    <div style="color:#94a3b8;font-size:12px;margin-bottom:16px;line-height:1.4">${inc.subtext}</div>
+
+    <div style="display:flex;flex-direction:column;gap:8px">
+      ${inc.choices.map((c, i) => `
+        <button class="winamp-btn" style="text-align:left;padding:12px 16px;background:#131c2a;border-color:${inc.color};color:#f8fafc;font-size:13px;border-radius:4px;cursor:pointer" onclick="resolveMedbayIncident(${i})">
+          <div style="font-weight:bold;color:#f8fafc;margin-bottom:4px">▶ ${c.label}</div>
+          <div style="font-size:11px;color:#94a3b8">${c.desc}</div>
+        </button>
+      `).join('')}
+    </div>
+  </div>`;
+}
+
+function resolveMedbayIncident(choiceIdx){
+  if(!_activeIncident || !_activeIncident.choices[choiceIdx]) return;
+  const choice = _activeIncident.choices[choiceIdx];
+  try {
+    choice.effect();
+  } catch(e) {
+    console.error('[Medbay Incident Error]', e);
+  }
+  _activeIncident = null;
+  save();
+  $('modal').style.display = 'none';
+  renderAll();
 }
 
 // ===================== Dossier-Modal (Akte) =====================
@@ -1621,11 +2002,70 @@ function colonyCanvasClick(e){
 }
 
 // ===================== Report =====================
-function showReport(){
+function showReport(isDayEnd=false){
  const m=$('modal');
- const body=S.rlog.map(l=>`<div class="${/✔|🏆|★|＋|🔬/.test(l)?'ok':/⚡|💥|💀|⚠/.test(l)?'bad':/⏱/.test(l)?'warn':''}">${l}</div>`).join('')||'<div class="dim">Ein ruhiger Tag im SGC.</div>';
+ if(!m)return;
+ if(isDayEnd&&typeof SFX!=='undefined'&&SFX.playTrack){
+  SFX.playTrack('theme_outro');
+ }
+ const ch=CHAPTERS[S.chapter]||CHAPTERS[0];
+ const cmd=(typeof COMMANDERS!=='undefined'&&COMMANDERS[S.commander])||COMMANDERS.hammond;
+ const discCount=Object.values(S.planets||{}).filter(p=>p.disc).length;
+ const totalPlanets=Object.keys(PLANETS).length;
+ const activeRecruits=S.roster.filter(x=>x.recruited&&!x.dead).length;
+ const coloniesCount=Object.keys(S.colonies||{}).length;
+ 
+ const SGC_STORIES=[
+  `General Hammond lässt im SGC frische Sandwiches aus Texas anliefern. Jack O'Neill und Teal'c debattieren im Aufenthaltsraum über die Kunstfertigkeit irdischer Westernfilme.`,
+  `Major Carter kalibriert die Puffer des Dial-Computers nach einer Naquadah-Resonanz neu. Daniel Jackson hat in der Bibliothek eine Schriftrolle über Aufgestiegene der Antiker entdeckt.`,
+  `Teal'c probiert in der Offiziersmesse erstmals verschiedene Wackelpudding-Sorten aus. Sein Urteil: „Dies ist in der Tat... von überraschender Konsistenz, O'Neill.“`,
+  `Sgt. Siler übersteht auf Ebene 19 eine Starkstrom-Entladung bei Reparaturarbeiten an den Primärleitungen („Keine Sorge, Sir, mir geht's gut!“).`,
+  `Dr. Janet Fraiser schließt die medizinische Routine-Tauglichkeitsprüfung von SG-1 ab. Jack beschwert sich lautstark über überdimensionierte Nadeln.`,
+  `Walter Harriman meldet ein butterweiches Einrasten von Chevron 7 ohne jegliche Spannungsspitzen im Stromnetz von Colorado Springs.`,
+  `Ein seltsamer Geruch auf Ebene 22 entpuppt sich als 3.000 Jahre alte ägyptische Grabbeigabe, die Daniel Jackson versehentlich in der Mikrowelle aufwärmen wollte.`,
+  `Die Tok'ra übermitteln eine verschlüsselte Subraum-Botschaft: Jacob Carter sendet Grüße und warnt vor ungewöhnlichen Schiffsbewegungen im Kernsektor.`,
+  `Bra'tac sendet über das Sternentor einen traditionellen Jaffa-Gruß: „Möge euer Rücken stark sein und eure Stabwaffe niemals klemmen, O'Neill.“`,
+  `Jonas Quinn und Daniel vergleichen Notizen über die Naquadria-Ader auf Langara und spekulieren über vergessene Sternentore der Antiker.`,
+  `Dr. Elizabeth Weir führt diplomatische Verhandlungen mit Vertretern der Freien Jaffa über Handelsrechte für Naquadah-Konzentrat.`
+ ];
+ const storySeed=(S.day*17+S.chapter*31)%SGC_STORIES.length;
+ const dailyStory=SGC_STORIES[storySeed];
+ const logHtml=S.rlog.map(l=>`<div class="${/✔|🏆|★|＋|🔬|🎁|🤝/.test(l)?'ok':/⚡|💥|💀|⚠|🛑/.test(l)?'bad':/⏱|🪐|📎/.test(l)?'warn':''}">${l}</div>`).join('')||'<div class="dim">Ein ruhiger Tag im Cheyenne Mountain Komplex.</div>';
+
  m.style.display='flex';
- m.innerHTML=`<div class="mbox"><h3>Tagesbericht · Tag ${S.day}</h3><div class="mbody">${body}</div><button onclick="$('modal').style.display='none';renderAll()">Weiter</button></div>`;
+ m.innerHTML=`<div class="mbox" style="max-width:760px;width:95vw;max-height:88vh;overflow-y:auto">
+  <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #38bdf8;padding-bottom:10px;margin-bottom:14px">
+   <div>
+    <h3 style="margin:0;font-size:20px;color:#f8fafc">SGC Tagesbericht · Tag ${S.day}</h3>
+    <small style="color:#38bdf8;font-weight:bold">${ch.title} · Leitung: ${cmd.name}</small>
+   </div>
+   <div style="text-align:right">
+    <span class="tag" style="background:#1e293b;border:1px solid #38bdf8;color:#e0f2fe;font-size:12px">TOR: BEREITSCHAFT</span>
+   </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:14px;background:#0c1322;padding:12px;border-radius:6px;border:1px solid #1e293b">
+   <div style="text-align:center"><small style="color:#94a3b8">ERFOLGE</small><div style="font-size:17px;font-weight:bold;color:#4ade80">${S.done.length} Einsätze</div></div>
+   <div style="text-align:center"><small style="color:#94a3b8">FEINDE BESIEGT</small><div style="font-size:17px;font-weight:bold;color:#f87171">${S.jaffaKills||0} Jaffa</div></div>
+   <div style="text-align:center"><small style="color:#94a3b8">ERFORSCHT</small><div style="font-size:17px;font-weight:bold;color:#38bdf8">${discCount} / ${totalPlanets} Welten</div></div>
+   <div style="text-align:center"><small style="color:#94a3b8">PERSONAL</small><div style="font-size:17px;font-weight:bold;color:#fbbf24">${activeRecruits} Soldaten</div></div>
+   <div style="text-align:center"><small style="color:#94a3b8">AUSSENPOSTEN</small><div style="font-size:17px;font-weight:bold;color:#a78bfa">${coloniesCount} Kolonien</div></div>
+  </div>
+
+  <div style="margin-bottom:12px">
+   <h4 style="color:#e2e8f0;font-size:13px;letter-spacing:1px;margin-bottom:6px">📋 TAGES-PROTOKOLL & ERTRÄGE</h4>
+   <div class="mbody" style="max-height:160px;overflow-y:auto;background:#060a12;padding:10px;border-radius:4px;border:1px solid #1e293b">${logHtml}</div>
+  </div>
+
+  <div style="margin-bottom:16px;background:linear-gradient(135deg,rgba(15,23,42,0.9),rgba(30,41,59,0.7));padding:12px 14px;border-left:4px solid #f59e0b;border-radius:4px">
+   <div style="color:#f59e0b;font-weight:bold;font-size:12px;margin-bottom:4px;letter-spacing:1px">☕ SGC LOGBUCH-NOTIZ & BEGEBENHEIT</div>
+   <div style="color:#cbd5e1;font-size:13px;font-style:italic;line-height:1.5">„${dailyStory}“</div>
+  </div>
+
+  <div style="display:flex;justify-content:flex-end;gap:10px">
+   <button onclick="$('modal').style.display='none';if(typeof SFX!=='undefined')SFX.music(UI.tab==='map'?'map':'base');renderAll()" style="background:#1f6f3a;border-color:#34c76a;color:#fff;padding:10px 24px;font-weight:bold;cursor:pointer">Tag abschließen & Weiter ›</button>
+  </div>
+ </div>`;
  renderAll();
 }
 
@@ -1635,6 +2075,7 @@ function renderAll(){
  if(UI.tab==='base'){renderBaseSide();}
  else if(UI.tab==='map'){renderMapSide();}
  else if(UI.tab==='colonies'){renderColoniesView();}
+ else if(UI.tab==='medbay'){renderMedbayView();}
  else if(UI.tab==='roster'){renderRoster();}
  else if(UI.tab==='log'){renderLog();}
  renderCombatUI();
@@ -1644,10 +2085,276 @@ function renderAll(){
  else ov.style.display='none';
 }
 
-function doDay(){
- if(S.over||C.active||GR.phase!=='idle')return;
+// ===================== SGC Vorfall- & Krisen-System (Stargate Tropes & Eastereggs) =====================
+const SGC_INCIDENTS = [
+  {
+    id: 'gate_alarm',
+    title: '🚨 UNAUTORISIERTE TORAKTIVIERUNG (INCOMING WORMHOLE)',
+    kicker: 'NOTFALL-ALARMSTUFE ROT · TORRAUM EBENE 28',
+    color: '#ef4444',
+    speaker: "Walter Harriman",
+    role: "Chevrons & Tor-Steuerung",
+    text: "„Chevron 6 eingelegt... Chevron 7 verriegelt! Sir, wir haben eine unautorisierte Aktivierung von außen! Kein IDC-Signal im Standard-Speicher!“",
+    subtext: "Das Tor öffnet sich mit einem gewaltigen Kawoosh. General Hammond eilt auf den Leitstand und greift zum Mikrofon.",
+    choices: [
+      {
+        label: "🛡 Iris sofort verriegeln & Schockwelle abfangen",
+        effectText: "THUD! Ein Goa'uld-Spähflugkörper zerschellt an der Titan-Iris. Die Basis bleibt unbeschadet!",
+        action: () => {
+          S.integrity = Math.min(100, (S.integrity || 100) + 10);
+          S.rlog.push("🛡 Vorfall: Titan-Iris fing feindliche Goa'uld-Sonde ab (+10 Integrität).");
+          note("🛡 Titan-Iris hält stand! O'Neill: „Wer immer das war... der hat jetzt Kopfschmerzen.“");
+        }
+      },
+      {
+        label: "📻 GDO-Signal dekodieren: Es ist SG-3 unter Feuer! Iris öffnen & Feuerschutz",
+        effectText: "Major Castleman und SG-3 hechten durch den Horizont, verfolgt von Stabwaffenfeuer. Das Lazarett flickt sie zusammen!",
+        action: () => {
+          S.res.ore = (S.res.ore || 0) + 90;
+          S.res.tech = (S.res.tech || 0) + 35;
+          S.res.medicine = Math.max(0, (S.res.medicine || 0) - 15);
+          S.rlog.push("⚡ Vorfall: SG-3 gerettet! Beute geborgen (+90 Erz, +35 Tech, -15 Med).");
+          note("🤝 SG-3 in Sicherheit! Sie bringen geborgene Artefakte aus dem Sektor mit.");
+        }
+      }
+    ]
+  },
+  {
+    id: 'woolsey_audit',
+    title: '📋 NID-HAUSHALTSREVISION (RICHARD WOOLSEY)',
+    kicker: 'VERWALTUNGSKONTROLLE · LEVEL 27 BÜRO',
+    color: '#f59e0b',
+    speaker: "Richard Woolsey",
+    role: "NID / Pentagon-Rechnungsprüfer",
+    text: "„General Hammond, das Pentagon verlangt eine detaillierte Ausgabenrechtfertigung. 450 Kilo waffenfähiges Naquadah für 'Kaffee-Röstung' auf Ebene 22? Und warum trägt dieser Jaffa hier eigentlich keine Dienstmütze?“",
+    subtext: "Woolsey rückt seine Brille zurecht und zückt einen roten Kugelschreiber über dem SGC-Budgetbericht.",
+    choices: [
+      {
+        label: "🍮 O'Neills Taktik: Mit blauem Wackelpudding bestechen & verwirren",
+        effectText: "Woolsey starrt fasziniert auf den blauen Wackelpudding, verliert völlig den Faden und zieht verwirrt ab. Das Team feiert!",
+        action: () => {
+          S.res.food = Math.max(0, (S.res.food || 0) - 15);
+          S.roster.forEach(m => { if (m.recruited && !m.dead) m.morale = Math.min(100, m.morale + 15); });
+          S.rlog.push("🍮 Vorfall: Woolsey mit blauem Wackelpudding abgewimmelt (+15 Team-Moral, -15 Nahrung).");
+          note("🍮 Woolsey verwirrt: „Dieser... Pudding verstößt gegen Paragraph 4, Colonel O'Neill!“");
+        }
+      },
+      {
+        label: "📜 Dr. Jacksons 4-stündigen Vortrag über sumerische Steuersysteme ertragen",
+        effectText: "Woolsey schläft erschöpft ein. Daniel entziffert während des Vortrags alte Steuer-Tafeln der Antiker!",
+        action: () => {
+          S.res.tech = (S.res.tech || 0) + 50;
+          S.rlog.push("📜 Vorfall: Daniel Jacksons Steuervortrag schlägt Woolsey in die Flucht (+50 Tech).");
+          note("📜 Daniel: „Wussten Sie, dass die Babylonier bereits Naquadah-Zölle erhoben, Herr Woolsey?“");
+        }
+      },
+      {
+        label: "⚛️ Carter rechnet ihm thermonukleare Gleichungen vor",
+        effectText: "Woolsey kapituliert vor Carters Formeln: „Ich vermerke das im Bericht als... experimentelle Astrophysik.“",
+        action: () => {
+          S.res.tech = (S.res.tech || 0) + 65;
+          S.rlog.push("⚛️ Vorfall: Carters Quanten-Kalkulation bewilligt Forschungsbudget (+65 Tech).");
+          note("⚛️ Carter: „Wenn Sie das Subraum-Potential nicht umschichten, bricht die Raumzeit zusammen.“");
+        }
+      }
+    ]
+  },
+  {
+    id: 'replicator_bug',
+    title: '🕷️ REPLIKATOR-ALARM IM SUBSPACE-ROUTER',
+    kicker: 'SICHERHEITSALARM EBENE 19 · NANITEN-INVASION',
+    color: '#a855f7',
+    speaker: "Major Samantha Carter",
+    role: "Astrophysikerin",
+    text: "„Sir! Ein metallischer Replikator-Käfer frisst an den Superdough-WebAudio-Leitungen und versucht den Code der Strudel-Soundengine zu verzehren!“ – O'Neill: „Carter, warum krabbelt Ihr Toaster?“ – Teal'c: „Projektilwaffen sind in der Tat effektiver als Energiewaffen.“",
+    subtext: "Kleine metallische Klick-Geräusche hallen durch die Lüftungsschächte von Cheyenne Mountain.",
+    choices: [
+      {
+        label: "💥 O'Neills SPAS-12 Schrotflinte einsetzen (BAM!)",
+        effectText: "BAM! Die Schrotgarbe pulverisiert den Käfer in nützliche Naniten-Bausteine!",
+        action: () => {
+          S.res.tech = (S.res.tech || 0) + 60;
+          if (S.inventory && S.inventory.special) S.inventory.special.emp = (S.inventory.special.emp || 0) + 1;
+          S.rlog.push("💥 Vorfall: Replikator per Schrotflinte zerlegt (+60 Tech, +1 EMP).");
+          note("💥 O'Neill: „Problem gelöst. Und holt Siler mit dem Besen!“");
+        }
+      },
+      {
+        label: "🔬 Carters Anti-Replikatoren-Disruptorwelle erforschen",
+        effectText: "Carter isoliert das Subraum-Feld der Naniten und speichert das Frequenzmuster für die SGC-Forschung!",
+        action: () => {
+          S.res.tech = (S.res.tech || 0) + 85;
+          S.res.ore = Math.max(0, (S.res.ore || 0) - 30);
+          S.rlog.push("🔬 Vorfall: Anti-Replikatoren-Frequenz isoliert (+85 Tech, -30 Erz).");
+          note("🔬 Carter: „Die Asgard werden von dieser Subraum-Analyse begeistert sein.“");
+        }
+      }
+    ]
+  },
+  {
+    id: 'content_rot_meta',
+    title: '🤖 DAS „CONTENT-ROT“ & CONTEXT-PHANTOM',
+    kicker: 'METAPHYSIK-LOGBUCH · UNIVERSITÄT OSNABRÜCK ANOMALIE',
+    color: '#06b6d4',
+    speaker: "Walter Harriman",
+    role: "Tor-Leitstand",
+    text: "„Sir, der Zentralrechner halluziniert! Er behauptet, wir seien Spielfiguren in einer Browser-Simulation der Universität Osnabrück und die Entwickler hätten die Token-Grenze fast erreicht.“ – Daniel: „Vielleicht eine Metapher für den Aufstieg?“ – O'Neill: „Walter, Stecker ziehen!“",
+    subtext: "Auf den Terminals von Ebene 28 flackern plötzlich Zeilen von JavaScript, Strudel-Noten und ein 1,44 MB Disketten-Icon auf.",
+    choices: [
+      {
+        label: "🔌 Stecker ziehen, Cache leeren & Hammond-Kaffee kochen",
+        effectText: "Der Speicher leert sich, die Systeme laufen butterweich und das ganze Team amüsiert sich köstlich!",
+        action: () => {
+          S.res.ore = (S.res.ore || 0) + 60;
+          S.res.tech = (S.res.tech || 0) + 30;
+          S.roster.forEach(m => { if (m.recruited && !m.dead) m.morale = Math.min(100, m.morale + 20); });
+          S.rlog.push("🔌 Vorfall: Contentrot durch Neustart behoben (+60 Erz, +30 Tech, +20 Moral).");
+          note("🔌 O'Neill: „Funktioniert jedes Mal. Warum studiert Daniel dafür eigentlich Linguistik?“");
+        }
+      },
+      {
+        label: "🕹️ Ein Easteregg im Winamp-Marquee verewigen",
+        effectText: "Das Team programmiert heimlich ein Easteregg in den SGC-AMP v2.80 Player!",
+        action: () => {
+          S.res.tech = (S.res.tech || 0) + 75;
+          if (typeof unlockTrack === 'function') unlockTrack('theme_outro_ambient');
+          S.rlog.push("🕹️ Vorfall: Easteregg im Winamp hinterlegt (+75 Tech, Outro Ambient freigeschaltet).");
+          note("🕹️ SGC-AMP: Geheimer Soundtrack und Easteregg im Audio-Deck aktiv!");
+        }
+      }
+    ]
+  },
+  {
+    id: 'harlan_altair',
+    title: '🥪 ALTAIR-KONTAKT: HARLAN IST DA!',
+    kicker: 'EXTRATERRESTRISCHER BESUCH · TORRAUM',
+    color: '#10b981',
+    speaker: "Harlan",
+    role: "Synthetischer Bewohner von Altair",
+    text: "„Comtrya! Besser! Viel, viel besser! Ich habe synthetische Androiden-Duplikate von Ihnen allen angefertigt! Sie müssen nie wieder schlafen oder essen!“",
+    subtext: "Harlan strahlt übers ganze Gesicht und verteilt kleine, blinkende Energiezellen.",
+    choices: [
+      {
+        label: "🚪 „Harlan, bitte gehen Sie sofort nach Hause!“ (Iris schließen)",
+        effectText: "Hammond drückt den Schließknopf. Harlan verabschiedet sich winkend durch das Tor.",
+        action: () => {
+          S.integrity = Math.min(100, (S.integrity || 100) + 15);
+          S.rlog.push("🚪 Vorfall: Harlan freundlich nach Altair zurückbegleitet (+15 SGC-Integrität).");
+          note("🚪 Hammond: „Ich liebe diesen Job... manchmal.“");
+        }
+      },
+      {
+        label: "⛏️ Die synthetischen Duplikate in den Naquadah-Minen arbeiten lassen",
+        effectText: "Die unermüdlichen Androiden schuften 24 Stunden durch und fördern riesige Erzmengen!",
+        action: () => {
+          S.res.ore = (S.res.ore || 0) + 140;
+          S.rlog.push("⛏️ Vorfall: Harlans Androiden steigern die Minenproduktion (+140 Erz).");
+          note("⛏️ Harlan: „Comtrya! Sie arbeiten viel besser als die echten Menschen!“");
+        }
+      }
+    ]
+  }
+];
+
+let _activeIncident = null;
+
+function showIncidentModal(inc){
+  _activeIncident = inc;
+  const m = $('modal');
+  if(!m) return;
+  sfx('special');
+  m.style.display = 'flex';
+  m.innerHTML = `<div class="mbox" style="max-width:680px;width:95vw;border:2px solid ${inc.color};box-shadow:0 0 35px ${inc.color}44">
+    <div style="background:${inc.color}22;border-bottom:2px solid ${inc.color};padding:12px 16px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="color:${inc.color};font-size:11px;font-weight:bold;letter-spacing:1.5px">${inc.kicker}</div>
+        <h3 style="margin:2px 0 0;font-size:18px;color:#fff">${inc.title}</h3>
+      </div>
+      <span class="tag" style="background:#090e17;border:1px solid ${inc.color};color:${inc.color};font-weight:bold">STATUS: ALARM</span>
+    </div>
+    <div class="mbody" style="padding:16px">
+      <div style="display:flex;gap:14px;align-items:flex-start;background:#090e17;padding:12px;border-radius:6px;border:1px solid #1e293b;margin-bottom:12px">
+        <div style="font-size:32px">🚨</div>
+        <div>
+          <div style="font-weight:bold;color:#38bdf8;font-size:13px">${inc.speaker} <small style="color:#94a3b8">(${inc.role})</small></div>
+          <div style="color:#e2e8f0;font-size:14px;font-style:italic;margin-top:4px;line-height:1.5">${inc.text}</div>
+        </div>
+      </div>
+      <p style="color:#cbd5e1;font-size:13px;margin-bottom:16px;line-height:1.5">${inc.subtext}</p>
+      <div style="font-size:12px;font-weight:bold;color:#ffd166;margin-bottom:8px;letter-spacing:1px">BEFEHL DES KOMMANDANTEN:</div>
+      <div style="display:flex;flex-direction:column;gap:8px" id="incident-choices">
+        ${inc.choices.map((c, i) => `
+          <button class="winamp-btn" style="text-align:left;padding:10px 14px;background:#131c2a;border-color:${inc.color};color:#f8fafc;font-size:13px;border-radius:4px;cursor:pointer" onclick="resolveIncident(${i})">
+            <b>${c.label}</b>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function resolveIncident(choiceIdx){
+  if(!_activeIncident || !_activeIncident.choices[choiceIdx]) return;
+  const choice = _activeIncident.choices[choiceIdx];
+  try {
+    choice.action();
+  } catch(e) {
+    console.error('[Incident Action]', e);
+  }
+  toast(choice.effectText);
+  _activeIncident = null;
+  save();
+  showReport(true);
+}
+
+function checkDailyIncident(forcedIdx = null){
+  let incident = null;
+  if(forcedIdx !== null && SGC_INCIDENTS[forcedIdx]){
+    incident = SGC_INCIDENTS[forcedIdx];
+  } else {
+    // 55% Chance auf einen episodischen SGC-Vorfall
+    const roll = Math.random();
+    if(roll < 0.55){
+      const idx = Math.floor(Math.random() * SGC_INCIDENTS.length);
+      incident = SGC_INCIDENTS[idx];
+    }
+  }
+
+  if(incident){
+    showIncidentModal(incident);
+  } else {
+    showReport(true);
+  }
+}
+
+function triggerWinampEasterEgg(){
+  const easterEggs = [
+    "🕷️ Reese' Spielzeug: Ein Replikator knabbert an der TB-303 Acid Bassline!",
+    "🚨 Walter Harriman: „Chevron 7 will simply not lock, Sir... wir hören Strudel-Musik!“",
+    "☕ Jack O'Neill: „In my culture, I would be considered quite a catch.“",
+    "🌌 Teal'c: „Things will in fact calm up.“",
+    "🎓 Uni Osnabrück: „42 Agenten simulierten diesen Beat ohne einen einzigen Compiler.“",
+    "🤖 SGC-AI: „Keine Sorge, wir halluzinieren den Bass nur mit 99.8% Konfidenz!“"
+  ];
+  const msg = easterEggs[Math.floor(Math.random() * easterEggs.length)];
+  toast(msg);
+  sfx('special');
+}
+
+function doDay(forcedIdx=null){
+ if(S.over)return;
+ if(C.active){
+  const ov=$('combat-overlay');
+  if(!ov||ov.style.display==='none'||ov.style.display===''){
+   C.active=false;
+  } else {
+   toast('⚠ Ein Kampfeinsatz läuft noch!');
+   return;
+  }
+ }
+ if(GR.phase!=='idle')return;
  endDay();
- showReport();
+ checkDailyIncident(forcedIdx);
 }
 function resetGame(force){
  if(!force&&!confirm('Neues Spiel starten? Der Spielstand geht verloren.'))return;
@@ -1665,20 +2372,26 @@ function toggleSound(){
 // ===================== Frame-Loop =====================
 function frame(now){
  if(UI.menuOpen){requestAnimationFrame(frame);return;}
- if(C.active){
-  renderCombat($('combat-cv'));
-  renderCombatUI();
-  $('combat-end').style.display=C.result?'inline-block':'none';
- }
- else if(GR.phase!=='idle'&&GATE_STATE){drawGateroom($('gate-cv'),now,GATE_STATE);}
- else if(UI.tab==='base'){
-  renderBase($('base-cv'));
-  if(B.selRoom&&S.base.rooms[B.selRoom]&&$('room-interior-cv')&&typeof drawRoomInteriorCanvas==='function'){
-   drawRoomInteriorCanvas($('room-interior-cv'),S.base.rooms[B.selRoom]);
+ try{
+  if(C.active){
+   renderCombat($('combat-cv'));
+   renderCombatUI();
+   $('combat-end').style.display=C.result?'inline-block':'none';
   }
+  else if(GR.phase!=='idle'&&GATE_STATE){drawGateroom($('gate-cv'),now,GATE_STATE);}
+  else if(UI.tab==='base'){
+   renderBase($('base-cv'));
+   if(B.selRoom&&S.base.rooms[B.selRoom]&&$('room-interior-cv')&&typeof drawRoomInteriorCanvas==='function'){
+    drawRoomInteriorCanvas($('room-interior-cv'),S.base.rooms[B.selRoom]);
+   }
+  }
+  else if(UI.tab==='map'){drawMap($('map-cv'),now);}
+  else if(UI.tab==='colonies'&&$('colony-cv')&&typeof renderColonyCanvas==='function'){
+   renderColonyCanvas($('colony-cv'),COLONY_UI.planet);
+  }
+ }catch(err){
+  console.error('[FRAME] Render loop error:', err);
  }
- else if(UI.tab==='map'){drawMap($('map-cv'),now);}
- else if(UI.tab==='colonies'){renderColoniesView();}
  requestAnimationFrame(frame);
 }
 
@@ -1761,6 +2474,9 @@ function init(){
   }
   if(C.active&&C.result&&(e.key==='Enter'||e.key===' '||matchesKey('endTurn',e))){
    e.preventDefault();combatEnd();return;
+  }
+  if(C.active&&!C.result&&C.phase==='player'&&(matchesKey('endTurn',e)||e.key==='Enter')){
+   e.preventDefault();endPlayerPhase();return;
   }
   if($('modal').style.display==='flex'&&(e.key==='Enter'||e.key===' '||e.key==='Escape')){
    e.preventDefault();$('modal').style.display='none';renderAll();return;

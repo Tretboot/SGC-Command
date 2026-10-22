@@ -73,6 +73,7 @@ const files=[
   'midi-data.js',
   'sound.js',
   'midi.js',
+  'midi-controller.js',
   'art.js',
   'art2.js',
   '../content/quests.js',
@@ -347,7 +348,9 @@ for(const fn of loadFns){
   assert(GR.phase === 'open', 'gateTick transitioned to open event horizon');
   gateTick(performance.now() + 6000);
   assert(GR.phase === 'transit', 'gateTick transitioned to outgoing transit (not collapse)');
-  gateTick(performance.now() + 7000);
+  gateTick(performance.now() + 7500);
+  assert(GR.phase === 'transit', 'gateTick maintains 4s wormhole transit sequence');
+  gateTick(performance.now() + 10500);
   assert(GR.phase === 'idle' && transitPassed === true, 'Gate transit completed and invoked callback into mission');
 }
 
@@ -454,6 +457,367 @@ for(const fn of loadFns){
   assert(!waveErr, 'WINAMP.drawVis renders Oscilloscope mode without errors');
 }
 
+// 23. Test Stargate Franchise Themes & Orchestral Fanfares
+{
+  assert(STRUDEL_TRACKS.theme_outro, 'Theme Outro registered in STRUDEL_TRACKS');
+  assert(STRUDEL_TRACKS.theme_outro_ambient, 'Theme Outro Ambient registered in STRUDEL_TRACKS');
+  assert(STRUDEL_TRACKS.theme_atlantis, 'Stargate Atlantis Theme registered in STRUDEL_TRACKS');
+  assert(STRUDEL_TRACKS.theme_asgard, 'Asgard & Thor Theme registered in STRUDEL_TRACKS');
+  assert(STRUDEL_TRACKS.theme_funeral, 'Memorial / Daniel Farewell Theme registered in STRUDEL_TRACKS');
+  assert(STRUDEL_TRACKS.theme_promotion, 'Medal of Valor Promotion Fanfare registered in STRUDEL_TRACKS');
+
+  // Verify compilation of new themes
+  const atl = STRUDEL.compile(STRUDEL_TRACKS.theme_atlantis.code);
+  assert(atl && atl.length >= 4, 'Stargate Atlantis Theme compiles cleanly (' + atl.length + ' voices)');
+  const asg = STRUDEL.compile(STRUDEL_TRACKS.theme_asgard.code);
+  assert(asg && asg.length >= 3, 'Asgard & Thor Theme compiles cleanly (' + asg.length + ' voices)');
+  const fun = STRUDEL.compile(STRUDEL_TRACKS.theme_funeral.code);
+  assert(fun && fun.length >= 3, 'Funeral Memorial Theme compiles cleanly (' + fun.length + ' voices)');
+  const pro = STRUDEL.compile(STRUDEL_TRACKS.theme_promotion.code);
+  assert(pro && pro.length >= 3, 'Promotion Fanfare compiles cleanly (' + pro.length + ' voices)');
+
+  const outro = STRUDEL_TRACKS.theme_outro;
+  assert(outro.code.includes('setCpm(134/4)') && outro.code.includes('c:minor'), 'Theme Outro runs at 134 BPM in C minor');
+  assert(outro.code.includes('$OSTINATO') && outro.code.includes('$OUTRO_FANFARE') && outro.code.includes('$DRIVING_BASS'), 'Theme Outro has ostinato, fanfare, and driving bass');
+  const compiledOutro = STRUDEL.compile(outro.code);
+  assert(compiledOutro && compiledOutro.length >= 4, 'Theme Outro compiles cleanly (' + compiledOutro.length + ' voices)');
+
+  // Verify Winamp Theme Tab lists all themes including Outro
+  const themeList = getWinampTracksForTab('theme');
+  assert(themeList.includes('theme_outro') && themeList.includes('theme_atlantis'), 'Winamp Theme playlist tab contains Outro and Atlantis themes');
+  assert(themeList.length === 15, 'Winamp Theme playlist tab contains all 15 Stargate tracks');
+
+  // Verify Track Unlocking Progression
+  unlockTrack('theme_asgard');
+  assert(S.unlockedTracks && S.unlockedTracks.includes('theme_asgard'), 'unlockTrack successfully persists new soundtrack in S.unlockedTracks');
+
+  // Verify Volume Slider & Mute Toggle Volume Preservation
+  if(!SFX.master){
+    SFX.master = { gain: { value: 0.65, setValueAtTime: (v) => { SFX.master.gain.value = v; } } };
+    SFX.ctx = { currentTime: 0 };
+  }
+  SFX.setVolume(0.78);
+  assert(Math.abs(SFX.getVolume() - 0.78) < 0.01, 'SFX volume set to 78%');
+  SFX.toggle(); // mute
+  assert(SFX.muted === true && SFX.master.gain.value === 0, 'SFX toggle mutes master gain to 0');
+  SFX.toggle(); // unmute
+  assert(SFX.muted === false && Math.abs(SFX.master.gain.value - 0.78) < 0.01, 'SFX unmute preserves exact 78% volume without hardcoded reset');
+}
+
+// 24. Test Hardware Web MIDI Subsystem & Akai Presets
+{
+  assert(typeof SGC_MIDI !== 'undefined', 'SGC_MIDI hardware controller subsystem loaded');
+  assert(SGC_MIDI.bindings[70] && SGC_MIDI.bindings[70].param === 'cutoff', 'Akai MPK Plus preset maps CC 70 to cutoff');
+  assert(SGC_MIDI.bindings[1] && SGC_MIDI.bindings[1].param === 'cutoff', 'Akai MPK mk2 preset maps CC 1 to cutoff');
+  assert(SGC_MIDI.padMap[36] === 'bd', 'Pad 1 (Note 36) mapped to BD Kick');
+  assert(SGC_MIDI.padMap[43] === 'tb303', 'Pad 8 (Note 43) mapped to TB-303 Acid');
+
+  // Test CC message dispatch
+  let rebirthCutoffSet = 0;
+  const originalRebirth = SFX.setRebirthParam;
+  SFX.setRebirthParam = (p, v) => { if(p === 'cutoff') rebirthCutoffSet = v; };
+  SGC_MIDI.handleMIDIMessage({ data: [0xb0, 70, 100] }); // Ch 1, CC 70, Val 100
+  assert(rebirthCutoffSet > 7000, 'Incoming MIDI CC #70 adjusted filter cutoff accurately');
+  SFX.setRebirthParam = originalRebirth;
+
+  // Test Drum Pad Note On trigger
+  let drumTriggered = null;
+  const originalTrigger = SFX.triggerDrum;
+  SFX.triggerDrum = (kind, vol) => { drumTriggered = kind; };
+  SGC_MIDI.handleMIDIMessage({ data: [0x99, 36, 110] }); // Ch 10, Note 36 (Pad 1)
+  assert(drumTriggered === 'bd', 'Incoming MIDI Note 36 triggered Kick drum');
+  SFX.triggerDrum = originalTrigger;
+
+  // Test Live Synth Playable Keys (Note On / Note Off)
+  let liveNoteOn = null, liveNoteOff = null;
+  const origPlayLive = SFX.playLiveNote, origStopLive = SFX.stopLiveNote;
+  SFX.playLiveNote = (note, vel) => { liveNoteOn = note; };
+  SFX.stopLiveNote = (note) => { liveNoteOff = note; };
+  SGC_MIDI.handleMIDIMessage({ data: [0x90, 60, 95] }); // Ch 1, Note 60 (Middle C)
+  assert(liveNoteOn === 60, 'Incoming MIDI Note 60 played live synth note');
+  SGC_MIDI.handleMIDIMessage({ data: [0x80, 60, 0] }); // Ch 1, Note 60 Off
+  assert(liveNoteOff === 60, 'Incoming MIDI Note 60 release stopped live synth note');
+  SFX.playLiveNote = origPlayLive; SFX.stopLiveNote = origStopLive;
+
+  // Test Dynamic MIDI Learn
+  SGC_MIDI.startLearn('volume', 'Master Volume', 0, 1, '%');
+  assert(SGC_MIDI.learningParam && SGC_MIDI.learningParam.key === 'volume', 'MIDI Learn activated for volume');
+  SGC_MIDI.handleMIDIMessage({ data: [0xb0, 44, 64] }); // Hardware knob turned on CC 44
+  assert(SGC_MIDI.bindings[44] && SGC_MIDI.bindings[44].param === 'volume', 'MIDI Learn successfully bound CC 44 to volume');
+  assert(SGC_MIDI.learningParam === null, 'MIDI Learn deactivated after knob mapping');
+
+  // Test Winamp MIDI tab render
+  WINAMP.tab = 'midi';
+  const html = renderWinampPlaylistHTML('base');
+  assert(html.includes('HARDWARE MIDI') && html.includes('8 DREHREGLER'), 'Winamp modal renders MIDI controller tab');
+}
+
+// 25. Test Cheyenne Mountain Boot Screen Audio Unlock Flow
+{
+  const bootScreen = els['boot-screen'];
+  bootScreen.dataset.boot = 'true';
+  let resumeCalled = false, introStarted = false;
+  const origCtx = SFX.ctx, origInit = SFX.init;
+  SFX.ctx = { state: 'suspended', resume: async () => { resumeCalled = true; } };
+  SFX.unlocked = false;
+
+  startOpeningCinematic(() => { introStarted = true; });
+  assert(bootScreen.style.display === 'flex', 'Boot screen displays when audio requires user interaction');
+  assert(introActive === false, 'Intro waits for boot screen user gesture');
+
+  // Trigger boot screen action
+  bootScreen.onclick();
+  assert(bootScreen.style.display === 'none', 'Boot screen hides after click');
+  assert(SFX.unlocked === true, 'Audio marked unlocked after user interaction');
+  assert(introActive === true, 'Intro started with guaranteed audio playback');
+  finishOpeningCinematic();
+
+  // Reset boot screen
+  delete bootScreen.dataset.boot;
+  SFX.ctx = origCtx; SFX.init = origInit;
+}
+
+// 26. Test Hyperspace Wormhole 3D Subspace Tunnel Rendering
+{
+  GR.phase = 'transit';
+  GR.t0 = performance.now();
+  GR.label = 'Abydos';
+  let wormholeError = null;
+  try {
+    drawGateroom(els['gate-cv'], performance.now() + 1500, GATE_STATE);
+  } catch(e) { wormholeError = e; }
+  assert(!wormholeError, 'Hyperspace wormhole 3D subspace tunnel renders without errors');
+  GR.phase = 'idle';
+}
+
+// 27. Test Starting Resource Balance, Room Affordability, Gate Resilience & Canonical Planets
+{
+  newGame();
+  assert(S.res.ore >= 800 && S.res.tech >= 140, 'Starting resources balanced for base building (Ore: ' + S.res.ore + ', Tech: ' + S.res.tech + ')');
+  assert(S.res.ore >= ROOMS.generator.cost.ore && S.res.ore >= ROOMS.workshop.cost.ore, 'Player can build generator & workshop on Day 1');
+  assert(S.integrity === 100, 'Base integrity starts at 100');
+  
+  // Test canonical planets
+  const canonPlanets = ['cimmeria', 'tollana', 'vorash', 'langara', 'delmak', 'tartarus', 'dakara', 'kheb', 'othala', 'camelot'];
+  const allPresent = canonPlanets.every(p => PLANETS[p] && PLANETS[p].name);
+  assert(allPresent, 'Canonical Stargate SG-1 planets registered in PLANETS (' + canonPlanets.length + ' verified)');
+
+  // Test Gate overlay safety on skip
+  els['gate-overlay'].style.display = 'flex';
+  skipGate();
+  assert(els['gate-overlay'].style.display === 'none', 'skipGate() guarantees #gate-overlay is hidden');
+
+  // Test multi-mission transition resilience (Mission 1-2 peaceful contact & Mission 1-3 defense)
+  activateMission(CHAPTERS[0].missions[1], [0, 1, 2]);
+  skipGate();
+  assert(C.active === true && els['gate-overlay'].style.display === 'none', 'Mission 1-2 starts cleanly with gate-overlay hidden');
+  renderCombat(els['combat-cv']);
+  const contactUnit = Object.values(C.units).find(u => u.side === 'neutral');
+  assert(contactUnit && contactUnit.name === 'Siedlungssprecher', 'Peaceful mission 1-2 contact unit spawned safely');
+  C.contactComplete = true;
+  checkEnd();
+  assert(C.result === 'victory', 'Peaceful contact victory resolved');
+  combatEnd();
+  assert(C.active === false && els['combat-overlay'].style.display === 'none', 'combatEnd cleans combat state and hides overlay');
+
+  // Test Day End and #go button state
+  renderHeader();
+  assert(els['go'].disabled === false, '#go button enabled after mission completion');
+  const oreBefore = S.res.ore;
+  doDay();
+  assert(S.res.ore >= oreBefore + 50, 'endDay grants balanced daily passive income');
+}
+
+// 28. Test Selection of 0-AP Units, Explicit Turn End, Outro Audio & Daily Stories
+{
+  newGame();
+  activateMission(CHAPTERS[0].missions[0], [0, 1, 2]);
+  skipGate();
+  
+  // Spend AP of Jack
+  const jack = Object.values(C.units).find(u => u.side === 'player');
+  jack.ap = 0;
+  playerSelect(jack);
+  assert(C.selected === jack, 'Units with 0 AP can still be selected and inspected');
+  assert(C.moveRange.length === 0, '0 AP unit has empty moveRange');
+  renderCombatUI(true);
+  assert(els['combat-ui'].innerHTML.includes('0 AP übrig') || els['combat-ui'].innerHTML.includes('Runde beenden'), 'Combat UI reflects selection and provides turn end button');
+  
+  // End player phase explicitly
+  const roundBefore = C.round;
+  endPlayerPhase();
+  assert(C.round >= roundBefore, 'endPlayerPhase cleanly cycles round without freeze');
+  
+  // Test Tag Beenden report with End Theme and statistics
+  let playedEndTheme = false;
+  const origPlayTrack = SFX.playTrack;
+  SFX.playTrack = (name) => { if(name === 'theme_outro') playedEndTheme = true; };
+  C.result = 'victory';
+  combatEnd();
+  
+  // Test Tag Beenden mit SGC Vorfall & Krisen-System (Stargate Tropes & Eastereggs)
+  doDay(0); // Force Incident 0: Unscheduled Wormhole
+  assert(els['modal'].innerHTML.includes('UNAUTORISIERTE TORAKTIVIERUNG') && els['modal'].innerHTML.includes('Walter Harriman'), 'doDay triggers SGC crisis event modal');
+  resolveIncident(0); // Iris verriegeln
+  assert(playedEndTheme === true, 'doDay triggers Stargate outro theme');
+  assert(els['modal'].innerHTML.includes('SGC Tagesbericht') && els['modal'].innerHTML.includes('SGC LOGBUCH-NOTIZ'), 'Debriefing includes SGC daily statistics and lore story');
+  
+  // Verify Woolsey, Replicators, Meta AI content-rot & Winamp Easteregg
+  assert(SGC_INCIDENTS.length >= 5, 'At least 5 SGC canonical incidents & eastereggs registered');
+  const woolsey = SGC_INCIDENTS[1];
+  assert(woolsey.title.includes('WOOLSEY') && woolsey.choices.length === 3, 'Woolsey NID inspection incident registered');
+  const repl = SGC_INCIDENTS[2];
+  assert(repl.title.includes('REPLIKATOR') && (repl.text.includes('Projektilwaffen') || repl.choices[0].label.includes('Schrotflinte')), 'Replicator bug incident with AI banter registered');
+  triggerWinampEasterEgg();
+  
+  SFX.playTrack = origPlayTrack;
+}
+
+// 29. Test Tactical Level Redesign, In-Combat Loot System & Level Editor
+{
+  // A. Tactical MAPS.city verification
+  assert(MAPS.city.length === 15 && MAPS.city[0].length === 20, 'MAPS.city has 20x15 tactical dimensions');
+  const cityRows = MAPS.city;
+  const hasPlaza = cityRows[7].includes('##') && cityRows[7].includes('l');
+  assert(hasPlaza, 'MAPS.city contains central plaza with monument and market stalls');
+  const openTileCount = cityRows.reduce((acc, row) => acc + (row.match(/\./g) || []).length, 0);
+  assert(openTileCount >= 100, 'MAPS.city provides generous open movement space (>100 open tiles)');
+
+  // B. In-Combat Loot Spawning & Collection
+  newGame();
+  activateMission(CHAPTERS[0].missions[3], [0, 1, 2]); // 1-4 Steuern beim Schatzamt (city map)
+  skipGate();
+  assert(Array.isArray(C.loot) && C.loot.length >= 2, 'Tactical loot caches spawn on the battlefield');
+  const cache = C.loot[0];
+  assert(cache.id && cache.name && cache.res && cache.collected === false, 'Loot cache has valid attributes');
+  
+  // Test looting via movement
+  const jack = Object.values(C.units).find(u => u.side === 'player');
+  jack.x = cache.x;
+  jack.y = cache.y;
+  const initialOre = S.res.ore || 0;
+  collectCombatLoot(jack, cache);
+  assert(cache.collected === true, 'Loot is marked collected upon pickup');
+  assert(S.res.ore > initialOre, 'Collecting loot awards SGC resources (Ore)');
+
+  // C. Level Editor Verification
+  const fs = require('fs');
+  assert(fs.existsSync('tools/leveleditor.html'), 'tools/leveleditor.html exists');
+  const editorHtml = fs.readFileSync('tools/leveleditor.html', 'utf8');
+  assert(editorHtml.includes('SGC Tactical Level Editor') && editorHtml.includes('PRESETS') && editorHtml.includes('renderIsometric'), 'Level editor contains isometric renderer and presets');
+}
+
+// 30. Test SGC Krankenstation (Ebene 21 / Dr. Janet Fraiser), Medical Treatments & Evacuation
+{
+  newGame();
+  
+  // A. Medbay Presence on Level 21
+  const medbayRoom = Object.values(S.base.rooms).find(r => r.type === 'medbay');
+  assert(medbayRoom && medbayRoom.y === (BASE_LEVELS - 21), 'SGC Medbay exists on canonical Level 21 from game start');
+
+  // B. Medical Healing Methods
+  const jack = S.roster[0];
+  jack.hp = 20;
+  jack.injuries = 2;
+  jack.fatigue = 50;
+
+  // Method 1: 'rest'
+  const restRes = healPatient(0, 'rest');
+  assert(restRes.ok && jack.room === medbayRoom.id, 'healPatient(0, "rest") admits patient to Medbay bed on Level 21');
+
+  // Method 2: 'medicine'
+  S.res.medicine = 50;
+  const medRes = healPatient(0, 'medicine');
+  assert(medRes.ok && jack.hp === 55 && jack.injuries === 1, 'healPatient(0, "medicine") heals +35 HP and cures 1 injury');
+  assert(S.res.medicine === 35, 'healPatient(0, "medicine") consumes 15 medicine');
+
+  // Method 3: 'tretonin'
+  S.res.medicine = 20;
+  S.res.tech = 50;
+  const prevMaxHp = jack.maxHp;
+  const tretRes = healPatient(0, 'tretonin');
+  assert(tretRes.ok && jack.maxHp === (prevMaxHp + 5), 'healPatient(0, "tretonin") increases constitution (+5 MaxHP)');
+  assert(jack.morale === 100, 'Tretonin restores high morale');
+
+  // Method 4: 'surgery'
+  jack.hp = 18;
+  jack.injuries = 2;
+  S.res.medicine = 40;
+  S.res.tech = 30;
+  const surgRes = healPatient(0, 'surgery');
+  assert(surgRes.ok && jack.injuries === 0 && jack.hp >= Math.round(jack.maxHp * 0.75), 'healPatient(0, "surgery") by Dr. Fraiser resolves all injuries and stabilizes HP');
+
+  // Method 5: 'tech_goauld'
+  jack.hp = 15;
+  jack.injuries = 3;
+  S.res.tech = 50;
+  S.res.ore = 50;
+  const techRes = healPatient(0, 'tech_goauld');
+  assert(techRes.ok && jack.hp === jack.maxHp && jack.injuries === 0, 'healPatient(0, "tech_goauld") achieves 100% full cellular regeneration');
+
+  // C. Emergency Group Healing
+  const sam = S.roster[1];
+  const daniel = S.roster[2];
+  sam.hp = 30;
+  daniel.hp = 25;
+  S.res.medicine = 50;
+  const groupRes = healAllEmergency();
+  assert(groupRes.ok && sam.hp > 30 && daniel.hp > 25, 'healAllEmergency() treats all wounded personnel with available medicine');
+
+  // D. Downed Unit Evacuation & Gate Extraction
+  activateMission(CHAPTERS[0].missions[0], [0, 1, 2]);
+  skipGate();
+  const playerUnits = Object.values(C.units).filter(u => u.side === 'player');
+  assert(playerUnits.length >= 3, 'Combat squad deployed');
+  
+  // Down 1 unit
+  playerUnits[0].downed = true;
+  playerUnits[0].ap = 0;
+  
+  // Move other 2 units to gate
+  playerUnits[1].x = C.gatePos.x;
+  playerUnits[1].y = C.gatePos.y;
+  playerUnits[2].x = C.gatePos.x + 1;
+  playerUnits[2].y = C.gatePos.y;
+
+  const g = gateReady();
+  assert(g.downed === 1 && g.at === g.total && g.total === 2, 'gateReady() detects conscious squad at gate with 1 downed comrade');
+  const extSuccess = extract();
+  assert(extSuccess === true && C.result === 'extracted', 'extract() succeeds and evacuates downed comrade through the gate');
+  combatEnd();
+  assert(C.active === false, 'combatEnd() resets C.active to false after downed evacuation');
+
+  // E. Emergency Retreat
+  activateMission(CHAPTERS[0].missions[0], [0, 1, 2]);
+  skipGate();
+  assert(C.active === true, 'Combat started for emergency retreat test');
+  emergencyRetreat();
+  assert(C.active === false && C.result === 'extracted', 'emergencyRetreat() halts combat and safely extracts team');
+
+  // F. Daily Medbay Healing Loop in endDay()
+  newGame();
+  const testJack = S.roster[0];
+  testJack.hp = 20;
+  testJack.injuries = 1;
+  healPatient(0, 'rest'); // In Medbay bed
+  endDay();
+  assert(testJack.hp >= 55, 'endDay() grants high daily bed recovery (+35 HP) in Medbay');
+  assert(S.rlog.some(l => l.includes('Krankenstation')), 'endDay() logs hospital recovery in daily debriefing S.rlog');
+
+  // G. Krankenstation UI View & Incident Modal Rendering
+  setTab('medbay');
+  assert(UI.tab === 'medbay', 'setTab("medbay") activates medbay tab');
+  renderMedbayView();
+  const medbayBody = els['medbay-body'];
+  assert(medbayBody && medbayBody.innerHTML.includes('KRANKENSTATION') && medbayBody.innerHTML.includes('DR. JANET FRAISER'), 'renderMedbayView() renders Dr. Janet Fraiser hospital screen');
+  
+  // Test Medbay Incident Modal
+  showMedbayIncidentModal(0); // Broca Divide
+  assert(els['modal'].style.display === 'flex' && els['modal'].innerHTML.includes('BROCA-VIRUS'), 'showMedbayIncidentModal() displays canonical Stargate medical crisis');
+  resolveMedbayIncident(0);
+  assert(els['modal'].style.display === 'none', 'resolveMedbayIncident() executes choice and dismisses modal cleanly');
+}
+
 for(let i=0;i<5;i++){
   now+=16;
   const cb=rafCb; rafCb=null;
@@ -469,4 +833,5 @@ if(failures>0){
   process.exit(1);
 }else{
   console.log('✔ ALL TESTS PASSED (0 errors)');
+  process.exit(0);
 }

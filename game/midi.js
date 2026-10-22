@@ -549,21 +549,276 @@ $SOLITARY_BELL: n("<[14 ~ ~ ~] [~ 16 ~ ~] [15 ~ ~ ~] [~ 12 ~ ~]>").sc()
 
 $COSMIC_WIND: s("pink").lpf(sine.slow(12).range(300, 950)).gain(0.045)
 `;
+  },
+  outroCode(){
+    return `//@title Stargate SG-1 Outro & End Credits @by Joel Goldsmith & SGC Orchestral Lab
+// 134 BPM Cinematic Fanfare: Philip Glass String Ostinato, Soaring French Horns, Galloping Bass & Orchestral Timpani
+setCpm(134/4)
+setScale("c:minor")
+const brassGain = slider(0.920)
+const volume = slider(0.950)
+all(x => x.mul(postgain(volume)))
+
+$OSTINATO: note("<[g4 c5 e5 e4]*4 [g4 c5 e5 e4]*4 [ab4 c5 eb5 eb4]*4 [g4 b4 d5 d4]*4 [g4 c5 e5 e4]*4 [g4 c5 e5 e4]*4 [ab4 c5 eb5 eb4]*4 [bb4 d5 f5 f4]*4>")
+  .s("piano")
+  .lpf(2800)
+  .room(0.65)
+  .gain(0.72)
+  .delay(0.2)
+  .o(3)
+
+$OUTRO_FANFARE: note("<[c5 ~ ~ ~ ~ ~ ~ ~ ~ ~ b4 ~ g4 ~ e4 ~] [~ c4 ~ g4 ~ ~ ~ ~ ab4 ~ ~ ~ ~ ~ ~ ~] [eb4 ~ ~ ~ g4 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~] [c5 ~ ~ ~ ~ ~ ~ ~ ~ ~ b4 ~ g4 ~ e4 ~] [~ c4 ~ g4 ~ ~ ~ ~ ab4 ~ ~ ~ ~ ~ ~ ~] [c5 ~ ~ ~ g4 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~] [a4 ~ ~ ~ b4 ~ ~ ~ c5 ~ ~ ~ d5 ~ ~ ~] [e5 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~]>")
+  .s("supersaw")
+  .detune(0.38)
+  .acidenv(0.65)
+  .lpf(sine.slow(8).range(2200, 4800))
+  .room(0.85).roomsize(4)
+  .delay(0.35)
+  .gain(brassGain)
+  .o(4)
+
+$DRIVING_BASS: note("<[c2 c3 c2 c3 c2 c3 c2 c3] [c2 c3 c2 c3 c2 c3 c2 c3] [ab1 ab2 ab1 ab2 ab1 ab2 ab1 ab2] [g1 g2 g1 g2 g1 g2 g1 g2] [c2 c3 c2 c3 c2 c3 c2 c3] [c2 c3 c2 c3 c2 c3 c2 c3] [ab1 ab2 ab1 ab2 ab1 ab2 ab1 ab2] [bb1 bb2 bb1 bb2 bb1 bb2 bb1 bb2]>")
+  .s("sawtooth")
+  .sub(12)
+  .lpf(380)
+  .gain(0.88)
+  .o(4)
+
+$TIMPANI_BEAT: s("<[bd*2 ~ ~ ~ bd ~ ~ ~] [bd*2 ~ ~ ~ bd ~ ~ ~] [bd*2 ~ ~ ~ bd ~ ~ ~] [bd ~ bd ~ bd*2 ~ cr ~]>").gain(0.95).o(2)
+
+$SNARE_MARCH: s("~ sd ~ [sd*2 sd] ~ sd ~ [sd*2 sd*2]").gain(0.68).room(0.45).o(2)
+
+$STRING_PAD: note("<[[c3,g3,c4,e4]@4 ~] [[c3,g3,c4,e4]@4 ~] [[ab2,eb3,ab3,c4]@4 ~] [[g2,d3,g3,b3]@4 ~]>")
+  .s("supersaw")
+  .lpf(1600)
+  .gain(0.6)
+  .room(0.9)
+  .o(3)
+`;
+  },
+  outroAmbientCode(){
+    return `//@title Stargate Outro × Deep Space Ambient @by SGC Cosmic Lab
+// 76 BPM Melancholic End-Credits Ambient: Resonant Phaser, Slow Ostinato & Floating Horn Echoes
+setCpm(76/4)
+setScale("c:minor")
+const phaserRate = slider(0.320)
+const volume = slider(0.920)
+all(x => x.mul(postgain(volume)))
+
+$AMBIENT_OSTINATO: note("<[g4 c5 e5 e4]*2 [ab4 c5 eb5 eb4]*2 [g4 b4 d5 d4]*2 [g4 c5 e5 e4]*2>")
+  .s("piano")
+  .lpf(sine.slow(7).range(450, 1800))
+  .lpq(3.5)
+  .room(0.95).roomsize(5)
+  .delay(0.55).delaytime(0.45)
+  .gain(0.62)
+  .o(3)
+
+$HORN_ECHO: note("<[c5 ~ ~ ~ ~ ~ b4 ~] [g4 ~ e4 ~ ~ ~ ~ ~] [ab4 ~ ~ ~ ~ ~ eb4 ~] [g4 ~ ~ ~ ~ ~ ~ ~]>")
+  .s("supersaw")
+  .detune(0.45)
+  .lpf(sine.slow(9).range(600, 2400))
+  .room(0.95)
+  .delay(0.6)
+  .gain(0.75)
+  .o(4)
+
+$SUB_CELLOBASS: note("<[c2 ~ c2 ~] [c2 ~ c2 ~] [ab1 ~ ab1 ~] [g1 ~ g1 ~]>")
+  .s("sawtooth")
+  .sub(12)
+  .lpf(220)
+  .gain(0.85)
+  .o(4)
+
+$SLOW_TIMPANI: s("sbd ~ ~ ~ ~ ~ sbd ~").dec(0.5).gain(0.75).o(2)
+
+$STELLAR_BELL: note("<[c5 ~ ~ ~] [eb5 ~ ~ ~] [d5 ~ ~ ~] [c5 ~ ~ ~]>")
+  .s("sine")
+  .add(12)
+  .gain(0.35)
+  .room(0.95)
+  .delay(0.5)
+  .o(5)
+`;
+  },
+  atlantisCode(){
+    return `//@title Stargate Atlantis · Pegasus Expedition Main Theme @by Joel Goldsmith & SGC Orchestral
+// 112 BPM Cinematic Adventure: Soaring French Horns, 12/8 Rolling Strings & Epic Pegasus Choir
+setCpm(112/4)
+setScale("bb:major")
+const volume = slider(0.960)
+all(x => x.mul(postgain(volume)))
+
+$ATLANTIS_FANFARE: note("<[f4 ~ ~ ~ bb4 ~ ~ ~] [c5 ~ d5 ~ eb5 ~ d5 ~] [c5 ~ bb4 ~ f4 ~ ~ ~] [g4 ~ ab4 ~ bb4 ~ ~ ~] [c5 ~ d5 ~ f5 ~ eb5 ~] [d5 ~ c5 ~ bb4 ~ ~ ~] [c5 ~ d5 ~ c5 ~ f4 ~] [bb4 ~ ~ ~ ~ ~ ~ ~]>")
+  .s("supersaw")
+  .detune(0.32)
+  .acidenv(0.60)
+  .lpf(sine.slow(10).range(2400, 5200))
+  .room(0.88).roomsize(4.5)
+  .delay(0.32)
+  .gain(0.92)
+  .o(4)
+
+$ATLANTIS_STRINGS: note("<[f3 bb3 d4 bb3 f3 bb3]*2 [g3 c4 eb4 c4 g3 c4]*2 [f3 a3 c4 a3 f3 a3]*2 [eb3 g3 bb3 g3 eb3 g3]*2>")
+  .s("piano")
+  .lpf(3200)
+  .gain(0.70)
+  .room(0.7)
+  .delay(0.2)
+  .o(3)
+
+$ATLANTIS_BASS: note("<[bb1 ~ bb1 ~ bb1 ~ bb1 ~] [c2 ~ c2 ~ c2 ~ c2 ~] [f1 ~ f1 ~ f1 ~ f1 ~] [eb1 ~ eb1 ~ eb1 ~ eb1 ~]>")
+  .s("sawtooth")
+  .sub(12)
+  .lpf(340)
+  .gain(0.85)
+  .o(4)
+
+$ATLANTIS_TIMPANI: s("<[bd*2 ~ ~ ~ bd ~ cr ~] [bd ~ ~ ~ bd*2 ~ ~ ~] [bd*2 ~ ~ ~ bd ~ ~ ~] [bd ~ bd ~ bd*2 ~ cr ~]>").gain(0.92).o(2)
+
+$PEGASUS_CHOIR: note("<[[bb3,d4,f4]@4 ~] [[c4,eb4,g4]@4 ~] [[f3,a3,c4]@4 ~] [[eb3,g3,bb3]@4 ~]>")
+  .s("supersaw")
+  .lpf(1400)
+  .gain(0.55)
+  .room(0.95)
+  .o(3)
+`;
+  },
+  asgardCode(){
+    return `//@title Asgard & Thor · Die O'Neill-Klasse @by Asgard High Council & SGC Soundlab
+// 72 BPM Ancient Wisdom: Mystical Flute Motif, Shimmering Teleport Harmonics & Hypnotic Deep Drone
+setCpm(72/4)
+setScale("d:minor")
+const volume = slider(0.920)
+all(x => x.mul(postgain(volume)))
+
+$ASGARD_THEME: note("<[d4 ~ ~ ~ a4 ~ ~ ~] [c5 ~ b4 a4 g4 ~ a4 ~] [d5 ~ c5 ~ a4 ~ ~ ~] [g4 ~ f4 ~ e4 ~ d4 ~]>")
+  .s("supersaw")
+  .detune(0.25)
+  .lpf(sine.slow(8).range(1200, 3200))
+  .room(0.95).roomsize(5)
+  .delay(0.45)
+  .gain(0.85)
+  .o(4)
+
+$CRYSTAL_BEAM: note("<[d5 f5 a5 d6]*2 [c5 e5 g5 c6]*2 [bb4 d5 f5 bb5]*2 [a4 c5 e5 a5]*2>")
+  .s("sine")
+  .add(12)
+  .gain(0.40)
+  .room(0.98)
+  .delay(0.55)
+  .o(5)
+
+$SUB_DRONE: note("<[d1 ~ ~ ~ ~ ~ ~ ~] [c1 ~ ~ ~ ~ ~ ~ ~] [bb0 ~ ~ ~ ~ ~ ~ ~] [a0 ~ ~ ~ ~ ~ ~ ~]>")
+  .s("sawtooth")
+  .sub(12)
+  .lpf(180)
+  .gain(0.95)
+  .o(4)
+
+$TEMPLE_PULSE: s("<[sbd ~ ~ ~ sbd ~ ~ ~] [sbd ~ ~ ~ sbd ~ cr ~]>").gain(0.70).o(2)
+`;
+  },
+  funeralCode(){
+    return `//@title Gefallene Helden & Daniel's Aufstieg @by SGC Memorial Chapel
+// 58 BPM Solemn Military Farewell: Mournful Horn, Muffled March Drum & Solitary Memorial Bell
+setCpm(58/4)
+setScale("a:minor")
+const volume = slider(0.920)
+all(x => x.mul(postgain(volume)))
+
+$MEMORIAL_HORN: note("<[a3 ~ ~ ~ c4 ~ ~ ~] [b3 ~ a3 ~ g3 ~ e3 ~] [a3 ~ ~ ~ ~ ~ ~ ~] [f3 ~ ~ ~ g3 ~ ~ ~] [a3 ~ ~ ~ ~ ~ ~ ~]>")
+  .s("supersaw")
+  .detune(0.18)
+  .lpf(sine.slow(12).range(800, 2200))
+  .room(0.95).roomsize(4.5)
+  .delay(0.5)
+  .gain(0.88)
+  .o(4)
+
+$CHAMBER_STRINGS: note("<[[a2,c3,e3]@4 ~] [[f2,a2,c3]@4 ~] [[d2,f2,a2]@4 ~] [[e2,g2,b2]@4 ~]>")
+  .s("sawtooth")
+  .lpf(1100)
+  .gain(0.58)
+  .room(0.95)
+  .o(3)
+
+$SOLEMN_DRUM: s("<[~ ~ ~ ~ sbd ~ ~ ~] [~ ~ ~ ~ ~ ~ ~ sd] [sbd ~ ~ ~ ~ ~ ~ ~] [~ ~ ~ ~ sbd ~ ~ ~]>").gain(0.72).o(2)
+
+$MEMORIAL_BELL: note("<[a4 ~ ~ ~ ~ ~ ~ ~] [~ ~ ~ ~ ~ ~ ~ ~] [e4 ~ ~ ~ ~ ~ ~ ~] [a4 ~ ~ ~ ~ ~ ~ ~]>")
+  .s("sine")
+  .add(12)
+  .gain(0.42)
+  .room(0.98)
+  .delay(0.6)
+  .o(5)
+`;
+  },
+  promotionCode(){
+    return `//@title SGC Ehrenmedaille & Beförderung @by USAF Ceremonial Brass & SGC Fanfare
+// 128 BPM Triumphal Clarion Call: Heroic Brass Cadence, Parade Snare & Regal Orchestra Hits
+setCpm(128/4)
+setScale("c:major")
+const volume = slider(0.960)
+all(x => x.mul(postgain(volume)))
+
+$CLARION_CALL: note("<[c4 c4 c4 ~] [g4 ~ ~ ~] [c5 ~ g4 e4] [c4 ~ ~ ~] [g4 ~ c5 ~] [e5 ~ d5 c5] [c5 ~ ~ ~ ~ ~ ~ ~]>")
+  .s("supersaw")
+  .detune(0.35)
+  .acidenv(0.70)
+  .lpf(sine.slow(6).range(2800, 5600))
+  .room(0.85).roomsize(4)
+  .delay(0.28)
+  .gain(0.95)
+  .o(4)
+
+$PARADE_SNARE: s("sd*4 [sd*2 sd sd*2] sd*4 [sd sd*2 cr ~]").gain(0.75).room(0.5).o(2)
+
+$ORCHESTRA_HIT: note("<[[c3,e3,g3,c4]*2 ~] [[f3,a3,c4]*2 ~] [[g3,b3,d4]*2 ~] [[c3,e3,g3,c4]*2 cr]>")
+  .s("supersaw")
+  .lpf(2400)
+  .gain(0.78)
+  .room(0.8)
+  .o(3)
+
+$MARCH_BASS: note("<[c2 ~ g1 ~] [c2 ~ g1 ~] [f1 ~ c2 ~] [g1 ~ c2 cr]>")
+  .s("sawtooth")
+  .sub(12)
+  .lpf(380)
+  .gain(0.88)
+  .o(4)
+`;
   }
 };
 
 function registerThemeTracks(){
   if(typeof STRUDEL_TRACKS==='undefined')return;
   const m=THEME_MIDI.load();if(!m)return;
-  STRUDEL_TRACKS.theme_midi={name:'🎼 Stargate Main Theme (MIDI direkt)',artist:'Original Theme · MIDI-Bridge',role:'gate',code:THEME_MIDI.directCode(0)};
-  STRUDEL_TRACKS.theme_fanfare={name:'🎺 Stargate Opening Fanfare (MIDI direkt)',artist:'Original Theme · MIDI-Bridge',role:'base',code:THEME_MIDI.directCode(1)};
+  STRUDEL_TRACKS.theme_midi={name:'🎼 Stargate SG-1 · Original General MIDI Direct',artist:'Original Theme · MIDI-Bridge',role:'gate',code:THEME_MIDI.directCode(0)};
+  STRUDEL_TRACKS.theme_fanfare={name:'🎺 Stargate Opening Fanfare (Orchestral)',artist:'Original Theme · MIDI-Bridge',role:'base',code:THEME_MIDI.directCode(1)};
+  
+  // Stargate Franchise Themes & Ceremonials
+  STRUDEL_TRACKS.theme_atlantis={name:'🌊 Stargate Atlantis · Hauptthema (Pegasus)',artist:'Joel Goldsmith · SGC Pegasus Unit',role:'base',code:THEME_MIDI.atlantisCode()};
+  STRUDEL_TRACKS.theme_asgard={name:'🛸 Asgard & Thor · Die O\'Neill-Klasse',artist:'Asgard High Council · SGC Lab',role:'peaceful',code:THEME_MIDI.asgardCode()};
+  STRUDEL_TRACKS.theme_funeral={name:'🕊 Gefallene Helden & Daniel\'s Aufstieg (Memorial)',artist:'SGC Memorial Chapel',role:'peaceful',code:THEME_MIDI.funeralCode()};
+  STRUDEL_TRACKS.theme_promotion={name:'🎖 SGC Ehrenmedaille & Beförderung (Fanfare)',artist:'USAF Ceremonial Brass',role:'base',code:THEME_MIDI.promotionCode()};
+
+  // Switch Angel Patreon Codevault Blends (Klarstellung: Keine offiziellen Remixes, sondern Codevault-Snippets mit Stargate-Synthesizern gemixt)
+  const blendNames = [
+    '🌀 Stargate SG-1 · Anthem (Patreon Codevault Blend 1)',
+    '🌀 Stargate SG-1 · Electro Odyssey (Patreon Codevault Blend 2)',
+    '🌀 Stargate SG-1 · Goa\'uld Assault (Patreon Codevault Blend 3)',
+    '🌀 Stargate SG-1 · Hyperspace Drive (Patreon Codevault Blend 4)'
+  ];
   for(let s=0;s<4;s++){
-    STRUDEL_TRACKS['theme_remix_'+s]={name:`🌀 Theme × Switch Angel Remix ${s+1}`,artist:'SGC Strudel Bridge',role:s===0?'gate':s%2?'combat':'map',
+    STRUDEL_TRACKS['theme_remix_'+s]={name:blendNames[s],artist:'SGC Live Code Vault (Patreon Blend)',role:s===0?'gate':s%2?'combat':'map',
       code:THEME_MIDI.remixCode(s,0.4+s*0.15)};
   }
-  STRUDEL_TRACKS.theme_remix_cnc={name:'🪖 Stargate × C&C Hell March Industrial Remix',artist:'SGC Heavy Industrial',role:'boss',code:THEME_MIDI.cncCode()};
-  STRUDEL_TRACKS.theme_remix_lofi={name:'☕ Stargate × Midnight Lo-Fi Chillhop Remix',artist:'SGC Midnight Lab',role:'peaceful',code:THEME_MIDI.lofiCode()};
-  STRUDEL_TRACKS.theme_remix_melancholy={name:'🌌 Stargate × Melancholic Ambient Phaser Remix',artist:'SGC Deep Space Lab',role:'peaceful',code:THEME_MIDI.melancholyCode()};
+  STRUDEL_TRACKS.theme_remix_cnc={name:'🪖 Stargate × C&C Hell March Industrial',artist:'SGC Heavy Industrial',role:'boss',code:THEME_MIDI.cncCode()};
+  STRUDEL_TRACKS.theme_remix_lofi={name:'☕ Stargate × Midnight Lo-Fi Chillhop',artist:'SGC Midnight Lab',role:'peaceful',code:THEME_MIDI.lofiCode()};
+  STRUDEL_TRACKS.theme_remix_melancholy={name:'🌌 Stargate × Melancholic Ambient Phaser',artist:'SGC Deep Space Lab',role:'peaceful',code:THEME_MIDI.melancholyCode()};
+  STRUDEL_TRACKS.theme_outro={name:'🎖 Stargate SG-1 Outro & End Credits (Original)',artist:'Joel Goldsmith · SGC Orchestral',role:'base',code:THEME_MIDI.outroCode()};
+  STRUDEL_TRACKS.theme_outro_ambient={name:'🌌 Stargate Outro × Deep Space Ambient',artist:'SGC Cosmic Lab',role:'peaceful',code:THEME_MIDI.outroAmbientCode()};
   if(typeof STRUDEL!=='undefined'&&STRUDEL.patterns){
     Object.keys(STRUDEL_TRACKS).forEach(k=>{STRUDEL.patterns[k]=STRUDEL_TRACKS[k].code;});
   }

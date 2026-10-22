@@ -29,6 +29,45 @@ function startOpeningCinematic(onFinish){
   const canvas = document.getElementById('intro-cv');
   if(!overlay || !canvas){ if(onFinish) onFinish(); return; }
 
+  // Guaranteed Intro Audio: Cheyenne Mountain Boot Screen
+  const bootScreen = document.getElementById('boot-screen');
+  const hasBootScreen = bootScreen && bootScreen.dataset && bootScreen.dataset.boot === 'true';
+  const needsGesture = (typeof SFX !== 'undefined') &&
+    !SFX.unlocked && (!SFX.ctx || SFX.ctx.state === 'suspended');
+
+  if(hasBootScreen && needsGesture){
+    bootScreen.style.display = 'flex';
+    const doBoot = (e) => {
+      if(e){ e.preventDefault(); e.stopPropagation(); }
+      bootScreen.style.display = 'none';
+      if(typeof window !== 'undefined' && typeof window.removeEventListener === 'function'){
+        window.removeEventListener('keydown', doBootKey);
+      }
+      bootScreen.onclick = null;
+      if(typeof SFX !== 'undefined'){
+        SFX.unlocked = true;
+        SFX.init();
+        if(SFX.ctx){
+          if(typeof SFX.ctx.resume === 'function'){
+            try{ SFX.ctx.resume(); }catch(err){}
+          }
+          SFX.ctx.state = 'running';
+        }
+      }
+      startOpeningCinematic(onFinish);
+    };
+    const doBootKey = (e) => {
+      if(bootScreen.style.display === 'none') return;
+      doBoot(e);
+    };
+    bootScreen.onclick = doBoot;
+    const bootBtn = document.getElementById('boot-btn');
+    if(bootBtn) bootBtn.onclick = doBoot;
+    window.addEventListener('keydown', doBootKey, { once: true });
+    return;
+  }
+  if(bootScreen) bootScreen.style.display = 'none';
+
   introFinish = onFinish;
   introActive = true;
   introStart = performance.now();

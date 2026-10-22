@@ -1,6 +1,6 @@
-# 🗺 ROADMAP – SGC COMMAND v0.23 ("Einsatzbereit")
+# 🗺 ROADMAP – SGC COMMAND v0.24 ("Feldtauglich & Web MIDI Edition")
 
-**Stand:** v0.23 · Mission-UI und Intro-Audio stabilisiert · Responsive Kampfpanel · 88 Tests grün
+**Stand:** v0.24 · Hardware Web MIDI Controller & Akai MPK Presets · Stargate Outro Theme · Cheyenne Boot-Screen · 3D Wurmloch-Tunnel · 122 Tests grün
 **Zweck:** Klare Prioritäten und technischer Fahrplan für die Weiterentwicklung von SGC Command.
 
 ---
@@ -116,6 +116,13 @@
 - [x] **Musik-Ablauf**: Intro (Stargate Thema) → Basis (Remix 1, `theme_remix_0`) → Sternenkarte (Remix 3, `theme_remix_2`) → Basis (Remix 1).
 - [x] **Mutieren-Engine repariert**: Setter für `STRUDEL.currentCode` ergänzt; sichere Algorithmus-Transformationen für Noten- und Skalenmodulation ohne Syntaxfehler.
 - [x] **Neuer Track: 🌌 Melancholic Ambient Phaser Remix**: 74 BPM D-Dorisch mit nativem `.phaser()` DSP-Filter, Supersaw-Pads, Cello-Subbass und einsamer Glocke.
+
+### 5.5 Outro-Fanfare, Web MIDI, Boot-Screen & Wurmloch-Transit (v0.24 – ERLEDIGT ✅)
+- [x] **Stargate Outro / Abspann-Thema (`theme_outro` & `theme_outro_ambient`)**: Joel Goldsmith / David Arnold Abspannmelodie (134 BPM, C-Moll/Dur) mit treibendem 16tel-Ostinato, Blechbläser-Fanfare und Pauken-Marsch; ertönt automatisch beim Missions-Debriefing (`showReport()`).
+- [x] **Web MIDI API Hardware-Controller & Akai MPK Support (`midi-controller.js`)**: Standard-Presets für Akai MPK mini Plus (CC 70..77) und MPK mini mk2 (CC 1..8), 8 Drum-Pads (Notes 36..43), 25 Live-Keyboard-Tasten, dynamisches MIDI-Learn und Winamp-Dashboard.
+- [x] **Cheyenne Mountain Terminal Boot-Screen (`#boot-screen`)**: Garantiert sofortige WebAudio-Aktivierung ab Frame 0 im Intro in allen modernen Browsern.
+- [x] **3D Hyperspace-Wurmloch-Tunnelsequenz**: Dynamisch geschwungener 3D-ASCII-Subraumtunnel mit perspektivischen Ringen, Chrono-Partikeln und Rausch-Audio (`SFX.wormhole()`).
+- [x] **Level-Editor Toolchain-Spezifikation (`LEVELEDITOR-SPEC.md`)**: Umfassende Spezifikation für 2:1 Isometrie-Voxel-Editor mit RLE-Kompression (< 1,44 MB Floppy-Budget).
 
 ---
 

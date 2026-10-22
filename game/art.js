@@ -10,6 +10,8 @@ const LOOKS={
  'Vala Mal Doran':{skin:'#e2ad88',hair:'#241812',style:'long'},
  'Ronon Dex':{skin:'#7a5232',hair:'#1a1210',style:'dreads'},
  'John Sheppard':{skin:'#e3b48e',hair:'#2a2018',style:'messy'},
+ 'Dr. Janet Fraiser':{skin:'#ecd0b0',hair:'#6b3a24',style:'short'},
+ 'Dr. Carolyn Lam':{skin:'#e8be96',hair:'#1a1816',style:'bob'},
  'Dr. Beale':{skin:'#e0aa84',hair:'#3a3a3a',style:'fringe',glasses:true},
  'Eli Wallace':{skin:'#e6b894',hair:'#2a1c14',style:'curly',glasses:true},
  "Ba'al":{skin:'#d9a882',hair:'#1c1814',style:'slick',goatee:true},
@@ -82,6 +84,8 @@ function playGate(dials,deploys,cb,isCollapse=false){
  GR.walkers=[];deploys.forEach((d,ti)=>d.members.forEach((id,k)=>GR.walkers.push({id,x:300+ti*0+k*34,row:ti})));
  if(!dials.length)GR.phase='open',GR.t0=performance.now();}
 function skipGate(){
+ const ov=typeof document!=='undefined'&&document.getElementById('gate-overlay');
+ if(ov)ov.style.display='none';
  if(GR.phase!=='idle'){
   GR.phase='idle';
   const cb=GR.cb;GR.cb=null;
@@ -100,11 +104,17 @@ function gateTick(now){
   if(t>2.8){
    GR.phase=GR.isCollapse?'close':'transit';
    GR.t0=now;
+   if(GR.phase==='transit'&&typeof SFX!=='undefined'&&typeof SFX.wormhole==='function'){
+    SFX.wormhole();
+   }
   }
  }
  else if(GR.phase==='close'||GR.phase==='transit'){
-  if(t>0.65){
+  const dur=(GR.phase==='transit')?4.0:0.65;
+  if(t>dur){
    GR.phase='idle';
+   const ov=typeof document!=='undefined'&&document.getElementById('gate-overlay');
+   if(ov)ov.style.display='none';
    const cb=GR.cb;GR.cb=null;
    if(cb){
     try{cb();}catch(err){console.error('[GATE] callback error:',err);}
@@ -112,8 +122,171 @@ function gateTick(now){
   }
  }
 }
+
+// ===================== Hyperspace Wormhole Subspace Tunnel =====================
+const WORMHOLE_PARTICLES = Array.from({length: 50}, (_, i) => ({
+ x: (Math.random() - 0.5) * 800,
+ y: (Math.random() - 0.5) * 500,
+ z: 1 + Math.random() * 16,
+ speed: 4.5 + Math.random() * 4.0,
+ char: ['·', '✦', '°', '★', '¤', '*'][i % 6]
+}));
+const WORMHOLE_ASCII = ['≈', '░', '▒', '·', '✦', '¤', '⌬', '※', '§', '✶', '~', '≈'];
+
+function drawWormholeTunnel(c, W, Ht, now, elapsed, planetLabel){
+ const cx = W / 2, cy = Ht / 2;
+ // 1. Deep Subspace Cosmic Void Background
+ const bg = c.createRadialGradient(cx, cy, 10, cx, cy, 480);
+ bg.addColorStop(0, '#0a192f');
+ bg.addColorStop(0.45, '#031226');
+ bg.addColorStop(1, '#01050d');
+ c.fillStyle = bg;
+ c.fillRect(0, 0, W, Ht);
+
+ // Undulation curve helper: snake-like winding tunnel
+ const undulate = (z) => ({
+  x: Math.sin(now * 0.0028 + z * 0.32) * (26 + (16 - Math.min(16, z)) * 4.2),
+  y: Math.cos(now * 0.0022 + z * 0.28) * (18 + (16 - Math.min(16, z)) * 3.0)
+ });
+
+ // 2. Streaming Subspace Chrono-Particles (rushing past camera)
+ c.font = '12px monospace';
+ c.textAlign = 'center';
+ c.textBaseline = 'middle';
+ for(let i = 0; i < WORMHOLE_PARTICLES.length; i++){
+  const p = WORMHOLE_PARTICLES[i];
+  p.z -= p.speed * 0.06;
+  if(p.z <= 0.4){
+   p.z = 16;
+   p.x = (Math.random() - 0.5) * 800;
+   p.y = (Math.random() - 0.5) * 500;
+  }
+  const u = undulate(p.z);
+  const k = 220 / p.z;
+  const sx = cx + u.x + p.x * (k * 0.006);
+  const sy = cy + u.y + p.y * (k * 0.006);
+  if(sx >= 0 && sx < W && sy >= 0 && sy < Ht){
+   const alpha = Math.min(1, Math.max(0.1, (16 - p.z) / 14));
+   c.fillStyle = `rgba(186, 230, 253, ${alpha * 0.85})`;
+   c.fillText(p.char, sx, sy);
+  }
+ }
+
+ // 3. Ring calculation for 18 perspective slices
+ const numRings = 18;
+ const ringData = [];
+ const speedOffset = (now * 0.0035) % 1.0;
+
+ for(let i = numRings; i >= 1; i--){
+  const z = i - speedOffset;
+  if(z <= 0.2) continue;
+  const u = undulate(z);
+  const r = 560 / (z + 0.4);
+  const rx = cx + u.x;
+  const ry = cy + u.y;
+  ringData.push({ z, rx, ry, r, i });
+ }
+
+ // 4. Longitudinal Warp Streamlines (6 glowing energy conduits connecting rings)
+ for(let rib = 0; rib < 6; rib++){
+  const angle = (rib / 6) * Math.PI * 2 + now * 0.0008;
+  c.beginPath();
+  let first = true;
+  for(let j = 0; j < ringData.length; j++){
+   const rd = ringData[j];
+   const px = rd.rx + Math.cos(angle + rd.z * 0.15) * rd.r;
+   const py = rd.ry + Math.sin(angle + rd.z * 0.15) * (rd.r * 0.72);
+   if(first){ c.moveTo(px, py); first = false; }
+   else { c.lineTo(px, py); }
+  }
+  c.strokeStyle = 'rgba(56, 189, 248, 0.22)';
+  c.lineWidth = 1.5;
+  c.stroke();
+ }
+
+ // 5. Render Perspective Concentric Rings & ASCII Perimeter Glyphs
+ for(let j = 0; j < ringData.length; j++){
+  const rd = ringData[j];
+  const alpha = Math.min(0.9, Math.max(0.08, (16 - rd.z) / 13));
+  const rX = rd.r;
+  const rY = rd.r * 0.72;
+
+  // Outer glowing elliptical ring
+  c.strokeStyle = `rgba(14, 165, 233, ${alpha * 0.65})`;
+  c.lineWidth = Math.max(1, 4.5 / rd.z);
+  c.beginPath();
+  c.ellipse(rd.rx, rd.ry, rX, rY, 0, 0, Math.PI * 2);
+  c.stroke();
+
+  // Core white-hot plasma line
+  c.strokeStyle = `rgba(224, 242, 254, ${alpha * 0.45})`;
+  c.lineWidth = Math.max(1, 1.8 / rd.z);
+  c.stroke();
+
+  // ASCII Characters orbiting around each ring
+  if(rd.z > 0.8 && rd.z < 13){
+   const numChars = Math.min(24, Math.max(8, Math.floor(rd.r / 16)));
+   const spin = now * 0.001 * (rd.i % 2 ? 1 : -1);
+   c.font = `${Math.max(9, Math.floor(22 / rd.z))}px monospace`;
+   for(let k = 0; k < numChars; k++){
+    const a = (k / numChars) * Math.PI * 2 + spin;
+    const gx = rd.rx + Math.cos(a) * rX;
+    const gy = rd.ry + Math.sin(a) * rY;
+    const ch = WORMHOLE_ASCII[(k + rd.i) % WORMHOLE_ASCII.length];
+    c.fillStyle = `rgba(125, 211, 252, ${alpha * 0.8})`;
+    c.fillText(ch, gx, gy);
+   }
+  }
+ }
+
+ // 6. Distant Exit Event Horizon Singularity (Destination Gate)
+ if(ringData.length > 0){
+  const deep = ringData[0];
+  const exitG = c.createRadialGradient(deep.rx, deep.ry, 2, deep.rx, deep.ry, 70);
+  exitG.addColorStop(0, '#ffffff');
+  exitG.addColorStop(0.25, '#7dd3fc');
+  exitG.addColorStop(0.6, 'rgba(14, 165, 233, 0.4)');
+  exitG.addColorStop(1, 'rgba(14, 165, 233, 0)');
+  c.fillStyle = exitG;
+  c.beginPath();
+  c.arc(deep.rx, deep.ry, 70, 0, Math.PI * 2);
+  c.fill();
+ }
+
+ // 7. Wormhole Transit Tactical HUD
+ c.fillStyle = 'rgba(2, 6, 23, 0.78)';
+ c.fillRect(0, 0, W, 42);
+ c.fillStyle = '#38bdf8';
+ c.font = 'bold 15px monospace';
+ c.textAlign = 'left';
+ c.fillText(`◎ SUBRAUM-WURMLOCH TRANSIT · ZIEL: ${(planetLabel || 'UNBEKANNT').toUpperCase()}`, 18, 26);
+
+ const rem = Math.max(0, 4.0 - elapsed).toFixed(1);
+ c.fillStyle = '#94a3b8';
+ c.font = '12px monospace';
+ c.textAlign = 'right';
+ c.fillText(`ETA: ${rem}s · CHRONO-VEKTOR: STABIL`, W - 18, 26);
+
+ // Bottom Status Ribbon
+ c.fillStyle = 'rgba(2, 6, 23, 0.78)';
+ c.fillRect(0, Ht - 36, W, 36);
+ c.fillStyle = '#e2e8f0';
+ c.font = '12px monospace';
+ c.textAlign = 'left';
+ c.fillText(`SG-1 PASSIERT DEN SUBRAUM-KORRIDOR NACH ${(planetLabel || 'UNBEKANNT').toUpperCase()} …`, 18, Ht - 14);
+
+ c.fillStyle = '#38bdf8';
+ c.font = 'bold 12px monospace';
+ c.textAlign = 'right';
+ c.fillText('▶ Klick / Leertaste / ESC: Überspringen', W - 18, Ht - 14);
+}
+
 function drawGateroom(cv,now,state){
  const c=cv.getContext('2d'),W=cv.width,Ht=cv.height,cx=W/2,cy=250,Rr=165;gateTick(now);
+ if(GR.phase==='transit'){
+  drawWormholeTunnel(c,W,Ht,now,(now-GR.t0)/1000,GR.label);
+  return;
+ }
  // Wand
  let g=c.createLinearGradient(0,0,0,Ht);g.addColorStop(0,'#10151c');g.addColorStop(.7,'#1b222c');g.addColorStop(1,'#0d1117');c.fillStyle=g;c.fillRect(0,0,W,Ht);
  c.strokeStyle='rgba(120,140,160,.12)';c.lineWidth=2;for(let x=0;x<W;x+=80){c.beginPath();c.moveTo(x,0);c.lineTo(x,430);c.stroke();}

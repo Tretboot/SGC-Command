@@ -498,6 +498,26 @@ function renderCombatIsoPixel(cv){
       drawIsoDiamondOverlay(c,sx,syGround,tw,th,C.buildType?'rgba(74,222,128,0.18)':null,hCol,2);
     }
 
+    // 3.5 Taktische Beute-Kiste auf diesem Voxel
+    if(C.loot&&C.loot.length){
+      const l=C.loot.find(item=>!item.collected&&item.x===x&&item.y===y);
+      if(l){
+        const pulse=0.5+0.5*Math.sin(now/260+x*2+y*3);
+        c.save();
+        c.fillStyle=`rgba(245,158,11,${0.24+0.16*pulse})`;
+        c.beginPath();
+        c.ellipse(sx,syGround-2,tw*0.35,th*0.35,0,0,Math.PI*2);
+        c.fill();
+        const cw=11*ISO.zoom,ch=7*ISO.zoom,cd=8*ISO.zoom;
+        drawIsoPrism(c,sx,syGround-2,cw*2,ch*2,cd,'#f59e0b','#b45309','#78350f','#fde047');
+        c.fillStyle='#fde047';
+        c.font=`bold ${Math.max(10,Math.round(11*ISO.zoom))}px monospace`;
+        c.textAlign='center';
+        c.fillText('📦',sx,syGround-cd-8-2*pulse);
+        c.restore();
+      }
+    }
+
     // 4. Einheit / Agent auf diesem Voxel (Syndicate / X-COM / Jagged Alliance Stil)
     const u=unitMap.get(cellKey);
     if(u){
@@ -737,6 +757,13 @@ function renderCombatIsoAscii(cv){
     if(C.hover&&C.hover.x===x&&C.hover.y===y){
       c.strokeStyle=C.buildType?(canPlaceOffworld(C.buildType,x,y)?'#4ade80':'#ef4444'):'#ffffff';
       c.lineWidth=1.5;c.strokeRect(sx-tw*0.32,syGround-th*0.28,tw*0.64,th*0.56);
+    }
+    if(C.loot&&C.loot.length){
+      const l=C.loot.find(item=>!item.collected&&item.x===x&&item.y===y);
+      if(l){
+        c.fillStyle='#f59e0b';
+        c.fillText('[$📦$]',sx,syGround-fontPx*0.7);
+      }
     }
 
     // 4. Multi-Cell ASCII-Sprites für Einheiten (wie asciicker .xp Sprites)

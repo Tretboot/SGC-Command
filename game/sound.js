@@ -864,6 +864,15 @@ const STRUDEL={
         }
       }
     }
+    const hasActiveVoice = lines.some(l => /^\s*\$([A-Z0-9_]+)\s*:/.test(l));
+    if(!hasActiveVoice){
+      for(let i=0; i<lines.length; i++){
+        if(/^\s*_\$([A-Z0-9_]+)\s*:/.test(lines[i])){
+          lines[i] = lines[i].replace(/^\s*_\$([A-Z0-9_]+)\s*:/, '$$$1:');
+          break;
+        }
+      }
+    }
     src = lines.join('\n');
 
     // 3. Ribbon-Parametrisierung (Seed & Länge permutieren)
@@ -1121,6 +1130,12 @@ const SFX={
       this.master.gain.setValueAtTime(this.muted?0:v,this.ctx.currentTime);
     }
     try{localStorage.setItem('sgc_volume',String(v));}catch(e){}
+    if(typeof document!=='undefined'){
+      const sl=document.getElementById('winamp-vol-slider');
+      if(sl&&Math.abs(parseFloat(sl.value)-Math.round(v*100))>1){
+        sl.value=Math.round(v*100);
+      }
+    }
     return v;
   },
 
@@ -1292,9 +1307,10 @@ const SFX={
 
   toggle(){
     this.muted=!this.muted;
-    if(this.master)this.master.gain.value=this.muted?0:0.55;
+    const curVol=this.getVolume();
+    if(this.master)this.master.gain.value=this.muted?0:curVol;
     if(this.muted)STRUDEL.hush();
-    else if(this.musicEnabled)this.playTrack(STRUDEL.currentTrack||'sa_lets_talk');
+    else if(this.musicEnabled)this.playTrack(STRUDEL.currentTrack||'base');
     if(typeof updateWinampDisplay==='function')updateWinampDisplay();
     return this.muted;
   },
@@ -1343,13 +1359,14 @@ const SFX={
     let target=contextKey;
     if(STRUDEL.useSwitchAngelAuto&&typeof SWITCH_ANGEL_TRACKS!=='undefined'){
       const roleMap={
-        base:['theme_remix_0'], // Basis: Remix 1 (Stargate × Switch Angel Remix 1)
-        map:['theme_remix_2'],  // Sternenkarte: Remix 3 (Stargate × Switch Angel Remix 3)
-        planet:['sa_canyonhopper','sa_openup','sa_mutek4am','sa_sentimental_dnb'],
+        base:['theme_remix_0'], // Basis: Anthem (Patreon Codevault Blend 1)
+        map:['theme_remix_2'],  // Sternenkarte: Goa'uld Assault (Patreon Codevault Blend 3)
+        planet:['theme_atlantis','sa_canyonhopper','sa_openup','sa_mutek4am','sa_sentimental_dnb'],
         gate:['sa_in_the_beginning','theme_fanfare'],
         combat:['theme_remix_cnc','sa_autotomatone','sa_extra_slippy','sa_909workout','sa_hotroller','sa_generative_jungle','sa_amen_infinity'],
-        peaceful:['theme_remix_lofi','theme_remix_melancholy','sa_curiosity_piano'],
-        boss:['theme_remix_cnc','sa_did_i_make_this','sa_whoneedsa303','sa_dubstepacid']
+        peaceful:['theme_asgard','theme_funeral','theme_remix_lofi','theme_remix_melancholy','sa_curiosity_piano'],
+        boss:['theme_remix_cnc','sa_did_i_make_this','sa_whoneedsa303','sa_dubstepacid'],
+        victory:['theme_outro','theme_promotion']
       };
       const pool=roleMap[contextKey];
       if(pool&&pool.length){
@@ -1558,7 +1575,7 @@ const SFX={
   death(){ this.tone(200,0.4,'sawtooth',0.3,40); this.noise(0.3,0.2,600); },
   special(){ this.tone(520,0.12,'sine',0.22,880); setTimeout(()=>this.tone(880,0.16,'triangle',0.18,1180),80); },
   gate(){
-    if(!this.ctx||this.muted)return;
+    if(!this.ctx||this.muted||!this.ctx.createOscillator)return;
     const t=this.ctx.currentTime,o=this.ctx.createOscillator(),g=this.ctx.createGain();
     o.type='sine';o.frequency.setValueAtTime(80,t);
     o.frequency.exponentialRampToValueAtTime(600,t+0.8);
@@ -1568,6 +1585,82 @@ const SFX={
     g.gain.exponentialRampToValueAtTime(0.001,t+1.8);
     o.connect(g);g.connect(this.master);o.start(t);o.stop(t+1.9);
     this.noise(1.2,0.1,800);
+  },
+  wormhole(){
+    if(!this.ctx||this.muted||!this.ctx.createOscillator)return;
+    const t=this.ctx.currentTime,o=this.ctx.createOscillator(),g=this.ctx.createGain();
+    o.type='sawtooth';
+    o.frequency.setValueAtTime(65,t);
+    o.frequency.exponentialRampToValueAtTime(320,t+1.8);
+    o.frequency.exponentialRampToValueAtTime(80,t+4.0);
+    const f=this.ctx.createBiquadFilter();
+    f.type='bandpass';f.frequency.setValueAtTime(350,t);
+    f.frequency.exponentialRampToValueAtTime(1400,t+2.0);
+    f.frequency.exponentialRampToValueAtTime(250,t+4.0);
+    f.Q.value=4.5;
+    g.gain.setValueAtTime(0.001,t);
+    g.gain.linearRampToValueAtTime(0.25,t+0.5);
+    g.gain.exponentialRampToValueAtTime(0.001,t+4.2);
+    o.connect(f);f.connect(g);g.connect(this.master);
+    o.start(t);o.stop(t+4.3);
+    this.noise(4.0,0.1,1600);
+  },
+  triggerDrum(kind, vol=0.3){
+    if(!this.ctx) this.init();
+    if(this.ctx&&this.ctx.state==='suspended') this.ctx.resume();
+    if(!this.ctx||this.muted) return;
+    const now=this.ctx.currentTime;
+    this._playStrudelNoise(now, 0.35, vol, 2400, kind||'bd');
+    if(typeof WINAMP!=='undefined'&&WINAMP.handleVoiceTrigger){
+      const voice = (kind==='bd'||kind==='sbd'||kind==='lt')?'kick':(kind==='sd'||kind==='cp'||kind==='snare')?'snare':(kind==='hh'||kind==='oh')?'hat':'bass';
+      WINAMP.handleVoiceTrigger(voice, 40);
+    }
+  },
+  _liveOscs: new Map(),
+  playLiveNote(midiNote, vel=0.8){
+    if(!this.ctx) this.init();
+    if(this.ctx&&this.ctx.state==='suspended') this.ctx.resume();
+    if(!this.ctx||this.muted) return;
+    this.stopLiveNote(midiNote);
+    const now=this.ctx.currentTime;
+    const freq=_midiToFreq(midiNote);
+    const osc=this.ctx.createOscillator();
+    const filt=this.ctx.createBiquadFilter();
+    const g=this.ctx.createGain();
+
+    const rb=this.rebirth||{};
+    osc.type = (rb.bassBank==='tb303_sq') ? 'square' : (rb.bassBank==='sub' ? 'sine' : 'sawtooth');
+    osc.frequency.setValueAtTime(freq, now);
+
+    filt.type = 'lowpass';
+    const cut = rb.cutoff || 2400;
+    filt.frequency.setValueAtTime(cut, now);
+    filt.Q.setValueAtTime(rb.resonance || 6, now);
+
+    const targetGain = Math.max(0.01, Math.min(0.35, vel * 0.28));
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.linearRampToValueAtTime(targetGain, now + 0.008);
+
+    osc.connect(filt);
+    filt.connect(g);
+    if(this.musicGain) g.connect(this.musicGain);
+    else g.connect(this.master);
+
+    osc.start(now);
+    this._liveOscs.set(midiNote, { osc, gain: g, filter: filt });
+
+    if(typeof WINAMP!=='undefined'&&WINAMP.handleVoiceTrigger){
+      WINAMP.handleVoiceTrigger('melody', midiNote);
+    }
+  },
+  stopLiveNote(midiNote){
+    const active = this._liveOscs.get(midiNote);
+    if(!active||!this.ctx) return;
+    const now=this.ctx.currentTime;
+    active.gain.gain.setValueAtTime(active.gain.gain.value, now);
+    active.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
+    active.osc.stop(now + 0.07);
+    this._liveOscs.delete(midiNote);
   },
   click(){ this.tone(1200,0.04,'square',0.1); },
   build(){ this.tone(400,0.1,'square',0.15,600); this.noise(0.1,0.1,1000); },

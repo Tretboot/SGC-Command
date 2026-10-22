@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SGC Command · Tactical Level Editor v1.0</title>
+  <style>
+    :root {
+      --bg: #0b111a;
+      --panel: #111a26;
+      --panel-border: #1e293b;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.25);
+      --amber: #f59e0b;
+      --green: #4ade80;
+      --red: #ef4444;
+      --text: #f8fafc;
+      --text-dim: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      user-select: none;
+    }
+    /* Header */
+    header {
+      background: var(--panel);
+      border-bottom: 2px solid var(--accent);
+      padding: 10px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      z-index: 10;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand h1 {
+      font-size: 17px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .brand span {
+      background: rgba(56,189,248,0.15);
+      color: var(--accent);
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--accent);
+    }
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    button, select {
+      background: #1e293b;
+      color: var(--text);
+      border: 1px solid #334155;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-family: inherit;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    button:hover {
+      background: #334155;
+      border-color: var(--accent);
+      color: #fff;
+    }
+    button.btn-primary {
+      background: #0284c7;
+      border-color: var(--accent);
+      color: #fff;
+      font-weight: bold;
+    }
+    button.btn-primary:hover {
+      background: #0369a1;
+    }
+    button.btn-accent {
+      background: #b45309;
+      border-color: var(--amber);
+      color: #fff;
+      font-weight: bold;
+    }
+    button.active {
+      background: var(--accent);
+      color: #0b111a;
+      border-color: #fff;
+      font-weight: bold;
+    }
+
+    /* Layout */
+    .editor-body {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 84px);
+    }
+    /* Sidebar */
+    .sidebar {
+      width: 290px;
+      background: var(--panel);
+      border-right: 1px solid var(--panel-border);
+      padding: 14px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 8px;
+      font-weight: bold;
+      border-bottom: 1px solid rgba(56,189,248,0.2);
+      padding-bottom: 4px;
+    }
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+    .tool-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      padding: 7px 10px;
+      text-align: left;
+    }
+    .tool-btn.active {
+      background: rgba(56,189,248,0.2);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .palette-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .palette-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 10px;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: all 0.15s;
+    }
+    .palette-item:hover {
+      border-color: var(--accent);
+      background: #1e293b;
+    }
+    .palette-item.active {
+      border-color: var(--accent);
+      background: rgba(56,189,248,0.15);
+      color: #fff;
+    }
+    .palette-swatch {
+      width: 18px;
+      height: 18px;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 11px;
+      color: #fff;
+      text-shadow: 0 1px 2px #000;
+    }
+
+    /* Main Viewport */
+    .viewport-container {
+      flex: 1;
+      position: relative;
+      background: #06090e;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    canvas {
+      image-rendering: pixelated;
+      cursor: crosshair;
+    }
+    .viewport-hud {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid #334155;
+      border-radius: 4px;
+      padding: 6px 12px;
+      display: flex;
+      gap: 14px;
+      font-size: 11px;
+      backdrop-filter: blur(4px);
+    }
+    .hud-stat b {
+      color: var(--accent);
+    }
+
+    /* Footer status */
+    footer {
+      background: #090e17;
+      border-top: 1px solid var(--panel-border);
+      padding: 6px 18px;
+      font-size: 11px;
+      color: var(--text-dim);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .toast {
+      position: fixed;
+      bottom: 40px;
+      right: 20px;
+      background: var(--accent);
+      color: #0b111a;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 12px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.25s;
+      pointer-events: none;
+      z-index: 100;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+    .modal-card {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 6px;
+      width: 650px;
+      max-width: 90vw;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    textarea {
+      width: 100%;
+      height: 240px;
+      background: #090e17;
+      border: 1px solid #334155;
+      color: #7dd3fc;
+      font-family: monospace;
+      font-size: 12px;
+      padding: 10px;
+      border-radius: 4px;
+      resize: vertical;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <h1>🗺️ SGC Tactical Level Editor</h1>
+      <span>v1.0 (X-COM / JA2)</span>
+    </div>
+    <div class="header-actions">
+      <select id="preset-select" onchange="loadPreset(this.value)">
+        <option value="city">Preset: 🏙️ Stadtsektor (v0.26 Plaza)</option>
+        <option value="chulak">Preset: 🏛️ Chulak Tempel-Vorhof</option>
+        <option value="desert">Preset: 🏜️ Abydos Ruinen &amp; Oase</option>
+        <option value="jungle">Preset: 🌴 Dschungel &amp; Doppelbrücke</option>
+        <option value="sgc">Preset: 🚪 SGC Torraum</option>
+      </select>
+      <button id="btn-view-iso" class="active" onclick="setViewMode('iso')">📐 2:1 Isometrie</button>
+      <button id="btn-view-grid" onclick="setViewMode('grid')">▦ 2D Raster</button>
+      <button class="btn-primary" onclick="openExportModal()">💾 Export / Import</button>
+      <button onclick="copyToGame()">📋 In Zwischenablage</button>
+      <button onclick="window.close()" title="Zurück zum Hauptportal">✖ Schließen</button>
+    </div>
+  </header>
+
+  <div class="editor-body">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div>
+        <div class="section-title">Werkzeug</div>
+        <div class="tool-grid">
+          <button class="tool-btn active" id="tool-paint" onclick="setTool('paint')">🖌️ Malen</button>
+          <button class="tool-btn" id="tool-fill" onclick="setTool('fill')">🪣 Füllen</button>
+          <button class="tool-btn" id="tool-up" onclick="setTool('up')">⛰️ Heben (+1)</button>
+          <button class="tool-btn" id="tool-down" onclick="setTool('down')">🌊 Senken (-1)</button>
+          <button class="tool-btn" id="tool-erase" onclick="setTool('erase')">🧹 Löschen</button>
+          <button class="tool-btn" onclick="clearMap()">🗑️ Alles leeren</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-title">Deckung &amp; Struktur</div>
+        <div class="palette-list" id="palette-cover"></div>
+      </div>
+
+      <div>
+        <div class="section-title">Terrain &amp; Wege</div>
+        <div class="palette-list" id="palette-terrain"></div>
+      </div>
+
+      <div>
+        <div class="section-title">Objekte &amp; Spawns</div>
+        <div class="palette-list" id="palette-props"></div>
+      </div>
+
+      <div style="margin-top:auto;padding-top:10px;border-top:1px solid #1e293b;font-size:11px;color:#64748b;line-height:1.5">
+        <b>Steuerung:</b><br>
+        • Linksklick/Ziehen: Malen<br>
+        • Rechtsklick/Ziehen: Kamera bewegen<br>
+        • Mausrad: Zoom (0.5× bis 2.5×)
+      </div>
+    </div>
+
+    <!-- Main Viewport -->
+    <div class="viewport-container" id="vp-container">
+      <canvas id="editor-cv"></canvas>
+      <div class="viewport-hud">
+        <div class="hud-stat">Größe: <b id="hud-dim">20 × 15</b></div>
+        <div class="hud-stat">Cursor: <b id="hud-pos">X: 0 Y: 0</b></div>
+        <div class="hud-stat">Kachel: <b id="hud-tile">Offen (.)</b></div>
+        <div class="hud-stat">Höhe: <b id="hud-height">Z: 0</b></div>
+        <div class="hud-stat">Deckung: <b id="hud-cover">0%</b></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div id="status-text">Bereit. Wähle ein Werkzeug oder Terrain aus der Palette.</div>
+    <div style="color:#64748b">SGC Command Level Editor · Universität Osnabrück · AGPL-3.0</div>
+  </footer>
+
+  <div id="toast" class="toast">In Zwischenablage kopiert!</div>
+
+  <!-- Export/Import Modal -->
+  <div class="modal-overlay" id="modal-export">
+    <div class="modal-card">
+      <h2 style="color:#fff;font-size:16px">Export / Import von Gefechtskarten</h2>
+      <p style="font-size:12px;color:var(--text-dim)">
+        Kopiere das JavaScript-Array für <code>game/engine.js</code> (MAPS) oder das JSON-Schema für Tools:
+      </p>
+      <div style="display:flex;gap:8px">
+        <button class="active" id="btn-fmt-maps" onclick="setExportFormat('maps')">JavaScript MAPS[]</button>
+        <button id="btn-fmt-json" onclick="setExportFormat('json')">JSON Schema</button>
+      </div>
+      <textarea id="export-text"></textarea>
+      <div style="display:flex;justify-content:flex-end;gap:8px">
+        <button onclick="applyImport()">📥 Importieren</button>
+        <button class="btn-primary" onclick="copyExportText()">📋 Kopieren</button>
+        <button onclick="closeExportModal()">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Map Presets matching game/engine.js
+    const PRESETS = {
+      city: [
+        '####..l......l..####',
+        '#......H....H......#',
+        '#..l............l..#',
+        '....l..######..l....',
+        '.......#....#.......',
+        '..H....l....l....H..',
+        '....l..........l....',
+        '..l....l.##.l....l..',
+        '....l..........l....',
+        '..H....l....l....H..',
+        '.......#....#.......',
+        '....l..######..l....',
+        '#..l............l..#',
+        '#......H....H......#',
+        '####..l..GG..l..####'
+      ],
+      chulak: [
+        '..H...l......l...H..',
+        '....l..........l....',
+        '#..#....####....#..#',
+        '#..#....#..#....#..#',
+        '....l..........l....',
+        '..H....l.##.l....H..',
+        '.......l....l.......',
+        '....l....GG....l....',
+        '.......l....l.......',
+        '..H....l.##.l....H..',
+        '....l..........l....',
+        '#..#....####....#..#',
+        '#..#....#..#....#..#',
+        '....l..........l....',
+        '..H...l......l...H..'
+      ],
+      desert: [
+        '..##..l......l..##..',
+        '#..#....H..H....#..#',
+        '#..#...l....l...#..#',
+        '..##............##..',
+        '.....l..~~~~..l.....',
+        '.H......~..~......H.',
+        '.l...l...GG...l...l.',
+        '.H......~..~......H.',
+        '.....l..~~~~..l.....',
+        '..##............##..',
+        '#..#...l....l...#..#',
+        '#..#....H..H....#..#',
+        '..##..l......l..##..',
+        '....l..........l....',
+        '..H...l......l...H..'
+      ],
+      jungle: [
+        '...l.l........l.l...',
+        '.l....H..##..H....l.',
+        '....l....#....l.....',
+        '..H...l......l...H..',
+        '..l.............l...',
+        '~~~~==~~~~~~~~==~~~~',
+        '....l..........l....',
+        '..H......GG......H..',
+        '....l..........l....',
+        '~~~~==~~~~~~~~==~~~~',
+        '..l.............l...',
+        '..H...l......l...H..',
+        '....l....#....l.....',
+        '.l....H..##..H....l.',
+        '...l.l........l.l...'
+      ],
+      sgc: [
+        '....................',
+        '..##....##....##....',
+        '..#........#........',
+        '..##..l.l.##..l.l...',
+        '....................',
+        '..l.l......l.l......',
+        '....########........',
+        '....#......#........',
+        '....#..G..#.........',
+        '....#......#........',
+        '....########........',
+        '..l.l......l.l......',
+        '..##..l.l.##..l.l...',
+        '..#........#........',
+        '..##....##....##....'
+      ]
+    };
+
+    const TILES = {
+      '.': { name: 'Offen / Sand', ch: '.', color: '#a88a5e', cat: 'terrain', walkable: true, cover: 0 },
+      'p': { name: 'Straße / Pflaster', ch: 'p', color: '#94a3b8', cat: 'terrain', walkable: true, cover: 0 },
+      'w': { name: 'Wasser / Fluss', ch: 'w', color: '#0284c7', cat: 'terrain', walkable: false, cover: 0 },
+      '~': { name: 'Sumpf / Gefahr', ch: '~', color: '#0369a1', cat: 'terrain', walkable: false, cover: 0 },
+      '=': { name: 'Brücke / Querung', ch: '=', color: '#b45309', cat: 'terrain', walkable: true, cover: 0 },
+      'l': { name: 'Halbdeckung (Sandsack)', ch: 'l', color: '#f59e0b', cat: 'cover', walkable: true, cover: 0.25 },
+      'H': { name: 'Volldeckung (Pfeiler)', ch: 'H', color: '#ea580c', cat: 'cover', walkable: true, cover: 0.5 },
+      '#': { name: 'Wand / Fassade', ch: '#', color: '#64748b', cat: 'cover', walkable: false, cover: 1.0 },
+      'b': { name: 'Trümmer / Schutt', ch: 'b', color: '#78716c', cat: 'cover', walkable: true, cover: 0.25 },
+      'V': { name: 'Gebäude-Block', ch: 'V', color: '#475569', cat: 'cover', walkable: false, cover: 1.0 },
+      'G': { name: 'Stargate Ring', ch: 'G', color: '#38bdf8', cat: 'props', walkable: false, cover: 0 },
+      '$': { name: 'Beute-Kiste', ch: '$', color: '#fbbf24', cat: 'props', walkable: true, cover: 0.25 },
+      'S': { name: 'SG-1 Spawn', ch: 'S', color: '#4ade80', cat: 'props', walkable: true, cover: 0 },
+      'E': { name: 'Jaffa Feind-Spawn', ch: 'E', color: '#ef4444', cat: 'props', walkable: true, cover: 0 }
+    };
+
+    // Editor state
+    let mapW = 20, mapH = 15;
+    let grid = [];
+    let heightMap = [];
+    let activeChar = 'l';
+    let activeTool = 'paint';
+    let viewMode = 'iso'; // 'iso' | 'grid'
+    let zoom = 1.0;
+    let camX = 0, camY = 0;
+    let isDrawing = false, isPanning = false;
+    let panStartX = 0, panStartY = 0;
+    let hoverCell = { x: 0, y: 0 };
+    let exportFmt = 'maps';
+
+    const cv = document.getElementById('editor-cv');
+    const ctx = cv.getContext('2d');
+    const vp = document.getElementById('vp-container');
+
+    function initEditor() {
+      buildPalettes();
+      loadPreset('city');
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      setupEvents();
+      requestAnimationFrame(renderLoop);
+    }
+
+    function buildPalettes() {
+      const coverEl = document.getElementById('palette-cover');
+      const terrainEl = document.getElementById('palette-terrain');
+      const propsEl = document.getElementById('palette-props');
+
+      Object.entries(TILES).forEach(([ch, def]) => {
+        const item = document.createElement('div');
+        item.className = 'palette-item' + (ch === activeChar ? ' active' : '');
+        item.dataset.ch = ch;
+        item.onclick = () => selectChar(ch);
+
+        const swatch = document.createElement('div');
+        swatch.className = 'palette-swatch';
+        swatch.style.background = def.color;
+        swatch.innerText = ch === '.' ? ' ' : ch;
+
+        const label = document.createElement('span');
+        label.innerText = def.name;
+
+        item.appendChild(swatch);
+        item.appendChild(label);
+
+        if (def.cat === 'cover') coverEl.appendChild(item);
+        else if (def.cat === 'terrain') terrainEl.appendChild(item);
+        else if (def.cat === 'props') propsEl.appendChild(item);
+      });
+    }
+
+    function selectChar(ch) {
+      activeChar = ch;
+      document.querySelectorAll('.palette-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.ch === ch);
+      });
+      document.getElementById('status-text').innerText = `Pinsel gewählt: ${TILES[ch].name} [${ch}]`;
+    }
+
+    function setTool(tool) {
+      activeTool = tool;
+      document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById('tool-' + tool);
+      if (activeBtn) activeBtn.classList.add('active');
+      document.getElementById('status-text').innerText = `Werkzeug aktiv: ${tool.toUpperCase()}`;
+    }
+
+    function setViewMode(mode) {
+      viewMode = mode;
+      document.getElementById('btn-view-iso').classList.toggle('active', mode === 'iso');
+      document.getElementById('btn-view-grid').classList.toggle('active', mode === 'grid');
+      centerCamera();
+    }
+
+    function loadPreset(key) {
+      const p = PRESETS[key] || PRESETS.city;
+      mapH = p.length;
+      mapW = p[0].length;
+      grid = [];
+      heightMap = [];
+      for (let y = 0; y < mapH; y++) {
+        grid[y] = [];
+        heightMap[y] = [];
+        for (let x = 0; x < mapW; x++) {
+          grid[y][x] = p[y][x] || '.';
+          const ch = grid[y][x];
+          heightMap[y][x] = (ch === '#' || ch === 'V') ? 2 : (ch === 'H' ? 1.5 : (ch === 'l' ? 0.8 : 0));
+        }
+      }
+      document.getElementById('hud-dim').innerText = `${mapW} × ${mapH}`;
+      centerCamera();
+      showToast(`Preset "${key.toUpperCase()}" geladen!`);
+    }
+
+    function clearMap() {
+      if (!confirm('Gesamte Karte wirklich auf leeres Terrain zurücksetzen?')) return;
+      for (let y = 0; y < mapH; y++) {
+        for (let x = 0; x < mapW; x++) {
+          grid[y][x] = '.';
+          heightMap[y][x] = 0;
+        }
+      }
+      showToast('Karte geleert!');
+    }
+
+    function centerCamera() {
+      camX = cv.width / 2;
+      camY = viewMode === 'iso' ? cv.height / 3.2 : cv.height / 2 - (mapH * 24) / 2;
+    }
+
+    function resizeCanvas() {
+      cv.width = vp.clientWidth;
+      cv.height = vp.clientHeight;
+      centerCamera();
+    }
+
+    // Event handling
+    function setupEvents() {
+      cv.addEventListener('mousedown', e => {
+        if (e.button === 2) {
+          isPanning = true;
+          panStartX = e.clientX - camX;
+          panStartY = e.clientY - camY;
+        } else if (e.button === 0) {
+          isDrawing = true;
+          applyTool(hoverCell.x, hoverCell.y);
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        isDrawing = false;
+        isPanning = false;
+      });
+
+      window.addEventListener('contextmenu', e => e.preventDefault());
+
+      cv.addEventListener('mousemove', e => {
+        if (isPanning) {
+          camX = e.clientX - panStartX;
+          camY = e.clientY - panStartY;
+          return;
+        }
+        const cell = screenToCell(e.clientX, e.clientY);
+        if (cell.x >= 0 && cell.x < mapW && cell.y >= 0 && cell.y < mapH) {
+          hoverCell = cell;
+          updateHUD();
+          if (isDrawing && activeTool === 'paint') {
+            applyTool(cell.x, cell.y);
+          }
+        }
+      });
+
+      cv.addEventListener('wheel', e => {
+        e.preventDefault();
+        const factor = e.deltaY < 0 ? 1.12 : 0.89;
+        zoom = Math.max(0.4, Math.min(2.5, zoom * factor));
+      });
+    }
+
+    function screenToCell(sx, sy) {
+      const rect = cv.getBoundingClientRect();
+      const x = sx - rect.left - camX;
+      const y = sy - rect.top - camY;
+
+      if (viewMode === 'grid') {
+        const cellSize = 28 * zoom;
+        return {
+          x: Math.floor(x / cellSize),
+          y: Math.floor(y / cellSize)
+        };
+      }
+
+      // 2:1 Isometric diamond inverse
+      const tw = 64 * zoom, th = 32 * zoom;
+      const isoX = (x / (tw / 2) + y / (th / 2)) / 2;
+      const isoY = (y / (th / 2) - x / (tw / 2)) / 2;
+      return {
+        x: Math.floor(isoX),
+        y: Math.floor(isoY)
+      };
+    }
+
+    function applyTool(x, y) {
+      if (x < 0 || x >= mapW || y < 0 || y >= mapH) return;
+      if (activeTool === 'paint') {
+        grid[y][x] = activeChar;
+        const def = TILES[activeChar];
+        if (activeChar === '#' || activeChar === 'V') heightMap[y][x] = 2;
+        else if (activeChar === 'H') heightMap[y][x] = 1.5;
+        else if (activeChar === 'l') heightMap[y][x] = 0.8;
+      } else if (activeTool === 'erase') {
+        grid[y][x] = '.';
+        heightMap[y][x] = 0;
+      } else if (activeTool === 'up') {
+        heightMap[y][x] = Math.min(4, (heightMap[y][x] || 0) + 0.5);
+      } else if (activeTool === 'down') {
+        heightMap[y][x] = Math.max(0, (heightMap[y][x] || 0) - 0.5);
+      } else if (activeTool === 'fill') {
+        const target = grid[y][x];
+        floodFill(x, y, target, activeChar);
+      }
+      updateHUD();
+    }
+
+    function floodFill(startX, startY, targetChar, fillChar) {
+      if (targetChar === fillChar) return;
+      const queue = [[startX, startY]];
+      const seen = new Set();
+      while (queue.length) {
+        const [x, y] = queue.pop();
+        const key = `${x},${y}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        if (x < 0 || x >= mapW || y < 0 || y >= mapH) continue;
+        if (grid[y][x] === targetChar) {
+          grid[y][x] = fillChar;
+          queue.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+        }
+      }
+    }
+
+    function updateHUD() {
+      const { x, y } = hoverCell;
+      document.getElementById('hud-pos').innerText = `X: ${x} Y: ${y}`;
+      if (x >= 0 && x < mapW && y >= 0 && y < mapH) {
+        const ch = grid[y][x];
+        const def = TILES[ch] || TILES['.'];
+        document.getElementById('hud-tile').innerText = `${def.name} [${ch}]`;
+        document.getElementById('hud-height').innerText = `Z: ${heightMap[y][x].toFixed(1)}`;
+        document.getElementById('hud-cover').innerText = `${Math.round(def.cover * 100)}%`;
+      }
+    }
+
+    // Rendering
+    function renderLoop() {
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      if (viewMode === 'iso') {
+        renderIsometric();
+      } else {
+        renderGrid();
+      }
+      requestAnimationFrame(renderLoop);
+    }
+
+    function renderGrid() {
+      const cellSize = 28 * zoom;
+      ctx.save();
+      ctx.translate(camX, camY);
+
+      // Background
+      ctx.fillStyle = '#0a0f16';
+      ctx.fillRect(0, 0, mapW * cellSize, mapH * cellSize);
+
+      for (let y = 0; y < mapH; y++) {
+        for (let x = 0; x < mapW; x++) {
+          const ch = grid[y][x];
+          const def = TILES[ch] || TILES['.'];
+          ctx.fillStyle = def.color;
+          ctx.fillRect(x * cellSize + 1, y * cellSize + 1, cellSize - 2, cellSize - 2);
+
+          // Grid border
+          ctx.strokeStyle = '#1e293b';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
+
+          // Label
+          if (ch !== '.') {
+            ctx.fillStyle = '#fff';
+            ctx.font = `bold ${Math.max(9, Math.round(11 * zoom))}px monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(ch, x * cellSize + cellSize / 2, y * cellSize + cellSize / 2);
+          }
+        }
+      }
+
+      // Cursor hover
+      const { x, y } = hoverCell;
+      if (x >= 0 && x < mapW && y >= 0 && y < mapH) {
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
+      }
+      ctx.restore();
+    }
+
+    function renderIsometric() {
+      const tw = 64 * zoom, th = 32 * zoom, tz = 16 * zoom;
+      ctx.save();
+      ctx.translate(camX, camY);
+
+      // Sort cells back-to-front (depth = x + y)
+      const list = [];
+      for (let y = 0; y < mapH; y++) {
+        for (let x = 0; x < mapW; x++) {
+          list.push({ x, y, depth: x + y });
+        }
+      }
+      list.sort((a, b) => a.depth - b.depth);
+
+      for (const item of list) {
+        const { x, y } = item;
+        const ch = grid[y][x];
+        const h = heightMap[y][x] || 0;
+        const def = TILES[ch] || TILES['.'];
+
+        const sx = (x - y) * (tw / 2);
+        const sy = (x + y) * (th / 2);
+        const hPx = h * tz;
+
+        // Voxel Base Column
+        drawIsoPrism(ctx, sx, sy, tw, th, hPx, def.color, shade(def.color, -25), shade(def.color, -40));
+
+        // Props / Glyphs on top
+        if (ch === 'G') {
+          ctx.strokeStyle = '#38bdf8';
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.arc(sx, sy - hPx - th * 0.3, 14 * zoom, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.fillStyle = '#7dd3fc';
+          ctx.font = `bold ${Math.max(8, Math.round(9 * zoom))}px monospace`;
+          ctx.textAlign = 'center';
+          ctx.fillText('GATE', sx, sy - hPx - th * 0.45);
+        } else if (ch === '$') {
+          ctx.fillStyle = '#fbbf24';
+          ctx.font = `bold ${Math.max(10, Math.round(12 * zoom))}px monospace`;
+          ctx.textAlign = 'center';
+          ctx.fillText('📦', sx, sy - hPx - 4);
+        } else if (ch === 'S') {
+          ctx.fillStyle = '#4ade80';
+          ctx.font = `bold ${Math.max(10, Math.round(11 * zoom))}px monospace`;
+          ctx.textAlign = 'center';
+          ctx.fillText('SG-1', sx, sy - hPx - 4);
+        } else if (ch === 'E') {
+          ctx.fillStyle = '#ef4444';
+          ctx.font = `bold ${Math.max(10, Math.round(11 * zoom))}px monospace`;
+          ctx.textAlign = 'center';
+          ctx.fillText('JAFFA', sx, sy - hPx - 4);
+        }
+
+        // Hover highlight
+        if (hoverCell.x === x && hoverCell.y === y) {
+          drawIsoDiamond(ctx, sx, sy - hPx, tw, th, 'rgba(56,189,248,0.25)', '#38bdf8', 2);
+        }
+      }
+
+      ctx.restore();
+    }
+
+    function drawIsoPrism(c, x, y, tw, th, h, topCol, leftCol, rightCol) {
+      const hw = tw / 2, hh = th / 2;
+      const topY = y - h;
+
+      // Left Face
+      if (h > 0) {
+        c.fillStyle = leftCol;
+        c.beginPath();
+        c.moveTo(x - hw, topY);
+        c.lineTo(x, topY + hh);
+        c.lineTo(x, y + hh);
+        c.lineTo(x - hw, y);
+        c.closePath();
+        c.fill();
+
+        // Right Face
+        c.fillStyle = rightCol;
+        c.beginPath();
+        c.moveTo(x, topY + hh);
+        c.lineTo(x + hw, topY);
+        c.lineTo(x + hw, y);
+        c.lineTo(x, y + hh);
+        c.closePath();
+        c.fill();
+      }
+
+      // Top Diamond Face
+      drawIsoDiamond(c, x, topY, tw, th, topCol, 'rgba(255,255,255,0.08)', 1);
+    }
+
+    function drawIsoDiamond(c, x, y, tw, th, fillCol, strokeCol, strokeW) {
+      const hw = tw / 2, hh = th / 2;
+      c.beginPath();
+      c.moveTo(x, y - hh);
+      c.lineTo(x + hw, y);
+      c.lineTo(x, y + hh);
+      c.lineTo(x - hw, y);
+      c.closePath();
+      if (fillCol) {
+        c.fillStyle = fillCol;
+        c.fill();
+      }
+      if (strokeCol) {
+        c.strokeStyle = strokeCol;
+        c.lineWidth = strokeW || 1;
+        c.stroke();
+      }
+    }
+
+    function shade(color, percent) {
+      if (!color.startsWith('#')) return color;
+      let num = parseInt(color.slice(1), 16),
+          amt = Math.round(2.55 * percent),
+          R = (num >> 16) + amt,
+          G = (num >> 8 & 0x00FF) + amt,
+          B = (num & 0x0000FF) + amt;
+      return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+        (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+        (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+    }
+
+    // Modal & Export
+    function openExportModal() {
+      document.getElementById('modal-export').style.display = 'flex';
+      updateExportText();
+    }
+
+    function closeExportModal() {
+      document.getElementById('modal-export').style.display = 'none';
+    }
+
+    function setExportFormat(fmt) {
+      exportFmt = fmt;
+      document.getElementById('btn-fmt-maps').classList.toggle('active', fmt === 'maps');
+      document.getElementById('btn-fmt-json').classList.toggle('active', fmt === 'json');
+      updateExportText();
+    }
+
+    function updateExportText() {
+      const lines = grid.map(row => row.join(''));
+      if (exportFmt === 'maps') {
+        const out = '[\n' + lines.map(l => `  '${l}'`).join(',\n') + '\n]';
+        document.getElementById('export-text').value = out;
+      } else {
+        const json = {
+          name: 'Custom SGC Tactical Sector',
+          dim: [mapW, mapH],
+          layers: {
+            tiles: lines,
+            heights: heightMap
+          }
+        };
+        document.getElementById('export-text').value = JSON.stringify(json, null, 2);
+      }
+    }
+
+    function applyImport() {
+      const val = document.getElementById('export-text').value.trim();
+      try {
+        if (val.startsWith('{')) {
+          const data = JSON.parse(val);
+          if (data.layers && data.layers.tiles) {
+            loadLines(data.layers.tiles);
+            if (data.layers.heights) heightMap = data.layers.heights;
+          }
+        } else {
+          // Parse JS array
+          const raw = eval(val);
+          if (Array.isArray(raw)) {
+            loadLines(raw);
+          }
+        }
+        closeExportModal();
+        showToast('Karte erfolgreich importiert!');
+      } catch (e) {
+        alert('Import-Fehler: ' + e.message);
+      }
+    }
+
+    function loadLines(lines) {
+      mapH = lines.length;
+      mapW = lines[0].length;
+      grid = [];
+      heightMap = [];
+      for (let y = 0; y < mapH; y++) {
+        grid[y] = [];
+        heightMap[y] = [];
+        for (let x = 0; x < mapW; x++) {
+          grid[y][x] = lines[y][x] || '.';
+          const ch = grid[y][x];
+          heightMap[y][x] = (ch === '#' || ch === 'V') ? 2 : (ch === 'H' ? 1.5 : (ch === 'l' ? 0.8 : 0));
+        }
+      }
+      document.getElementById('hud-dim').innerText = `${mapW} × ${mapH}`;
+      centerCamera();
+    }
+
+    function copyExportText() {
+      const ta = document.getElementById('export-text');
+      ta.select();
+      navigator.clipboard.writeText(ta.value).then(() => {
+        showToast('In Zwischenablage kopiert!');
+      });
+    }
+
+    function copyToGame() {
+      const lines = grid.map(row => row.join(''));
+      const out = '[\n' + lines.map(l => `  '${l}'`).join(',\n') + '\n]';
+      navigator.clipboard.writeText(out).then(() => {
+        showToast('MAPS-Code in Zwischenablage kopiert!');
+      });
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.innerText = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    window.onload = initEditor;
+  </script>
+</body>
+</html>
+

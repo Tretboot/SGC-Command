@@ -127,94 +127,109 @@ const POOL=[
 
 // Planeten (Sternenkarte + Missions-Kontext)
 const PLANETS={
- sgc:{name:'SGC – Cheyenne Mountain',x:105,y:275,type:'base',ch:0,sgc:true},
- p3x478:{name:'P3X-478',x:255,y:150,type:'neutral',ch:0},
- chulak:{name:'Chulak',x:385,y:320,type:'hostile',ch:0},
- abydos:{name:'Abydos (P4X-544)',x:300,y:370,type:'hostile',ch:0},
- p2x416:{name:'P2X-416',x:215,y:265,type:'neutral',ch:0},
- p5c353:{name:'P5C-353',x:395,y:255,type:'empty',ch:0},
- orbit1:{name:'Orbit P3X-478b',x:385,y:95,type:'space',ch:0},
- p2u744:{name:'P2U-744',x:480,y:185,type:'neutral',ch:1},
- alpha:{name:'Planet Alpha',x:535,y:340,type:'neutral',ch:1},
- mobius:{name:'Planet Möbius',x:625,y:105,type:'neutral',ch:1},
- newground:{name:'New Ground',x:660,y:420,type:'neutral',ch:1},
- p7j989:{name:'P7J-989',x:450,y:440,type:'empty',ch:1},
- p5u666:{name:'P5U-666',x:735,y:235,type:'hostile',ch:2},
- ennui:{name:'Ennui',x:800,y:355,type:'neutral',ch:2},
- kern:{name:'Kern-Systeme',x:850,y:120,type:'hostile',ch:3},
- nexus:{name:'Orbit-Nexus',x:765,y:480,type:'space',ch:3},
- ori:{name:'Ori-Welt',x:905,y:255,type:'hostile',ch:4},
- flag:{name:"Apophis' Flaggschiff",x:910,y:440,type:'space',ch:4},
+ sgc:{name:'SGC – Cheyenne Mountain',x:105,y:275,type:'base',ch:0,sgc:true,address:'28-26-5-36-11-29',desc:'Kommandozentrale der Erde im Cheyenne Mountain Komplex.'},
+ p3x478:{name:'P3X-478',x:255,y:150,type:'neutral',ch:0,desc:'Ruhige Welt mit verstreuten Antiker-Markern.'},
+ chulak:{name:'Chulak',x:385,y:320,type:'hostile',ch:0,address:'9-2-23-15-37-20',desc:'Heimatwelt von Teal\'c und Hauptrekrutierungsort der Apophis-Jaffa.'},
+ abydos:{name:'Abydos (P4X-544)',x:300,y:370,type:'hostile',ch:0,address:'27-7-15-32-12-30',desc:'Wüstenplanet von Kasuf und Sha\'re, einst von Ra beherrscht.'},
+ cimmeria:{name:'Cimmeria (P3X-974)',x:270,y:210,type:'neutral',ch:0,address:'3-12-8-21-14-19',desc:'Asgard-Schutzwelt unter dem Hammer von Thor.'},
+ p4x639:{name:'P4X-639',x:325,y:195,type:'empty',ch:0,address:'22-14-9-18-35-3',desc:'Antiker-Zeitschleifen-Station (Kein Ende in Sicht).'},
+ p2x416:{name:'P2X-416',x:215,y:265,type:'neutral',ch:0,desc:'Bedrosianer und Optricianer im Streit um das Tor.'},
+ p5c353:{name:'P5C-353',x:395,y:255,type:'empty',ch:0,desc:'Ausgestorbener Planet mit einer mysteriösen Sphäre.'},
+ orbit1:{name:'Orbit P3X-478b',x:385,y:95,type:'space',ch:0,desc:'Trümmerfeld im Orbit nach Thors Raumschiff-Verteidigung.'},
+ p2u744:{name:'P2U-744',x:480,y:185,type:'neutral',ch:1,desc:'Ehemaliger Naquadah-Außenposten der Goa\'uld.'},
+ alpha:{name:'Planet Alpha',x:535,y:340,type:'neutral',ch:1,address:'3-28-9-19-24-18',desc:'Geheimer Alpha-Außenposten der Tau\'ri.'},
+ tollana:{name:'Tollana (P4X-377)',x:425,y:140,type:'neutral',ch:1,address:'4-29-8-19-22-10',desc:'Heimat der Tollaner mit Ionenkanonen & Phasenverschiebung.'},
+ vorash:{name:'Vorash',x:515,y:275,type:'hostile',ch:1,address:'17-25-8-3-12-19',desc:'Tok\'ra-Wüstenbasis mit Kristalltunneln.'},
+ langara:{name:'Langara (P3S-452)',x:585,y:220,type:'neutral',ch:1,address:'9-18-27-3-14-22',desc:'Heimat von Jonas Quinn, reich an instabilem Naquadria.'},
+ hadante:{name:'Hadante',x:340,y:430,type:'hostile',ch:1,address:'8-21-14-29-3-18',desc:'Unterirdische Gefängniswelt ohne DHD (Linea).'},
+ p3x888:{name:'P3X-888',x:470,y:390,type:'hostile',ch:1,address:'14-8-22-31-19-4',desc:'Urwelt der Goa\'uld-Symbionten und wilden Unas.'},
+ mobius:{name:'Planet Möbius',x:625,y:105,type:'neutral',ch:1,desc:'Historischer Zeitschleifen-Nexus.'},
+ newground:{name:'New Ground',x:660,y:420,type:'neutral',ch:1,desc:'Territorium der Optricianischen Gemeinschaft.'},
+ p7j989:{name:'P7J-989',x:450,y:440,type:'empty',ch:1,desc:'Garten-Kuppel mit der virtuellen Realität der Hüter.'},
+ delmak:{name:'Delmak',x:670,y:290,type:'hostile',ch:2,address:'1-18-9-24-31-15',desc:'Festungswelt des Sokar und spätere Bastion von Ba\'al.'},
+ tartarus:{name:'Tartarus',x:715,y:160,type:'hostile',ch:2,address:'19-14-22-7-35-12',desc:'Anubis\' Brutstätte der unaufhaltsamen Kull-Krieger.'},
+ kheb:{name:'Kheb (P9C-882)',x:610,y:370,type:'empty',ch:2,address:'26-35-14-8-19-2',desc:'Heiliger Antiker-Tempel der Aufgestiegenen & Oma Desala.'},
+ othala:{name:'Othala (Ida-Galaxie)',x:870,y:80,type:'space',ch:2,address:'3-14-22-8-19-29',desc:'Heimatgalaxie der Asgard und Flottenwerft von Thor.'},
+ p5u666:{name:'P5U-666',x:735,y:235,type:'hostile',ch:2,desc:'Uralte Tempelruinen mit astronomischen Karten.'},
+ ennui:{name:'Ennui',x:800,y:355,type:'neutral',ch:2,desc:'Herrschaftsbereich eines abtrünnigen Goa\'uld-Prinzen.'},
+ dakara:{name:'Dakara',x:790,y:215,type:'hostile',ch:3,address:'28-3-14-26-11-7',desc:'Ursprung der Jaffa-Kultur mit der Antiker-Superwaffe.'},
+ camelot:{name:'Camelot (PX1-591)',x:840,y:290,type:'neutral',ch:3,address:'11-20-14-9-27-3',desc:'Merlins Bibliothek, der Sangreal und die Artus-Sage.'},
+ proclarush:{name:'Proclarush Taonas',x:880,y:380,type:'hostile',ch:3,address:'18-29-3-14-22-7',desc:'Lava-überströmte Antiker-Kuppel mit ZPM-Kammer.'},
+ kern:{name:'Kern-Systeme',x:850,y:120,type:'hostile',ch:3,desc:'Stark befestigtes Goa\'uld-Territorium.'},
+ nexus:{name:'Orbit-Nexus',x:765,y:480,type:'space',ch:3,desc:'Knotenpunkt des replizierten Netzwerks.'},
+ ori:{name:'Ori-Welt (Celestis)',x:905,y:255,type:'hostile',ch:4,desc:'Zentrum der Priore und der Ori-Armada.'},
+ flag:{name:"Apophis' Flaggschiff",x:910,y:440,type:'space',ch:4,desc:'Schweres Ha\'tak-Flaggschiff im Angriffsmodus.'},
 };
 
 // Kompakte Startsektoren, die der Combat-Renderer um Landschaft und Wege erweitert.
 // . offen, l leichte Deckung, H schwere Deckung, # Wand/Gebäude, ~ Wasser/Gefahr, b Trümmer, G Gate
 const MAPS={
- // Abydos-Ruinen: Tempel-Zentrum, Felsformationen, Oase, klare Pfade
+ // Abydos-Ruinen: Tempel-Zentrum, offene Dünen, Oase mit Doppelquerung, weite Flanken
  desert:[
- '..##..####..####..##',
- '#..#..l.l..l.l..#..#',
- '#..#.......l..#..#.#',
- '..##..l..H..H..l..##',
- '.....l..~..l........',
- '.H..##..l.l..##..H..',
- '.l..#..G.G..#..l....',
- '.H..##..l.l..##..H..',
- '.....l..~..l........',
- '..##..l..H..H..l..##',
- '#..#.......l..#..#.#',
- '#..#..l.l..l.l..#..#',
- '..##..####..####..##',
- '....................',
- '....................'],
+ '..##..l......l..##..',
+ '#..#....H..H....#..#',
+ '#..#...l....l...#..#',
+ '..##............##..',
+ '.....l..~~~~..l.....',
+ '.H......~..~......H.',
+ '.l...l...GG...l...l.',
+ '.H......~..~......H.',
+ '.....l..~~~~..l.....',
+ '..##............##..',
+ '#..#...l....l...#..#',
+ '#..#....H..H....#..#',
+ '..##..l......l..##..',
+ '....l..........l....',
+ '..H...l......l...H..'],
  jungle:[
- '...l.l....l.l...l.l.',
- '.l..l..l..l..l..l..l',
- '..l.l.l.l.l.l.l.l.l.',
- '....l...l...l...l...',
- '.l.l..l.l.l.l..l.l..',
- '..l.l.l..l..l.l.l.l.',
- '...l....l.l....l....',
- '.l.l.l.l.l.l.l.l.l.l',
- '..l..l..l.l..l..l.l.',
- '....l.l..l.l.l..l...',
- '.l.l..l.l..l.l..l.l.',
- '..l.l.l.l.l.l.l.l.l.',
- '...l....l.l....l....',
- '.l.l.l.l..l..l.l.l.l',
- '...l.l....l.l...l.l.'],
+ '...l.l........l.l...',
+ '.l....H..##..H....l.',
+ '....l....#....l.....',
+ '..H...l......l...H..',
+ '..l.............l...',
+ '~~~~==~~~~~~~~==~~~~',
+ '....l..........l....',
+ '..H......GG......H..',
+ '....l..........l....',
+ '~~~~==~~~~~~~~==~~~~',
+ '..l.............l...',
+ '..H...l......l...H..',
+ '....l....#....l.....',
+ '.l....H..##..H....l.',
+ '...l.l........l.l...'],
  chulak:[
- '...l....l...........',
- '..l...l.....l.......',
- '....#...............',
- '...l....l....l......',
- '.....l..............',
- '..l...#...l.........',
- '...l...........l....',
- '......l..G....l.....',
- '...l...........l....',
- '..l...#...l.........',
- '.....l..............',
- '...l....l....l......',
- '....#...............',
- '..l...l.....l.......',
- '...l....l...........'],
+ '..H...l......l...H..',
+ '....l..........l....',
+ '#..#....####....#..#',
+ '#..#....#..#....#..#',
+ '....l..........l....',
+ '..H....l.##.l....H..',
+ '.......l....l.......',
+ '....l....GG....l....',
+ '.......l....l.......',
+ '..H....l.##.l....H..',
+ '....l..........l....',
+ '#..#....####....#..#',
+ '#..#....#..#....#..#',
+ '....l..........l....',
+ '..H...l......l...H..'],
  city:[
- '####..####..####..##',
- '#..#..#..#..#..#..#.',
- '#..#..#..#..#..#..#.',
- '####..####..####..##',
- '....l.......l.......',
- '####..####..####..##',
- '#..#..#..#..#..#..#.',
- '#..#..#..#..#..#..#.',
- '####..####..####..##',
- '....l.......l.......',
- '####..####..####..##',
- '#..#..#..#..#..#..#.',
- '#..#..#..#..#..#..#.',
- '####..####..####..##',
- '....................'],
+ // Taktischer Stadtsektor: Breite Boulevards (3 Kacheln), offener Marktplatz, Ruinenfassaden mit Türen, kein Engpass
+ '####..l......l..####',
+ '#......H....H......#',
+ '#..l............l..#',
+ '....l..######..l....',
+ '.......#....#.......',
+ '..H....l....l....H..',
+ '....l..........l....',
+ '..l....l.##.l....l..',
+ '....l..........l....',
+ '..H....l....l....H..',
+ '.......#....#.......',
+ '....l..######..l....',
+ '#..l............l..#',
+ '#......H....H......#',
+ '####..l..GG..l..####'],
  sgc:[
  '....................',
  '..##....##....##....',
@@ -236,11 +251,11 @@ const MAPS={
 // Kapitel & Missionen
 const CHAPTERS=[
  {title:'Kapitel 1 – Erste Schritte',sub:'Ein Tor, eine Basis, ein Gott mit schlechtem Lebenslauf.',missions:[
-     {id:'1-1',name:'Der erste Schritt',planet:'chulak',goal:'SG-1 durch Chulak führen und Teal’cs Seitenwechsel ermöglichen',map:'chulak',theme:'jungle',type:'assault',enemies:{jaffa:3},enemySpawns:[{x:4,y:6},{x:15,y:6},{x:4,y:9}],tutorial:true,timer:30,reward:{ore:30,tech:5},recruit:3,text:'Teal’c schließt sich SG-1 an'},
-   {id:'1-2',name:'Das Dorf am Fluss',planet:'abydos',goal:'Friedlichen Erstkontakt herstellen und Vertrauen gewinnen',map:'village',theme:'jungle',type:'contact',peaceful:true,contact:{id:'village-elder',name:'Siedlungssprecher',x:22,y:13},enemies:{},reward:{ore:25,medicine:5},text:'Ein neuer Verbündeter auf Abydos'},
-   {id:'1-3',name:'Stand Orders',planet:'p2x416',goal:'Halte-Mission 10 Runden',map:'desert',theme:'desert',type:'defense',enemies:{jaffa:12},timer:28,reward:{ore:30,tech:5},recruit:12,text:'Jaffa-Anatomie I'},
-   {id:'1-4',name:'Steuern beim Schatzamt',planet:'abydos',goal:'Steuereintreiber fassen',map:'city',theme:'city',type:'assault',enemies:{jaffa:8,elite:1},timer:28,reward:{ore:20,tech:10},recruit:9,text:'Trelak befreit'},
-   {id:'1-5',name:'38 Minuten',planet:'orbit1',goal:'Thor reparieren, Raid abwehren',map:'asgard',theme:'asgard',type:'defense',enemies:{jaffa:12,veteran:2,elite:1},timer:17,reward:{tech:15,ore:20},recruit:5,text:'Dock Thor, Asgard-Deckung'},
+     {id:'1-1',name:'Der erste Schritt',planet:'chulak',goal:'SG-1 durch Chulak führen und Teal’cs Seitenwechsel ermöglichen',map:'chulak',theme:'jungle',type:'assault',enemies:{jaffa:3},enemySpawns:[{x:4,y:6},{x:15,y:6},{x:4,y:9}],tutorial:true,timer:30,reward:{ore:80,tech:20},recruit:3,text:'Teal’c schließt sich SG-1 an'},
+   {id:'1-2',name:'Das Dorf am Fluss',planet:'abydos',goal:'Friedlichen Erstkontakt herstellen und Vertrauen gewinnen',map:'village',theme:'jungle',type:'contact',peaceful:true,contact:{id:'village-elder',name:'Siedlungssprecher',x:22,y:13},enemies:{},reward:{ore:60,medicine:15,food:20},text:'Ein neuer Verbündeter auf Abydos'},
+   {id:'1-3',name:'Stand Orders',planet:'p2x416',goal:'Halte-Mission 10 Runden',map:'desert',theme:'desert',type:'defense',enemies:{jaffa:12},timer:28,reward:{ore:75,tech:25},recruit:12,text:'Jaffa-Anatomie I'},
+   {id:'1-4',name:'Steuern beim Schatzamt',planet:'abydos',goal:'Steuereintreiber fassen',map:'city',theme:'city',type:'assault',enemies:{jaffa:8,elite:1},timer:28,reward:{ore:70,tech:30},recruit:9,text:'Trelak befreit'},
+   {id:'1-5',name:'38 Minuten',planet:'orbit1',goal:'Thor reparieren, Raid abwehren',map:'asgard',theme:'asgard',type:'defense',enemies:{jaffa:12,veteran:2,elite:1},timer:17,reward:{tech:40,ore:60},recruit:5,text:'Dock Thor, Asgard-Deckung'},
  ]},
  {title:'Kapitel 2 – Das Netz wächst',sub:'Das Telefon hat jetzt mehrere Leitungen.',missions:[
   {id:'2-1',name:'Netz',planet:'p2u744',goal:'Jaffa-Nachbasis sabotieren',map:'jungle',theme:'jungle',type:'assault',enemies:{jaffa:8,veteran:4},timer:28,reward:{tech:15,ore:10},recruit:6,text:'Antiquitäten-Lizenz'},
@@ -310,16 +325,16 @@ const BASE_ROOM_LEVEL={
 // Raum-Typen (Shelter-Basis)
 const ROOMS={
  gate:{name:'Gate-Room',w:2,h:1,power:-10,staff:0,cost:{},icon:'◎',desc:'Missions-Launch (fest)'},
- generator:{name:'Generator',w:1,h:1,power:10,staff:1,cost:{ore:300},icon:'⚡',desc:'+10 Power'},
- lab:{name:'Labor',w:1,h:1,power:-2,staff:2,cost:{ore:500,tech:50},icon:'🔬',desc:'+10 RP/Staff'},
- workshop:{name:'Werkstatt',w:1,h:1,power:-3,staff:2,cost:{ore:400,tech:60},icon:'🛠',desc:'+Erz/Staff'},
- barracks:{name:'Kaserne',w:1,h:1,power:-1,staff:4,cost:{ore:300},icon:'🛏',desc:'Beherbergt 4, +Morale'},
- medbay:{name:'MedBay',w:1,h:1,power:-2,staff:2,cost:{ore:600,tech:40},icon:'⚕',desc:'+10 HP/Staff'},
- training:{name:'Training',w:1,h:2,power:-2,staff:2,cost:{ore:800,tech:80},icon:'🏋',desc:'+2 XP/Staff'},
- armory:{name:'Armory',w:1,h:2,power:-2,staff:1,cost:{ore:700,tech:100},icon:'🔫',desc:'+Schaden'},
- water:{name:'Wasserwerk',w:1,h:1,power:-1,staff:1,cost:{ore:350,tech:30},icon:'💧',desc:'Life-Support (Pflicht)'},
- storage:{name:'Lager',w:1,h:1,power:0,staff:0,cost:{ore:250},icon:'📦',desc:'+Kapazität'},
- canteen:{name:'Kantine',w:1,h:1,power:-1,staff:1,cost:{ore:400},icon:'🍽',desc:'+Morale'},
+ generator:{name:'Generator',w:1,h:1,power:10,staff:1,cost:{ore:220},icon:'⚡',desc:'+10 Power'},
+ lab:{name:'Labor',w:1,h:1,power:-2,staff:2,cost:{ore:350,tech:30},icon:'🔬',desc:'+10 RP/Staff'},
+ workshop:{name:'Werkstatt',w:1,h:1,power:-3,staff:2,cost:{ore:300,tech:30},icon:'🛠',desc:'+Erz/Staff'},
+ barracks:{name:'Kaserne',w:1,h:1,power:-1,staff:4,cost:{ore:220},icon:'🛏',desc:'Beherbergt 4, +Morale'},
+ medbay:{name:'MedBay',w:1,h:1,power:-2,staff:2,cost:{ore:380,tech:25},icon:'⚕',desc:'+10 HP/Staff'},
+ training:{name:'Training',w:1,h:2,power:-2,staff:2,cost:{ore:500,tech:50},icon:'🏋',desc:'+2 XP/Staff'},
+ armory:{name:'Armory',w:1,h:2,power:-2,staff:1,cost:{ore:450,tech:50},icon:'🔫',desc:'+Schaden'},
+ water:{name:'Wasserwerk',w:1,h:1,power:-1,staff:1,cost:{ore:260,tech:20},icon:'💧',desc:'Life-Support (Pflicht)'},
+ storage:{name:'Lager',w:1,h:1,power:0,staff:0,cost:{ore:180},icon:'📦',desc:'+Kapazität'},
+ canteen:{name:'Kantine',w:1,h:1,power:-1,staff:1,cost:{ore:250},icon:'🍽',desc:'+Morale'},
 };
 
 // ===================== Zustand =====================
@@ -478,11 +493,12 @@ function newGame(){
   addRoom(base,'lab',2,BASE_LEVELS-19);
   addRoom(base,'workshop',2,BASE_LEVELS-16);
   addRoom(base,'barracks',2,BASE_LEVELS-25);
+  addRoom(base,'medbay',2,BASE_LEVELS-21);
   addRoom(base,'water',2,BASE_LEVELS-4);
   addRoom(base,'armory',5,BASE_LEVELS-16);
   S={
     v:4,day:1,chapter:0,integrity:100,
-    res:{ore:100,tech:20,medicine:10,food:30},
+    res:{ore:800,tech:140,medicine:50,food:80},
     inventory:defaultInventory(),
     commander:'hammond',
     gfxMode:'pixel', // 'pixel' (Isometric Voxel) | 'ascii' (asciiid-Mode) | 'topdown'
@@ -490,6 +506,7 @@ function newGame(){
     controllerVibration:true,
     keybinds:defaultKeybinds(),
     customTracks:{},
+    unlockedTracks:['theme_fanfare','theme_remix_0','theme_remix_2','theme_outro','base','map'],
     colonies:{},
     roster,base,
     planets:{},
@@ -532,6 +549,16 @@ function load(){
       if(S.controllerVibration===undefined)S.controllerVibration=true;
       if(!S.keybinds)S.keybinds=defaultKeybinds();
       if(!S.customTracks)S.customTracks={};
+      if(!S.unlockedTracks)S.unlockedTracks=['theme_fanfare','theme_remix_0','theme_remix_2','theme_outro','base','map'];
+      if(!S.res)S.res={ore:800,tech:140,medicine:50,food:80};
+      if(S.res.ore<300)S.res.ore=Math.max(S.res.ore,600);
+      if(S.res.tech<40)S.res.tech=Math.max(S.res.tech,100);
+      if(S.res.medicine<20)S.res.medicine=Math.max(S.res.medicine,40);
+      if(S.res.food<30)S.res.food=Math.max(S.res.food,60);
+      if(S.integrity===undefined)S.integrity=100;
+      if(S.base&&S.base.rooms&&!Object.values(S.base.rooms).some(r=>r.type==='medbay')){
+        addRoom(S.base,'medbay',2,BASE_LEVELS-21);
+      }
       (S.roster||[]).forEach((m,i)=>{
         if(m.armor===undefined)m.armor=null;
         if(m.special===undefined)m.special=null;
@@ -628,6 +655,19 @@ function checkQuests(){
     note(`📋 Neue Quest: ${q.title} (${q.char})`);S.rlog.push(`📋 Neue Quest: ${q.title} (${q.char})`);
   });
 }
+function unlockTrack(trackKey){
+  if(typeof S==='undefined'||!S)return;
+  S.unlockedTracks=S.unlockedTracks||['theme_fanfare','theme_remix_0','theme_remix_2','theme_outro','base','map'];
+  if(!S.unlockedTracks.includes(trackKey)){
+    S.unlockedTracks.push(trackKey);
+    save();
+    const tr=typeof STRUDEL_TRACKS!=='undefined'&&STRUDEL_TRACKS[trackKey];
+    const name=tr?(tr.title||tr.name):trackKey;
+    if(typeof toast==='function')toast(`🎵 Neuer Soundtrack im SGC-AMP freigeschaltet: ${name}!`);
+    note(`🎵 Neuer Soundtrack im SGC-AMP freigeschaltet: ${name}`);
+  }
+}
+
 function advanceQuests(missionId){
   (S.quests||[]).forEach(q=>{
     if(q.status!=='active')return;
@@ -636,6 +676,8 @@ function advanceQuests(missionId){
     note(`✔ Quest abgeschlossen: ${q.title}`);S.rlog.push(`✔ Quest: ${q.title}`);
     note(`   ${q.epilogue}`);S.rlog.push(`   ${q.epilogue}`);
     note(`   🎁 ${q.reward}`);S.rlog.push(`   🎁 ${q.reward}`);
+    if(q.id==='q-asgard'||q.unlockTrack==='theme_asgard') unlockTrack('theme_asgard');
+    if(q.id==='q-atlantis'||q.unlockTrack==='theme_atlantis') unlockTrack('theme_atlantis');
   });
 }
 function failQuests(){
@@ -660,11 +702,11 @@ function endDay(){
   S.research.rp+=rp;
   S.res.ore+=ore;
   if(rp||ore||heal||xp)S.rlog.push(`🏗 Produktion: 🔬+${rp} · ⛏+${ore} · ✚${heal} · 🎓${xp}`);
-  S.rlog.push(`📦 Passive: ⛏+20 · ⚙+5 · ✚+5 · 🍞+10`);
+  S.rlog.push(`📦 Passive Versorgung: ⛏+50 · ⚙+15 · ✚+10 · 🍞+15`);
   const q=S.research.queue&&TECH.find(t=>t[0]===S.research.queue);
   if(q&&S.research.rp>=q[3]){S.research.rp-=q[3];S.research.done.push(q[0]);S.research.queue=null;note(`🔬 Forschung abgeschlossen: ${q[1]}`);S.rlog.push(`🔬 Forschung abgeschlossen: ${q[1]}`);}
   // Passive Income
-  S.res.ore+=20;S.res.tech+=5;S.res.medicine+=5;S.res.food+=10;
+  S.res.ore+=50;S.res.tech+=15;S.res.medicine+=10;S.res.food+=15;
   // Kolonien: Tägliche Produktion & Verteidigungscheck
   if(S.colonies){
     let colOre=0,colTech=0,colMed=0;
@@ -692,23 +734,53 @@ function endDay(){
       S.rlog.push(`🪐 Kolonien-Ertrag: ⛏+${colOre} · ⚙+${colTech} · ✚+${colMed}`);
     }
   }
-  // Staff-Tick
+  // Krankenstation- & Personal-Tick (Ebene 21)
+  const medbayRoom=Object.values(S.base.rooms).find(r=>r.type==='medbay');
+  const hasMedbay=!!medbayRoom;
+  const medStaff=(medbayRoom&&medbayRoom.staff.filter(id=>S.roster[id]&&S.roster[id].recruited&&!S.roster[id].dead).length)||0;
+  const medBoost=1+(medStaff*0.5);
+
   const rec=S.roster.filter(m=>m.recruited&&!m.dead);
+  const healedLog=[];
   rec.forEach(m=>{
-    if(m.room>=0){
-      const r=S.base.rooms[m.room];
-      if(r.type==='medbay')m.hp=Math.min(m.maxHp,m.hp+Math.max(5,heal/2));
-      if(r.type==='barracks')m.morale=Math.min(100,m.morale+3);
-      if(r.type==='training')m.xp+=Math.round(xp/2);
-      if(r.type==='canteen')m.morale=Math.min(100,m.morale+2);
-    } else {
-      m.hp=Math.min(m.maxHp,m.hp+5);
-      m.morale=Math.min(100,m.morale+2);
+    const inMedbay=m.room>=0&&S.base.rooms[m.room]&&S.base.rooms[m.room].type==='medbay';
+    const isWounded=m.hp<m.maxHp||(m.injuries||0)>0||(m.fatigue||0)>0;
+    
+    if(inMedbay){
+      // Intensiv-Bettruhe auf Ebene 21
+      const gain=Math.round(35*medBoost);
+      const prev=m.hp;
+      m.hp=Math.min(m.maxHp,m.hp+gain);
+      m.fatigue=0;
+      if(m.injuries>0&&Math.random()<0.85)m.injuries--;
+      m.morale=Math.min(100,m.morale+5);
+      if(prev<m.maxHp||m.injuries>0)healedLog.push(`${m.name.split(' ')[0]} (+${gain} HP${m.injuries===0?', genesen':''})`);
+    }else if(hasMedbay&&isWounded){
+      // SGC-Ambulanz-Betreuung
+      const gain=Math.round(18*medBoost);
+      m.hp=Math.min(m.maxHp,m.hp+gain);
+      m.fatigue=Math.max(0,m.fatigue-25);
+      if(m.injuries>0&&Math.random()<0.40)m.injuries--;
+      m.morale=Math.min(100,m.morale+3);
+    }else{
+      // Kasernenruhe
+      if(m.room>=0){
+        const r=S.base.rooms[m.room];
+        if(r.type==='barracks')m.morale=Math.min(100,m.morale+3);
+        if(r.type==='training')m.xp+=Math.round(xp/2);
+        if(r.type==='canteen')m.morale=Math.min(100,m.morale+2);
+      }else{
+        m.morale=Math.min(100,m.morale+2);
+      }
+      m.hp=Math.min(m.maxHp,m.hp+8);
+      m.fatigue=Math.max(0,m.fatigue-15);
+      if(m.injuries>0&&Math.random()<0.20)m.injuries--;
     }
-    m.fatigue=Math.max(0,m.fatigue-15);
-    if(m.injuries>0&&Math.random()<0.15)m.injuries--;
     while(m.lvl<12&&m.xp>=30*m.lvl){m.xp-=30*m.lvl;m.lvl++;m.maxHp+=5;m.hp=m.maxHp;note(`★ ${m.name} erreicht Level ${m.lvl}`);}
   });
+  if(healedLog.length>0){
+    S.rlog.push(`🏥 Krankenstation (Ebene 21): ${healedLog.join(', ')}`);
+  }
   if(Math.random()<0.45)note('📎 '+EVENTS[ri(EVENTS.length)]);
   // Kapitel-Check
   const ch=CHAPTERS[S.chapter];
@@ -773,6 +845,196 @@ function sandwich(){
   note('🥪 Hammond serviert Sandwiches: alle Morale +20.');
   return R(true,'Morale +20 für alle.');
 }
+
+// ===================== Krankenstation (Ebene 21 / Dr. Janet Fraiser) =====================
+function healPatient(charId, method){
+  const m = S.roster[charId];
+  if(!m) return R(false, 'Patient nicht im SGC-Roster gefunden.');
+  if(m.dead) return R(false, `${m.name} ist gefallen und kann nicht mehr behandelt werden.`);
+
+  if(method === 'rest'){
+    const medbay = Object.values(S.base.rooms).find(r => r.type === 'medbay');
+    if(!medbay) return R(false, 'Keine Krankenstation im SGC vorhanden!');
+    if(m.room === medbay.id) return R(false, `${m.name} belegt bereits ein Bett auf Ebene 21.`);
+    const res = assignRoom(charId, medbay.id);
+    if(res.ok) note(`🛏 ${m.name} wurde auf Ebene 21 stationär aufgenommen.`);
+    return res;
+  }
+
+  if(method === 'medicine'){
+    const cost = 15;
+    if((S.res.medicine || 0) < cost) return R(false, `Nicht genug Medizin (${cost} ✚ benötigt).`);
+    if(m.hp >= m.maxHp && (m.injuries || 0) === 0 && (m.fatigue || 0) === 0){
+      return R(false, `${m.name} ist vollkommen diensttauglich.`);
+    }
+    S.res.medicine -= cost;
+    const gained = Math.min(35, m.maxHp - m.hp);
+    m.hp = Math.min(m.maxHp, m.hp + 35);
+    if(m.injuries > 0) m.injuries--;
+    m.fatigue = Math.max(0, (m.fatigue || 0) - 30);
+    m.morale = Math.min(100, (m.morale || 70) + 5);
+    note(`💊 Erstversorgung: ${m.name} versorgt (+${gained} HP, Wunden verbunden).`);
+    return R(true, `${m.name} erstversorgt (+${gained} HP).`);
+  }
+
+  if(method === 'tech_goauld'){
+    const techCost = 20, oreCost = 15;
+    if((S.res.tech || 0) < techCost) return R(false, `Nicht genug Tech (${techCost} ⚙ benötigt).`);
+    if((S.res.ore || 0) < oreCost) return R(false, `Nicht genug Naquadah/Erz (${oreCost} ⛏ benötigt).`);
+    if(m.hp >= m.maxHp && (m.injuries || 0) === 0){
+      return R(false, `${m.name} weist keine Traumata auf.`);
+    }
+    S.res.tech -= techCost;
+    S.res.ore -= oreCost;
+    m.hp = m.maxHp;
+    m.injuries = 0;
+    m.fatigue = 0;
+    m.morale = 100;
+    note(`✨ Antikes Heilgerät pulsiert: ${m.name} vollständig regeneriert (100% HP)!`);
+    return R(true, `Zelluläre Regeneration: ${m.name} vollständig geheilt!`);
+  }
+
+  if(method === 'tretonin'){
+    const medCost = 10, techCost = 10;
+    if((S.res.medicine || 0) < medCost) return R(false, `Nicht genug Medizin (${medCost} ✚ benötigt).`);
+    if((S.res.tech || 0) < techCost) return R(false, `Nicht genug Tech (${techCost} ⚙ benötigt).`);
+    S.res.medicine -= medCost;
+    S.res.tech -= techCost;
+    m.hp = Math.min(m.maxHp, m.hp + 50);
+    m.maxHp = Math.min(115, m.maxHp + 5);
+    if(m.injuries > 0) m.injuries = Math.max(0, m.injuries - 1);
+    m.fatigue = 0;
+    m.morale = Math.min(100, (m.morale || 70) + 15);
+    note(`🧪 Tretonin verabreicht: ${m.name} gestärkt (+50 HP, MaxHP +5, Moral +15).`);
+    return R(true, `Tretonin verabreicht: Vitalwerte über Normalwert stabilisiert!`);
+  }
+
+  if(method === 'surgery'){
+    const medCost = 25, techCost = 10;
+    if((S.res.medicine || 0) < medCost) return R(false, `Nicht genug Medizin (${medCost} ✚ benötigt).`);
+    if((S.res.tech || 0) < techCost) return R(false, `Nicht genug Tech (${techCost} ⚙ benötigt).`);
+    if(m.hp >= Math.round(m.maxHp * 0.75) && (m.injuries || 0) === 0){
+      return R(false, `Kein chirurgischer Eingriff erforderlich.`);
+    }
+    S.res.medicine -= medCost;
+    S.res.tech -= techCost;
+    m.hp = Math.max(m.hp, Math.round(m.maxHp * 0.85));
+    m.injuries = 0;
+    m.fatigue = 15;
+    m.morale = Math.min(100, (m.morale || 70) + 10);
+    note(`💉 Not-Operation Dr. Fraiser: ${m.name} gerettet (Wunden versorgt, HP 85%).`);
+    return R(true, `Not-Operation erfolgreich: ${m.name} außer Lebensgefahr!`);
+  }
+
+  return R(false, 'Unbekannte Behandlungsmethode.');
+}
+
+function healAllEmergency(){
+  let count = 0;
+  const wounded = S.roster.filter(m => m.recruited && !m.dead && (m.hp < m.maxHp || (m.injuries || 0) > 0));
+  if(wounded.length === 0) return R(false, 'Keine verwundeten Soldaten vorhanden.');
+  for(const m of wounded){
+    if((S.res.medicine || 0) < 15) break;
+    const res = healPatient(m.id, 'medicine');
+    if(res.ok) count++;
+  }
+  if(count === 0) return R(false, 'Nicht genügend Medizin für eine Erstversorgung.');
+  return R(true, `${count} Soldat(en) von Dr. Fraiser erstversorgt!`);
+}
+
+const MEDBAY_INCIDENTS = [
+  {
+    id: 'broca_divide',
+    title: '☣ DAS BROCA-VIRUS (DIE SEUCHE)',
+    kicker: 'NOTFALL-QUARANTÄNE AUF EBENE 21',
+    color: '#ef4444',
+    speaker: "Dr. Janet Fraiser",
+    role: "Chefärztin des SGC",
+    text: '„Sir! Das Rückkehrer-Team zeigt akute Verhaltensmutationen! Jack hat mich gerade angeknurrt und versucht, mit einem Knochen den Defibrillator zu zertrümmern. Es ist das primitive Broca-Virus!“',
+    subtext: 'Dr. Fraiser hat sich in der Isolierzelle verbarrikadiert und analysiert das Hormonmuster.',
+    choices: [
+      {
+        label: 'Sedativum & Antiserum synthetisieren',
+        desc: 'Kostet 20 Medizin, heilt alle Infizierten und stellt die Ordnung wieder her.',
+        cost: {medicine: 20},
+        effect: () => {
+          S.res.medicine = Math.max(0, (S.res.medicine || 0) - 20);
+          S.roster.forEach(m => { if(m.recruited && !m.dead){ m.morale = Math.min(100, m.morale + 10); m.injuries = 0; } });
+          note('💊 Antiserum erfolgreich injiziert: Jack bittet Dr. Fraiser mit rotem Kopf um Entschuldigung.');
+        }
+      },
+      {
+        label: 'Jack mit der Betäubungswaffe stoppen & DNA-Probe sequenzieren',
+        desc: 'Bringt +25 Tech-Erkenntnisse über retrovirale Antiker-Biologie.',
+        effect: () => {
+          S.res.tech = (S.res.tech || 0) + 25;
+          const jack = S.roster[0]; if(jack) jack.hp = Math.max(20, jack.hp - 10);
+          note('🔬 DNA sequenziert (+25 Tech). Jack wacht mit Beule auf: "Janet... mein Kopf dröhnt."');
+        }
+      }
+    ]
+  },
+  {
+    id: 'symbiote_crisis',
+    title: '🐍 GOA\'ULD-SYMBIONTEN-ISOLIERUNG',
+    kicker: 'CHIRURGISCHE ALARMSTUFE ROT',
+    color: '#a855f7',
+    speaker: "Dr. Janet Fraiser",
+    role: "Chefärztin des SGC",
+    text: '„Röntgenaufnahme bestätigt: Ein jugendlicher Goa\'uld-Symbiont hat sich um den Hirnstamm eines geretteten Soldaten gewickelt! Wenn wir nicht sofort handeln, übernimmt die Schlange die Kontrolle!“',
+    subtext: 'Teal\'c bietet an, mit Kelno\'reem die Gehirnwellen zu beruhigen.',
+    choices: [
+      {
+        label: 'Präzisions-Skalpell von Dr. Fraiser & Kryo-Schock',
+        desc: 'Rettet den Wirt vollständig und entfernt alle Wunden (+15 Moral für SGC).',
+        cost: {medicine: 15, tech: 10},
+        effect: () => {
+          S.res.medicine = Math.max(0, (S.res.medicine || 0) - 15);
+          S.res.tech = Math.max(0, (S.res.tech || 0) - 10);
+          S.roster.forEach(m => { if(m.recruited && !m.dead) m.morale = Math.min(100, m.morale + 15); });
+          note('💉 Dr. Fraiser extrahiert die Larve millimetergenau. Wirt ist frei und wohlauf!');
+        }
+      },
+      {
+        label: 'Tok\'ra-Extraktor & Symbionten-Geheimnisse studieren',
+        desc: 'Bringt wertvolles Goa\'uld-Forschungswissen (+30 Tech).',
+        effect: () => {
+          S.res.tech = (S.res.tech || 0) + 30;
+          note('⚡ Tok\'ra-Feld aktiv: Symbiont in Stasiskammer isoliert (+30 Tech für das SGC).');
+        }
+      }
+    ]
+  },
+  {
+    id: 'ancient_healing_cube',
+    title: '✨ RESONANZ DES ANTIKEN HEILGERÄTS',
+    kicker: 'EBENE 21 MEDIZINISCHE ENERGIEWELLE',
+    color: '#38bdf8',
+    speaker: "Dr. Janet Fraiser",
+    role: "Chefärztin des SGC",
+    text: '„General, das Antike Handgerät hat bei der Behandlung eine harmonische Schwingung aufgebaut! Das Licht heilt die Zellstrukturen unserer Verwundeten mit unglaublicher Geschwindigkeit!“',
+    subtext: 'Major Carter meldet, dass die Energiekupplung der Krankenstation sanft summt.',
+    choices: [
+      {
+        label: 'Heilungs-Feld auf die gesamte Station ausdehnen',
+        desc: 'Alle anwesenden Soldaten werden sofort um +40 HP geheilt.',
+        effect: () => {
+          S.roster.forEach(m => { if(m.recruited && !m.dead) m.hp = Math.min(m.maxHp, m.hp + 40); });
+          note('✨ Das warme Licht durchströmt die Krankenstation: Alle Wunden schließen sich schlagartig!');
+        }
+      },
+      {
+        label: 'Überschüssige Energie in die Naquadah-Puffer einspeisen',
+        desc: 'Sichert +35 Naquadah und +15 Tech für die Basissysteme.',
+        effect: () => {
+          S.res.ore = (S.res.ore || 0) + 35;
+          S.res.tech = (S.res.tech || 0) + 15;
+          note('🔋 Puffer aufgeladen: +35 Erz, +15 Tech aus der Antiker-Resonanz gewonnen.');
+        }
+      }
+    ]
+  }
+];
 function openMissions(){
   const next=CHAPTERS[S.chapter].missions.find(m=>!S.done.includes(m.id));
   return next?[next]:[];

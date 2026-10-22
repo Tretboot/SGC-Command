@@ -1,19 +1,30 @@
-# 📦 HANDOFF – SGC COMMAND (v0.24 – "Feldtauglich")
+# 📦 HANDOFF – SGC COMMAND (v0.28 – "Krankenstation Ebene 21 & Dr. Janet Fraiser")
 
 **Projekt:** SGC Command (`g:\AgentHome\SGC-Command`)  
 **Forschungsrahmen:** Universität Osnabrück (Kognitionswissenschaft / Informatik) – KI-Pair-Programming-Studie  
 **Beteiligte Modell-Schichten:**  
 1. **Gemini 4 Argon:** 2:1 isometrische Voxel-Projektion, Obelisk-Mathematik, Diamond-Picking, initialer CP437/ASCII-Renderer, Lizenz-Audit.  
 2. **Claude 5.5 / 3.5 Sonnet:** Obelisk/Voxel-Stabilisierung, prozedurale WebAudio-Sample-Synthese, Inventar & Werkbank-Crafting (`INVENTAR-SPEC.md`), Hammonds Klemmbrett.  
-3. **Gemini 3.8 Flash (Vorherige Schicht):** Standard-MIDI-Bridge, Krumhansl-Schmuckler-Tonarterkennung, Stargate Theme × Switch Angel Hybrid-Remix-Synthesizer, prozedurale Seed-Song-Generierung (`SONGGEN`), persistenter planetarer Koloniebau, **SGC-AMP v2.80**, Strudel Live-Code Interface, ReBirth-338 Rack, 8-Bit Chiptune-Modus, C&C- und Lo-Fi-Remixes sowie das vereinheitlichte Web-Portal.
-4. **Aktueller Durchgang (v0.24):** 
-   - **Missionsabschluss "Weiter"-Button repariert**: Strudels globale `window.note`-Parser-Kollision mit dem Ingame-Logger behoben, `combatEnd()`-Absicherung und z-index-Priorisierung.
-   - **Massiver Performance-Boost im Gefecht (11 FPS → 120+ FPS)**: Beseitigung von Layout-Thrashing (`resizeCombatViewport` aus der 60-FPS-Schleife entfernt), HTML-Dirty-State-Caching für `renderCombatUI` und wiederverwendbare TypedArray-Buffer für die Winamp-Visualisierung.
-   - **Musik-Dramaturgie**: Intro spielt Stargate-Thema, beim ersten Klick/Betreten der Basis wechselt es auf **Remix 1** (`theme_remix_0`), beim Aufrufen der Sternenkarte nahtlos auf **Remix 3** (`theme_remix_2`) und zurück zur Basis wieder auf **Remix 1**.
-   - **Song-Mutations-Engine repariert**: Fehlerhafte Methodenverkettungen und fehlender Setter für `currentCode` behoben; aufeinanderfolgende Mutationen kompilieren und klingen zuverlässig.
-   - **Neuer Song: 🌌 Melancholic Ambient Phaser Remix (`theme_remix_melancholy`)**: 74 BPM in D-Dorisch mit Strudel-Phaser-Effekt, schwebenden Akkorden, Cello-Bass und Solitär-Glocke.
-**Stand:** 22. Oktober 2026 · Alle Tests grün (0 Fehler).
-**Lizenz:** AGPL-3.0-or-later.  
+3. **Gemini 3.8 Flash:** Standard-MIDI-Bridge, Krumhansl-Schmuckler-Tonarterkennung, Stargate Theme × Switch Angel Hybrid-Remix-Synthesizer, prozedurale Seed-Song-Generierung (`SONGGEN`), persistenter planetarer Koloniebau, **SGC-AMP v2.80**, Strudel Live-Code Interface, ReBirth-338 Rack, 8-Bit Chiptune-Modus, C&C- und Lo-Fi-Remixes sowie das vereinheitlichte Web-Portal.
+4. **Claude Opus 5.5 Medium (Aktuelle Führungsschicht – v0.27 / v0.28):** 
+   - **Krankenstation (Ebene 21 / Dr. Janet Fraiser & Carolyn Lam – v0.28):**
+     * Neuer Navigations-Reiter `🏥 Krankenstation` mit direkter Anbindung an Ebene 21 des Cheyenne Mountain Complex.
+     * Chefärztin Dr. Janet Fraiser mit prozeduralem Pixel-Porträt, diagnostischen Lageberichten und Bio-Telemetrie-Monitor (EKG).
+     * 5 Behandlungsmethoden: Stationäre Bettruhe (+35 bis +50 HP/Tag), Erstversorgung mit Medizin (+35 HP, -1 Wunde), Antikes Heilgerät (100% Vollregeneration), Tretonin (+50 HP, +5 MaxHP, Moralboost) und Dr. Fraisers Not-Operation für kritische Traumata.
+     * Geschlossener Tages-Loop (`endDay`): Patienten regenerieren spürbar, Heilung wird im Tagesbericht (`S.rlog`) transparent aufgeführt.
+     * Stargate-Episodenevents auf der Krankenstation (Broca-Divide Höhlenmensch-Virus, Goa'uld-Symbionten-Isolierung, Antiker Heilwürfel-Schock).
+   - **Taktische Downed-Evakuierung & Not-Rückzug (v0.28):**
+     * Bewusstlose (`downed`) Teammitglieder blockieren nicht länger die Extraktion: Noch mobile Einheiten tragen Verwundete durch das Sternentor!
+     * Neuer Taktik-Button `[🚨 Not-Rückzug]` erlaubt jederzeit den geordneten Abbruch missglückter Einsätze.
+   - **SGC Vorfall- & Krisen-System bei „Tag Beenden“ (`SGC_INCIDENTS` – v0.27):**
+     * 55% Chance auf kanonische Zwischenfälle: Unautorisierte Toraktivierung, Woolsey NID-Revision, Replikatoren im Subspace-Router, Meta-Content-Rot.
+   - **SGC Tactical Level Editor (`tools/leveleditor.html` – v0.27):**
+     * Standalone Autorenwerkzeug mit 2:1 Isometrie- & 2D-Rasteransicht, Palette, Höhenverstellung (+1/-1 Z), Presets und Export.
+   - **Floppy-Disk-Budget & Release-Archiv:**
+     * Release `release/SGC-Command-v028.zip` erzeugt (~630 KB, weit unter der 1,44 MB Floppy-Disk-Grenze).
+     * Alle früheren Versionen (`v0.1.0-rc.1`, `v022`, `v024`, `v025`, `v026`, `v027`) bleiben im `release/`-Verzeichnis gesichert.
+**Stand:** 23. Oktober 2026 · 194 Tests grün (0 Fehler).  
+**Lizenz:** AGPL-3.0-or-later.    
 
 ---
 
