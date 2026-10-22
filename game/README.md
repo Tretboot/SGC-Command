@@ -1,4 +1,4 @@
-# 📖 SGC COMMAND – Anleitung (v0.20 Isometric Voxel & ASCII-3D Edition)
+# 📖 SGC COMMAND – Anleitung (v0.23 Combat UI & Intro-Audio Edition)
 
 ## Starten
 
@@ -27,6 +27,8 @@ Ein taktisches Sci-Fi-Strategiespiel im Stargate-Universum. Du leitest das SGC u
 | **🎵 (Header / Menü)** | **Strudel Core Sound-Engine & Live-Coding-Konsole** öffnen |
 | **Pfeiltasten / WASD / Ziehen** | Einsatzkarte verschieben |
 | **ESC** | Pause-Menü (Grafik-Engine, Kommandant, Schwierigkeit, Strudel-Sound) |
+
+Beim ersten Start kann der Browser die Musik zunächst blockieren. Während des Intros lässt sie sich über **🔊 Ton aktivieren** freischalten; das Intro läuft dabei weiter. Feld-Dialoge lassen die Einsatzkarte und das Aktionspanel sichtbar und erlauben die Auswahl eigener Einheiten.
 
 ---
 

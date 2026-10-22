@@ -2,9 +2,9 @@
 >
 > **License scope:** The MIT License in this repository applies only to the original program code identified in [LICENSE](LICENSE). It does not grant any rights to Stargate, its universe, names, characters, settings, story elements, dialogue, trademarks, or any artwork, audio, screenshots, or other non-code material. Rights to third-party materials remain with their respective owners.
 
-# SGC Command
+### SGC Command v0.23 ("Einsatzbereit")
 
-An experimental, non-commercial fan-made tactical strategy game prototype. Manage a remote base, assemble a team, and take turn-based missions through the Stargate.
+An experimental, non-commercial fan-made tactical strategy game prototype. Manage a remote base, assemble a team, build offworld colonies, and take turn-based missions through the Stargate — backed by a high-octane algorithmic Strudel live-coding sound engine.
 
 The project is a browser game built with plain HTML, CSS, and JavaScript. It has no build step and requires no package installation.
 
@@ -24,7 +24,7 @@ python -m http.server 8080 --directory game
 
 Then open <http://localhost:8080> in a modern browser. If `python` is not available, try `py -m http.server 8080 --directory game`.
 
-The opening cinematic plays on a fresh game and can be replayed from the pause menu. The game saves progress in the browser's `localStorage`; file-based browser storage behavior can vary by browser. Use the in-game reset controls to start over.
+The opening cinematic plays on a fresh game and can be replayed from the pause menu. Browsers may require a user gesture before audio can start; use the **Ton aktivieren** control during the intro to enable its soundtrack without skipping it. The game saves progress in the browser's `localStorage`; file-based browser storage behavior can vary by browser. Use the in-game reset controls to start over.
 
 ## Play & Web Hub
 
@@ -35,12 +35,10 @@ Open index.html (or hub.html)
 ```
 
 The Web Hub provides an integrated suite combining:
-1. **Interactive Game Player:** Full-featured embedded view of *SGC Command v0.21*.
-2. **Academic Research Paper:** [`blog/uni-osnabrueck-ai-study.md`](blog/uni-osnabrueck-ai-study.md) detailing the multi-agent LLM study conducted for Universität Osnabrück.
-3. **SGC Wiki & Lore Database:** Lore, planet telemetry, weapons, SG-teams, and colony structures.
-4. **Strudel, SGC-AMP & Sound Lab:** Live-pattern synthesizer showcase with Winamp visualizer, MIDI bridge, 8-bit chiptunes, and procedural song generation.
-5. **Captain's Log Archive:** Multi-agent development logs ([Log 021](blog/captains-log-021.md) and [Log 020](blog/captains-log-020.md)).
-6. **Release Downloads:** Clean standalone builds (`SGC-Command-v021.zip`) and documentation.
+1. **Interactive Game Player:** Full-featured embedded view of *SGC Command v0.23*.
+2. **SGC Wiki & Lore Database:** Lore, planet telemetry, weapons, SG-teams, and colony structures.
+3. **Captain's Log Archive:** Multi-agent development logs ([Log 023](blog/captains-log-023.md), [Log 022](blog/captains-log-022.md), and [Log 021](blog/captains-log-021.md)).
+4. **Über & Labor:** Integrated sub-portal combining the Strudel & Winamp Sound Lab, academic pair-programming research notes, and clean offline release downloads (`SGC-Command-v023.zip`).
 
 If an optional local HTTP server is preferred:
 
@@ -93,10 +91,14 @@ Live coding and procedural audio synthesis are powered by [`@strudel/web`](https
 - **Stargate MIDI Direct & Hybrid Strudel Instruments (`game/midi.js`):**
   - Standard MIDI bridge decoding the iconic Stargate Main Theme (165 BPM, G Major) into 16-step measures.
   - Dedicated lightweight Strudel voices: French Horn / Trumpet fanfare (`$MELODY`), driving electric bass (`$BASS`), power brass harmony (`$HARMONY`), and orchestral timpani/kit (`$DRUMS`).
-  - 4 hybrid remixes fusing Stargate fanfares with Switch Angel acid bass, trancegates, and ducking aesthetics.
+  - **🪖 Stargate × C&C Hell March Industrial Remix (`theme_remix_cnc`):** 132 BPM, Frank-Klepacki-style industrial cyber-metal with distorted TB-303/saw guitar chug, driving Roland TR-909 kick, and cutting brass fanfares for combat and boss battles.
+  - **☕ Stargate × Midnight Lo-Fi Chillhop Remix (`theme_remix_lofi`):** 84 BPM, mellow tape-saturated Rhodes electric piano, warm sub-bass, vinyl dust crackle, and lazy swing groove for base management and offworld colony construction.
+  - 4 additional hybrid remixes fusing Stargate fanfares with Switch Angel acid bass, trancegates, and ducking aesthetics.
 - **Switch Angel Live-Coding Library & Runtime Fixes (`game/switch-angel.js`):**
   - 20 integrated tracks by Switch Angel (including `extra_slippy`, `Lets_Talk`, `MUTEK4am`, `did_i_make_this`, and `AUTOTOMATONE`) fully stabilized via AST/regex normalization and defensive prototype patching.
-  - Procedural offline WebAudio sample synthesis for drums, speech, and synths without network roundtrips.
+  - Special thanks to Switch Angel (`https://github.com/switchangel`)! Her tracks serve as educational development benchmarks and placeholders showcasing the sound engine's real-time synthesis performance.
+- **Public Domain NASA Space Imagery (`references/NASA-ASSETS.md`):**
+  - Curated collection of high-resolution, public domain (PD-USGov / CC0) imagery from NASA, JPL, Hubble, and James Webb for Abydos sand dunes, exoplanet vistas, Carina Nebula deep fields, and icy moons.
 - **Procedural Mission Song Generator (`SONGGEN`):**
   - Dynamically synthesizes unique soundtracks based on campaign day, planet scale, team members, weapons, and enemy compositions.
 - **Persistent Offworld Colonies (Civ / SimCity / Total War Rome Layer):**
@@ -114,12 +116,14 @@ Live coding and procedural audio synthesis are powered by [`@strudel/web`](https
 
 | Path | Purpose |
 |---|---|
-| [`index.html`](index.html) / [`hub.html`](hub.html) | Unified Web Hub & Portal (Game launcher, Academic Study, Lore Wiki, Sound Lab, Captain's Log) |
+| [`index.html`](index.html) / [`hub.html`](hub.html) | Unified Web Hub & Portal (Game launcher, Lore Wiki, Captain's Log, Über & Labor) |
 | [`game/`](game/) | Playable browser game (`index.html`, `iso.js`, `sound.js`, `midi.js`, `switch-angel.js`, `combat.js`, `engine.js`, `base.js`, `ui.js`) |
 | [`game/vendor/strudel-web.js`](game/vendor/strudel-web.js) | Local `@strudel/web@1.3.0` bundle |
-| [`blog/uni-osnabrueck-ai-study.md`](blog/uni-osnabrueck-ai-study.md) | Academic Research Study Paper (Uni Osnabrück) |
+| [`blog/captains-log-022.md`](blog/captains-log-022.md) | Development log for v0.22 ("...aber der Soundtrack ist jetzt Fett!", C&C/Lo-Fi remixes, combat UI fix, volume slider fix) |
+| [`blog/captains-log-023.md`](blog/captains-log-023.md) | Development log for v0.23 (combat selection during dialogue, intro audio unlock, release cleanup) |
 | [`blog/captains-log-021.md`](blog/captains-log-021.md) | Development log for v0.21 (Winamp Player, Oscilloscope, 8-Bit Chiptune, Switch Angel fixes) |
 | [`blog/captains-log-020.md`](blog/captains-log-020.md) | Development log for v0.20 (Voxel Dual-Gfx, Civ Colonies, Strudel Core) |
+| [`references/NASA-ASSETS.md`](references/NASA-ASSETS.md) | Catalog of public domain NASA space and planet imagery |
 | [`references/`](references/) | Inbox for user feedback and inspiration drops, and [`LICENSE-AUDIT.md`](references/LICENSE-AUDIT.md) |
 | [`content/`](content/) | Campaign flavor, quests, and mission scenes |
 | [`wiki/`](wiki/) | In-project reference pages and database |
@@ -134,7 +138,7 @@ Run the automated headless test suite:
 node test-browser.js
 ```
 
-Verifies all components (DOM mocks, 2:1 isometric projection, MIDI parsing, Tonart analysis, dedicated Strudel instruments, Winamp transport & state, ReBirth-338 DSP rack, soundbank hot-patching, 8-Bit chiptune mode, Switch Angel track compilation, colony state, crafting, special items, and dual-mode rendering) across 63 assertions with 0 external dependencies.
+Verifies all components (DOM mocks, 2:1 isometric projection, MIDI parsing, Tonart analysis, dedicated Strudel instruments, Winamp transport & state, ReBirth-338 DSP rack, soundbank hot-patching, 8-Bit chiptune mode, C&C and Lo-Fi remixes, volume gain routing, Switch Angel track compilation, colony state, crafting, special items, and dual-mode rendering) across 81 assertions with 0 external dependencies.
 
 ## License
 

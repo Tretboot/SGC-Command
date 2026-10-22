@@ -32,7 +32,10 @@ function setTab(t){UI.tab=t;sfx('click');
  document.querySelectorAll('.pane').forEach(p=>p.style.display=p.id==='pane-'+t?'block':'none');
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
  if(typeof SFX!=='undefined'&&!C.active){
-  SFX.music(t==='map'?'map':t==='colonies'?'planet':'base');
+  // Musik beim Wechsel auf die Sternenkarte nicht wechseln, um Unterbrechungen zu vermeiden
+  if(t!=='map'){
+   SFX.music(t==='colonies'?'planet':'base');
+  }
  }
  renderAll();}
 
@@ -168,7 +171,10 @@ const WINAMP = {
     }
   },
 
+  beatPulse: 0.2,
+
   handleVoiceTrigger(voice, val){
+    this.beatPulse = (voice === 'kick' || voice === 'sbd') ? 1.0 : Math.max(this.beatPulse || 0.2, 0.75);
     // Highlight voice badge (Strudel.cc style monitor)
     const badge=document.getElementById(`winamp-badge-${voice}`);
     if(badge){
@@ -189,23 +195,27 @@ const WINAMP = {
     const ctx=cv.getContext('2d');
     const w=cv.width,h=cv.height;
 
-    ctx.fillStyle='#050a06';
+    // Smooth beat decay
+    this.beatPulse = Math.max(0.18, (this.beatPulse || 0.18) * 0.92);
+
+    ctx.fillStyle='#040805';
     ctx.fillRect(0,0,w,h);
 
-    // Subtle LCD grid lines
-    ctx.strokeStyle='#0d2212';
+    // Subtle Winamp LCD grid lines
+    ctx.strokeStyle='rgba(22,101,52,0.25)';
     ctx.lineWidth=1;
     ctx.beginPath();
     for(let x=0;x<w;x+=16){ctx.moveTo(x,0);ctx.lineTo(x,h);}
-    for(let y=0;y<h;y+=10){ctx.moveTo(0,y);ctx.lineTo(w,y);}
+    for(let y=0;y<h;y+=12){ctx.moveTo(0,y);ctx.lineTo(w,y);}
     ctx.stroke();
 
     const isPlaying=(typeof STRUDEL!=='undefined'&&STRUDEL.playing&&!STRUDEL.paused);
     const analyser=(typeof SFX!=='undefined'&&SFX.analyser);
 
-    if(!isPlaying||!analyser){
-      ctx.strokeStyle='#1b5e20';
-      ctx.lineWidth=2;
+    if(!isPlaying){
+      // Idle retro standby line
+      ctx.strokeStyle='#14532d';
+      ctx.lineWidth=1.5;
       ctx.beginPath();
       ctx.moveTo(0,h/2);
       ctx.lineTo(w,h/2);
@@ -214,12 +224,24 @@ const WINAMP = {
     }
 
     if(this.visMode==='spectrum'){
-      const bins=24;
-      const freq=new Uint8Array(analyser.frequencyBinCount);
-      analyser.getByteFrequencyData(freq);
+      const bins=26;
+      let freq=analyser?new Uint8Array(analyser.frequencyBinCount):new Uint8Array(64);
+      let isFlat=true;
+      if(analyser){
+        analyser.getByteFrequencyData(freq);
+        for(let i=0;i<Math.min(32,freq.length);i++)if(freq[i]>2){isFlat=false;break;}
+      }
+      if(isFlat){
+        const nowMs=performance.now()*0.006;
+        for(let i=0;i<bins;i++){
+          const harmonic=Math.sin(nowMs*2 + i*0.4)*0.5 + 0.5;
+          const falloff=Math.max(0.1, 1 - (i/bins)*0.7);
+          freq[i]=Math.round(255 * harmonic * falloff * this.beatPulse);
+        }
+      }
       const barW=Math.floor(w/bins);
       for(let i=0;i<bins;i++){
-        const v=freq[Math.floor(i*freq.length/bins)]/255;
+        const v=(freq[Math.floor(i*freq.length/bins)]||0)/255;
         const bH=Math.max(2,Math.floor(v*(h-4)));
         const grad=ctx.createLinearGradient(0,h,0,0);
         grad.addColorStop(0,'#22c55e');
@@ -227,17 +249,55 @@ const WINAMP = {
         grad.addColorStop(1,'#ef4444');
         ctx.fillStyle=grad;
         ctx.fillRect(i*barW+1,h-bH,barW-2,bH);
+        // Peak cap
+        ctx.fillStyle='#86efac';
+        ctx.fillRect(i*barW+1,Math.max(0,h-bH-2),barW-2,1);
       }
     }else{
-      const timeData=new Uint8Array(analyser.fftSize);
-      analyser.getByteTimeDomainData(timeData);
-      ctx.strokeStyle='#4ade80';
-      ctx.lineWidth=2;
-      ctx.shadowColor='#22c55e';
-      ctx.shadowBlur=4;
+      // Oscilloscope Mode (authentic cathode phosphor trace)
+      let timeData=analyser?new Uint8Array(analyser.fftSize):new Uint8Array(256);
+      let isFlat=true;
+      if(analyser){
+        analyser.getByteTimeDomainData(timeData);
+        for(let i=0;i<timeData.length;i++){
+          if(Math.abs(timeData[i]-128)>2){isFlat=false;break;}
+        }
+      }
+      if(isFlat){
+        const nowMs=performance.now();
+        const pulse=this.beatPulse;
+        const cutoffMod=(typeof SFX!=='undefined'&&SFX.rebirth)?(SFX.rebirth.cutoff||2400)/2400:1;
+        for(let i=0;i<timeData.length;i++){
+          const t=i/timeData.length;
+          const f1=Math.sin(t*8*Math.PI + nowMs*0.012)*32*pulse;
+          const f2=Math.sin(t*20*Math.PI*cutoffMod - nowMs*0.022)*18*pulse;
+          const noise=(Math.random()-0.5)*5*pulse;
+          timeData[i]=Math.max(0,Math.min(255,Math.round(128 + f1 + f2 + noise)));
+        }
+      }
+
+      // Phosphor halo (glow pass)
+      ctx.strokeStyle='rgba(74,222,128,0.35)';
+      ctx.lineWidth=4;
       ctx.beginPath();
       const slice=w/timeData.length;
       let x=0;
+      for(let i=0;i<timeData.length;i++){
+        const v=timeData[i]/128.0;
+        const y=(v*h)/2;
+        if(i===0)ctx.moveTo(x,y);
+        else ctx.lineTo(x,y);
+        x+=slice;
+      }
+      ctx.stroke();
+
+      // Sharp electron beam center trace
+      ctx.strokeStyle='#4ade80';
+      ctx.lineWidth=1.8;
+      ctx.shadowColor='#22c55e';
+      ctx.shadowBlur=5;
+      ctx.beginPath();
+      x=0;
       for(let i=0;i<timeData.length;i++){
         const v=timeData[i]/128.0;
         const y=(v*h)/2;
@@ -566,7 +626,7 @@ function showStrudelModal(){
 
       <div class="winamp-vol" style="margin-left:8px">
         <span>VOL:</span>
-        <input type="range" min="0" max="100" value="${SFX&&SFX.master?Math.round(SFX.master.gain.value*100):55}" oninput="if(SFX&&SFX.master)SFX.master.gain.value=this.value/100">
+        <input type="range" id="winamp-vol-slider" min="0" max="100" value="${Math.round((SFX?SFX.getVolume():0.65)*100)}" oninput="if(SFX&&SFX.setVolume)SFX.setVolume(this.value/100)" title="Master-Lautstärke (Strudel &amp; Effekte)">
       </div>
 
       <div style="flex:1"></div>
@@ -739,11 +799,15 @@ function generateNewSongFromContext(){
 
 function mutateCurrentSong(){
   if(typeof STRUDEL==='undefined'||typeof STRUDEL.mutateCode!=='function')return;
-  const curCode = STRUDEL.currentCode || '';
-  const mutated = STRUDEL.mutateCode(curCode, 0.6);
+  const ed=$('strudel-editor');
+  const curCode=(ed&&ed.value.trim())?ed.value:(STRUDEL.currentCode||'');
+  const mutated=STRUDEL.mutateCode(curCode, 0.65);
+  STRUDEL.customCode=mutated;
+  STRUDEL.currentCode=mutated;
+  if(ed)ed.value=mutated;
   STRUDEL.evaluate(mutated, true);
-  toast('🧬 Soundtrack generativ mutiert!');
-  showStrudelModal();
+  toast('🧬 Soundtrack mutiert: Stimmen gemixt, Ribbon & Rhythmus gewürfelt!');
+  if(typeof updateWinampDisplay==='function')updateWinampDisplay();
 }
 
 function saveCustomSong(){
@@ -1062,33 +1126,44 @@ function activateMission(mission,teamIds){
  sfx('gate');
  if(typeof SFX!=='undefined')SFX.music('gate');
  playGate([mission.planet],[{planet:mission.planet,members:teamIds}],()=>{
-  $('gate-overlay').style.display='none';
-  startCombat(mission,teamIds);
-  document.body.style.overflow='hidden';
-  $('combat-overlay').style.display='flex';
-  $('combat-end').style.display='none';
-  if(typeof SFX!=='undefined'){
-   if(mission.peaceful) SFX.music('peaceful');
-   else if(mission.type==='boss'||(mission.enemies&&mission.enemies.goauld)) SFX.music('boss');
-   else if(typeof SONGGEN!=='undefined'&&SONGGEN.fromCombat){
-    const gen=SONGGEN.fromCombat(C,S);
-    if(gen&&typeof STRUDEL!=='undefined'){
-      STRUDEL.patterns.generated_mission=gen.code;
-      SFX.playTrack('generated_mission');
+  try{
+   $('gate-overlay').style.display='none';
+   startCombat(mission,teamIds);
+   document.body.style.overflow='hidden';
+   $('combat-overlay').style.display='flex';
+   $('combat-end').style.display='none';
+   if(typeof SFX!=='undefined'){
+    if(mission.peaceful) SFX.music('peaceful');
+    else if(mission.type==='boss'||(mission.enemies&&mission.enemies.goauld)) SFX.music('boss');
+    else if(typeof SONGGEN!=='undefined'&&SONGGEN.fromCombat){
+     const gen=SONGGEN.fromCombat(C,S);
+     if(gen&&typeof STRUDEL!=='undefined'){
+       if(typeof STRUDEL_TRACKS!=='undefined'){
+         STRUDEL_TRACKS.generated_mission={name:gen.title||`Mission ${mission.name}`,artist:'SGC Strudel Bridge',role:'combat',code:gen.code};
+       }
+       STRUDEL.patterns.generated_mission=gen.code;
+       SFX.playTrack('generated_mission');
+     }else{
+       SFX.music('combat');
+     }
     }else{
-      SFX.music('combat');
+     SFX.music('combat');
     }
-   }else{
-    SFX.music('combat');
    }
+   renderAll();
+  }catch(err){
+   console.error('[MISSION] Failed entering combat:', err);
+   $('gate-overlay').style.display='none';
+   $('combat-overlay').style.display='flex';
+   renderAll();
   }
-  renderAll();
- });
+ }, false);
 }
 function showStorySequence(lines,title,buttonText,onComplete,kind,objective){
  const host=$('story-dialogue');
  let index=0;
  const isCombat=kind==='field';
+ host.className=isCombat?'field-dialogue':'';
  if(isCombat)C.dialogueActive=true;
  const render=()=>{
   const line=lines[index],member=S.roster[line.portraitId],image=member?portrait(member):'';
@@ -1102,14 +1177,20 @@ function showStorySequence(lines,title,buttonText,onComplete,kind,objective){
     <div><b>${line.speaker}</b><small>${line.role}</small></div>
    </div>
    <p class="story-line">${line.text}</p>
-   <div class="story-controls"><span>${String(index+1).padStart(2,'0')} / ${String(lines.length).padStart(2,'0')} · ENTER WEITER</span>
-    <button id="story-next">${last?buttonText:'Weiter'} <span>›</span></button>
+   <div class="story-controls"><span>${String(index+1).padStart(2,'0')} / ${String(lines.length).padStart(2,'0')} · ENTER / KLICK WEITER</span>
+    <button id="story-next" style="cursor:pointer">${last?buttonText:'Weiter'} <span>›</span></button>
    </div>
   </div>`;
   host.style.display='flex';
-  $('story-next').onclick=()=>{
+  host.onclick=(e)=>{
+   if(e.target&&e.target.tagName==='BUTTON')return;
+   const nextBtn=$('story-next');
+   if(nextBtn)nextBtn.click();
+  };
+  $('story-next').onclick=(e)=>{
+   e.stopPropagation();
    if(index<lines.length-1){index++;render();return;}
-   host.style.display='none';host.innerHTML='';
+   host.style.display='none';host.innerHTML='';host.onclick=null;host.className='';
    if(isCombat)C.dialogueActive=false;
    onComplete();
   };
@@ -1145,12 +1226,18 @@ function getCombatTileFromMouse(cv,mx,my){
 
 function combatClick(e){
  if(C.justPanned){C.justPanned=false;return;}
- if(!C.active||C.result)return;
+ if(!C.active)return;
+ if(C.result){combatEnd();return;}
  const cv=$('combat-cv'),r=cv.getBoundingClientRect(),sx=cv.width/r.width,sy=cv.height/r.height;
  const mx=(e.clientX-r.left)*sx,my=(e.clientY-r.top)*sy;
  const hit=getCombatTileFromMouse(cv,mx,my);
  const tx=hit.x,ty=hit.y;
  if(!inB(tx,ty))return;
+ if(C.dialogueActive){
+  const unit=unitAt(tx,ty);
+  if(unit&&unit.side==='player'&&!unit.downed&&unit.ap>0)playerSelect(unit);
+  return;
+ }
  // Offworld Base Building (Command & Conquer / SimCity Feld-Bau)
  if(C.buildType&&typeof placeOffworldBuilding==='function'){
   const res=placeOffworldBuilding(C.buildType,tx,ty);
@@ -1164,7 +1251,7 @@ function combatClick(e){
  if(C.selected){
   if(C.moveRange.some(p=>p.x===tx&&p.y===ty)){playerMove(C.selected,tx,ty);return;}
   if(u&&u.side==='enemy'&&C.atkRange.includes(u)){playerAttack(C.selected,u);return;}
-  if(u&&u.side==='enemy'&&dist(C.selected.x,C.selected.y,tx,ty)<=1&&C.selected.melee&&C.selected.ap>0&&tutorialAllowsAttack(C.selected)){const sel=C.selected;if(C.tutorial&&C.tutorial.step===2&&sel.charId===0)C.tutorial.step=3;sel.facing=facingToward(sel,u);sel.ap--;C.firstHint=false;doMelee(sel,u);C.selected=null;C.moveRange=[];C.atkRange=[];C.coverRange=[];checkEnd();if(!C.result&&sel.ap<=0)nextUnit();return;}
+  if(u&&u.side==='enemy'&&C.distance(C.selected.x,C.selected.y,tx,ty)<=1&&C.selected.melee&&C.selected.ap>0&&tutorialAllowsAttack(C.selected)){const sel=C.selected;if(C.tutorial&&C.tutorial.step===2&&sel.charId===0)C.tutorial.step=3;sel.facing=facingToward(sel,u);sel.ap--;C.firstHint=false;doMelee(sel,u);C.selected=null;C.moveRange=[];C.atkRange=[];C.coverRange=[];checkEnd();if(!C.result&&sel.ap<=0)nextUnit();return;}
   if(C.coverRange.some(p=>p.x===tx&&p.y===ty)){playerAttackTerrain(C.selected,tx,ty);return;}
   C.selected=null;C.moveRange=[];C.atkRange=[];C.coverRange=[];
  }
@@ -1206,7 +1293,7 @@ function combatEnd(){
  $('combat-overlay').style.display='none';
  document.body.style.overflow='';
  $('combat-end').style.display='none';
- if(typeof SFX!=='undefined')SFX.music(UI.tab==='map'?'map':'base');
+ if(typeof SFX!=='undefined')SFX.music('base');
  showReport();
 }
 
@@ -1546,6 +1633,8 @@ function init(){
  document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
  $('go').onclick=doDay;$('reset').onclick=()=>resetGame(false);
  $('gate-cv').onclick=()=>skipGate();
+ if($('gate-overlay'))$('gate-overlay').onclick=()=>skipGate();
+ if($('gate-skip'))$('gate-skip').onclick=e=>{e.stopPropagation();skipGate();};
  $('base-cv').onclick=e=>baseClick(e.clientX,e.clientY);
  $('map-cv').onclick=e=>{const cv=e.target,r=cv.getBoundingClientRect(),sx=cv.width/r.width,x=(e.clientX-r.left)*sx,y=(e.clientY-r.top)*sx;
   const hit=MAP.nodes.find(n=>Math.hypot(n.x-x,n.y-y)<n.r);MAP.sel=hit?hit.id:null;renderAll();};
@@ -1592,6 +1681,9 @@ function init(){
 
   const t=document.activeElement;
   const inInput=t&&(t.tagName==='INPUT'||t.tagName==='SELECT'||t.tagName==='TEXTAREA');
+  if(typeof GR!=='undefined'&&GR.phase!=='idle'&&(e.key==='Escape'||e.key===' '||e.key==='Enter')){
+   e.preventDefault();skipGate();return;
+  }
   if(!inInput&&(matchesKey('cycleGfx',e)||e.key==='v'||e.key==='V')&&!UI.menuOpen){
    e.preventDefault();cycleGfxMode();return;
   }
@@ -1610,6 +1702,12 @@ function init(){
   if((matchesKey('endTurn',e)||e.key==='Enter'||e.key===' ')&&$('story-dialogue').style.display==='flex'){
    e.preventDefault();$('story-next')?.click();return;
   }
+  if(C.active&&C.result&&(e.key==='Enter'||e.key===' '||matchesKey('endTurn',e))){
+   e.preventDefault();combatEnd();return;
+  }
+  if($('modal').style.display==='flex'&&(e.key==='Enter'||e.key===' '||e.key==='Escape')){
+   e.preventDefault();$('modal').style.display='none';renderAll();return;
+  }
   if(matchesKey('pause',e)||e.key==='Escape'){
    if($('intro-overlay').style.display==='flex'||$('story-dialogue').style.display==='flex')return;
    if(inInput)return;
@@ -1617,15 +1715,13 @@ function init(){
   }
  });
  setTab('base');
- if(!S.introSeen){
-  MAP.sel='chulak';setTab('map');
-  startOpeningCinematic(()=>{
-   S.introSeen=true;save();
-   if(!S.pilotBriefingSeen&&!S.done.includes('1-1')&&S.day===1)showPilotOpening();
-  });
- } else if(!S.pilotBriefingSeen&&!S.done.includes('1-1')&&S.day===1){
-  MAP.sel='chulak';setTab('map');showPilotOpening();
- }
+ startOpeningCinematic(()=>{
+  S.introSeen=true;save();
+  if(!S.pilotBriefingSeen&&!S.done.includes('1-1')&&S.day===1){
+   MAP.sel='chulak';setTab('map');
+   showPilotOpening();
+  }
+ });
  requestAnimationFrame(frame);
 }
 window.addEventListener('load',init);

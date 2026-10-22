@@ -73,20 +73,45 @@ function drawSoldier(c,x,y,sc,m,walk,alpha){
  if(lk.crown){c.fillStyle='#e8c040';c.fillRect(x-5*sc,y-38*sc,10*sc,3*sc);}
  c.restore();}
 // ===================== Gateroom =====================
-const GR={phase:'idle',t0:0,label:'',sub:'',names:[],chev:0,walkers:[],cb:null,flash:0};
-function playGate(dials,deploys,cb){
- if(!dials.length&&!deploys.length){cb();return;}
+const GR={phase:'idle',t0:0,label:'',sub:'',names:[],chev:0,walkers:[],cb:null,flash:0,isCollapse:false};
+function playGate(dials,deploys,cb,isCollapse=false){
+ if(!dials.length&&!deploys.length){if(cb)cb();return;}
  const first=dials[0]||(deploys[0]&&deploys[0].planet);
- GR.phase='dial';GR.t0=performance.now();GR.cb=cb;
+ GR.phase='dial';GR.t0=performance.now();GR.cb=cb;GR.isCollapse=isCollapse;
  GR.label=first?PLANETS[first].name:'Orbit';GR.sub=dials.length>1?`+${dials.length-1} weitere Verbindung(en)`:'';
  GR.walkers=[];deploys.forEach((d,ti)=>d.members.forEach((id,k)=>GR.walkers.push({id,x:300+ti*0+k*34,row:ti})));
  if(!dials.length)GR.phase='open',GR.t0=performance.now();}
-function skipGate(){if(GR.phase!=='idle'){GR.phase='idle';const cb=GR.cb;GR.cb=null;if(cb)cb();}}
+function skipGate(){
+ if(GR.phase!=='idle'){
+  GR.phase='idle';
+  const cb=GR.cb;GR.cb=null;
+  if(cb){
+   try{cb();}catch(err){console.error('[GATE] skip callback error:',err);}
+  }
+ }
+}
 function gateTick(now){
  if(GR.phase==='idle')return;const t=(now-GR.t0)/1000;
- if(GR.phase==='dial'){GR.chev=Math.min(7,Math.floor(t/0.38));if(t>2.9){GR.phase='open';GR.t0=now;GR.flash=1;}}
- else if(GR.phase==='open'){if(t>3.2){GR.phase='close';GR.t0=now;}}
- else if(GR.phase==='close'){if(t>0.7){GR.phase='idle';const cb=GR.cb;GR.cb=null;if(cb)cb();}}}
+ if(GR.phase==='dial'){
+  GR.chev=Math.min(7,Math.floor(t/0.32));
+  if(t>2.3){GR.phase='open';GR.t0=now;GR.flash=1;}
+ }
+ else if(GR.phase==='open'){
+  if(t>2.8){
+   GR.phase=GR.isCollapse?'close':'transit';
+   GR.t0=now;
+  }
+ }
+ else if(GR.phase==='close'||GR.phase==='transit'){
+  if(t>0.65){
+   GR.phase='idle';
+   const cb=GR.cb;GR.cb=null;
+   if(cb){
+    try{cb();}catch(err){console.error('[GATE] callback error:',err);}
+   }
+  }
+ }
+}
 function drawGateroom(cv,now,state){
  const c=cv.getContext('2d'),W=cv.width,Ht=cv.height,cx=W/2,cy=250,Rr=165;gateTick(now);
  // Wand
@@ -108,17 +133,35 @@ function drawGateroom(cv,now,state){
  c.fillStyle='#2e3846';c.beginPath();c.moveTo(cx-90,Rr+cy-10);c.lineTo(cx+90,Rr+cy-10);c.lineTo(cx+190,Ht);c.lineTo(cx-190,Ht);c.closePath();c.fill();
  c.strokeStyle='rgba(255,255,255,.12)';for(let i=1;i<6;i++){const yy=Rr+cy-10+i*(Ht-(Rr+cy-10))/6;c.beginPath();c.moveTo(cx-90-i*17,yy);c.lineTo(cx+90+i*17,yy);c.stroke();}
  // Gate
- const open=GR.phase==='open'||GR.phase==='close';
- if(open){const k=GR.phase==='close'?Math.max(0,1-(now-GR.t0)/700):1;
-  const gl=c.createRadialGradient(cx,cy,10,cx,cy,Rr*1.7);gl.addColorStop(0,`rgba(90,190,255,${.35*k})`);gl.addColorStop(1,'rgba(90,190,255,0)');c.fillStyle=gl;c.fillRect(0,0,W,Ht);}
+ const open=GR.phase==='open'||GR.phase==='close'||GR.phase==='transit';
+ if(open){
+  const k=GR.phase==='close'?Math.max(0,1-(now-GR.t0)/650):GR.phase==='transit'?Math.min(2.5,1+(now-GR.t0)/300):1;
+  const gl=c.createRadialGradient(cx,cy,10,cx,cy,Rr*(GR.phase==='transit'?3.0:1.7));
+  gl.addColorStop(0,`rgba(90,190,255,${Math.min(0.85,.35*k)})`);
+  gl.addColorStop(1,'rgba(90,190,255,0)');
+  c.fillStyle=gl;c.fillRect(0,0,W,Ht);
+ }
  c.save();c.translate(cx,cy);
  // Ereignishorizont
- if(open){const k=GR.phase==='close'?Math.max(0,1-(now-GR.t0)/700):1,el=(now-GR.t0)/1000;
-  const grow=GR.phase==='open'?Math.min(1,el/0.5):k;
-  const eg=c.createRadialGradient(0,0,0,0,0,Rr-18);eg.addColorStop(0,'#bfeaff');eg.addColorStop(.6,'#4aa8f0');eg.addColorStop(1,'#1e5fbf');
+ if(open){
+  const el=(now-GR.t0)/1000;
+  const k=GR.phase==='close'?Math.max(0,1-el/0.65):1;
+  const grow=GR.phase==='open'?Math.min(1,el/0.45):GR.phase==='transit'?Math.min(2.8,1+el*2):k;
+  const eg=c.createRadialGradient(0,0,0,0,0,Rr-18);
+  eg.addColorStop(0,'#bfeaff');eg.addColorStop(.6,'#4aa8f0');eg.addColorStop(1,'#1e5fbf');
   c.fillStyle=eg;c.beginPath();c.arc(0,0,(Rr-18)*grow,0,7);c.fill();
-  for(let i=0;i<6;i++){c.strokeStyle=`rgba(255,255,255,${.25*k})`;c.lineWidth=2;c.beginPath();c.arc(0,0,((now/18+i*26)%(Rr-20))*grow,0,7);c.stroke();}
-  if(GR.phase==='open'&&el<0.5){const kw=1-el/0.5;c.fillStyle=`rgba(210,240,255,${.7*kw})`;c.beginPath();c.arc(0,0,(Rr+60)*(1-kw*.5),0,7);c.fill();}
+  for(let i=0;i<6;i++){
+   c.strokeStyle=`rgba(255,255,255,${.25*k})`;c.lineWidth=2;c.beginPath();
+   c.arc(0,0,((now/18+i*26)%(Rr-20))*grow,0,7);c.stroke();
+  }
+  if(GR.phase==='open'&&el<0.45){
+   const kw=1-el/0.45;c.fillStyle=`rgba(210,240,255,${.7*kw})`;c.beginPath();c.arc(0,0,(Rr+60)*(1-kw*.5),0,7);c.fill();
+  }
+  if(GR.phase==='transit'){
+   // Warp vortex flash as team steps through
+   const wf=Math.min(1,el/0.5);
+   c.fillStyle=`rgba(200,240,255,${.35*wf})`;c.beginPath();c.arc(0,0,(Rr+100)*wf,0,7);c.fill();
+  }
  }else{c.fillStyle='#090c11';c.beginPath();c.arc(0,0,Rr-18,0,7);c.fill();}
  // Ring
  const spin=GR.phase==='dial'?(now-GR.t0)/900*(GR.chev%2?1:-1)*0.6:0;
@@ -145,18 +188,29 @@ function drawGateroom(cv,now,state){
   let k=0;state.teams.forEach((t,ti)=>{t.members.forEach((id,j)=>{const m=state.roster[id];
    const x=cx-150+ (k%6)*60-(Math.floor(k/6))*20,y=Ht-40-Math.floor(k/6)*28;
    drawSoldier(c,Math.min(W-60,x+300*((ti+0)%1)),y,sc,m,0,t.mission>=0?1:.55);k++;});});
- }else if(GR.phase==='open'){const el=(now-GR.t0)/1000;
-  GR.walkers.forEach((w,i)=>{const m=state.roster[w.id];const st=0.8+i*0.18;const p=Math.max(0,Math.min(1,(el-st)/1.4));
-   const sx=cx-150+(i%6)*60,sy=Ht-40-Math.floor(i/6)*28,tx=cx,ty=cy+40;const x=sx+(tx-sx)*p,y=sy+(ty-sy)*p,s=sc*(1-0.55*p);
-   drawSoldier(c,x,y,s,m,el*9,1-Math.max(0,(p-.8)*5));});}
+ }else if(GR.phase==='open'||GR.phase==='transit'){
+  const el=(now-GR.t0)/1000;
+  GR.walkers.forEach((w,i)=>{
+   const m=state.roster[w.id];const st=0.4+i*0.22;
+   const p=GR.phase==='transit'?1:Math.max(0,Math.min(1,(el-st)/1.4));
+   const sx=cx-150+(i%6)*60,sy=Ht-40-Math.floor(i/6)*28,tx=cx,ty=cy+40;
+   const x=sx+(tx-sx)*p,y=sy+(ty-sy)*p,s=sc*(1-0.55*p);
+   const alpha=Math.max(0,1-Math.max(0,(p-0.75)*4));
+   if(alpha>0.01)drawSoldier(c,x,y,s,m,el*9,alpha);
+  });
+ }
  // Statusleiste
- c.fillStyle='rgba(6,10,16,.82)';c.fillRect(0,0,W,40);c.fillStyle='#e8b040';c.font='bold 17px monospace';
+ c.fillStyle='rgba(6,10,16,.88)';c.fillRect(0,0,W,40);c.fillStyle='#e8b040';c.font='bold 16px monospace';
  let txt='Gate inaktiv · Bereitschaft';
- if(GR.phase==='dial')txt=`WÄHLE ${GR.label.toUpperCase()} … Chevron ${GR.chev} encoded`;
- if(GR.phase==='open')txt=`WURMLOCH STABIL · ${GR.label}  ${GR.sub}`;
+ if(GR.phase==='dial')txt=`WÄHLE ${GR.label.toUpperCase()} … Chevron ${GR.chev}/7 verriegelt`;
+ if(GR.phase==='open')txt=`WURMLOCH STABIL · ${GR.label} ${GR.sub} · TEAM RÜCKT VOR`;
+ if(GR.phase==='transit')txt=`TRANSIT · SG-1 PASSIERT DEN EREIGNISHORIZONT NACH ${GR.label.toUpperCase()} …`;
  if(GR.phase==='close')txt='Wurmloch kollabiert …';
  c.fillText(txt,16,26);
- if(GR.phase!=='idle'){c.fillStyle='#8aa0b4';c.font='12px monospace';c.fillText('Klicken zum Überspringen',W-190,26);}
+ if(GR.phase!=='idle'){
+  c.fillStyle='#67e8f9';c.font='bold 12px monospace';
+  c.fillText('▶ Klick / Leertaste / ESC: Überspringen',W-290,26);
+ }
 }
 // ===================== Sternenkarte =====================
 const STARS=Array.from({length:140},(_,i)=>({x:(i*127.1%960),y:(i*311.7%540),r:0.5+(i*7%10)/9,p:i}));

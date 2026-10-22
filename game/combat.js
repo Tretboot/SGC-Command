@@ -9,7 +9,8 @@
 // FX-System: Schadenszahlen, Treffer-Flash, Mündungsfeuer, Tracer, Tod.
 // Sound: SFX (sound.js). UX: Angriffsziele SOFORT bei Auswahl sichtbar.
 
-const C={active:false,map:[],units:{},nextId:1,round:1,phase:'player',gatePos:null,objective:null,selected:null,moveRange:[],atkRange:[],coverRange:[],result:null,log:[],mission:null,teamIds:[],hover:null,fx:[],shake:0,firstHint:true,firstJaffa:false,tutorial:null,dialogueActive:false,sceneFlags:{},cameraX:0,cameraY:0,mapVersion:0};
+const C={active:false,map:[],units:{},nextId:1,round:1,phase:'player',gatePos:null,objective:null,selected:null,moveRange:[],atkRange:[],coverRange:[],result:null,log:[],mission:null,teamIds:[],hover:null,fx:[],shake:0,firstHint:true,firstJaffa:false,tutorial:null,dialogueActive:false,sceneFlags:{},cameraX:0,cameraY:0,mapVersion:0,
+ distance(x0,y0,x1,y1){return Math.max(Math.abs(x1-x0),Math.abs(y1-y0));}};
 const TILE=48;
 let VIEW_W=20,VIEW_H=15;
 let GW=VIEW_W,GH=VIEW_H;
@@ -126,11 +127,10 @@ function panCombatCamera(x,y){
  C.cameraY=clamp(y,0,Math.max(0,GH-VIEW_H));
 }
 function resizeCombatViewport(){
- const cv=document.getElementById('combat-cv'),overlay=document.getElementById('combat-overlay'),panel=document.getElementById('combat-ui');
- if(!cv||!overlay)return;
- const panelHeight=C.active&&!C.result&&panel?panel.getBoundingClientRect().height:0;
- overlay.style.bottom=`${panelHeight}px`;
- const width=Math.max(1,window.innerWidth),height=Math.max(1,window.innerHeight-panelHeight);
+ const cv=document.getElementById('combat-cv'),wrap=cv?cv.parentElement:null;
+ if(!cv)return;
+ const width=Math.max(1,wrap&&wrap.clientWidth?wrap.clientWidth:window.innerWidth);
+ const height=Math.max(1,wrap&&wrap.clientHeight?wrap.clientHeight:(window.innerHeight-100));
  if(cv.width!==width)cv.width=width;
  if(cv.height!==height)cv.height=height;
  VIEW_W=Math.max(1,Math.ceil(width/TILE));VIEW_H=Math.max(1,Math.ceil(height/TILE));
@@ -303,7 +303,7 @@ function startCombat(mission,teamIds){
   }
   Object.values(C.units).forEach(unit=>{
     const opposition=Object.values(C.units).filter(other=>other.side!==unit.side);
-    const nearest=opposition.sort((a,b)=>dist(unit.x,unit.y,a.x,a.y)-dist(unit.x,unit.y,b.x,b.y))[0];
+    const nearest=opposition.sort((a,b)=>C.distance(unit.x,unit.y,a.x,a.y)-C.distance(unit.x,unit.y,b.x,b.y))[0];
     if(nearest)unit.facing=facingToward(unit,nearest);
   });
   clog(`Mission: ${mission.name} · ${mission.goal}`);
@@ -335,7 +335,7 @@ function coverTargets(unit){
  for(let y=Math.max(0,unit.y-range);y<=Math.min(GH-1,unit.y+range);y++)
   for(let x=Math.max(0,unit.x-range);x<=Math.min(GW-1,unit.x+range);x++){
    const tile=C.map[idx(x,y)];
-   if((tile.t===1||tile.t===2||tile.t===6)&&dist(unit.x,unit.y,x,y)>0&&dist(unit.x,unit.y,x,y)<=range&&los(unit.x,unit.y,x,y))
+   if((tile.t===1||tile.t===2||tile.t===6)&&C.distance(unit.x,unit.y,x,y)>0&&C.distance(unit.x,unit.y,x,y)<=range&&los(unit.x,unit.y,x,y))
     targets.push({x,y});
   }
  return targets;
@@ -362,12 +362,11 @@ function los(x0,y0,x1,y1){
   }
   return true;
 }
-function dist(x0,y0,x1,y1){return Math.max(Math.abs(x1-x0),Math.abs(y1-y0));}
 function unitAt(x,y){return Object.values(C.units).find(u=>!u.dead&&!u.downed&&u.x===x&&u.y===y);}
 function getSpawnEdges(){
   const candidates=[];
   for(let y=1;y<GH-1;y++)for(let x=1;x<GW-1;x++){
-   const distance=dist(x,y,C.gatePos.x,C.gatePos.y);
+   const distance=C.distance(x,y,C.gatePos.x,C.gatePos.y);
    const visible=x>=C.cameraX+1&&x<C.cameraX+VIEW_W-1&&y>=C.cameraY+1&&y<C.cameraY+VIEW_H-1;
    if(visible&&distance>=5&&distance<=9&&isWalkable(x,y))candidates.push({x,y});
   }
@@ -402,7 +401,7 @@ function attackTargets(unit){
   const targets=[],w=WEAPONS[unit.weapon];
   for(const u of Object.values(C.units)){
     if(u.side===unit.side||u.dead||u.downed)continue;
-    const d=dist(unit.x,unit.y,u.x,u.y);
+    const d=C.distance(unit.x,unit.y,u.x,u.y);
     if(d<=w.range&&los(unit.x,unit.y,u.x,u.y))targets.push(u);
   }
   return targets;
@@ -428,7 +427,7 @@ function doAttack(attacker,target){
   else sfx('shoot');
   if(Math.random()*100<hit){
     let dmg=rnd(w.min,w.max);
-    if(attacker.name==="Teal'c"&&target.type&&target.type.startsWith('jaffa')&&dist(attacker.x,attacker.y,target.x,target.y)<=1&&attacker.melee==='chakram')dmg+=8;
+    if(attacker.name==="Teal'c"&&target.type&&target.type.startsWith('jaffa')&&C.distance(attacker.x,attacker.y,target.x,target.y)<=1&&attacker.melee==='chakram')dmg+=8;
     if(attacker.weapon==='zat'&&target.type&&['goauld','repl','drone','queen'].includes(target.type))dmg=Math.round(dmg*1.25);
     if(attacker.side==='player'){
       if(has('W2')&&target.type&&['goauld','repl','drone','queen'].includes(target.type))dmg=Math.round(dmg*1.2);
@@ -467,8 +466,8 @@ function useSpecial(unit){
     spawnFlash(unit.x,unit.y,'#94a3b8');
     clog(`💨 ${unit.name} wirft Rauchgranate (+25% Ausweichen).`);
   }else if(unit.special==='emp'){
-    const enemies=Object.values(C.units).filter(e=>e.side==='enemy'&&!e.dead&&dist(unit.x,unit.y,e.x,e.y)<=5);
-    enemies.sort((a,b)=>dist(unit.x,unit.y,a.x,a.y)-dist(unit.x,unit.y,b.x,b.y));
+    const enemies=Object.values(C.units).filter(e=>e.side==='enemy'&&!e.dead&&C.distance(unit.x,unit.y,e.x,e.y)<=5);
+    enemies.sort((a,b)=>C.distance(unit.x,unit.y,a.x,a.y)-C.distance(unit.x,unit.y,b.x,b.y));
     if(enemies[0]){
       const t=enemies[0];
       t.ap=Math.max(0,(t.ap||2)-1);
@@ -548,19 +547,19 @@ function interactWithContact(contact){
  let unit=C.selected&&C.selected.side==='player'&&C.selected.ap>0?C.selected:null;
  if(!unit){
   unit=Object.values(C.units).filter(u=>u.side==='player'&&!u.dead&&!u.downed&&u.ap>0)
-   .sort((a,b)=>dist(a.x,a.y,contact.x,contact.y)-dist(b.x,b.y,contact.x,contact.y))[0];
+   .sort((a,b)=>C.distance(a.x,a.y,contact.x,contact.y)-C.distance(b.x,b.y,contact.x,contact.y))[0];
  }
  if(!unit){clog('⚠ Niemand kann den Kontakt aufnehmen.');return;}
- if(dist(unit.x,unit.y,contact.x,contact.y)<=1){playCombatScene('contact');return;}
- const reachable=moveRange(unit).sort((a,b)=>dist(a.x,a.y,contact.x,contact.y)-dist(b.x,b.y,contact.x,contact.y));
- const next=reachable.find(p=>dist(p.x,p.y,contact.x,contact.y)<=1)||reachable[0];
+ if(C.distance(unit.x,unit.y,contact.x,contact.y)<=1){playCombatScene('contact');return;}
+ const reachable=moveRange(unit).sort((a,b)=>C.distance(a.x,a.y,contact.x,contact.y)-C.distance(b.x,b.y,contact.x,contact.y));
+ const next=reachable.find(p=>C.distance(p.x,p.y,contact.x,contact.y)<=1)||reachable[0];
  if(!next){clog(`${unit.name} findet keinen sicheren Weg zu ${contact.name}.`);return;}
  playerMove(unit,next.x,next.y);
- if(dist(unit.x,unit.y,contact.x,contact.y)<=1)playCombatScene('contact');
+ if(C.distance(unit.x,unit.y,contact.x,contact.y)<=1)playCombatScene('contact');
 }
 function tutorialAllowsAttack(unit){return !C.tutorial||unit.charId!==0||C.tutorial.step>=2;}
 function playerMove(unit,x,y){
-  const d=dist(unit.x,unit.y,x,y);
+  const d=C.distance(unit.x,unit.y,x,y);
   if(d>unit.move||!isWalkable(x,y)||unitAt(x,y))return;
   if(C.tutorial&&C.tutorial.step<=1&&unit.charId===0)C.tutorial.step=2;
   unit.facing=facingToward(unit,{x,y});
@@ -603,7 +602,7 @@ function enemyAct(u){
   while(ap>0&&!C.result){
     const target=nearestPlayer(u);
     if(!target)break;
-    const d=dist(u.x,u.y,target.x,target.y);
+    const d=C.distance(u.x,u.y,target.x,target.y);
     const w=WEAPONS[u.weapon];
     const inRange=d<=w.range&&los(u.x,u.y,target.x,target.y);
     if(inRange){u.facing=facingToward(u,target);doAttack(u,target);ap--;}
@@ -619,18 +618,18 @@ function nearestPlayer(u){
   let best=null,bd=999;
   for(const p of Object.values(C.units)){
     if(p.side!=='player'||p.dead||p.downed)continue;
-    const d=dist(u.x,u.y,p.x,p.y);
+    const d=C.distance(u.x,u.y,p.x,p.y);
     if(d<bd){bd=d;best=p;}
   }
   return best;
 }
 function bestStep(u,target){
   const dirs=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
-  let best=null,bd=dist(u.x,u.y,target.x,target.y);
+  let best=null,bd=C.distance(u.x,u.y,target.x,target.y);
   for(const[dx,dy]of dirs){
     const nx=u.x+dx,ny=u.y+dy;
     if(!canWalkStep(u.x,u.y,nx,ny)||unitAt(nx,ny))continue;
-    const nd=dist(nx,ny,target.x,target.y);
+    const nd=C.distance(nx,ny,target.x,target.y);
     if(nd<bd){
       const t=C.map[idx(nx,ny)].t;
       const cover=t===2?0.35:(t===1||t===6?0.18:0);
@@ -649,7 +648,7 @@ function pathStep(unit,target){
    const x=current.x+dx,y=current.y+dy,key=idx(x,y);
    if(visited.has(key)||!canWalkStep(current.x,current.y,x,y)||unitAt(x,y))continue;
    const first=current.first||{x,y};
-   if(dist(x,y,target.x,target.y)<=1)return first;
+   if(C.distance(x,y,target.x,target.y)<=1)return first;
    visited.add(key);queue.push({x,y,first});
   }
  }
@@ -687,7 +686,7 @@ function checkEnd(){
 // Funktioniert nur, wenn das ganze (überlebende) Team in Gate-Nähe steht.
 function gateReady(){
   const players=Object.values(C.units).filter(u=>u.side==='player'&&!u.dead);
-  return {at:players.filter(p=>dist(p.x,p.y,C.gatePos.x,C.gatePos.y)<=2).length,total:players.length};
+  return {at:players.filter(p=>C.distance(p.x,p.y,C.gatePos.x,C.gatePos.y)<=2).length,total:players.length};
 }
 function extract(){
   if(C.result)return false;
@@ -698,6 +697,7 @@ function extract(){
 }
 function clog(t){C.log.unshift(t);if(C.log.length>100)C.log.pop();}
 function applyCombatResult(){
+  const logNote=(typeof gameNote==='function'?gameNote:(typeof note==='function'?note:(t)=>{}));
   // Backfill für alte Saves (v4 ohne jaffaSeen/jaffaKills)
   if(S.jaffaSeen===undefined)S.jaffaSeen=false;
   if(S.jaffaKills===undefined)S.jaffaKills=0;
@@ -707,17 +707,17 @@ function applyCombatResult(){
   teamUnits.forEach(u=>{
     const m=S.roster[u.charId];if(!m)return;
     if(u.dead||u.downed){
-      if(m.sg1){note(`⚠ ${m.name} down. Duplikat-Klausel greift.`);m.hp=Math.max(10,m.hp-30);m.injuries+=2;}
-      else if(u.dead){m.dead=true;S.memorial.push(m.name);note(`💀 ${m.name} ist gefallen. Gedenktafel angebracht.`);
+      if(m.sg1){logNote(`⚠ ${m.name} down. Duplikat-Klausel greift.`);m.hp=Math.max(10,m.hp-30);m.injuries+=2;}
+      else if(u.dead){m.dead=true;S.memorial.push(m.name);logNote(`💀 ${m.name} ist gefallen. Gedenktafel angebracht.`);
         S.roster.forEach(x=>{if(x.recruited&&!x.dead)x.morale=Math.max(0,x.morale-10);});}
-      else{m.hp=Math.max(15,Math.round(m.maxHp*0.35));m.injuries=(m.injuries||0)+1;note(`🩹 ${m.name} schwer verwundet (MedBay empfohlen).`);}
+      else{m.hp=Math.max(15,Math.round(m.maxHp*0.35));m.injuries=(m.injuries||0)+1;logNote(`🩹 ${m.name} schwer verwundet (MedBay empfohlen).`);}
     } else {m.hp=u.hp;m.fatigue=Math.min(100,m.fatigue+20);m.morale=Math.max(0,m.morale-5);}
   });
   failQuests();
   // Extraktion schließt normale Missionen ab; der Pilotauftrag braucht den Sieg, damit Teal’c mitkommt.
   if(result==='victory'||result==='extracted'){
     if(m.tutorial&&result!=='victory'){
-      note('⚠ Teal’c bleibt auf Chulak. SG-1 muss den Einsatz erfolgreich abschließen.');
+      logNote('⚠ Teal’c bleibt auf Chulak. SG-1 muss den Einsatz erfolgreich abschließen.');
     } else {
       const full=result==='victory';
       let lootPct=full?1:(0.5+(has('G1')?0.1:0));
@@ -725,7 +725,7 @@ function applyCombatResult(){
       S.done.push(m.id);
       advanceQuests(m.id);
       for(const k in m.reward)S.res[k]=(S.res[k]||0)+Math.round(m.reward[k]*lootPct);
-      note(full?`✔ ${m.name}: ${m.text}`:`🌀 ${m.name}: Extraktion (${Math.round(lootPct*100)}% Beute).`);
+      logNote(full?`✔ ${m.name}: ${m.text}`:`🌀 ${m.name}: Extraktion (${Math.round(lootPct*100)}% Beute).`);
       teamUnits.forEach(u=>{const m=S.roster[u.charId];if(m&&!m.dead)m.xp+=Math.round((20+S.chapter*5)*(full?1:0.5));});
       // Beute-Drops fürs Inventar (INVENTAR-SPEC.md §9)
       const defeated=Object.values(C.units).filter(u=>u.side==='enemy'&&u.dead).length;
@@ -733,24 +733,24 @@ function applyCombatResult(){
         const dropRoll=Math.random();
         if(dropRoll<0.45){
           S.inventory.special.medkit=(S.inventory.special.medkit||0)+1;
-          note('🎁 Beute-Fund: +1 Medkit (Inventar)');
+          logNote('🎁 Beute-Fund: +1 Medkit (Inventar)');
         }else if(dropRoll<0.75){
           const aKey=defeated>=4?'medium':'light';
           S.inventory.armor[aKey]=(S.inventory.armor[aKey]||0)+1;
-          note(`🎁 Beute-Fund: +1 ${ARMORS[aKey].name} (Inventar)`);
+          logNote(`🎁 Beute-Fund: +1 ${ARMORS[aKey].name} (Inventar)`);
         }else{
           const wKey=S.chapter>=1?'zat':'rifle';
           S.inventory.weapons[wKey]=(S.inventory.weapons[wKey]||0)+1;
-          note(`🎁 Beute-Fund: +1 ${WEAPONS[wKey].name} (Inventar)`);
+          logNote(`🎁 Beute-Fund: +1 ${WEAPONS[wKey].name} (Inventar)`);
         }
       }
       if(m.recruit!==undefined&&!S.roster[m.recruit].recruited){
         S.roster[m.recruit].recruited=true;
-        note(m.recruit===3&&m.id==='1-1'?'🤝 Teal’c widersetzt sich Apophis und schließt sich SG-1 an.':`＋ Neuer Rekrut: ${S.roster[m.recruit].name}`);
+        logNote(m.recruit===3&&m.id==='1-1'?'🤝 Teal’c widersetzt sich Apophis und schließt sich SG-1 an.':`＋ Neuer Rekrut: ${S.roster[m.recruit].name}`);
       }
     }
   }
-  else if(result==='defeat'){S.integrity=Math.max(0,S.integrity-10);note(`💀 Niederlage bei ${m.name}.`);}
+  else if(result==='defeat'){S.integrity=Math.max(0,S.integrity-10);logNote(`💀 Niederlage bei ${m.name}.`);}
   C.active=false;save();
 }
 

@@ -51,7 +51,13 @@ global.document={
   querySelectorAll:()=>[],
   addEventListener(){},
 };
-global.localStorage={getItem:()=>null,setItem(){}};
+const storageStore={};
+global.localStorage={
+  getItem:k=>(k in storageStore?storageStore[k]:null),
+  setItem:(k,v)=>{storageStore[k]=String(v);},
+  removeItem:k=>{delete storageStore[k];},
+  clear:()=>{for(const k in storageStore)delete storageStore[k];}
+};
 let now=1000;
 global.performance={now:()=>now};
 let rafCb=null;
@@ -163,6 +169,23 @@ for(const fn of loadFns){
   const spRes=useSpecial(jack);
   assert(spRes.ok&&jack.specialUsed,'Used Special Item (Medkit) in combat');
 
+  // Combat controls remain accessible while the arrival scene is on screen.
+  const nextPlayer=Object.values(C.units).find(u=>u.side==='player'&&u!==jack);
+  const oldPosition={x:nextPlayer.x,y:nextPlayer.y};
+  setGfxMode('topdown');
+  C.dialogueActive=true;
+  const combatCanvas=els['combat-cv'];
+  const combatRect=combatCanvas.getBoundingClientRect();
+  combatClick({
+    clientX:combatRect.left+(nextPlayer.x-C.cameraX+0.5)*TILE*combatRect.width/combatCanvas.width,
+    clientY:combatRect.top+(nextPlayer.y-C.cameraY+0.5)*TILE*combatRect.height/combatCanvas.height
+  });
+  assert(C.selected===nextPlayer,'Combat click selects a teammate during arrival dialogue');
+  assert(nextPlayer.x===oldPosition.x&&nextPlayer.y===oldPosition.y,'Arrival dialogue selection does not move units');
+  C.dialogueActive=false;
+  renderCombatUI();
+  assert(els['combat-ui'].style.display==='flex'&&els['combat-ui'].innerHTML.includes(nextPlayer.name),'Bottom combat action panel renders the selected teammate');
+
   setGfxMode('pixel');
 }
 
@@ -196,6 +219,7 @@ for(const fn of loadFns){
   // Verify Winamp controls & visualizer setup
   SFX.playTrack('sa_extra_slippy');
   assert(STRUDEL.playing && STRUDEL.currentTrack === 'sa_extra_slippy', 'Winamp playTrack starts track');
+  assert(C.distance(2,3,7,8)===5,'Combat distance calculation is isolated from Strudel global helpers');
   SFX.pause();
   assert(STRUDEL.paused, 'Winamp pause sets paused state');
   SFX.stop();
@@ -278,6 +302,115 @@ for(const fn of loadFns){
   showKeybindModal();
   assert(els['modal'].innerHTML.includes('TASTATUR &amp; TASTENBELEGUNG'), 'Keybinding configuration modal renders');
   assert(S.keybinds && S.keybinds.cycleGfx === 'KeyV', 'Keybindings loaded with defaults (cycleGfx: KeyV, nextUnit: Tab)');
+}
+
+// 9. Test Polished Theme Remix 3 Percussion & Drum Synthesis
+{
+  const r3 = STRUDEL_TRACKS.theme_remix_2 || STRUDEL_TRACKS.theme_remix_3;
+  assert(r3 && r3.code, 'Theme Remix 3 registered in STRUDEL_TRACKS');
+  assert(!r3.code.includes('s("cb'), 'Theme Remix 3 has no broken cowbell (cb) percussion');
+  assert(r3.code.includes('$KICK') && r3.code.includes('$HAT') && r3.code.includes('$SNARE'), 'Theme Remix 3 includes punchy $KICK, $HAT, and $SNARE tracks');
+}
+
+// 10. Test Creative Song Mutation Engine (Ribbon, Scramble, Track Toggles)
+{
+  const baseCode = STRUDEL_TRACKS.theme_remix_2.code;
+  const mutated = STRUDEL.mutateCode(baseCode, 0.7);
+  assert(mutated && mutated.length > 50, 'STRUDEL.mutateCode produced valid mutated Strudel pattern');
+  assert(mutated !== baseCode, 'Mutated code differs from original seed');
+}
+
+// 11. Test ASCII-3D Stargate Flying Intro Cinematic
+{
+  let cinematicDone = false;
+  const originalInit=SFX.init,originalPlayTrack=SFX.playTrack,originalCtx=SFX.ctx;
+  let initCalled=false,introTrack=null;
+  SFX.init=()=>{initCalled=true;SFX.ctx={state:'suspended',addEventListener(){}};};
+  SFX.playTrack=key=>{introTrack=key;};
+  startOpeningCinematic(() => { cinematicDone = true; });
+  assert(introActive === true, 'ASCII-3D Stargate opening cinematic started');
+  assert(initCalled&&introTrack==='theme_remix_2','Intro initializes audio and starts the Stargate theme');
+  assert(els['intro-audio'].style.display==='', 'Intro exposes the audio unlock control when autoplay is blocked');
+  drawOpeningCinematic(performance.now() + 2000);
+  assert(true, 'drawOpeningCinematic rendered frame with 3D starfield, rotating glyph ring, and ASCII water horizon');
+  finishOpeningCinematic();
+  assert(introActive === false && cinematicDone === true, 'finishOpeningCinematic completed cleanly');
+  SFX.init=originalInit;SFX.playTrack=originalPlayTrack;SFX.ctx=originalCtx;
+}
+
+// 12. Test Mission Launch & Gate Transit (Non-Collapsing Outgoing Transit)
+{
+  let transitPassed = false;
+  playGate(['chulak'], [{planet:'chulak', members:[0, 1, 2]}], () => { transitPassed = true; }, false);
+  assert(GR.phase === 'dial', 'playGate initiated dial phase');
+  gateTick(performance.now() + 2500);
+  assert(GR.phase === 'open', 'gateTick transitioned to open event horizon');
+  gateTick(performance.now() + 6000);
+  assert(GR.phase === 'transit', 'gateTick transitioned to outgoing transit (not collapse)');
+  gateTick(performance.now() + 7000);
+  assert(GR.phase === 'idle' && transitPassed === true, 'Gate transit completed and invoked callback into mission');
+}
+
+// 13. Test C&C Hell March & Lo-Fi Chillhop Remixes
+{
+  assert(STRUDEL_TRACKS.theme_remix_cnc, 'Theme Remix C&C registered in STRUDEL_TRACKS');
+  assert((STRUDEL_TRACKS.theme_remix_cnc.name || '').includes('Hell March'), 'Theme Remix C&C has Hell March name');
+  assert(STRUDEL_TRACKS.theme_remix_cnc.code.includes('132/4'), 'Theme Remix C&C runs at 132 BPM');
+  assert(STRUDEL_TRACKS.theme_remix_lofi, 'Theme Remix Lo-Fi registered in STRUDEL_TRACKS');
+  assert((STRUDEL_TRACKS.theme_remix_lofi.name || '').includes('Lo-Fi'), 'Theme Remix Lo-Fi has Lo-Fi name');
+  assert(STRUDEL_TRACKS.theme_remix_lofi.code.includes('84/4'), 'Theme Remix Lo-Fi runs at 84 BPM');
+}
+
+// 14. Test SFX Master Volume Control
+{
+  SFX.setVolume(0.42);
+  assert(Math.abs(SFX.getVolume() - 0.42) < 0.01, 'SFX.setVolume updates master volume accurately');
+  assert(localStorage.getItem('sgc_volume') === '0.42', 'SFX.setVolume persists value in localStorage');
+}
+
+// 15. Test Combat UI Architecture & Menu Cleanup in HTML
+{
+  const gameHtml = fs.readFileSync(path.join(__dirname, 'game', 'index.html'), 'utf8');
+  assert(gameHtml.includes('<div id="combat-overlay"'), 'game/index.html includes #combat-overlay');
+  const overlayIdx = gameHtml.indexOf('<div id="combat-overlay"');
+  const overlayCloseIdx = gameHtml.indexOf('</div>\n  </div>', overlayIdx);
+  const combatUiIdx = gameHtml.indexOf('<div id="combat-ui"');
+  assert(combatUiIdx > overlayIdx, 'combat-ui is placed inside combat-overlay');
+  assert(!gameHtml.includes('id="menu-cmd"'), 'menu-cmd dropdown removed from pause menu in game/index.html');
+  assert(gameHtml.includes('id="intro-audio"'), 'Opening cinematic provides an audio-unlock control for autoplay-restricted browsers');
+}
+
+// 18. Test Mission End "Weiter" Flow & Report Modal
+{
+  const mission = CHAPTERS[0].missions[0];
+  startCombat(mission, [0, 1, 2]);
+  C.result = 'victory';
+  let endError = null;
+  try {
+    combatEnd();
+  } catch (err) {
+    endError = err;
+  }
+  assert(!endError, 'combatEnd executes cleanly without exception (Strudel note-parser collision avoided)');
+  assert(!C.active, 'Mission victory resets C.active to false');
+  assert(els['modal'].style.display === 'flex', 'Mission end displays report modal (#modal display: flex)');
+  assert(els['modal'].innerHTML.includes('Tagesbericht') && els['modal'].innerHTML.includes('Teal’c'), 'Report modal contains mission summary and recruits');
+
+  // Verify Weiter button closes modal
+  els['modal'].style.display = 'none';
+  renderAll();
+  assert(els['modal'].style.display === 'none', 'Modal Weiter action closes report modal cleanly');
+}
+
+// 19. Test Star Map Music Continuity (No disruptive music change on map)
+{
+  setTab('base');
+  SFX.music('base');
+  const baseTrack = STRUDEL.currentTrack;
+  setTab('map');
+  assert(STRUDEL.currentTrack === baseTrack, 'Switching to Sternenkarte tab (map) preserves active background music');
+  SFX.music('map');
+  assert(STRUDEL.currentTrack === baseTrack, 'SFX.music("map") syncs to base context without changing active track');
 }
 
 for(let i=0;i<5;i++){

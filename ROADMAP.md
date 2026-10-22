@@ -1,6 +1,6 @@
-# 🗺 ROADMAP – SGC COMMAND v3 (Isometric Voxel & ASCII-3D Edition)
+# 🗺 ROADMAP – SGC COMMAND v0.23 ("Einsatzbereit")
 
-**Stand:** v0.20 · Isometrisches Voxel-Spielfeld (Pixel-Art) · Live-Umschaltung auf 3D-ASCII (`asciiid`/`asciicker`-Style) · Offworld-Basenbau (C&C / SimCity) · Strudel Core Sound-Engine · Inventar & Hammonds Klemmbrett
+**Stand:** v0.23 · Mission-UI und Intro-Audio stabilisiert · Responsive Kampfpanel · 88 Tests grün
 **Zweck:** Klare Prioritäten und technischer Fahrplan für die Weiterentwicklung von SGC Command.
 
 ---
@@ -21,96 +21,105 @@
 ## Phase 1: Gerüst & Taktik-Kern (KOMPLETT ERLEDIGT ✅)
 
 ### 1.1 Inventar-, Waffenkammer- & Crafting-System (ERLEDIGT ✅)
-**Spec:** [`INVENTAR-SPEC.md`](file:///g:/AgentHome/SGC-Command/INVENTAR-SPEC.md)
 - [x] `S.inventory` mit Waffen (`rifle`, `shotgun`, `pistol`, `zat`, `staff`, `staffLong`), Rüstungen (`light` −10%, `medium` −20%, `heavy` −30% / −1 Move) und Spezial-Items (`medkit`, `shield`, `smoke`, `emp`)
-- [x] `craftItem()` in [`game/engine.js`](file:///g:/AgentHome/SGC-Command/game/engine.js) + Werkbank in der Basis-Seitenleiste
+- [x] `craftItem()` in `game/engine.js` + Werkbank in der Basis-Seitenleiste
 - [x] `equipItem()` im Roster & auf Hammonds Klemmbrett
-- [x] `useSpecial(unit)` im Kampf ([`game/combat.js`](file:///g:/AgentHome/SGC-Command/game/combat.js)) + automatische Beute-Drops in `applyCombatResult()`
+- [x] `useSpecial(unit)` im Kampf (`game/combat.js`) + automatische Beute-Drops in `applyCombatResult()`
 
 ### 1.2 Mehrere SG-Teams (`SG-1` bis `SG-5`) (ERLEDIGT ✅)
 - [x] 5 SG-Teams (`SG-1` Flaggschiff, `SG-2` Sturmtrupp, `SG-3` Marines, `SG-4` Medizin & Diplomatie, `SG-5` Spezialeinheit)
 - [x] Team-Zuweisung im Roster & auf Hammonds Klemmbrett (`assignTeam()`)
 - [x] Schnellwahl-Buttons für komplette SG-Teams vor Missionsstart auf der Sternenkarte
 
-### 1.3 Rekruten & Verwundeten-System (ERLEDIGT ✅)
+### 1.3 Rekruten, Verwundete & Raum-Innenansichten (ERLEDIGT ✅)
 - [x] Rekruten einteilbar, Gedenktafel bei Tod, Heilung in der MedBay
-
-### 1.4–1.7 Desert-Map, Pause-Menü, Schwierigkeitsgrad & One-Way-Gate (ERLEDIGT ✅)
-- [x] 3 Schwierigkeitsstufen (`easy`, `normal`, `hard`) + Kapitel-Skalierung
-- [x] One-Way-Gate mit 3D-Voxel- & 3D-ASCII-Portal-Ring am Spawn-Punkt
+- [x] 28-Level-Ansicht des Cheyenne Mountain Complex mit animierten Raum-Innenansichten in Pixel- und ASCII-Grafik
+- [x] Hammonds Klemmbrett-Modal (`📋`) mit wechselbaren Kommandanten (Hammond, Weir, Landry)
 
 ---
 
-## Phase 1.5: Basis-Immersion & Kommando (ERLEDIGT ✅)
+## Phase 2: Dual-Engine: Isometrisch Voxel ⇄ 3D-ASCII (KOMPLETT ERLEDIGT ✅)
 
-### 1.5.1 Progressions-Gatter (ERLEDIGT ✅)
-- [x] Kapitelweise Freischaltung von SG-Teams (`unlockChap`) und High-Tech-Crafting (`req: 'W2' / 'S1'`)
+### 2.1 2:1 Pixel-Voxel Engine (`game/iso.js`) (ERLEDIGT ✅)
+- [x] Echte isometrische 2:1 Projektion (`tileW: 64`, `tileH: 32`, `zStep: 14`) mit Höhenstufen (`baseZ` + `blockH`)
+- [x] 4-Wege-Kameradrehung in 90°-Schritten (`Q`/`E`), Zoom und analytisches Ray-to-Diamond Mouse-Picking
+- [x] Biome für Wüste/Abydos, Wald/Chulak, Asgard, Ha'tak-Schiff und mehrstöckige Städte (`city`) im Syndicate / SimCity-Look
 
-### 1.5.2 Hammonds Büro & Klemmbrett + Kommandanten-Wechsel (ERLEDIGT ✅)
-- [x] **Klemmbrett-Modal (`showClipboardModal()`)** über Header-Button `📋`, Pause-Menü oder Klick auf das Büro auf Level 27
-- [x] Vollständige Personal-Tabelle (Name, Klasse, SG-Team, Raum-Zuweisung, HP/Erschöpfung, Ausrüstung)
-- [x] **Kommandant wechselbar (`setCommander()`):**
-  - **Gen. George Hammond** (+10% Moral-Regeneration & Sandwich-Aktion)
-  - **Dr. Elizabeth Weir** (+25% Forschungspunkte & +15% Kontakt-Beute)
-  - **Gen. Hank Landry** (+10 Basis-Power & +10% Waffenschaden)
+### 2.2 3D-ASCII Modus (`asciiid` / `asciicker` Style) (ERLEDIGT ✅)
+- [x] Jederzeit im Menü (`ESC`), über den Header-Button (`🖥 PIXEL` / `⌨ ASCII`) oder per Hotkey **`V`** live umschaltbar
+- [x] CP437/ASCII-3D-Renderer mit Höhenkonturen (`─`), Schattierungen (`█`, `▓`, `▒`, `░`), ASCII-Stargate und mehrzelligen Sprites
 
-### 1.5.3 Einsehbare Räume (Fallout-Shelter- / Dungeon-Keeper-Style) (ERLEDIGT ✅)
-- [x] Klick auf jeden gebauten Raum öffnet die live animierte **Raum-Innenansicht (`drawRoomInteriorCanvas`)** in der Seitenleiste (inkl. blauem Wackelpudding in der Kantine, Naquadah-Analysator im Labor, Krankenbetten in der MedBay, Waffenregalen in der Armory und Stargate im Gateraum)
-- [x] Unterstützt sowohl **Pixel-Art** als auch **ASCII-Terminal-Grafik**!
+### 2.3 Offworld-Basenbau im Gefecht (ERLEDIGT ✅)
+- [x] Taktischer Feldbau (`OFFWORLD_BUILDINGS`): Sandsäcke, Auto-Geschütztürme, Naquadah-Generatoren, Bunker
 
 ---
 
-## Phase 2: Audio & Animation (ERLEDIGT ✅)
+## Phase 3: Persistente Planeten-Kolonien (Civ / SimCity Layer) (ERLEDIGT ✅)
 
-### 2.1 Strudel Core Sound-Engine (ERLEDIGT ✅)
-**Referenz:** `https://urswilke.github.io/strudel/learn/getting-started/`
-- [x] Lokales `@strudel/web@1.3.0` Bundle heruntergeladen nach [`game/vendor/strudel-web.js`](file:///g:/AgentHome/SGC-Command/game/vendor/strudel-web.js) (655 KB) + Referenzkopie in [`references/strudel/strudel-web.js`](file:///g:/AgentHome/SGC-Command/references/strudel/strudel-web.js)
-- [x] Nativer, MIT-sauberer **Strudel-DSL Pattern-Compiler & WebAudio-Synthesizer (`STRUDEL` in [`game/sound.js`](file:///g:/AgentHome/SGC-Command/game/sound.js))**
-  - Unterstützt `setcps()`, `setTempo()`, `stack()`, `cat()`, `seq()`, `note()`, `n()`, `chord()`, `s()`/`sound()`, Mini-Notation (`<a b>`, `[c d]`, `white*8`, `~`) und Synth-Filterketten (`.lpf()`, `.hpf()`, `.gain()`, `.attack()`, `.decay()`, `.sustain()`, `.release()`, `.delay()`, `.room()`, `.pan()`, `.fast()`, `.slow()`)
-- [x] **6 kontextsensitive Live-Soundtracks:** `base` (Cheyenne Mountain Telemetry), `map` (Deep Space Cartography), `gate` (Wormhole Horizon), `combat` (Jaffa Assault), `peaceful` (First Contact), `boss` (Ha'tak Command)
-- [x] **In-Game Strudel Live-Coding Konsole (`🎵`)** zum Editieren und Live-Evaluieren eigener Strudel-Patterns im laufenden Spiel
-
-### 2.2 Walk-Animation (ERLEDIGT ✅)
-- [x] Flüssige Positions-Interpolation (`_animFrom`, `_animT0`) und Bein-Animation beim Laufen auf dem isometrischen Feld
+### 3.1 Kolonie-Verwaltung (`S.colonies`) (ERLEDIGT ✅)
+- [x] Kolonie-Gründung auf befreiten Welten (`foundColony(planetId)`)
+- [x] 6×5 Sektoren-Raster mit Gebäuden: Naquadah-Mine, Naquadah-Reaktor, Forschungslabor, Schutzschild-Kuppel, UAV-Hangar
+- [x] Tägliche Rohstoff- und Forschungsausbeute (`tickColonies()`)
+- [x] Automatische Goa'uld-Angriffssimulation gegen Verteidigungswert
 
 ---
 
-## Phase 4: Fundamentale Spielfeld-Überarbeitung – Isometric Voxel & ASCII-3D Dual-Engine (NEU)
+## Phase 4: High-Octane Sound-Engine & Winamp Player (KOMPLETT ERLEDIGT ✅)
 
-### 4.1 Lizenz-Audit & Referenz-Archiv (ERLEDIGT ✅)
-- [x] [`references/README.md`](file:///g:/AgentHome/SGC-Command/references/README.md) & [`references/LICENSE-AUDIT.md`](file:///g:/AgentHome/SGC-Command/references/LICENSE-AUDIT.md) angelegt (auch gespiegelt nach `G:\AgentHome\Referenz\sgc-iso-ascii-strudel`)
-- [x] Referenzcode gesichert aus:
-  - [`Tretboot/asciiid`](https://github.com/Tretboot/asciiid) & [`msokalski/asciicker`](https://github.com/msokalski/asciicker) (**MIT-Lizenz** — kompatibel!)
-  - [`nosir/obelisk.js`](https://github.com/nosir/obelisk.js) (**MIT-Lizenz** — 2:1 Pixel-Isometrie & Voxel-Shading)
-  - `@strudel/web` (**AGPL-3.0** — dokumentiert in `LICENSE-AUDIT.md`, daher dual gelöst: Vendor-Bundle + eigener MIT-Clean-Room-Interpreter)
+### 4.1 SGC-AMP v2.80 (Winamp Retro Player) (ERLEDIGT ✅)
+- [x] Titan-Chassis mit grünem Phosphor-LCD (Marquee, Spielzeit, BPM/CPS)
+- [x] Status-Badges: `[ ▶ PLAYING ]`, `[ ⏸ PAUSED ]`, `[ ⏹ STOPPED ]`
+- [x] Live-Oszilloskop & 28-Band-Spektrumanalysator (HTML5-Canvas an `AnalyserNode`)
+- [x] Reparierter Master-Lautstärkeregler mit linear-to-exponential Scaling & `localStorage`-Persistenz
 
-### 4.2 Isometrische 2:1 Pixel-Voxel-Engine ([`game/iso.js`](file:///g:/AgentHome/SGC-Command/game/iso.js)) (ERLEDIGT ✅)
-- [x] Echte isometrische `2:1`-Projektion (`tileW: 64`, `tileH: 32`, `zStep: 14`) mit Höhenstufen (`baseZ` + `blockH`)
-- [x] 4-Wege-Kameradrehung in 90°-Schritten (`Q` / `E` oder UI-Buttons `↶ Q` / `↷ E`) + Zoom
-- [x] Exaktes isometrisches Mouse-Picking (`isoScreenToTile`) inkl. Höhen-Hitboxen und analytischem Boden-Fallback
-- [x] Voxel-Biome für Wüste/Abydos, Wald/Chulak, Asgard, Ha'tak-Schiff und **mehrstöckige Städte (`city`)** im Syndicate / SimCity 2000 Look
+### 4.2 ReBirth-338 Synthesizer-Rack & Roland Soundbanks (ERLEDIGT ✅)
+- [x] TB-303 Acid Bass Rack mit 7 Soundbanks (`303 Saw`, `303 Sq`, `SH-101`, `Sub`, `Slap`, `8-Bit`, `Reese`) und Drehreglern
+- [x] Roland TR Drum Machine (`TR-909`, `TR-808`, `TR-707`, `LinnDrum`, `8-Bit`, `Acoustic`, `Acid`)
+- [x] Hot-Patching in den Code (`[ ✍ SOUNDBANKS ANWENDEN ]`)
 
-### 4.3 Live umschaltbarer 3D-ASCII-Modus (`asciiid` / `asciicker` Style) (ERLEDIGT ✅)
-- [x] Jederzeit im Menü (`ESC`), über den Header-Button (`🖥 PIXEL` / `⌨ ASCII`), im Kampf-HUD oder per Hotkey **`V`** live umschaltbar
-- [x] Vollständig spielbarer 3D-isometrischer CP437/ASCII-Renderer (`renderCombatIsoAscii` & `renderBaseAscii`):
-  - Höhen-Konturkanten (`─`, `_`), schattierte Voxel-Säulen (`█`, `▓`, `▒`, `░`, `▀`, `▄`), Terrain-Dithering, 3D-ASCII-Stargate und mehrzellige Agenten-Sprites (`[@]` / `/|═`, `{+}` für Feinde)
+### 4.3 Stargate Theme Remixes & MIDI Bridge (ERLEDIGT ✅)
+- [x] Standard-MIDI-Parser für Stargate Main Theme (165 BPM, G-Dur, 1.380 Events)
+- [x] **🪖 Stargate × C&C Hell March Industrial Remix (`theme_remix_cnc`):** 132 BPM, 909-Kick, verzerrter Bass-Chug, Fanfare
+- [x] **☕ Stargate × Midnight Lo-Fi Chillhop Remix (`theme_remix_lofi`):** 84 BPM, Rhodes E-Piano, warme Subs, Vinyl-Dust
+- [x] 4x Theme × Switch Angel Remixes + dedicated Strudel Voices ($MELODY, $BASS, $HARMONY, $DRUMS)
 
-### 4.4 Offworld-Basenbau im Kampf (Command & Conquer / SimCity Style) (ERLEDIGT ✅)
-- [x] Direkt im Einsatz baubare Offworld-Strukturen (`OFFWORLD_BUILDINGS`):
-  - `🧱 Sandsack-Stellung` (Leichte Deckung, begehbar)
-  - `🗼 Auto-Geschützturm` (Feuert am Rundenende automatisch auf sichtbare Feinde in Reichweite 5)
-  - `⚡ Naquadah-Generator` (Heilt/schützt eigene Einheiten im Umkreis von 3 Feldern)
-  - `🏢 Kommando-Bunker` (Schwere Voxel-Deckung)
+### 4.4 Switch Angel Live-Coding Bibliothek & Audio-Fixes (ERLEDIGT ✅)
+- [x] AST-Normalisierung für alle 20 Switch-Angel-Tracks (HTML `String.sub` Fix, `postgain` Entflechtung)
+- [x] Automatischer 8-Bit Chiptune-Modus gekoppelt an ASCII-3D (Taste `V`)
+- [x] Audio-reaktives Spielfeld-Tanzen (`ISO.beatPulse`) & Gamepad Dual-Rumble Feedback
 
 ---
 
-## Phase 5: Nächste Ausbaustufen (OFFEN / GEPLANT)
+## Phase 5: Polishing, Entschlackung & Portal-Restrukturierung (ERLEDIGT ✅)
 
-### 5.1 Persistente Offworld-Kolonien & Städtebau (SimCity / C&C Layer) 🔴
-- **Idee:** Auf befreiten Planeten bleibt die gebaute Offworld-Basis (Naquadah-Minen, Straßennetz, Geschütztürme, Habitate) dauerhaft gespeichert und liefert täglich Ressourcen ans SGC, muss aber gelegentlich gegen Goa'uld-Gegenangriffe verteidigt werden.
+### 5.1 Combat-UI Layout-Fix (ERLEDIGT ✅)
+- [x] `#combat-ui` direkt im `#combat-overlay` per Flexbox verankert; kein Abschneiden in Iframes oder niedrigen Auflösungen mehr
+- [x] Dynamische Viewport-Berechnung in `resizeCombatViewport()`
+- [x] Einheiten bleiben während Ankunftsdialogen auswählbar; Angriffs- und Bewegungsaktionen setzen erst nach dem Dialog ein
+- [x] Responsives, scrollbar gehaltenes Aktionspanel für niedrige Viewports
+- [x] Intro-Soundtrack vorbereitet und in autoplay-gesperrten Browsern per eigenem Button ohne Skip aktivierbar
 
-### 5.2 REXPaint (`.xp`) / CP437 Sprite-Importer aus `asciiid` 🟡
-- **Idee:** Direktes Laden von `.xp`-ASCII-Sprites (wie in `Tretboot/asciiid`) für noch detailliertere mehrfarbige ASCII-Gebäude, Gleiter (Death Glider) und Goa'uld-Mutterschiffe.
+### 5.2 Hub-Navigation aufgeräumt (ERLEDIGT ✅)
+- [x] Aufdringliche Uni-Badges im Header entfernt; 4 aufgeräumte Hauptreiter: `[ 🎮 Spiel ]`, `[ 📚 Datenbank & Lore ]`, `[ 📜 Captain's Log ]`, `[ ℹ️ Über & Labor ]`
+- [x] Dezent integriertes Untermenü für Strudel & Winamp Lab, Forschungsnotizen, Downloads und Lizenzen
+- [x] Manuelle Kommandantenauswahl aus dem Pause-Menü entfernt (bleibt rein im Quest-System)
 
-### 5.3 Mehrteilige Boss-Kämpfe & Fahrzeug-/Gleiter-Unterstützung 🟡
-- **Idee:** Eigene Voxel-Karten für Ha'tak-Brücken, Replikatoren-Königin und MALP-/UAV-Drohnen im Feldeinsatz.
+### 5.3 Entschlackung des Release-Pakets (ERLEDIGT ✅)
+- [x] 7.6 MB ungenutzte PNG-Screenshots gelöscht
+- [x] Release-Paket auf `SGC-Command-v023.zip` aktualisiert; Tests und aktuelle Dokumentation enthalten
+- [x] Danksagung an Switch Angel und Dokumentation der Tracks als Bildungs-/Entwicklungs-Platzhalter in `README.md` und `LICENSE`
+- [x] Gemeinfreie NASA-Assets (Mars-Dünen, Eye of the Sahara, Webb Cosmic Cliffs, Cassini-Eiswelten) in `references/NASA-ASSETS.md` katalogisiert
+
+---
+
+## Phase 6: Künftige Ausbaustufen (GEPLANT / BACKLOG)
+
+### 6.1 REXPaint (`.xp`) / CP437 Sprite-Importer 🟡
+- Direktes Laden von `.xp`-ASCII-Dateien für noch detailliertere mehrfarbige Goa'uld-Mutterschiffe (Ha'tak) und Death Glider.
+
+### 6.2 Einbindung der gemeinfreien NASA-Hintergründe 🟡
+- Verwendung der in `references/NASA-ASSETS.md` recherchierten Aufnahmen als optionale Panoramahintergründe für Kolonien und Wurmloch-Reisen.
+
+### 6.3 Mehrteilige Boss-Kämpfe & Fahrzeug-/Gleiter-Unterstützung 🟢
+- Spezielle Voxel-Karten für Ha'tak-Brücken, Replikatoren-Mutterschiffe und MALP-/UAV-Drohnensteuerung im Feldeinsatz.
+---

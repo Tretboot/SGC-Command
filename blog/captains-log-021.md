@@ -103,9 +103,47 @@ Das Spiel koppelt Grafik und Akustik:
 
 ---
 
-## 7. Bereinigung & Test-Ergebnisse
+## 7. Polishing-Pass: Wurmloch-Transit, Oszilloskop, Song-Mutation & ASCII-3D Intro
+
+In diesem abschließenden Polishing-Pass wurden die verbliebenen Rückmeldungen zur Spielbarkeit und Präsentation gelöst:
+
+### A. Mission 1-1: Wurmloch-Transit statt Kollaps
+- **Problem:** Bei der Missionswahl zeigte das Gate fälschlicherweise „Wurmloch kollabiert …“, was Spieler verwirrte und wie ein Abbruch wirkte. Zudem konnte bei Klicks außerhalb des Canvas das Überspringen fehlschlagen.
+- **Lösung:**
+  - Die Gate-Phasen wurden überarbeitet: `dial` (Wählen) → `open` (Ereignishorizont stabilisiert) → `transit` („SG-1 BETRITT DEN EREIGNISHORIZONT NACH CHULAK …“) mit blauem Vortex-Warp-Effekt.
+  - Das Gate kollabiert nur noch bei Notfällen oder gezieltem Missions-Rückzug.
+  - `#gate-overlay`, `#gate-cv` und der neue Button `#gate-skip` sowie `ESC` / `Leertaste` / `Enter` erlauben sofortiges Überspringen in den Gefechtseinsatz.
+  - Robuster `try/catch`-Schutz garantiert, dass der Übergang in den Kampf und das Einsatzprotokoll immer zuverlässig starten.
+
+### B. Oszilloskop & Audio-Routing (`#winamp-vis`)
+- **Problem:** Externe Strudel- und Superdough-Knoten verbanden sich direkt mit `ctx.destination`, wodurch der WebAudio `AnalyserNode` umgangen wurde und die Wellenform stumm blieb.
+- **Lösung:**
+  - `AudioNode.prototype.connect` fängt Ausgänge zu `ctx.destination` transparent ab und leitet sie über `SFX.analyser`.
+  - Ergänzend wurde ein organischer Fallback-Generator integriert: Falls Zeitbereichsdaten flach sind, moduliert ein reaktiver Phosphor-Wellenform-Strahl synchron zu Stimmentriggern (`$KICK`, `$BASS`, `$HAT`) und Filter-Cutoff.
+  - 28-Band LCD-Spektrum und Phosphor-Glow-Effekte bieten originalgetreue Winamp 2.91 Ästhetik.
+
+### C. Kreative Song-Mutation (`mutateCode`)
+- Der Button `[ 🧬 MUTIEREN ]` wirbelt Stücke nun spürbar und musikalisch durcheinander:
+  - **Spuren stummschalten / aktivieren:** Zufälliges Togglen von `$VOICE:` ⇄ `_$VOICE:`.
+  - **Ribbon-Injektion:** Automatisches Einfügen von `.rib(seed, len)` auf Melodie- oder Bass-Mustern.
+  - **Scrambling & Reversal:** Zufällige Permutation von Noten-Token sowie Injektion von `.rev()` und `.scramble()`.
+  - **Direkte Synchronisation:** Der Code im Editor wird sofort aktualisiert und live ausgeführt.
+
+### D. ASCII-3D Stargate Intro & Theme Remix 3 Percussion-Polish
+- **Drums bereinigt:** Die metallische Ringmodulation (800 Hz / 1200 Hz), die wie eine „kaputte Kuhglocke“ klang, wurde aus den Open-Hi-Hats und aus Remix 3 entfernt. Stattdessen treiben jetzt ein druckvoller Roland TR-909 Kick, ein knackiger Clap und seidige Hi-Hats den Beat.
+- **ASCII-3D Gate Intro:** Beim Spielstart fliegt das Sternentor in plastischer 3D-Perspektive aus den Tiefen des Alls heran:
+  - 3D-Sternenfeld im Warp-Drift.
+  - Rotierender Torring mit 38 antiken Glyphen.
+  - 9 Chevrons, die nacheinander mit Neonglühen einrasten.
+  - Irisierender Ereignishorizont aus ASCII-Wasserzeichen.
+  - Unterlegt mit dem Switch Angel Stargate Remix 3; jederzeit überspringbar via Klick, Leertaste oder ESC.
+
+---
+
+## 8. Bereinigung & Test-Ergebnisse
 
 - **Schlankes Repository:** 6 große WAV-Dateien (ca. 50 MB) und `samples.zip` wurden aus `Switch-Angel/` entfernt. Alle Drums und Synthesizer-Sounds werden offline generiert.
 - **Inbox `references/`:** Aufgeräumt und mit einer klaren `README.md` versehen; bereit für künftige Notizen und Skizzen.
-- **Vollständige Test-Abdeckung:** `node test-browser.js` führt 63 automatisierte Prüfungen aus – alle Tests laufen mit **0 Fehlern** fehlerfrei durch.
+- **Vollständige Test-Abdeckung:** `node test-browser.js` führt 74 automatisierte Prüfungen aus – alle Tests laufen mit **0 Fehlern** fehlerfrei durch.
+- **Release-Archiv:** `SGC-Command-v021.zip` (480 KB, bereinigt und einsatzbereit).
 

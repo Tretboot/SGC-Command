@@ -572,7 +572,23 @@ function load(){
   }
   return false;
 }
-function note(t){const l=`[T${S.day}] ${t}`;S.log.unshift(l);if(S.log.length>200)S.log.pop();S.rlog.push(t);}
+function gameNote(t){
+  if(typeof S==='undefined'||!S)return;
+  const l=`[T${S.day}] ${t}`;
+  S.log.unshift(l);
+  if(S.log.length>200)S.log.pop();
+  S.rlog.push(t);
+}
+function note(t){
+  if(typeof window!=='undefined'&&window.strudel&&typeof window.strudel.note==='function'){
+    if(typeof t!=='string'||!/[✔💀⚠🩹🎁🤝🪐🏗⬆🔫🎖🖥🏆★＋🔬⚡💥⏱·’üäöß]|(?:^[A-Z][a-z]{3,})/.test(t)){
+      try{return window.strudel.note(t);}catch(e){}
+    }
+  }
+  return gameNote(t);
+}
+if(typeof window!=='undefined'){window.gameNote=gameNote;window.note=note;}
+if(typeof globalThis!=='undefined'){globalThis.gameNote=gameNote;globalThis.note=note;}
 
 // Power-Budget
 function powerGen(){

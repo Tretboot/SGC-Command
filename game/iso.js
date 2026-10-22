@@ -880,8 +880,8 @@ function canPlaceOffworld(buildKey,x,y){
   const cell=C.map[idx(x,y)];
   if(!cell||(cell.t!==0&&cell.t!==10))return false;
   // Muss in Reichweite (Radius 5) eines eigenen Agenten oder des Gates liegen
-  const nearGate=C.gatePos&&dist(x,y,C.gatePos.x,C.gatePos.y)<=6;
-  const nearUnit=Object.values(C.units).some(u=>u.side==='player'&&!u.dead&&!u.downed&&dist(x,y,u.x,u.y)<=4);
+  const nearGate=C.gatePos&&C.distance(x,y,C.gatePos.x,C.gatePos.y)<=6;
+  const nearUnit=Object.values(C.units).some(u=>u.side==='player'&&!u.dead&&!u.downed&&C.distance(x,y,u.x,u.y)<=4);
   if(!nearGate&&!nearUnit)return false;
   for(const k in spec.cost)if((S.res[k]||0)<spec.cost[k])return false;
   return true;
@@ -910,8 +910,8 @@ function tickOffworldStructures(){
     if(!cell)continue;
     if(cell.t===12){
       // Geschützturm sucht nächsten sichtbaren Feind in Reichweite 5
-      const enemies=Object.values(C.units).filter(u=>u.side==='enemy'&&!u.dead&&dist(x,y,u.x,u.y)<=5&&los(x,y,u.x,u.y));
-      enemies.sort((a,b)=>dist(x,y,a.x,a.y)-dist(x,y,b.x,b.y));
+      const enemies=Object.values(C.units).filter(u=>u.side==='enemy'&&!u.dead&&C.distance(x,y,u.x,u.y)<=5&&los(x,y,u.x,u.y));
+      enemies.sort((a,b)=>C.distance(x,y,a.x,a.y)-C.distance(x,y,b.x,b.y));
       if(enemies[0]){
         const target=enemies[0],dmg=rnd(8,12);
         target.hp-=dmg;
@@ -924,7 +924,7 @@ function tickOffworldStructures(){
     }else if(cell.t===11){
       // Naquadah-Generator regeneriert +4 HP bei eigenen Einheiten im Radius 3
       Object.values(C.units).forEach(u=>{
-        if(u.side==='player'&&!u.dead&&!u.downed&&u.hp<u.maxHp&&dist(x,y,u.x,u.y)<=3){
+        if(u.side==='player'&&!u.dead&&!u.downed&&u.hp<u.maxHp&&C.distance(x,y,u.x,u.y)<=3){
           u.hp=Math.min(u.maxHp,u.hp+4);
         }
       });

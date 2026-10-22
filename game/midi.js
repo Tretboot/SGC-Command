@@ -332,9 +332,11 @@ const energy = slider(${energy.toFixed(3)})
 const volume = slider(0.9)
 all(x => x.mul(postgain(volume)))
 
-$KICK: s("sbd!4").duck("3:4:5").duckdepth(.8).duckattack(.16).o(2)
+$KICK: s("sbd!4").gain(.92).duck("3:4:5").duckdepth(.75).duckattack(.14).o(2)
 
-$HAT: s("<- oh:2>*8").almostNever(ply("2 | 4")).gain(.6).dly(.5)
+$HAT: s("<[~ hh]*4 [~ oh]*2 [~ hh]*4 [~ hh*2 oh]>").gain(.55).dly(.2).o(1)
+
+$SNARE: s("~ cp ~ cp").gain(.7).room(.3).o(2)
 
 $THEME: n("<${melBars.join(' ')}>").sc()
   .s("supersaw").detune(.5).acidenv(energy).room(.6).roomsize(4).dly(.3).o(3)
@@ -445,7 +447,60 @@ const THEME_MIDI={
     const tit=titles[section%titles.length]||'Stargate Theme';
     return midiToStrudelCode(m,{title:tit,bars:8,startBar:sb});
   },
-  remixCode(section=0,energy=0.55){const m=this.load();return m?remixThemeSwitchAngel(m,{section,energy}):null;}
+  remixCode(section=0,energy=0.55){const m=this.load();return m?remixThemeSwitchAngel(m,{section,energy}):null;},
+  cncCode(){
+    return `//@title Stargate × C&C Hell March Industrial Remix @by SGC Heavy Industrial
+// Heavy Industrial Cyber-Metal: Driving 4/4 Beat, Distorted Guitar Riff & Stargate Brass
+setCpm(132/4)
+setScale("e:minor")
+const drive = slider(0.850)
+const volume = slider(0.950)
+all(x => x.mul(postgain(volume)))
+
+$KICK: s("sbd!4").gain(1.05).duck("3:4:5").duckdepth(.85).duckattack(.12).o(2)
+
+$MARCH_SNARE: s("~ [sd*2 sd] ~ [sd*2 sd*2]").gain(.78).room(.45).o(2)
+
+$INDUSTRIAL_HAT: s("hh*8").gain(.52).crush(7).dly(.2).o(1)
+
+$HEAVY_RIFF: note("<[e1 e1 e1 e1 e1 e1 e1 e1] [e1 e1 e1 e1 g1 g1 a1 a1] [e1 e1 e1 e1 e1 e1 e1 e1] [c2 c2 c2 c2 b1 b1 b1 b1]>")
+  .s("sawtooth").gain(.92).distort("2.5").lpq(8).lpf(2200).o(4)
+
+$THEME_BRASS: n("<[9 ~ ~ ~ ~ ~ ~ 9 10 ~ ~ ~ 8 ~ ~ ~] [9 ~ ~ ~ 11 ~ ~ ~ 10 ~ ~ ~ 9 ~ ~ 8] [9 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~] [~ ~ ~ ~ 8 ~ ~ ~ 7 ~ ~ ~ 4 ~ ~ ~]>").sc()
+  .s("supersaw").detune(.65).acidenv(drive).room(.6).roomsize(4).gain(.85).o(3)
+
+$SUB_DRIVE: note("<[e1 e1 e1 e1]*4>").s("sawtooth").sub(12).acidenv(0.6).lpf(180).gain(.9).o(4)
+
+_$ALARM_SIREN: s("sawtooth").freq("<440 660>*8").lpf(1200).gain(.25).room(.8)
+`;
+  },
+  lofiCode(){
+    return `//@title Stargate × Midnight Lo-Fi Chillhop Remix @by SGC Midnight Lab
+// 84 BPM Mellow Tape-Saturated Chillhop: Dusty Rhodes, Lazy Swing Groove & Stargate Melody
+setCpm(84/4)
+setScale("d:minor")
+const warmth = slider(0.650)
+const volume = slider(0.880)
+all(x => x.mul(postgain(volume)))
+
+$KICK: s("sbd ~ ~ ~ sbd ~ ~ ~").gain(.82).o(2)
+
+$SNARE: s("~ ~ cp ~ ~ ~ cp ~").gain(.65).room(.5).roomsize(3).o(2)
+
+$DUSTY_HAT: s("<[~ hh]*4 [~ hh*2] [~ hh]*4 [~ oh]>").gain(.42).lpf(2800).o(1)
+
+$RHODES_CHORDS: note("<[[d3,f3,a3,c4]@2 ~] [[g3,bb3,d4,f4]@2 ~] [[c3,e3,g3,b3]@2 ~] [[bb2,d3,f3,a3]@2 ~]>")
+  .s("piano").lpf(1600).room(.8).gain(.75).dly(.35).o(5)
+
+$MELLOW_LEAD: n("<[9 ~ ~ 8 9 ~ 11 ~] [10 ~ ~ 9 8 ~ ~ ~] [9 ~ ~ ~ ~ ~ ~ ~] [~ ~ 8 ~ 7 ~ 4 ~]>").sc()
+  .s("supersaw").lpf(2100).detune(.3).room(.7).dly(.4).gain(.62).o(3)
+
+$WARM_SUB: note("<[d2 ~ d2 ~] [g2 ~ g2 ~] [c2 ~ c2 ~] [bb1 ~ bb1 ~]>")
+  .s("sine").sub(12).lpf(140).gain(.85).o(4)
+
+$TAPE_VINYL: s("pink").lpf(850).gain(.06)
+`;
+  }
 };
 
 function registerThemeTracks(){
@@ -457,6 +512,8 @@ function registerThemeTracks(){
     STRUDEL_TRACKS['theme_remix_'+s]={name:`🌀 Theme × Switch Angel Remix ${s+1}`,artist:'SGC Strudel Bridge',role:s===0?'gate':s%2?'combat':'map',
       code:THEME_MIDI.remixCode(s,0.4+s*0.15)};
   }
+  STRUDEL_TRACKS.theme_remix_cnc={name:'🪖 Stargate × C&C Hell March Industrial Remix',artist:'SGC Heavy Industrial',role:'boss',code:THEME_MIDI.cncCode()};
+  STRUDEL_TRACKS.theme_remix_lofi={name:'☕ Stargate × Midnight Lo-Fi Chillhop Remix',artist:'SGC Midnight Lab',role:'peaceful',code:THEME_MIDI.lofiCode()};
   if(typeof STRUDEL!=='undefined'&&STRUDEL.patterns){
     Object.keys(STRUDEL_TRACKS).forEach(k=>{STRUDEL.patterns[k]=STRUDEL_TRACKS[k].code;});
   }
