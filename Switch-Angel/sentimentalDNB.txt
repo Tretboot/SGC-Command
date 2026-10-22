@@ -1,0 +1,28 @@
+// @title sentimental DNB @By Switch Angel
+setCpm(170/4)
+
+mondo`
+$ def basspat <D@2 B2@2 F#@2 E@2>
+
+$ note basspat # sub (note 24) # s wt_digital:2 
+# unison 4 # detune .7 # seg 8 # lpf 200 # lpenv 3 # fm 1.4 
+# fmh 2.02 # dist .6 # orbit 2
+
+//KICK
+$ s bd:2 # beat [0,[7|_|_],10] 16 # duck [2,3]
+
+//SNARE
+$ s sd:2 # beat [4,12] 16
+
+//RIM
+$ s rim:1:.7 # beat [7.1,9.1] 16 # delay .5 # delayfeedback .2
+
+//HAT
+$ <1 .6>*8 # velocity # s hh # almostNever (# ply 2)
+
+//CHORDS
+$ note basspat # add (note [0,4,7,11,14]) # tgate .3 3 1 # s wt_digital # wtrate .3 
+# phaser 2 # dly .6 # orbit 3
+
+`
+

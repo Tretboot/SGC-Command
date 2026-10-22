@@ -1,0 +1,20 @@
+// @title Waning Pad @By Switch Angel
+setCpm(160/4)
+
+mondo`
+// MELODY
+$ n <0 0 3 3 9 10>*16 # sc # s supersaw # acidenv (tri # slow 16 # range .1 .8) 
+# dly (tri # slow 9 # range .5 .99)
+# pan (sine # slow 18)
+
+// CLAP
+$ s <_ cp>*4 # sb .2 (# ply 2) # gain .7
+
+
+// KICK
+$ s bd:4!4 # dec .2 # sb .12 (# ply [2 | 4]) # duck 4 # duckattack .18
+
+// PAD
+$ n [0,2,6,8,10] # sc # s wt_digital:4 # wtrate .4 # unison 4 # orbit 4 # gain .8 # room 1
+`
+

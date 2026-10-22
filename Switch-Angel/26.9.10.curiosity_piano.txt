@@ -1,0 +1,16 @@
+//@title Curiosity the Piano @By Switch Angel
+const seed = 0
+$: n(irand(10).seg(4).ribbon(seed,2).add(4)) 
+  .scale("g:minor:pentatonic").piano()
+  .velocity(rand.range(.6,1).ribbon(13,1))
+  .sometimesBy(.4, x => x.jux(iter("4"))).delay(rand).delaytime(rand.seed(3)).pan(rand)
+  .sometimesBy(.14, x=> x.fast("2"))
+  .sometimesBy(.12, x => x.add(note("7 | 12")))
+  .room(slider(0.702)).roomsize(6).o(4)
+  .dry(.5)
+  .lpf(slider(0.623).mul(20).pow(3)).begin(rand.div(10)).postgain(2)
+  .pianoroll()
+ 
+
+
+

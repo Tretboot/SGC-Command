@@ -1,0 +1,749 @@
+//TODO: find a better way to do this
+window.registerFunc = (name, func) => {
+  //ensures it will work in mondo notation
+  strudelScope[name] = func
+  //ensures it will work in mini notation
+  window[name] = func
+}
+
+window.DX = (env=8, fm = 2, harm = 2) => s("sine")
+  .fm(fm).fmenv(env).fmh(harm).fmdecay(.2)
+
+// tb303 style filter envelope control between 0 & 1 values for useful range
+register('acidenv', (x, pat) => pat.lpf(100)
+  .lpenv(x * 9).lps(.2).lpd(.12).lpq(2)
+)
+
+setGainCurve(x => Math.pow(x, 2))
+
+
+
+//tracker style arrangement
+window.track = function(...input) {
+  const patterns = input.shift()
+  let mods = Array.isArray(input.at(-1)) ? input.pop() : undefined
+  if (input.length % 2 !== 0) {
+    throw new Error('Arrange needs a length paramter for each pattern (length, pattern, length, pattern)');
+  }
+  let sects = [];
+  let total = 0;
+  for (let i = 0; i < input.length; i += 2) {
+    let inp = [input.at(i)].flat()
+    let cycles = inp.at(0);
+    let start = inp.at(1) ?? 0
+    
+    total += cycles;
+    
+    let cpat = input.at(i + 1).innerBind((str, pat) => {
+
+      const pats = []
+      str.split(/-+/).forEach((val, index) => {
+        if (val == false ){
+        return
+        }
+        let newPat = patterns.at(index)
+         mods?.forEach(([mod, callback]) => {
+            if (val != mod) {
+              return
+            }
+            newPat = callback(newPat)
+         })
+        
+          pats.push(newPat)
+      })
+      return stack(...pats)
+    });
+   
+    sects.push([cycles, cpat.ribbon(start, cycles).fast(cycles)]);
+  }
+  return stepcat(...sects).slow(total);
+}
+/**
+$: track(
+   [bd,     sd,     hat,    clap,    bass], 
+ 2, "--------0------1-------1--------0",
+ 2, "1-------0------1-------D--------0",
+ 4, "1-------0------1-------1--------1",
+  [['D' ,(x) => x.delay(.5)]] //Optional modifiers
+)
+*/
+
+
+/**
+ * Quick Arrange
+ * Allows to arrange multiple patterns together over multiple cycles.
+ * Takes a variable number of arrays with two elements specifying the number of cycles and the pattern to use.
+ *
+ * @return {Pattern}
+ * @example
+ * ar(
+ *   4, "<c a f e>(3,8)",
+ *   2, "<g a>(5,8)"
+ * ).note()
+ */
+window.ar = function(...input) {
+
+  if (input.length % 2 !== 0) {
+    throw new Error('Arrange needs a length paramter for each pattern (length, pattern, length, pattern)');
+  }
+  let sects = [];
+  let total = 0;
+  for (let i = 0; i < input.length; i += 2) {
+    let inp = [input.at(i)].flat()
+    let cycles = inp.at(0);
+    let start = inp.at(1) ?? 0
+    total += cycles;
+    
+    let pattern = input.at(i + 1);
+    sects.push([cycles, pattern.ribbon(start, cycles).fast(cycles)]);
+  }
+  return stepcat(...sects).slow(total);
+}
+
+
+window.p = stack
+
+window.blockArrange = function (patArr, modifiers = []) {
+  return stack(
+    ...patArr.map(([pat, maskPat]) => {
+      pat = [pat].flat()
+
+      return maskPat.fmap(m => {
+        return stack(...pat.map(p => {
+
+          if (m == 0) {
+            return
+          }
+          const ms = m.toString()
+          let newPat = p
+
+          if (ms.includes('R')) {
+            newPat = newPat.restart(1)
+          }
+          if (ms.includes('B')) {
+            newPat = newPat.rev().speed(-1)
+          }
+          modifiers.forEach(([mod, callback]) => {
+            if (mod(ms)) {
+              newPat = callback(newPat)
+            }
+          })
+          return newPat
+        }).filter(Boolean))
+      }).innerJoin()
+    }).flat()
+  )
+}
+
+// example:
+// $: blockArrange(
+//     [ 
+//       [[bd],       "<F F F F F F F F F 0>"],
+//       [[bass],     "<0 0 F F F S F F F B>"],
+//       [[hat],      "<0 F F F F F F F F F>"],    
+//     ],
+//     //ADD CUSTOM BINDINGS
+//     [[(m) => m.includes('S') , (x) => x.stretch(1)]]
+//   )._scope()
+
+// fill in gaps between events
+register('fill', function (pat) {
+  return new Pattern(function (state) {
+    const lookbothways = 1;
+    // Expand the query window
+    const haps = pat.query(state.withSpan(span => new TimeSpan(span.begin.sub(lookbothways), span.end.add(lookbothways))));
+    const onsets = haps.map(hap => hap.whole.begin)
+      // sort fractions
+      .sort((a, b) => a.compare(b))
+      // make unique
+      .filter((x, i, arr) => i == (arr.length - 1) || x.ne(arr[i + 1]));
+    const newHaps = [];
+    for (const hap of haps) {
+      // Ingore if the part starts after the original query
+      if (hap.part.begin.gte(state.span.end)) {
+        continue;
+      }
+
+      // Find the next onset, to use as an offset
+      const next = onsets.find(onset => onset.gte(hap.whole.end));
+
+      // Ignore if the part ended before the original query, and hasn't expanded inside
+      if (next.lte(state.span.begin)) {
+        continue;
+      }
+
+      const whole = new TimeSpan(hap.whole.begin, next);
+      // Constrain part to original query
+      const part = new TimeSpan(hap.part.begin.max(state.span.begin), next.min(state.span.end));
+      newHaps.push(new Hap(whole, part, hap.value, hap.context, hap.stateful));
+    }
+    return newHaps;
+  });
+});
+
+register('trancegate', (density, seed, length, x) => {
+  density = reify(density).add(.5)
+  return x.struct(rand.mul(density).round().seg(16).rib(seed, length)).fill().clip(.7)
+})
+
+//increasing the delay increases the feedback as well
+register('dly', (amt, x) =>{ 
+  amt = reify(amt)
+  return  x.delay(amt.mul(.8)).delayfeedback(amt.pow(2)).mask(amt.floor().inv()) 
+})
+
+register('colorparty', (p, pat) => {
+ const colors = ['blue', 'yellow', 'violet', 'green', 'orange', 'cyan', 'magenta', 'white']
+   return pat.color(colors.at(Math.floor(p * colors.length)))
+})
+
+// quantize notes to given values: pat.grab("e:f#:c")
+register('grab', function (scale, pat) {
+  // Supports ':' list syntax in mininotation
+  scale = (Array.isArray(scale) ? scale.flat() : [scale]).flatMap((val) =>
+    typeof val === 'number' ? val : noteToMidi(val) - 48
+  );
+
+  return pat.withHap((hap) => {
+    const isObject = typeof hap.value === 'object';
+    let note = isObject ? hap.value.n : hap.value;
+    if (typeof note === 'number') {
+      note = note;
+    }
+    if (typeof note === 'string') {
+      note = noteToMidi(note);
+    }
+
+    if (isObject) {
+      delete hap.value.n; // remove n so it won't cause trouble
+    }
+    const octave = (note / 12) >> 0;
+    const transpose = octave * 12;
+
+    const goal = note - transpose;
+    note =
+      scale.reduce((prev, curr) => {
+        return Math.abs(curr - goal) < Math.abs(prev - goal) ? curr : prev;
+      }) + transpose;
+
+    return hap.withValue(() => (isObject ? { ...hap.value, note } : note));
+  });
+});
+
+setDefault('gain', 1)
+
+// multi orbit pan for quad setups etc.
+// ex: s("bd!4").mpan("3:4", slider(0.761))
+register('mpan', (orbits, amount, pat) => {
+  const index = Math.round(amount * (orbits.length - 1))
+  const orbit = orbits[index]
+  const pamt = (amount * orbits.length) % 1
+  return pat.orbit(orbit).pan(pamt)
+})
+
+// lpf between 0 and 1
+register('rlpf', (x, pat) => { return pat.lpf(pure(x).mul(12).pow(4)) })
+
+//hpf between 0 and 1
+register('rhpf', (x, pat) => { return pat.hpf(pure(x).mul(12).pow(4)) })
+
+//@title velocity structure @by Switch Angel
+register('vstruct', (ipat,pat) => {
+  return ipat.outerBind(vel => {
+    return pat.keepif.out(Math.ceil(vel)).velocity(vel)
+  })
+},false)
+
+// sets my Ableton vocoder CC key to the specified value, probably only useful for me
+
+register('voc', (key, x) => {
+  let value;
+  switch (key.toLowerCase()) {
+    case 'c': value = 0; break;
+    case 'c#': value = 0.2; break;
+    case 'd': value = 0.25; break;
+    case 'd#': value = 0.3; break;
+    case 'e': value = 0.4; break;
+    case 'f': value = 0.5; break;
+    case 'f#': value = 0.6; break;
+    case 'g': value = 0.7; break;
+    case 'g#': value = 0.75; break;
+    case 'a': value = 0.8; break;
+    case 'a#': value = 0.9; break;
+    case 'b': value = 1; break;
+    default: value = 0; // fallback value if key is not recognized
+  }
+
+  return x.ccn(34).ccv(value).midi('tout');
+});
+
+register('fmtime', (start,length, pat) => {
+  let modu = time.mod(length).add(start)
+  return pat.fm(modu).fmh(modu)
+})
+
+window.irando = (ipat) => reify(ipat).fmap(_irand).outerJoin()
+
+window.randm = (division) => irand(division).div(16)
+window.pk = function (...args) {
+  const control = args.length > 2 ? args.pop() : 0
+  return pick(args, control)
+}
+
+
+register('acid', (pat) => {
+  return pat.s('supersaw')
+    .detune(.5)
+    .unison(1)
+    .lpf(100)
+    .lpsustain(0.2).lpd(.2).lpenv(2)
+    .lpq(12)
+})
+
+//stext
+//transform text input into synthesis!
+register('stxt', (text, pat) => {
+  const RANGE = 'range'
+  const SELECTION = 'selection'
+
+  const params = {
+    lpf: {
+      type: RANGE,
+      val: [100, 3000]
+    },
+    room: {
+      type: RANGE,
+      val: [0, 1]
+    },
+    vib: {
+      type: RANGE,
+      val: [0, 16]
+    },
+    vibmod: {
+      type: RANGE,
+      val: [0, .3]
+    },
+    wt: {
+      type: RANGE,
+      val: [0, 1]
+    },
+    note: {
+      type: RANGE,
+      transform: x => Math.round(x),
+      val: [-12, 8]
+    },
+
+    wtrate: {
+      type: RANGE,
+      val: [0, 3]
+    },
+    wtdepth: {
+      type: RANGE,
+      val: [0, 1]
+    },
+
+    delay: {
+      type: RANGE,
+      val: [0, 1]
+    },
+
+
+    delaytime: {
+      type: RANGE,
+      val: [0, .66]
+    },
+
+
+    delayfeedback: {
+      type: RANGE,
+      val: [0, .6]
+    },
+
+    decay: {
+      type: RANGE,
+      val: [.1, 1]
+    },
+
+    attack: {
+      type: RANGE,
+      val: [0, .1]
+    },
+
+    wtrate: {
+      type: RANGE,
+      val: [0, 5]
+    },
+
+    lpenv: {
+      type: RANGE,
+      val: [0, 8]
+    },
+
+    lpd: {
+      type: RANGE,
+      val: [0, 1]
+    },
+
+    lpa: {
+      type: RANGE,
+      val: [0, .5]
+    },
+
+    detune: {
+      type: RANGE,
+      val: [0, .8]
+    },
+
+
+
+    // penv: {
+    //   type: RANGE,
+    //   transform: x => Math.round(x),
+    //   val: [0, 48]
+    // },
+    // pdec: {
+    //   type: RANGE,
+    //   val: [0, .1]
+    // },
+
+
+    s: {
+      type: SELECTION,
+      val: [
+        'sawtooth',
+        'supersaw',
+        'wt_digital',
+        'wt_digital_bad_day',
+        'wt_digital_basique',
+        'wt_digital_echoes',
+        'sine',
+        'triangle',
+        'pulse'
+      ]
+    }
+  };
+  // Encode the text into a Uint8Array of UTF-8 bytes
+  const encoder = new TextEncoder('utf-8');
+  const utf8Bytes = encoder.encode(text);
+
+  // Convert each byte to a two-digit hexadecimal string and join them
+  const byteArray = Array.from(utf8Bytes)
+
+
+  const byteSize = 255
+  let acc = 0
+  Object.keys(params).forEach((p, i) => {
+    const { type, transform = (x) => x, val } = params[p]
+
+    let byteVal = byteArray[i % byteArray.length];
+    acc += byteVal
+    byteVal = [byteVal + acc] % byteSize
+
+    if (type === SELECTION) {
+
+      pat = pat[p](transform(val[byteVal % val.length]))
+
+
+    } else {
+      const min = val.at(0)
+      const max = val.at(-1)
+      const pTotal = max - min
+      const valAdjusted = ((pTotal / byteSize) * byteVal) + min
+
+      pat = pat[p](transform(valAdjusted))
+
+    }
+  })
+
+  return pat
+})
+
+/* Oldschool timestretching function 
+@example
+$: s("brk").sf(2)
+*/
+register('sf', (cycles,x) => {
+  const segments = 16;
+  cycles = reify(cycles)
+  return x.scrub(saw.seg(cycles.mul(segments)).slow(cycles))
+})
+
+/* swap one value with another
+@example
+ s("bd bd sd bd".fast(4).swap("bd", "<lt bd:3>").swap("sd", "hh sd:2"))
+ */
+register('swap', (find, rep, x) => {
+  return x.withValue(v => {
+    if (v === find) {
+      return rep
+    }
+    return v
+  })
+})
+
+/*
+@example
+$: s("piano").over(
+  n("<0 3 2 1 5>*8"),
+  n("<-5 -2 -3 -4 0>*2")
+).scale("g:major:pentatonic")
+*/
+Pattern.prototype.over = function(...inp) {
+  return this.set.out(stack(...inp))
+}
+
+window.SCALE = 'e:minor'
+
+window.setScale = (sc) => {
+  window.SCALE = sc
+}
+
+register('sc', (pat) => {
+   return pat.scale(window.SCALE)
+})
+
+register('ifit', (cycles, pat) => {
+  return pat.inside(cycles,fit)
+})
+
+
+//FX
+
+window._comb = register('comb', (inp, pat) => {
+  let [delay, feedback = .6] = [inp].flat()
+  delay = reify(delay).div(100)
+  
+  return pat.FX(K(() => {
+    const d = S(delay);
+    const q = S(feedback);
+    return audioin()
+      .add(x => x.delay(d).mul(q))
+      .add(x => x.delay(2 * d).mul(q * q))
+      .add(x => x.delay(3 * d).mul(q * q * q))
+      .add(x => x.delay(4 * d).mul(q * q * q * q))
+      .out();
+  })).fxr(1)
+});
+
+// SOUNDS
+
+
+registerFunc('noisehat', (seg = 16, modu = tri, speed = 4, min = .05, max = .12) => s('white').seg(seg).dec(modu.fast(4).range(min,max)))
+registerFunc('zap', (amount = .8, speed = .1,note = 'c3', ) => s("sine").penv(reify(amount).mul(120)).note(note).pdec(speed).dec(speed).o(8))
+window.roller = (wt = 0) => s("wt_digi")
+  .wt(wt).wtenv(0).wtdecay(.2).warp(0).warpmode(7).warpenv(.5).warpdec(.1)
+  .dec(.2).lpq(0).dly(.8).room(.7).roomsize(4).diode("1").acidenv(.44)
+
+//THANKS GLOSSING
+window.spinor = (alive = 1, dead = 0) => s("wt_digital").lfo({ dr: 0.05 })
+  .wtrate(alive).unison(3).detune(alive).compressor(-20)
+  .fm(dead).fmh(4)
+  .FX(lpf(200).lpe(4).lpa(0.5).lps(1).K(() => {
+    audioin().sub(x => x.bpf(sine(0.13).mul(S(rand)))).out()
+  }).asym("0.3".mul(dead)), diode(0.7), gain(0.3)).fxr(1)
+
+
+window.roller2 = (acidenv = .5) => {
+  return s("bstab:1:.6,supersaw:1:.6,white:0:.3").detune(rand)
+    .begin("<0 .02>/4").room(.5).acidenv(acidenv).lpq(0).postgain(1.2).diode([2.5,.6])
+  .sustain(.45).dec(.2)
+}
+
+// GLOSSING FUNCTIONS <3 these are pulled from Glossing's repo: 
+// https://codeberg.org/glossing/Strudel_Scripts
+
+
+/* Similar to set.mix but won't write over values that `vals` does not contain.
+  This lets you do things like
+
+  $: s("bd").n(5).room(0.1).rlp(1800).up(`<
+    1 0.5 ~ 0.7:4
+    1 0.5 ~ ~
+    1 0.5 ~ [0.4:4 0.6:4]
+    1 0.5 1:22:sd:1 ~
+  >*8`.as("velocity:n:s:room"))
+
+  to do Elektron-style parameter locks ++ set the rhythm of an element (similar to `struct`)
+  at the same time
+*/
+register(
+  'up',
+  (vals, pat) =>
+    pat
+      .withValue(
+        (v) => (vNew) =>
+          Object.assign(v, Object.fromEntries(Object.entries(vNew).filter(([_, val]) => val !== undefined))),
+      )
+      .appBoth(vals),
+  false,
+);
+
+/* Plays a sound once (when the REPL is updated) but locked to a provided grid/quantize
+
+So doing
+
+s("downlifter").oneshot(4)
+
+will play it, but only at the next 4-divisible cycle (t = 0, 4, 8, etc)
+Useful for locking it into relevant parts of the arrangement
+
+*/
+register('oneshot', (grid, pat) => {
+  const t = getTime();
+  const qt = Math.ceil(t / grid) * grid;
+  return pat.filterWhen((t) => t >= qt && t < qt + 1);
+});
+
+/* Executes a function when a specific control key matches a specific value. For example
+
+$: s("bd hh sd hh").filtval("s", "bd", x => x.duck(2))
+
+To only have the kicks trigger the sidechain
+
+*/
+register('filtval', (key, val, func, pat) => {
+  return pat.when(
+    pat.fmap((v) => v[key] === val),
+    func,
+  );
+});
+
+/* Polyphonic non-legato glide
+
+This also has the nice feature of glide persisting across notes, so if you have a very long glide
+it'll actually slowly drift between those targets rather than starting its glide over on
+every new note
+
+*/
+register(
+  'glide',
+  (time, pat) => {
+    let curr = [],
+      prev = [],
+      lastT = null;
+    const query = (state) => {
+      const trig = !!state.controls._cps; // an actual trigger as opposed to lookahead
+      const haps = pat.query(state);
+      const output = [];
+      haps.map((hap) => {
+        const { value, whole } = hap;
+        const t = Number(whole.begin);
+        if (trig && (lastT == null || lastT !== t)) {
+          prev = curr;
+          curr = [];
+          lastT = t;
+        }
+        const glideHaps = time.query(state.setSpan(hap.wholeOrPart()));
+        glideHaps.map((glideHap) => {
+          const part = hap.part.intersection(glideHap.part);
+          if (!part) return;
+          const context = hap.combineContext(glideHap);
+          const glideT = glideHap.value;
+          const freqF = getFrequencyFromValue(value, value.s === 'sbd' ? 29 : 36); // target
+          const freqI = prev.length
+            ? prev.reduce((closest, v) => {
+                const phase = glideT > 0 ? Math.min((t - v.t) / glideT, 1) : 1;
+                const cand = v.freqI + phase * (v.freqF - v.freqI);
+                if (closest == null) return cand;
+                return Math.abs(cand - freqF) < Math.abs(closest - freqF) ? cand : closest;
+              }, null)
+            : freqF;
+          if (trig) {
+            curr.push({ freqI, freqF, t });
+          }
+          let newVal = value;
+          if (Math.abs(freqF - freqI) > 1e-6) {
+            newVal = {
+              ...value,
+              panchor: 0,
+              psustain: 0,
+              pattack: 0,
+              pdecay: glideT,
+              penv: -12 * Math.log2(freqF / freqI),
+            };
+          }
+          output.push(new Hap(whole, part, newVal, context));
+        });
+      });
+      return output;
+    };
+    return new Pattern(query);
+  },
+  false,
+);
+
+/* Try all(x => x.glitch(rand)) to absolutely destroy your patterns :p <3
+
+Fun to trigger at the end of bars for weird glitchy fills
+
+*/
+register('glitch', (amt, pat) => {
+  return pat.fmap((v) => {
+    const keys = Object.keys(v);
+    const numKeys = keys.length;
+    for (let i = 0; i < numKeys; i++) {
+      const k = keys[i];
+      if (['orbit', 'duckorbit'].includes(k)) continue;
+      const rand = 2 * Math.random() - 1;
+      const val = v[k];
+      const isNumber = typeof val === 'number';
+      if (k === 'note' && !isNumber) {
+        const midi = noteToMidi(val);
+        v[k] = Math.round(Math.max(midi * (1 + amt * 0.5 * Math.random()), 24));
+      } else if (isNumber) {
+        v[k] *= 1 + rand * amt;
+      }
+    }
+    return v;
+  });
+});
+
+/* Square ⬜️. Useful for making knobs / sliders feel smoother
+*/
+register('sq', (pat) => pat.fmap((v) => v * v));
+
+/* Strums chords
+
+$: s("gm_slap_bass_2")
+  .note("a1,c2,e3,g4").clip(0.125).decay(0.2).delay(0.3)
+  .strum(slider(0.0849, 0, 0.1))._pianoroll()
+
+*/
+register('strum', (amt, pat) => {
+  return pat
+    .collect()
+    .withHaps((haps) => {
+      return flatten(
+        haps.map((hap) => {
+          const collected = hap.value;
+          if (collected.length <= 1) {
+            return group;
+          }
+          const l = collected.length - 1;
+          return collected.map((hap, idx) => {
+            const offset = amt * (2 * idx / l - 1);
+            return hap.withSpan((span) => span.withTime((t) => t + offset));
+          });
+        })
+      );
+    });
+});
+
+/* Moves hits off the grid and adds velocity variation
+
+$: s("bd hh sd hh").humanize(slider(0.0328, 0, 1))
+  .bank("tr909")
+  ._pianoroll()
+metronome: s("hh*8").n(9).dec(0.3)
+
+*/
+register('humanize', (amt, pat) => {
+  const amtC = clamp(amt, 0, 1);
+  return pat.withHaps((haps) => {
+    return haps.map((hap) => {
+      const offset = 0.1 * amtC * (2 * Math.random() - 1);
+      return hap.withSpan((span) => span.withTime(t => t + offset));
+    })
+  }).withValue((v) => ({ ...v, velocity: (v.velocity ?? 1) + 0.5 * amtC * (2 * Math.random() - 1) }));
+});
+

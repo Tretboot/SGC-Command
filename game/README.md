@@ -1,180 +1,47 @@
-# 📖 SGC COMMAND – Anleitung
+# 📖 SGC COMMAND – Anleitung (v0.20 Isometric Voxel & ASCII-3D Edition)
 
 ## Starten
 
-`index.html` kann direkt aus dem Ordner `game` im Browser geöffnet werden; ein lokaler Server ist zum Spielen nicht nötig. Der Server ist optional, falls der Browser lokale Dateien oder deren `localStorage` einschränkt.
+`index.html` kann direkt aus dem Ordner `game` im Browser geöffnet werden; ein lokaler Server ist zum Spielen nicht nötig.
 
 ## Was ist das?
 
-Ein taktisches Grid-Kampfspiel im Stargate-Universum. Du leitest das SGC unter Cheyenne Mountain, baust deine Basis aus, forschst, und schickst Teams durch das Gate auf Missionen. Der Kampf ist **rundenbasiert und taktisch** (X-COM-Style) – du steuerst jede Aktion.
+Ein taktisches Sci-Fi-Strategiespiel im Stargate-Universum. Du leitest das SGC unter Cheyenne Mountain, baust deine Basis aus, fertigst Ausrüstung in der Waffenkammer, koordinierst **SG-1 bis SG-5** auf **Hammonds Klemmbrett** und führst deine Agenten durch das Stargate auf isometrische Voxel-Missionen (im Stil von *Syndicate*, *X-COM*, *Jagged Alliance*, *Command & Conquer* und *SimCity*).
 
-> **Im Spiel:** Der Button **❓** oben im Header öffnet diese Anleitung jederzeit. Im Kampf gibt es zusätzlich einen **❓ Hilfe**-Button im unteren Panel.
-
----
-
-## Die zwei Welten
-
-### 🏗 Basis (Cheyenne Mountain)
-Die Basis ist ein **Berg**:
-- **Oben:** Himmel, Parkplatz, Eingangsbau („SGC – Cheyenne Mountain")
-- **Rechts:** Fahrstuhl-Schacht; er fährt nur gelegentlich, wenn ein Mini-NPC mitfährt.
-- **News-Desk:** Tagesmeldungen aus dem SGC mit Status zu Personal und Aufzug.
-- **Mitte:** ein 8-spaltiger Querschnitt durch 28 nummerierte Ebenen mit leeren, pixeligen Räumen, Türen und Verbindungstunneln. Rekrutierte Figuren bewegen sich durch die Korridore.
-- **Oben nach unten:** Level 1 bis 28; Level 28 liegt am tiefsten und enthält den **Gateraum**.
-- Die Ebenenbelegung ist an einer Fan-Rekonstruktion orientiert und keine offizielle oder kanonische SGC-Bauzeichnung.
-
-- Baue Räume (Labor, Werkstatt, MedBay, Kaserne, …): rechts Raum-Typ wählen → freies Feld anklicken
-- Weise Staff zu (Roster-Tab → Dropdown)
-- **Power-Budget:** Generatoren (+10) müssen alle Consumer versorgen, sonst geht alles offline
-- **Produktion:** Lab → Research-Points, Werkstatt → Erz, MedBay → Heilung
-
-### 🗺 Sternenkarte
-- Ein überspringbares Stargate-Intro öffnet ein neues Spiel; anschließend führt Hammonds Einsatzbesprechung nach **Chulak**.
-- Das Intro kann im Pausemenü unter **„Intro erneut ansehen“** wiederholt werden.
-- Vor wichtigen Story-Missionen gibt es ein Briefing mit Auftrag und Teamstimmen; im Kampf werden kurze Dialoge an Ankunft und erstem Feindkontakt eingeblendet.
-- Kampagnenmissionen werden der Reihe nach freigeschaltet.
-- Wähle dein Team (max. 6; SG-1 ist in der Pilotmission vorausgewählt)
-- **„Mission starten"** → Story-Briefing (falls vorhanden) → Gateroom-Animation (mit Whoosh) → Kampf
-
-### ⚔ Kampf (Top-Down Grid)
-- **Große Einsatzkarten (64×48 Tiles)**; die Karte füllt das Browserfenster oberhalb der Aktionsleiste. Die Minimap zeigt die ganze Welt und verschiebt die Kamera bei Klick; alternativ gehen Pfeiltasten, WASD oder Ziehen auf der Karte.
-- Jede Einsatzkarte erhält eine eigene Kulisse und Terrain-Art: Chulaks bewachsene Außenbereiche, Abydos-Sandstein und Wüste, bewohnte Stadtblöcke, SGC-Technik sowie dunkle Goa'uld-Ha'tak- und helle Asgard-Schiffskorridore.
-- **Natur und Siedlungen:** Wälder, Flussläufe mit Brücken, Wege und kleine Dörfer machen die Außenbereiche lesbarer und abwechslungsreicher.
-- **Friedlicher Erstkontakt:** Die Dorfmission auf Abydos und die Kolonie-Mission auf Serenno laufen ohne Feinde. Nähere dich der gold markierten Kontaktperson und schließe den Dialog ab.
-- **2 AP pro Einheit pro Runde**
-- **Klicke auf eine Einheit** → Bewegungsbereich (blau) + **Angriffsziele (rot ✛) erscheinen sofort**
-- **Klicke auf ein blaues Feld** → bewegen (1 AP)
-- **Chulak-Tutorial:** Jack wird nach dem ersten Bewegungsschritt zum Schießen freigegeben; danach erscheinen seine Angriffsziele wie gewohnt.
-- **Klicke auf einen roten Gegner (✛)** → **schießen** (1 AP)
-- **Klicke auf benachbarten Gegner** → Melee (Chakram etc., 1 AP)
-- **⏸ Warten** → Rest-AP an nächste Einheit
-- **Deckung:** Leichte Deckung reduziert gegnerische Trefferchance von vorn um 20 Prozentpunkte, schwere Deckung um 40; Flankenangriffe umgehen den Schutz und geben +15 Prozentpunkte Trefferchance. Eigene Deckung verbessert das Zielen leicht.
-- **Zerstörbare Deckung:** Gelb markierte Kisten und Trümmer können beschossen und entfernt werden; Wandsegmente blockieren Sicht und Bewegung.
-- **Einbahn-Gate:** Keine Runden-Uhr; extrahiere am Gate oder gewinne den Kampf.
+> **Highlight (Dual-Engine):** Du kannst jederzeit live im Menü (`ESC`), über den Header-Button **🖥 PIXEL / ⌨ ASCII** oder mit der Taste **`V`** zwischen **Isometrischer Pixel-Voxel-Grafik** und **3D-ASCII-Grafik** (`asciiid` / `asciicker` Style) umschalten – **beide Modi sind zu 100 % spielbar!**
 
 ---
 
-## Die Jagged-Alliance-UI (unten im Kampf)
-
-| Bereich | Inhalt |
-|---|---|
-| **Links** | Portrait, Name, Klasse, HP-Bar, AP (●●), Waffe, Melee |
-| **Mitte** | Aktions-Buttons (⏸ Warten, 🔄 Neu wählen, ❓ Hilfe, ▶ Weiter) |
-| **Rechts** | Gate-Bereitschaft und letzter Kampf-Log (4 Zeilen) |
-
-**Hover** über eine Einheit → Info-Tooltip (Name, HP, Waffe, Reichweite).
-
-**FX:** Schadenszahlen fliegen hoch, Treffer-Flash, Mündungsfeuer, Tracer-Linien, Screen-Shake bei starkem Schaden, Death-Partikel.
-
----
-
-## Sound
-
-Alles **prozedural** (Web-Audio, keine Dateien):
-- 🔫 Schuss (Rifle/Shotgun), ⚔ Melee, 💥 Treffer/Verfehlen, 💀 Tod
-- 🌀 Gate-Whoosh bei Mission-Start
-- 🏗 Bau-Klick, 🎵 Sieg-/Niederlage-Fanfare
-- **🔊/🔇** Button oben im Header schaltet Sound an/aus
-
----
-
-## Die Regeln
-
-### AP-System
-| Aktion | Kosten |
-|---|---|
-| 1 Tile bewegen (8-Wege) | 1 AP |
-| Schießen | 1 AP |
-| Melee (Chakram, etc.) | 1 AP |
-| Warten | 0 AP |
-
-### Trefferchance
-- Base: 70% (gleiche Reihe/Spalte), 50% (Diagonale)
-- Ziel in leichter Deckung und zum Angreifer blickend: −20 Prozentpunkte
-- Ziel in schwerer Deckung und zum Angreifer blickend: −40 Prozentpunkte
-- Angriff von hinter dem Ziel: +15 Prozentpunkte; Deckung bringt dem Schützen zusätzlich einen kleinen Zielbonus
-- Treffer auf zerstörbare Deckungsfelder reduzieren ihre Strukturpunkte; bei null verschwinden sie
-
-### Tod
-- **Rekruten:** sterben permanent. Gedenktafel in der Basis.
-- **SG-1:** Duplikat-Klausel. Können downen, aber nicht sterben.
-- **Pilotmission:** Teal’c wird erst nach einem Sieg auf Chulak rekrutiert. Eine Extraktion rettet SG-1, lässt den Auftrag aber offen.
-
-### Einbahn-Gate
-- Es gibt keinen Runden-Countdown. Eine Mission endet mit dem Sieg oder durch Extraktion.
-- Für die Extraktion muss das gesamte Team zum Gate zurückkehren; sie bringt 50% Beute (mit G1: 60%).
-- In der Pilotmission auf Chulak reicht eine Extraktion nicht: Teal’c schließt sich SG-1 erst nach dem Sieg an.
-
----
-
-## Die 5 Kapitel
-
-| Akt | Titel | Neuer Feind | Missionen |
-|---|---|---|---|
-| 1 | Erste Schritte | Jaffa | 5 |
-| 2 | Das Netz wächst | Veteran, Elite, Goa'uld | 6 |
-| 3 | Bedrohungen | System Lords | 5 |
-| 4 | Replikatoren | Replikatoren + Königin | 5 |
-| 5 | Das Ende | 3 Lords, Ancient Drones | 6 |
-
----
-
-## Tips & Tricks
-
-1. **Carter immer mitnehmen** – Gate-Genius erhöht Extraktionsbeute um 10%
-2. **Teal'c gegen Jaffa** – +8 Schaden (Chakram)
-3. **Deckung nutzen** – Kisten sind besser als Mauern (du kannst sie betreten)
-4. **Medic im Team** – −15% Schaden erlitten
-5. **Nicht alle 6 schicken** – 4 SG-1 + 2 Rekruten ist oft genug
-6. **Power-Budget im Auge behalten** – 1 Generator = 10 Power
-7. **Sandwich (Hammond)** – 1× pro Kapitel, +20 Morale für alle
-
----
-
-## Steuerung
+## Steuerung & Hotkeys
 
 | Input | Aktion |
 |---|---|
-| Klick auf eigene Einheit | Auswählen (blauer Bewegungsbereich + rote Angriffsziele) |
-| Klick auf blaues Feld | Bewegen (1 AP) |
-| Klick auf roten Gegner (✛) | **Schießen** (1 AP) |
-| Klick auf benachbarten Gegner | Melee-Angriff (1 AP) |
-| ⏸ Warten (Panel) | Rest-AP an nächste Einheit |
-| ❓ (Header/Panel) | Anleitung öffnen |
-| 🔊 (Header) | Sound an/aus |
-| Pfeiltasten / WASD oder Karte ziehen | Einsatzkarte verschieben |
-| Minimap anklicken | Ansicht auf die gewählte Kartenposition verschieben |
-| Goldene Kontaktperson anklicken | Friedlichen Erstkontakt beginnen |
-| Klick auf Gate (Gateroom) | Animation überspringen |
+| **`V`** oder **🖥 PIXEL / ⌨ ASCII** | Live zwischen **Isometrisch Voxel (Pixel-Art)** und **3D-ASCII (`asciiid`)** umschalten |
+| **`Q` / `E`** oder **↶ Q / ↷ E** | Isometrische Kamera im Kampf um 90° drehen (4 Blickwinkel) |
+| **Klick auf eigene Einheit** | Auswählen (blaue Bewegungs-Rauten + rote Angriffsziele) |
+| **Klick auf blaues Feld** | Bewegen (1 AP, mit Laufanimation) |
+| **Klick auf roten Gegner (✛)** | **Schießen** (1 AP) |
+| **💊 / 🛡 / 💨 / ⚡ Button** | Ausgerüstetes Spezial-Item einsetzen (Medkit, Schild, Rauch, EMP) |
+| **🧱 / 🗼 / ⚡ / 🏢 Feld-Bau** | Offworld-Struktur (Barrikade, Geschützturm, Naquadah-Generator, Bunker) nahe Team/Gate errichten |
+| **📋 (Header / Level 27)** | **Hammonds Büro & Klemmbrett** öffnen (Personal, SG-Teams & Kommandanten-Wechsel) |
+| **🎵 (Header / Menü)** | **Strudel Core Sound-Engine & Live-Coding-Konsole** öffnen |
+| **Pfeiltasten / WASD / Ziehen** | Einsatzkarte verschieben |
+| **ESC** | Pause-Menü (Grafik-Engine, Kommandant, Schwierigkeit, Strudel-Sound) |
 
 ---
 
-## Technische Infos
+## Die Features im Überblick
 
-- **Dateien:** `index.html`, `style.css`, `sound.js`, `art.js`, `art2.js`, `engine.js`, `combat.js`, `base.js`, `ui.js`, `cinematic.js`, `../content/scenes.js`
-- **Kein Build-Step** – einfach `index.html` im Browser öffnen
-- **Save:** `localStorage` (auto nach jedem Tag)
-- **Sound:** Web-Audio-API, prozedural, kein Download nötig
-- **Grafik:** 100% prozedural (Canvas-API). `art.js` = Basis, `art2.js` = Artist-Erweiterung (Rekruten, Feinde, Waffen, Icons, Terrain, Akten)
-- **Alt-Spielstände:** Vorhandene 8×10-Basen werden beim Laden in das 8×28-Levelraster übertragen; Raum-IDs und Personalzuweisungen bleiben erhalten.
-- **Kampf-Terrain:** 64×48-Weltkarten werden zellweise aus `drawTile()` gerendert; die Kameragröße passt sich der verfügbaren Fensterfläche oberhalb der Aktionsleiste an. Die Minimap zeigt Terrain, Einheiten und Sichtfenster. Pro Karte gibt es genau ein Gate-Feld. `hatak` und `asgard` besitzen eigene Raumaufteilungen und Tilesets.
-- **Keine Bilddateien, kein drawImage in art2.js** – nur `fillRect` (hartkantig, pixel-art)
+### 1. 🏗 Basis (Cheyenne Mountain) & Einsehbare Räume
+- **28 Ebenen:** Querschnitt durch Cheyenne Mountain mit animiertem Aufzug und Personal.
+- **Einsehbare Raum-Innenansicht:** Klicke auf einen gebauten Raum (Kantine, Labor, MedBay, Waffenkammer, Gateraum), um rechts oben live in den Raum hineinzuschauen (inkl. blauem Wackelpudding in der Kantine!) – funktioniert sowohl in Pixel-Art als auch im ASCII-Terminal-Modus.
+- **🔧 Arsenal & Werkbank:** Fertige Sturmgewehre, Shotguns, Zat'nik'tel, Stabwaffen, Komposit-/Naquadah-Rüstungen sowie Medkits, Schilde, Rauchgranaten und EMP-Impulse.
+- **📋 Hammonds Büro & Klemmbrett:** Verwalte alle Rekruten tabellarisch auf einen Blick und wechsle bei Bedarf den SGC-Kommandanten (**Gen. George Hammond**, **Dr. Elizabeth Weir**, **Gen. Hank Landry**).
 
-## Art-Toolchain (für Entwickler)
+### 2. ⚔ Isometrischer Voxel-Kampf & Offworld-Basenbau
+- **2:1 Pixel-Voxel & 3D-ASCII:** Höhenstufen für Klippen, Flüsse, Brücken, Tempel und mehrstöckige Hochhäuser (`city`).
+- **Offworld-Basenbau (C&C / SimCity Style):** Baue im Feld Sandsack-Barrikaden, automatisch feuernde Geschütztürme (`8–12` Schaden am Rundenende) und heilende Naquadah-Generatoren (`+4 HP` im Radius 3).
 
-- **`ART-TOOLCHAIN.md`** – wie man neue Assets generiert, testet, integriert
-- **`incoming/preview.html`** – visueller Kontaktbogen (im Browser öffnen)
-- **`incoming/rastertest.js`** – Headless-Test (Mock-Canvas, Grenzen, Determinismus)
-- **`test-browser.js`** – Browser-Gate-Test (muss nach jedem Durchgang grün sein)
-- **`HANDOFF.md`** – Übergabe-Dokument für Folge-Teams/Agenten
-
-## Planungs-Dokumente
-
-- **`ROADMAP.md`** – Prioritäten + Spezifikationen (4 Phasen, Zeitplan)
-- **`QUEST-ENGINE-SPEC.md`** – Quest-Engine-Architektur (Schema, Trigger, Abnahme)
-- **`content/`** – Lore & Quest-Texte (quests.js, intros.js, lore.md)
-- **`wiki/`** – 17 verlinkte HTML-Seiten (inkl. quests.html, art-toolchain.html)
-
----
-
-*„Der Kaffee ist noch schlecht." – Hammond*
+### 3. 🎵 Strudel Core Sound-Engine
+- Integrierter **Strudel-DSL Pattern-Compiler & WebAudio-Synthesizer** (`game/sound.js` + `game/vendor/strudel-web.js` nach <https://urswilke.github.io/strudel/learn/getting-started/>).
+- 6 dynamische Soundtracks (`base`, `map`, `gate`, `combat`, `peaceful`, `boss`), die im Spiel über den **🎵**-Button im Live-Code-Editor angepasst und sofort evaluiert werden können.

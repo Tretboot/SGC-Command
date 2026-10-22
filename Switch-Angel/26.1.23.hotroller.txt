@@ -1,0 +1,23 @@
+setCpm(140/4)
+setScale("e:minor")
+
+$KICK: s("bd:1!4").duck("3:4").duckattack(.16).almostNever(ply(
+  "2 | 4"
+)).gain(1).rlpf(.7)
+._scope()
+
+$BASS: n("-14".add(0)).sc().s("supersaw,wt_digital:2")
+  .acidenv(perlin.fast(8).rib("<3 3 3 6>",1).mul(slider(1)))
+  .lpd(.1).seg(16)
+  .dec(.2).clip(.9).detune(.6).diode(1).room(.4)
+  .fm(1.2).fmh(2.04)
+  .roomsize(3).lpq(0)
+  .wt(.3).dly(0)
+  .o(3)
+._scope()
+
+$HAT: s("oh:2").struct("<- 1>*8").dly(.5).gain(.6)
+
+$NOISE: s("white!4").att(.4).gain(.3).o(4)
+
+all(x => x.mul(postgain(1)))

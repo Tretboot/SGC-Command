@@ -105,8 +105,10 @@ function expandBattleMap(rows,mapName){
    if(ridge>.88&&n>.44)t=n>.81?2:1;
    else if(n>.986)t=6;
   }else if(theme==='city'){
+   const isRoad=(x%8===0||y%7===0);
    const nearBlock=(x%8>=1&&x%8<=3&&y%7>=1&&y%7<=4);
-   if(nearBlock&&n>.35)t=n>.81?3:2;
+   if(isRoad)t=10;
+   else if(nearBlock&&n>.35)t=n>.81?3:2;
    else if(n>.985)t=6;
   }else if(theme==='hatak'){
    if(n>.90)t=n>.975?2:1;
@@ -139,7 +141,7 @@ function drawCombatMinimap(){
  if(!cv||!C.active||!C.map.length)return;
  const c=cv.getContext('2d'),w=cv.width,h=cv.height,tw=w/GW,th=h/GH;
  c.clearRect(0,0,w,h);c.fillStyle='#101822';c.fillRect(0,0,w,h);
- const colors={0:'#536b3c',1:'#315831',2:'#193820',3:'#7c6951',4:'#236a91',5:'#4fc3f7',6:'#9b7350',7:'#276e92',8:'#b89661',9:'#c8b078',10:'#9a8457'};
+ const colors={0:'#536b3c',1:'#315831',2:'#193820',3:'#7c6951',4:'#236a91',5:'#4fc3f7',6:'#9b7350',7:'#276e92',8:'#b89661',9:'#c8b078',10:'#9a8457',11:'#4fc3f7',12:'#e8b040',13:'#7be1e8',14:'#a78bfa'};
  for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){
   const type=C.map[idx(x,y)].t;
   c.fillStyle=colors[type]||'#536b3c';c.fillRect(x*tw,y*th,Math.ceil(tw),Math.ceil(th));
@@ -160,14 +162,62 @@ function panCombatToMinimap(e){
  panCombatCamera(Math.round(x-VIEW_W/2),Math.round(y-VIEW_H/2));
 }
 
-// ---------- FX-System ----------
+// ---------- FX & Haptik-System ----------
+function triggerHapticFeedback(intensity=0.4,durationMs=120){
+  if(typeof navigator==='undefined'||!navigator.getGamepads)return;
+  if(typeof S!=='undefined'&&S&&S.controllerVibration===false)return;
+  try{
+    const gamepads=navigator.getGamepads();
+    if(!gamepads)return;
+    for(let i=0;i<gamepads.length;i++){
+      const gp=gamepads[i];
+      if(gp&&gp.vibrationActuator&&typeof gp.vibrationActuator.playEffect==='function'){
+        gp.vibrationActuator.playEffect('dual-rumble',{
+          startDelay:0,
+          duration:Math.max(30,Math.min(1000,durationMs)),
+          weakMagnitude:Math.max(0,Math.min(1.0,intensity*0.7)),
+          strongMagnitude:Math.max(0,Math.min(1.0,intensity))
+        }).catch(()=>{});
+      }
+    }
+  }catch(e){}
+}
+if(typeof window!=='undefined')window.triggerHapticFeedback=triggerHapticFeedback;
+
 function addFx(fx){fx.t0=performance.now();C.fx.push(fx);if(C.fx.length>80)C.fx.shift();}
-function spawnDamage(x,y,val,color){addFx({type:'dmg',x,y,val,color:color||'#fff'});}
+function spawnDamage(x,y,val,color){
+  addFx({type:'dmg',x,y,val,color:color||'#fff'});
+  triggerHapticFeedback(Math.min(1.0,0.25+(val||10)*0.02),120);
+  if(typeof ISO!=='undefined')ISO.beatPulse=Math.max(ISO.beatPulse||0,0.7);
+}
 function spawnFlash(x,y,color){addFx({type:'flash',x,y,color:color||'#fff'});}
 function spawnMuzzle(x,y){addFx({type:'muzzle',x,y});}
 function spawnTrace(x0,y0,x1,y1){addFx({type:'trace',x0,y0,x1,y1});}
-function spawnDeath(x,y){addFx({type:'death',x,y});}
+function spawnDeath(x,y){addFx({type:'death',x,y});triggerHapticFeedback(0.7,240);}
 function updateFx(){const now=performance.now();C.fx=C.fx.filter(f=>now-f.t0<700);C.shake=Math.max(0,C.shake*0.82-0.15);}
+
+function centerCombatCameraOn(tx,ty){
+  C.cameraX=Math.max(0,Math.min(GW-VIEW_W,Math.round(tx-VIEW_W/2)));
+  C.cameraY=Math.max(0,Math.min(GH-VIEW_H,Math.round(ty-VIEW_H/2)));
+}
+
+function cycleSGMember(dir=1){
+  if(!C.active||C.result)return;
+  const playerUnits=Object.values(C.units).filter(u=>u.side==='player'&&!u.dead);
+  if(!playerUnits.length)return;
+  let idx=playerUnits.indexOf(C.selected);
+  if(idx===-1)idx=0;
+  else idx=(idx+dir+playerUnits.length)%playerUnits.length;
+  const next=playerUnits[idx];
+  playerSelect(next);
+  centerCombatCameraOn(next.x,next.y);
+  sfx('select');
+  if(typeof renderCombatUI==='function')renderCombatUI();
+}
+if(typeof window!=='undefined'){
+  window.cycleSGMember=cycleSGMember;
+  window.centerCombatCameraOn=centerCombatCameraOn;
+}
 
 function startCombat(mission,teamIds){
   C.active=true;C.mission=mission;C.teamIds=teamIds;
@@ -178,11 +228,15 @@ function startCombat(mission,teamIds){
   // Anzahl skalieren mit D * chapterScale; Spieler-Schaden mit D.
   // KEIN Gate-Timer mehr: Runden laufen, bis Sieg oder Rückkehr zum Gate.
   const D=diff(),chapterScale=1+S.chapter*0.05;
-  C.result=null;C.log=[];C.selected=null;C.moveRange=[];C.atkRange=[];C.coverRange=[];C.nextId=1;C.units={};C.hover=null;C.fx=[];C.shake=0;C.cameraX=0;C.cameraY=0;C.mapVersion++;C.contactComplete=false;
+  C.result=null;C.log=[];C.selected=null;C.moveRange=[];C.atkRange=[];C.coverRange=[];C.nextId=1;C.units={};C.hover=null;C.fx=[];C.shake=0;C.cameraX=0;C.cameraY=0;C.mapVersion++;C.contactComplete=false;C.buildType=null;
   C.tutorial=mission.tutorial?{step:0}:null;
   C.dialogueActive=false;C.sceneFlags={};
   C.firstHint=!mission.tutorial&&!mission.peaceful;
   C.firstJaffa=false;
+  if(typeof SFX!=='undefined'&&SFX.syncContext){
+    const isBoss=mission.enemies&&(mission.enemies.goauld||mission.enemies.queen);
+    SFX.syncContext(mission.peaceful?'peaceful':isBoss?'boss':'combat');
+  }
   // Erster Jaffa-Kontakt: einmaliger narrativer Beat – der erste Jaffa ist "etwas Besonderes".
   const hasJaffa=mission.enemies&&['jaffa','veteran','elite'].some(t=>mission.enemies[t]>0);
   if(hasJaffa&&!S.jaffaSeen){
@@ -216,10 +270,13 @@ function startCombat(mission,teamIds){
     const pos=spawnTiles.find(t=>!usedSpawn.has(idx(t.x,t.y)))||{x:gatePos.x,y:gatePos.y};
     usedSpawn.add(idx(pos.x,pos.y));
     const uid=C.nextId++;
+    const arm=typeof ARMORS!=='undefined'&&m.armor&&ARMORS[m.armor];
+    const effMove=Math.max(2,m.move-(arm?arm.movePenalty:0));
     C.units[uid]={id:uid,side:'player',name:m.name,cls:m.cls,
       x:pos.x,y:pos.y,
-      hp:m.hp,maxHp:m.maxHp,move:m.move,ap:2,
-      weapon:m.weapon,melee:m.melee,sg1:m.sg1,
+      hp:m.hp,maxHp:m.maxHp,move:effMove,ap:2,
+      weapon:m.weapon,melee:m.melee,armor:m.armor||null,special:m.special||null,
+      shieldTurns:0,smokeTurns:0,sg1:m.sg1,
       downed:false,dead:false,charId:m.id,specialUsed:false,facing:{x:0,y:1}};
   });
   if(mission.peaceful&&mission.contact){
@@ -267,7 +324,7 @@ function startCombat(mission,teamIds){
 function inB(x,y){return x>=0&&y>=0&&x<GW&&y<GH;}
 function idx(x,y){return y*GW+x;}
 function isWalkable(x,y){if(!inB(x,y))return false;const t=C.map[idx(x,y)].t;return t===0||t===1||t===2||t===6||t===9||t===10;}
-function blocksLOS(x,y){if(!inB(x,y))return true;const t=C.map[idx(x,y)].t;return t===3||t===4||t===5||t===8;}
+function blocksLOS(x,y){if(!inB(x,y))return true;const t=C.map[idx(x,y)].t;return t===3||t===4||t===5||t===8||t===13;}
 function coverRating(unit){
  if(!unit||!inB(unit.x,unit.y))return 0;
  const t=C.map[idx(unit.x,unit.y)].t;
@@ -351,29 +408,38 @@ function attackTargets(unit){
   return targets;
 }
 function doAttack(attacker,target){
-  const w=WEAPONS[attacker.weapon];
+  const w=WEAPONS[attacker.weapon]||WEAPONS.rifle;
   attacker.facing=facingToward(attacker,target);
   let hit=w.hit;
   if(attacker.x!==target.x&&attacker.y!==target.y)hit-=20;
   const cover=coverRating(target),coverAngle=coverFacing(target,attacker);
   if(cover&&coverAngle>=0.5)hit-=cover===2?40:20;
   else if(cover&&coverAngle<=-0.5)hit+=15;
+  if(target.smokeTurns>0)hit-=25;
   if(w.ignoreCover)hit+=25;
   const attackerCover=coverRating(attacker);
   if(attackerCover)hit+=attackerCover===2?12:7;
   hit=clamp(hit,10,95);
   spawnTrace(attacker.x,attacker.y,target.x,target.y);
   spawnMuzzle(attacker.x,attacker.y);
-  if(w.name==='Shotgun')sfx('shotgun');else sfx('shoot');
-      if(Math.random()*100<hit){
+  if(attacker.weapon==='shotgun')sfx('shotgun');
+  else if(attacker.weapon==='zat')sfx('zat');
+  else if(attacker.weapon==='staff'||attacker.weapon==='staffLong')sfx('staff');
+  else sfx('shoot');
+  if(Math.random()*100<hit){
     let dmg=rnd(w.min,w.max);
     if(attacker.name==="Teal'c"&&target.type&&target.type.startsWith('jaffa')&&dist(attacker.x,attacker.y,target.x,target.y)<=1&&attacker.melee==='chakram')dmg+=8;
+    if(attacker.weapon==='zat'&&target.type&&['goauld','repl','drone','queen'].includes(target.type))dmg=Math.round(dmg*1.25);
     if(attacker.side==='player'){
       if(has('W2')&&target.type&&['goauld','repl','drone','queen'].includes(target.type))dmg=Math.round(dmg*1.2);
       if(has('W3'))dmg=Math.round(dmg*1.1);
+      if(S.commander==='landry')dmg=Math.round(dmg*1.1);
       dmg=Math.round(dmg*diff().playerDmg); // Schwierigkeit: Spieler-Schaden
     }
     if(attacker.side==='enemy')dmg=Math.round(dmg*diff().enemyDmg); // Schwierigkeit: Gegner-Schaden
+    const arm=target.armor&&typeof ARMORS!=='undefined'&&ARMORS[target.armor];
+    if(arm)dmg=Math.max(1,Math.round(dmg*(1-arm.reduction)));
+    if(target.shieldTurns>0)dmg=Math.max(1,Math.round(dmg*0.5));
     target.hp-=dmg;
     spawnDamage(target.x,target.y,dmg,'#ffd23a');
     spawnFlash(target.x,target.y,'#ff5555');
@@ -383,6 +449,42 @@ function doAttack(attacker,target){
     if(target.hp<=0){target.hp=0;killUnit(target);}
     return true;
   } else {clog(`${attacker.name} verfehlt ${target.name}.`);sfx('miss');return false;}
+}
+function useSpecial(unit){
+  if(!unit||unit.side!=='player'||unit.specialUsed||!unit.special||unit.ap<1)return false;
+  unit.specialUsed=true;unit.ap--;C.firstHint=false;
+  sfx('special');
+  if(unit.special==='medkit'){
+    unit.hp=Math.min(unit.maxHp,unit.hp+15);
+    spawnFlash(unit.x,unit.y,'#4ade80');
+    clog(`✚ ${unit.name} nutzt Medkit (+15 HP).`);
+  }else if(unit.special==='shield'){
+    unit.shieldTurns=2;
+    spawnFlash(unit.x,unit.y,'#4fc3f7');
+    clog(`🛡 ${unit.name} aktiviert Persönlichen Schild (2 Runden).`);
+  }else if(unit.special==='smoke'){
+    unit.smokeTurns=2;
+    spawnFlash(unit.x,unit.y,'#94a3b8');
+    clog(`💨 ${unit.name} wirft Rauchgranate (+25% Ausweichen).`);
+  }else if(unit.special==='emp'){
+    const enemies=Object.values(C.units).filter(e=>e.side==='enemy'&&!e.dead&&dist(unit.x,unit.y,e.x,e.y)<=5);
+    enemies.sort((a,b)=>dist(unit.x,unit.y,a.x,a.y)-dist(unit.x,unit.y,b.x,b.y));
+    if(enemies[0]){
+      const t=enemies[0];
+      t.ap=Math.max(0,(t.ap||2)-1);
+      t.hp=Math.max(0,t.hp-8);
+      spawnTrace(unit.x,unit.y,t.x,t.y);
+      spawnDamage(t.x,t.y,8,'#4fc3f7');
+      clog(`⚡ ${unit.name} EMP → ${t.name}: 8 Schaden & −1 AP.`);
+      if(t.hp<=0)killUnit(t);
+    }else{
+      clog(`⚡ ${unit.name} zündet EMP-Impuls (kein Ziel in R.5).`);
+    }
+  }
+  if(unit.ap>0){C.selected=unit;C.moveRange=moveRange(unit);C.atkRange=attackTargets(unit);C.coverRange=coverTargets(unit);}
+  else{C.selected=null;C.moveRange=[];C.atkRange=[];C.coverRange=[];nextUnit();}
+  checkEnd();
+  return {ok:true,msg:`${SPECIALS[unit.special]?SPECIALS[unit.special].name:'Spezial-Item'} eingesetzt!`};
 }
 function playerAttackTerrain(unit,x,y){
  if(unit.ap<1||!inB(x,y)||!coverTargets(unit).some(tile=>tile.x===x&&tile.y===y))return false;
@@ -462,6 +564,7 @@ function playerMove(unit,x,y){
   if(d>unit.move||!isWalkable(x,y)||unitAt(x,y))return;
   if(C.tutorial&&C.tutorial.step<=1&&unit.charId===0)C.tutorial.step=2;
   unit.facing=facingToward(unit,{x,y});
+  unit._animFrom={x:unit.x,y:unit.y};unit._animT0=performance.now();
   unit.x=x;unit.y=y;unit.ap--;C.firstHint=false;
   if(unit.ap>0){C.selected=unit;C.moveRange=moveRange(unit);C.atkRange=attackTargets(unit);C.coverRange=coverTargets(unit);}
   else{C.selected=null;C.moveRange=[];C.atkRange=[];C.coverRange=[];nextUnit();}
@@ -507,7 +610,7 @@ function enemyAct(u){
     else if(d<=1&&u.melee){u.facing=facingToward(u,target);doMelee(u,target);ap--;}
     else{
       const step=bestStep(u,target);
-      if(step){u.facing=facingToward(u,step);u.x=step.x;u.y=step.y;ap--;}
+      if(step){u.facing=facingToward(u,step);u._animFrom={x:u.x,y:u.y};u._animT0=performance.now();u.x=step.x;u.y=step.y;ap--;}
       else break;
     }
   }
@@ -554,8 +657,17 @@ function pathStep(unit,target){
 }
 function endRound(){
   if(C.result)return;
+  if(typeof tickOffworldStructures==='function')tickOffworldStructures();
+  checkEnd();
+  if(C.result)return;
   C.round++;
-  Object.values(C.units).forEach(u=>{if(!u.dead&&!u.downed)u.ap=2;});
+  Object.values(C.units).forEach(u=>{
+    if(!u.dead&&!u.downed){
+      u.ap=2;
+      if(u.shieldTurns>0)u.shieldTurns--;
+      if(u.smokeTurns>0)u.smokeTurns--;
+    }
+  });
   checkEnd();
   if(!C.result){C.phase='player';nextUnit();}
 }
@@ -589,14 +701,16 @@ function applyCombatResult(){
   // Backfill für alte Saves (v4 ohne jaffaSeen/jaffaKills)
   if(S.jaffaSeen===undefined)S.jaffaSeen=false;
   if(S.jaffaKills===undefined)S.jaffaKills=0;
+  if(!S.inventory&&typeof defaultInventory==='function')S.inventory=defaultInventory();
   const m=C.mission,result=C.result;
   const teamUnits=Object.values(C.units).filter(u=>u.side==='player');
   teamUnits.forEach(u=>{
     const m=S.roster[u.charId];if(!m)return;
-    if(u.dead){
+    if(u.dead||u.downed){
       if(m.sg1){note(`⚠ ${m.name} down. Duplikat-Klausel greift.`);m.hp=Math.max(10,m.hp-30);m.injuries+=2;}
-      else{m.dead=true;S.memorial.push(m.name);note(`💀 ${m.name} ist gefallen. Gedenktafel angebracht.`);
+      else if(u.dead){m.dead=true;S.memorial.push(m.name);note(`💀 ${m.name} ist gefallen. Gedenktafel angebracht.`);
         S.roster.forEach(x=>{if(x.recruited&&!x.dead)x.morale=Math.max(0,x.morale-10);});}
+      else{m.hp=Math.max(15,Math.round(m.maxHp*0.35));m.injuries=(m.injuries||0)+1;note(`🩹 ${m.name} schwer verwundet (MedBay empfohlen).`);}
     } else {m.hp=u.hp;m.fatigue=Math.min(100,m.fatigue+20);m.morale=Math.max(0,m.morale-5);}
   });
   failQuests();
@@ -606,12 +720,30 @@ function applyCombatResult(){
       note('⚠ Teal’c bleibt auf Chulak. SG-1 muss den Einsatz erfolgreich abschließen.');
     } else {
       const full=result==='victory';
-      const lootPct=full?1:(0.5+(has('G1')?0.1:0));
+      let lootPct=full?1:(0.5+(has('G1')?0.1:0));
+      if(m.peaceful&&S.commander==='weir')lootPct*=1.15;
       S.done.push(m.id);
       advanceQuests(m.id);
       for(const k in m.reward)S.res[k]=(S.res[k]||0)+Math.round(m.reward[k]*lootPct);
       note(full?`✔ ${m.name}: ${m.text}`:`🌀 ${m.name}: Extraktion (${Math.round(lootPct*100)}% Beute).`);
       teamUnits.forEach(u=>{const m=S.roster[u.charId];if(m&&!m.dead)m.xp+=Math.round((20+S.chapter*5)*(full?1:0.5));});
+      // Beute-Drops fürs Inventar (INVENTAR-SPEC.md §9)
+      const defeated=Object.values(C.units).filter(u=>u.side==='enemy'&&u.dead).length;
+      if(defeated>0&&S.inventory){
+        const dropRoll=Math.random();
+        if(dropRoll<0.45){
+          S.inventory.special.medkit=(S.inventory.special.medkit||0)+1;
+          note('🎁 Beute-Fund: +1 Medkit (Inventar)');
+        }else if(dropRoll<0.75){
+          const aKey=defeated>=4?'medium':'light';
+          S.inventory.armor[aKey]=(S.inventory.armor[aKey]||0)+1;
+          note(`🎁 Beute-Fund: +1 ${ARMORS[aKey].name} (Inventar)`);
+        }else{
+          const wKey=S.chapter>=1?'zat':'rifle';
+          S.inventory.weapons[wKey]=(S.inventory.weapons[wKey]||0)+1;
+          note(`🎁 Beute-Fund: +1 ${WEAPONS[wKey].name} (Inventar)`);
+        }
+      }
       if(m.recruit!==undefined&&!S.roster[m.recruit].recruited){
         S.roster[m.recruit].recruited=true;
         note(m.recruit===3&&m.id==='1-1'?'🤝 Teal’c widersetzt sich Apophis und schließt sich SG-1 an.':`＋ Neuer Rekrut: ${S.roster[m.recruit].name}`);
@@ -667,6 +799,12 @@ function drawCivilian(c,x,y){
 // ---------- Rendering ----------
 function renderCombat(cv){
   const c=cv.getContext('2d'),W=cv.width,H=cv.height;
+  const gfxMode=typeof getGfxMode==='function'?getGfxMode():'pixel';
+  if(gfxMode==='ascii'&&typeof renderCombatIsoAscii==='function'){
+    renderCombatIsoAscii(cv);
+  }else if(gfxMode==='pixel'&&typeof renderCombatIsoPixel==='function'){
+    renderCombatIsoPixel(cv);
+  }else{
   c.clearRect(0,0,W,H);
   updateFx();
   c.save();
@@ -816,6 +954,7 @@ function renderCombat(cv){
     c.fillStyle='#b9d0de';c.font='10px monospace';c.textAlign='left';
     c.fillText(`MAP ${C.cameraX+1}-${Math.min(GW,C.cameraX+VIEW_W)}/${GW} × ${C.cameraY+1}-${Math.min(GH,C.cameraY+VIEW_H)}/${GH} · WASD / ARROWS`,15,H-13);
   }
+  } // end 2D topdown fallback
   // HUD (oben)
   c.fillStyle='rgba(6,10,16,0.9)';c.fillRect(0,0,W,32);
   c.strokeStyle='#243248';c.lineWidth=1;c.strokeRect(0,0,W,32);

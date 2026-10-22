@@ -177,6 +177,9 @@ function drawBasePeople(c,now){
  });
 }
 function renderBase(cv){
+ if(typeof getGfxMode==='function'&&getGfxMode()==='ascii'&&typeof renderBaseAscii==='function'){
+  renderBaseAscii(cv);return;
+ }
  const c=cv.getContext('2d');
  if(cv.width!==BW)cv.width=BW;if(cv.height!==BH)cv.height=BH;
  const now=performance.now();
@@ -191,9 +194,105 @@ function renderBase(cv){
    if(isOrigin(x,y,id))drawBuiltRoom(c,room);
   }
  }
+ // Level 27 Commander's Office (Hammond / Weir / Landry) + Clipboard Hotspot
+ {
+  const cmd=(typeof COMMANDERS!=='undefined'&&COMMANDERS[S.commander])||COMMANDERS.hammond;
+  const ly=GRID_Y+26*CH,ox=GRID_X+6*CW,ow=2*CW;
+  c.fillStyle='rgba(58,42,24,0.88)';c.fillRect(ox+3,ly+4,ow-6,CH-9);
+  c.strokeStyle='#e8b040';c.lineWidth=1.5;c.strokeRect(ox+3,ly+4,ow-6,CH-9);
+  c.fillStyle='#5c3a1e';c.fillRect(ox+22,ly+21,36,7); // Desk
+  c.fillStyle='#ef4444';c.fillRect(ox+48,ly+18,7,4); // Red Phone
+  c.fillStyle='#e8b040';c.fillRect(ox+26,ly+18,8,4); // Clipboard
+  c.fillStyle=cmd?cmd.color:'#e8b040';c.beginPath();c.arc(ox+40,ly+15,4.5,0,Math.PI*2);c.fill();
+  c.fillStyle='#f3d27a';c.font='bold 6.5px monospace';c.textAlign='center';
+  c.fillText('📋 BÜRO: '+(cmd?cmd.name.toUpperCase().slice(0,14):'HAMMOND'),ox+ow/2,ly+11);
+ }
  drawBaseElevator(c,now);drawBasePeople(c,now);
  c.fillStyle='#76d9e9';c.font='bold 9px monospace';c.textAlign='center';
  c.fillText('GATE LEVEL 28',GRID_X+GRID_W/2,BH-9);
+}
+
+// ---------- Room Interior Detail Renderer (ROADMAP §1.5.3) ----------
+function drawRoomInteriorCanvas(cv,room){
+ if(!cv||!room)return;
+ const c=cv.getContext('2d'),W=cv.width,H=cv.height;
+ const R=ROOMS[room.type]||{name:room.type};
+ const now=performance.now();
+ if(typeof getGfxMode==='function'&&getGfxMode()==='ascii'){
+  c.fillStyle='#040806';c.fillRect(0,0,W,H);
+  c.strokeStyle='#22c55e';c.strokeRect(1,1,W-2,H-2);
+  c.font='bold 10px "Courier New",monospace';c.fillStyle='#4ade80';c.textAlign='left';
+  c.fillText(`[RAUM-TERMINAL] ${R.name.toUpperCase()} (#${room.id})`,8,15);
+  c.fillStyle='#15803d';c.fillText('┌────────────────────────────────────────┐',6,29);
+  const asciiArt={
+   gate:     ['│   ╭═══════ [ STARGATE ] ═══════╮       │','│   ║   ≋≋≋≋ EVENT HORIZON ≋≋≋   ║       │','│   ╰════════════╤══╤════════════╯       │','│        ════════╧══╧════════ (RAMPE)    │'],
+   canteen:  ['│ [KÜCHE: BLAUER WACKELPUDDING & KAFFEE] │','│  ┌──────┐     ┌──────┐     ┌──────┐    │','│  │TISCH1│     │TISCH2│     │TISCH3│    │','│  └──────┘     └──────┘     └──────┘    │'],
+   lab:      ['│ [NAQUADAH-ANALYSATOR]  [ANTIKER-ARCHIV]│','│  ╔══════╗  ░░▒▒▓▓██    ┌────────────┐  │','│  ╚══════╝  [SPEKTRUM]  │ HOLO-TISCH │  │','│                        └────────────┘  │'],
+   medbay:   ['│ [KRANKENBETT 1] [BETT 2]   [MRT-SCAN]  │','│  ┌──────────┐  ┌──────────┐  ╔════╗    │','│  │ ✚ LIEGE  │  │ ✚ LIEGE  │  ║SCAN║    │','│  └──────────┘  └──────────┘  ╚════╝    │'],
+   armory:   ['│ [WAFFENREGAL: P90 / M16 / ZAT / RÜST.] │','│  ╠══╦══╦══╣    ╠══╦══╦══╣  [WERKBANK]  │','│  ║🔫║⚡║🛡║    ║🔫║⚡║🛡║  ┌────────┐  │','│  ╩══╩══╩══╩    ╩══╩══╩══╩  └────────┘  │']
+  }[room.type]||['│ [SGC SEKTOR-EINRICHTUNG AKTIV]         │','│  ╔════════════╗      ╔════════════╗    │','│  ║ KONSOLE A  ║      ║ KONSOLE B  ║    │','│  ╚════════════╝      ╚════════════╝    │'];
+  asciiArt.forEach((line,i)=>{c.fillStyle='#86efac';c.fillText(line,6,43+i*14);});
+  c.fillStyle='#15803d';c.fillText('└────────────────────────────────────────┘',6,101);
+  const staffNames=room.staff.map(id=>S.roster[id]?S.roster[id].name:'?').join(', ')||'Keine Zuweisung';
+  c.fillStyle='#eab308';c.fillText(`Personal: ${staffNames.slice(0,34)}`,8,118);
+  return;
+ }
+ // Pixel-Art Interior View
+ const wallGrad=c.createLinearGradient(0,0,0,H);
+ wallGrad.addColorStop(0,'#1b2836');wallGrad.addColorStop(0.65,'#121b24');wallGrad.addColorStop(0.66,'#232f3a');wallGrad.addColorStop(1,'#151d26');
+ c.fillStyle=wallGrad;c.fillRect(0,0,W,H);
+ c.strokeStyle='rgba(140,175,200,0.12)';c.lineWidth=1;
+ for(let fx=0;fx<W;fx+=28){c.beginPath();c.moveTo(fx,H*0.66);c.lineTo(fx-18,H);c.stroke();}
+ if(room.type==='canteen'){
+  c.fillStyle='#3c4d5c';c.fillRect(14,38,96,26);
+  c.fillStyle='#38bdf8';c.fillRect(28,31,12,7); // Blue Jell-O
+  c.fillStyle='#ef4444';c.fillRect(54,32,10,6);
+  [135,215].forEach(tx=>{
+   c.fillStyle='#5c4632';c.fillRect(tx,72,52,9);
+   c.fillStyle='#334155';c.fillRect(tx+8,81,5,16);c.fillRect(tx+38,81,5,16);
+   c.fillStyle='#38bdf8';c.fillRect(tx+20,66,8,6);
+  });
+ }else if(room.type==='lab'||room.type==='workshop'){
+  c.fillStyle='#16394a';c.fillRect(22,32,76,42);c.strokeStyle='#38bdf8';c.strokeRect(22,32,76,42);
+  const pulse=0.5+0.5*Math.sin(now/300);
+  c.fillStyle=`rgba(56,189,248,${0.3+0.4*pulse})`;c.beginPath();c.arc(60,53,13,0,Math.PI*2);c.fill();
+  c.fillStyle='#4b5563';c.fillRect(130,58,110,20);
+  c.fillStyle='#eab308';c.fillRect(155,48,14,10);
+ }else if(room.type==='medbay'){
+  [24,114,204].forEach(bx=>{
+   c.fillStyle='#334155';c.fillRect(bx,64,62,16);
+   c.fillStyle='#e2e8f0';c.fillRect(bx+4,58,54,7);
+   c.fillStyle='#ef4444';c.fillRect(bx+26,36,8,14);c.fillRect(bx+22,40,16,6);
+  });
+ }else if(room.type==='armory'){
+  for(let rx=20;rx<260;rx+=60){
+   c.fillStyle='#293542';c.fillRect(rx,28,44,50);c.strokeStyle='#64748b';c.strokeRect(rx,28,44,50);
+   c.fillStyle='#eab308';c.fillRect(rx+6,38,30,4);c.fillRect(rx+6,50,26,4);c.fillRect(rx+6,62,32,4);
+  }
+ }else if(room.type==='gate'){
+  c.fillStyle='#334155';c.beginPath();c.arc(W/2,58,38,0,Math.PI*2);c.fill();
+  c.fillStyle='#0ea5e9';c.beginPath();c.arc(W/2,58,28,0,Math.PI*2);c.fill();
+  c.fillStyle='#475569';c.fillRect(W/2-36,86,72,12);
+ }else{
+  c.fillStyle='#2a3b4c';c.fillRect(28,38,88,38);c.fillRect(150,38,100,38);
+  c.fillStyle='#38bdf8';c.fillRect(36,46,72,16);c.fillRect(160,46,80,16);
+ }
+ const people=[];
+ room.staff.forEach(id=>{if(S.roster[id])people.push({m:S.roster[id],role:'STAFF'});});
+ if(people.length<3){
+  S.roster.filter(m=>m.recruited&&!m.dead&&!room.staff.includes(m.id)).slice(0,3-people.length).forEach(m=>people.push({m,role:'BESUCH'}));
+ }
+ people.forEach((p,idx)=>{
+  const px=48+idx*88+Math.sin(now/700+idx*2)*12;
+  const py=106+(idx%2)*8;
+  drawSoldier(c,px,py,0.68,p.m,now/140+idx,1);
+  c.fillStyle='rgba(6,10,16,0.85)';c.fillRect(px-32,py+3,64,12);
+  c.fillStyle=p.role==='STAFF'?'#4ade80':'#94a3b8';c.font='bold 8.5px monospace';c.textAlign='center';
+  c.fillText(p.m.name.split(' ').pop(),px,py+12);
+ });
+ c.fillStyle='rgba(6,10,16,0.82)';c.fillRect(0,0,W,18);
+ c.fillStyle='#e8b040';c.font='bold 9.5px monospace';c.textAlign='left';
+ c.fillText(`🔍 INNENANSICHT: ${R.name.toUpperCase()}`,8,13);
 }
 
 function canBuildAt(type,x,y){
@@ -215,6 +314,10 @@ function baseClick(clientX,clientY){
   const res=buildRoom(B.buildType,x,y);
   if(res.ok&&typeof SFX!=='undefined')SFX.build();
   B.buildMode=false;B.buildType=null;act(res);return;
+ }
+ // Level 27 (gy===26) cols 6-7 is Hammond's Office / Clipboard hotspot
+ if(gy===26&&gx>=6&&!S.base.grid[y*COLS+x]&&typeof showClipboardModal==='function'){
+  showClipboardModal();return;
  }
  B.selRoom=S.base.grid[y*COLS+x]||null;renderAll();
 }

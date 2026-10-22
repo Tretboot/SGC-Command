@@ -1,0 +1,30 @@
+
+//@title its giving tycho @by Switch Angel
+setScale("d:major:pentatonic")
+setCpm(135/4)
+
+const transp = "<-1@3 1@3 2@21 <4 3 4 1>@5>*8"
+
+
+
+$KICK: s("bd:1!4").duck("3:4:5").duckdepth(.8).duckattack(.14).o(2).almostNever(ply("2")).gain(.9).rlpf(.45)
+
+
+_$SNARE: s("<- sd:6>*4")
+
+$OPENHAT: s("<- oh:2>*8").almostNever(ply("2 | 4")).gain(.8).dly(.4).rlpf(.8)
+
+$NOISE: s("white!4").att(.4).gain(.3)
+
+$CRASH: s("cr!4").gain(.5)
+
+_$PAD: n(transp.add("[<0 0 14>,3,7,11]").sub(5)).sc().s("sawtooth").rlpf(.6).detune(.5).att(.2).room(1).roomsize(5)
+.lpattack(3).phaser(.4).o(5).hpf(400).vib(1).vibmod(.2)
+
+$LEAD: n("<0 4 2 3 5>*8".add("<0 1 2 0 3 4>*16".add(3)))
+  .sc().s("supersaw").o(3).dly(slider(0.918)).pan(rand)
+  .rlpf(1).detune(.5).roomsize(5).acidenv(tri.slow(30).range(.2,1))
+  .lpd(.3).lpr(2).rel(.3).att(.02).gain(.8)
+// .phaser(.4).o(5)
+
+$BASS: n(transp.add(-7).add("< 0>*8")).sc().s("supersaw").seg(16).acidenv(.4).diode(1).o(3)

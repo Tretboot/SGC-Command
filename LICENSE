@@ -1,11 +1,19 @@
-MIT License
+GNU AFFERO GENERAL PUBLIC LICENSE
+Version 3, 19 November 2007 (AGPL-3.0-or-later)
 
 Copyright (c) 2026 tretboot
 
-Scope: This license applies only to original program code in this repository authored by tretboot, to the extent the rights are held by tretboot ("Program Code"). It does not apply to, and grants no rights in, Stargate or any other third-party intellectual property, including names, trademarks, characters, settings, story elements, dialogue, artwork, audio, screenshots, or other non-code material. No permission to use such material is implied. Material owned by third parties remains subject to its owners' terms.
+Scope Notice (Fan Project Disclaimer):
+This license applies only to the original program code in this repository authored by tretboot and integrated open-source software components (such as @strudel/web under AGPL-3.0-or-later and MIT-licensed isometric/ASCII libraries), to the extent the rights are held by their respective authors ("Program Code"). It does not apply to, and grants no rights in, Stargate or any other third-party intellectual property, including names, trademarks, characters, settings, story elements, dialogue, artwork, audio, screenshots, or other non-code material. No permission to use such material is implied. Material owned by third parties remains subject to its owners' terms.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of the Program Code (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version (AGPL-3.0-or-later).
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Program Code.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
-THE PROGRAM CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE PROGRAM CODE OR THE USE OR OTHER DEALINGS IN THE PROGRAM CODE.
+You should have received a copy of the GNU Affero General Public License along with this program (see https://www.gnu.org/licenses/agpl-3.0.html).
+
+Third-Party Open-Source Components Included / Referenced:
+- @strudel/web (https://codeberg.org/uzu/strudel) — Licensed under AGPL-3.0-or-later
+- Switch Angel Strudel Prebake & Patterns (Switch-Angel/) — AGPL-3.0-or-later compatible. Special thanks to Switch Angel for pioneering live-coding patterns and prebake scripts! These serve as educational placeholders and demonstrate the dynamic performance of the Strudel sound engine.
+- Tretboot/asciiid & msokalski/asciicker — Licensed under MIT (compatible with AGPL-3.0)
+- nosir/obelisk.js — Licensed under MIT (compatible with AGPL-3.0)

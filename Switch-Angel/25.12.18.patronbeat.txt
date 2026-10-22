@@ -1,0 +1,21 @@
+// @Title Patron Beat 25.12.18 @By Everyone
+setCpm(140/4)
+const volume = slider(0.667)
+
+
+const patrons = `
+<Dillon_Summers Be_Ankh_Ah Hailey_Halcyon recursive 
+Charlie_Juno_Jr Janeishly Daft Rick_Wells>*16
+`
+$PATRON_BASS: s("sawtooth!16")
+  .stxt(patrons).att(0)
+  .scale("e:major:pentatonic")
+  // .diode("4:.3")
+  // .punchcard({labels: 1})
+  // .label(patrons)
+
+$KICK: s("sbd!4")
+
+HAT$: s(" <- oh:2>*8")
+  .dec(.3).delay(.5).o(5).delaytime(1/8)
+

@@ -12,14 +12,61 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
 // Waffen: [min, max, range, hitBase]
 const WEAPONS={
-  rifle:{name:'Rifle',min:9,max:13,range:4,hit:70},
-  shotgun:{name:'Shotgun',min:14,max:18,range:2,hit:90},
-  pistol:{name:'Pistol',min:7,max:10,range:3,hit:70},
-  staff:{name:'Staff',min:7,max:11,range:3,hit:70},
-  staffLong:{name:'Langer Staff',min:12,max:16,range:5,hit:70},
+  rifle:{name:'Rifle',min:9,max:13,range:4,hit:70,cost:{ore:15}},
+  shotgun:{name:'Shotgun',min:14,max:18,range:2,hit:90,cost:{ore:20}},
+  pistol:{name:'Pistol',min:7,max:10,range:3,hit:70,cost:{ore:10}},
+  zat:{name:"Zat'nik'tel",min:12,max:16,range:4,hit:78,cost:{ore:30,tech:10},minChap:1},
+  staff:{name:'Staff',min:7,max:11,range:3,hit:70,cost:{ore:25,tech:5},minChap:2},
+  staffLong:{name:'Langer Staff',min:12,max:16,range:5,hit:70,cost:{ore:35,tech:10},minChap:2},
   melee:{name:'Melee',min:5,max:9,range:1,hit:95},
   chakram:{name:'Chakram',min:16,max:22,range:1,hit:95},
+  hammer:{name:'Hammer',min:14,max:19,range:1,hit:95},
   throw:{name:'Wurf',min:15,max:22,range:7,hit:70,ignoreCover:true},
+};
+
+// Rüstungen (INVENTAR-SPEC.md §4)
+const ARMORS={
+  light:{name:'Leichte Weste',reduction:0.10,movePenalty:0,cost:{ore:10},desc:'−10% Schaden erlitten'},
+  medium:{name:'Komposit-Rüstung',reduction:0.20,movePenalty:0,cost:{ore:25,tech:5},desc:'−20% Schaden erlitten'},
+  heavy:{name:'Schwere Naquadah-Platte',reduction:0.30,movePenalty:1,cost:{ore:40,tech:10},desc:'−30% Schaden, −1 Bewegung'},
+};
+
+// Spezial-Items (INVENTAR-SPEC.md §5)
+const SPECIALS={
+  medkit:{name:'Medkit',icon:'✚',cost:{medicine:5},desc:'+15 HP im Einsatz (1×/Mission)'},
+  shield:{name:'Persönlicher Schild',icon:'🛡',cost:{tech:15},desc:'Halbiert Schaden für 2 Runden'},
+  smoke:{name:'Rauchgranate',icon:'💨',cost:{ore:10},desc:'+25% Ausweichen für 2 Runden'},
+  emp:{name:'EMP-Impuls',icon:'⚡',cost:{tech:20},desc:'Nächster Gegner verliert 1 AP & 8 HP'},
+};
+
+// Kommandanten für Hammonds Büro / Klemmbrett (ROADMAP.md §1.5.2)
+const COMMANDERS={
+  hammond:{id:'hammond',name:'Gen. George Hammond',title:'USAF · Stargate Command',color:'#e8b040',quote:'„Gehen Sie mit Gott, SG-1.“',bonus:'+10% Moral-Regeneration & Sandwich-Aktion',portraitId:12},
+  weir:{id:'weir',name:'Dr. Elizabeth Weir',title:'Zivile Leitung · IOA',color:'#38bdf8',quote:'„Diplomatie ist unsere erste Verteidigungslinie.“',bonus:'+25% Forschungspunkte (Labor) & +15% Kontakt-Beute',portraitId:1},
+  landry:{id:'landry',name:'Gen. Hank Landry',title:'USAF · Taktische Leitung',color:'#4ade80',quote:'„Feuerkraft löst Probleme, bevor sie entstehen.“',bonus:'+10 Basis-Power & +10% Waffenschaden',portraitId:0},
+};
+
+// SG-Teams (KONZEPT-v3.md §2+4 & Progressions-Gatter ROADMAP.md §1.5.1)
+const SG_TEAMS={
+  sg1:{id:'sg1',name:'SG-1',role:'Flaggschiff & Erkundung',color:'#4fc3f7',unlockChap:0,leadId:0},
+  sg2:{id:'sg2',name:'SG-2',role:'Taktischer Sturmtrupp',color:'#4ade80',unlockChap:0,leadId:5},
+  sg3:{id:'sg3',name:'SG-3',role:'Schwere Marines',color:'#f97316',unlockChap:1,leadId:8},
+  sg4:{id:'sg4',name:'SG-4',role:'Medizin & Diplomatie',color:'#a78bfa',unlockChap:2,leadId:4},
+  sg5:{id:'sg5',name:'SG-5',role:'Spezialeinheit',color:'#facc15',unlockChap:3,leadId:7},
+};
+
+// Crafting-Rezepte (INVENTAR-SPEC.md §3)
+const RECIPES={
+  rifle:   {name:'🔫 Sturmgewehr (P90/M16)',cat:'weapons',item:'rifle',cost:{ore:15}},
+  shotgun: {name:'🔫 Combat Shotgun',cat:'weapons',item:'shotgun',cost:{ore:20}},
+  zat:     {name:"⚡ Zat'nik'tel",cat:'weapons',item:'zat',cost:{ore:30,tech:10},req:'W2'},
+  staff:   {name:'🔥 Jaffa-Stabwaffe',cat:'weapons',item:'staff',cost:{ore:25,tech:5}},
+  medium:  {name:'🛡 Komposit-Rüstung (−20%)',cat:'armor',item:'medium',cost:{ore:25,tech:5}},
+  heavy:   {name:'🛡 Naquadah-Platte (−30%)',cat:'armor',item:'heavy',cost:{ore:40,tech:10},req:'S1'},
+  medkit:  {name:'✚ Medkit (+15 HP)',cat:'special',item:'medkit',cost:{medicine:5}},
+  shield:  {name:'🛡 Persönlicher Schild',cat:'special',item:'shield',cost:{tech:15},req:'S1'},
+  smoke:   {name:'💨 Rauchgranate',cat:'special',item:'smoke',cost:{ore:10}},
+  emp:     {name:'⚡ EMP-Impuls',cat:'special',item:'emp',cost:{tech:20}},
 };
 
 // Feind-Typen
@@ -278,10 +325,149 @@ const ROOMS={
 // ===================== Zustand =====================
 let S=null;
 
+function defaultInventory(){
+  const spec={medkit:3,shield:1,smoke:1,emp:0};
+  return {
+    weapons:{rifle:2,shotgun:1,pistol:2,zat:0,staff:0,staffLong:0},
+    armor:{light:2,medium:1,heavy:0},
+    special:spec,
+    specials:spec,
+  };
+}
+
+// ===================== Offworld Koloniebau & Persistente Planeten (Civ / SimCity Layer) =====================
+const COLONY_BUILDINGS={
+  gate:{id:'gate',name:'Stargate-Ring',icon:'⛩',cost:{},power:0,def:10,yield:{},desc:'Planetares Sternentor & Verbindung zur Erde (fest)'},
+  gate_defense:{id:'gate_defense',name:'Gate-Befestigung',icon:'🧱',cost:{ore:20,tech:5},power:0,def:20,yield:{},desc:'Sandsäcke & Flak-Stellungen um das Gate (+20 Verteidigung)'},
+  mine:{id:'mine',name:'Naquadah-Mine',icon:'⛏',cost:{ore:35,tech:10},power:-2,def:0,yield:{ore:6},desc:'Tiefenbohrung nach Naquadah-Erz (+6 Erz/Tag, -2 Energie)'},
+  lab:{id:'lab',name:'Antiker-Forschungslabor',icon:'🔬',cost:{ore:30,tech:20},power:-3,def:0,yield:{tech:5},desc:'Analyse außerirdischer Relikte (+5 Tech/Tag, -3 Energie)'},
+  hangar:{id:'hangar',name:'UAV & Jumper-Hangar',icon:'🛸',cost:{ore:45,tech:25},power:-2,def:15,yield:{tech:2,ore:2},desc:'Luftaufklärung & Patrouillen (+15 Verteidigung, +2 Erz, +2 Tech)'},
+  reactor:{id:'reactor',name:'Naquadah-Reaktor',icon:'⚡',cost:{ore:40,tech:15},power:12,def:5,yield:{},desc:'Kompakt-Reaktor (+12 Energie für die Kolonie)'},
+  dome:{id:'dome',name:'Schutzschild-Kuppel',icon:'🛡',cost:{ore:50,tech:30},power:-4,def:30,yield:{},desc:'Antiker-Kraftfeldkuppel (+30 Verteidigung, schützt Kolonie)'},
+  hospital:{id:'hospital',name:'Feldlazarett',icon:'✚',cost:{ore:25,tech:10},power:-1,def:0,yield:{medicine:2},desc:'Medizinische Station (+2 Medizin/Tag, heilt Truppen)'},
+  barracks:{id:'barracks',name:'SG-Garnisonslager',icon:'🏕',cost:{ore:30,tech:10},power:-1,def:15,yield:{},desc:'Stationierte Wachmannschaft (+15 Verteidigung)'},
+};
+
+function defaultKeybinds(){
+  return {
+    moveUp:'KeyW',moveDown:'KeyS',moveLeft:'KeyA',moveRight:'KeyD',
+    rotateLeft:'KeyQ',rotateRight:'KeyE',cycleGfx:'KeyV',
+    nextUnit:'Tab',endTurn:'Space',pause:'Escape',
+    zoomIn:'Equal',zoomOut:'Minus'
+  };
+}
+
+function createColonyState(planetId){
+  const p=PLANETS[planetId];
+  const gridW=6,gridH=5;
+  const sectors=[];
+  for(let y=0;y<gridH;y++){
+    for(let x=0;x<gridW;x++){
+      if(x===2&&y===2){
+        sectors.push({x,y,building:'gate',lvl:1,hp:100});
+      }else if((x===1&&y===2)||(x===3&&y===2)){
+        sectors.push({x,y,building:'gate_defense',lvl:1,hp:60});
+      }else{
+        sectors.push({x,y,building:null,lvl:0,hp:0});
+      }
+    }
+  }
+  return {
+    planet:planetId,
+    name:p?(p.name+' Außenposten'):'Kolonie',
+    founded:true,
+    dayFounded:typeof S!=='undefined'&&S?S.day:1,
+    sectors,
+    gridW,
+    gridH
+  };
+}
+
+function getColonyStats(col){
+  if(!col||!col.sectors)return {power:0,powerUsed:0,defense:0,yield:{ore:0,tech:0,medicine:0},buildingsCount:0};
+  let power=0,powerUsed=0,defense=0;
+  const yld={ore:0,tech:0,medicine:0};
+  let count=0;
+  col.sectors.forEach(s=>{
+    if(!s.building)return;
+    const b=COLONY_BUILDINGS[s.building];
+    if(!b)return;
+    count++;
+    const mult=1+(s.lvl-1)*0.5;
+    if(b.power>0)power+=Math.round(b.power*mult);
+    else powerUsed+=Math.abs(b.power);
+    defense+=Math.round(b.def*mult);
+    if(b.yield){
+      for(const k in b.yield)yld[k]=(yld[k]||0)+Math.round((b.yield[k]||0)*mult);
+    }
+  });
+  return {power,powerUsed,defense,yield:yld,buildingsCount:count};
+}
+
+function foundColony(planetId){
+  if(!S.planets[planetId]||!S.planets[planetId].disc)return R(false,'Planet noch nicht erforscht.');
+  if(S.colonies[planetId])return R(false,'Kolonie existiert bereits.');
+  const cost={ore:40,tech:20};
+  for(const k in cost)if(S.res[k]<cost[k])return R(false,`Nicht genug ${k} (${cost[k]} benötigt).`);
+  for(const k in cost)S.res[k]-=cost[k];
+  S.colonies[planetId]=createColonyState(planetId);
+  const p=PLANETS[planetId];
+  note(`🪐 Neuer Außenposten gegründet: ${p?p.name:planetId}!`);
+  return R(true,`Außenposten auf ${p?p.name:planetId} errichtet.`);
+}
+
+function buildColonySector(planetId,x,y,type){
+  const col=S.colonies[planetId];if(!col)return R(false,'Kolonie nicht gefunden.');
+  const s=col.sectors.find(sec=>sec.x===x&&sec.y===y);
+  if(!s)return R(false,'Ungültiger Sektor.');
+  if(s.building)return R(false,'Sektor bereits bebaut.');
+  const b=COLONY_BUILDINGS[type];if(!b)return R(false,'Unbekanntes Gebäude.');
+  for(const k in b.cost)if(S.res[k]<(b.cost[k]||0))return R(false,`Nicht genug ${k}.`);
+  for(const k in b.cost)S.res[k]-=(b.cost[k]||0);
+  s.building=type;s.lvl=1;s.hp=80;
+  note(`🏗 ${b.name} im Sektor (${x},${y}) errichtet.`);
+  return R(true,`${b.name} gebaut.`);
+}
+
+function upgradeColonySector(planetId,x,y){
+  const col=S.colonies[planetId];if(!col)return R(false,'Kolonie nicht gefunden.');
+  const s=col.sectors.find(sec=>sec.x===x&&sec.y===y);
+  if(!s||!s.building)return R(false,'Kein Gebäude vorhanden.');
+  if(s.lvl>=3)return R(false,'Bereits maximale Stufe.');
+  const b=COLONY_BUILDINGS[s.building];
+  const upCost={ore:Math.round(25*s.lvl),tech:Math.round(15*s.lvl)};
+  for(const k in upCost)if(S.res[k]<(upCost[k]||0))return R(false,`Nicht genug ${k} für Upgrade.`);
+  for(const k in upCost)S.res[k]-=(upCost[k]||0);
+  s.lvl++;s.hp+=40;
+  note(`⬆ ${b.name} auf Stufe ${s.lvl} aufgewertet!`);
+  return R(true,`${b.name} nun Stufe ${s.lvl}.`);
+}
+
+function demolishColonySector(planetId,x,y){
+  const col=S.colonies[planetId];if(!col)return R(false,'Kolonie nicht gefunden.');
+  const s=col.sectors.find(sec=>sec.x===x&&sec.y===y);
+  if(!s||!s.building)return R(false,'Kein Gebäude vorhanden.');
+  if(s.building==='gate')return R(false,'Das Stargate kann nicht abgerissen werden!');
+  s.building=null;s.lvl=0;s.hp=0;
+  note(`🔨 Sektor (${x},${y}) zurückgebaut.`);
+  return R(true,'Sektor geräumt.');
+}
+
+function defaultTeamForChar(i,p){
+  if(p.sg1||i<=3)return 'sg1';
+  if(i===5||i===15||i===16)return 'sg2';
+  if(i===8||i===17||i===18)return 'sg3';
+  if(i===4||i===19||i===20)return 'sg4';
+  if(i===7||i===21||i===22)return 'sg5';
+  return 'sg'+(2+(i%4));
+}
+
 function newGame(){
   const roster=POOL.map((p,i)=>({
     id:i,name:p.name,cls:p.cls,hp:p.hp,maxHp:p.hp,move:p.move,
-    weapon:p.weapon,melee:p.melee||null,sg1:!!p.sg1,talent:p.talent,
+    weapon:p.weapon,melee:p.melee||null,armor:i===3?'medium':(i===0?'light':null),
+    special:i===1?'medkit':(i===2?'smoke':null),
+    sg1:!!p.sg1,team:defaultTeamForChar(i,p),talent:p.talent,
     lvl:1,xp:0,morale:85,fatigue:0,injuries:0,dead:false,room:-1,
     recruited:START.includes(i)
   }));
@@ -293,9 +479,18 @@ function newGame(){
   addRoom(base,'workshop',2,BASE_LEVELS-16);
   addRoom(base,'barracks',2,BASE_LEVELS-25);
   addRoom(base,'water',2,BASE_LEVELS-4);
+  addRoom(base,'armory',5,BASE_LEVELS-16);
   S={
     v:4,day:1,chapter:0,integrity:100,
     res:{ore:100,tech:20,medicine:10,food:30},
+    inventory:defaultInventory(),
+    commander:'hammond',
+    gfxMode:'pixel', // 'pixel' (Isometric Voxel) | 'ascii' (asciiid-Mode) | 'topdown'
+    audioDance:true,
+    controllerVibration:true,
+    keybinds:defaultKeybinds(),
+    customTracks:{},
+    colonies:{},
     roster,base,
     planets:{},
     research:{rp:0,queue:null,done:[]},
@@ -329,6 +524,19 @@ function load(){
       for(const id in PLANETS)if(!S.planets[id])S.planets[id]={disc:PLANETS[id].ch<=(S.chapter||0)};
       if(S.pilotBriefingSeen===undefined)S.pilotBriefingSeen=false;
       if(S.introSeen===undefined)S.introSeen=false;
+      if(!S.inventory)S.inventory=defaultInventory();
+      if(!S.commander)S.commander='hammond';
+      if(!S.gfxMode)S.gfxMode='pixel';
+      if(!S.colonies)S.colonies={};
+      if(S.audioDance===undefined)S.audioDance=true;
+      if(S.controllerVibration===undefined)S.controllerVibration=true;
+      if(!S.keybinds)S.keybinds=defaultKeybinds();
+      if(!S.customTracks)S.customTracks={};
+      (S.roster||[]).forEach((m,i)=>{
+        if(m.armor===undefined)m.armor=null;
+        if(m.special===undefined)m.special=null;
+        if(!m.team)m.team=defaultTeamForChar(i,m);
+      });
       return true;
     }
     function migrateBaseLevels(){
@@ -367,7 +575,10 @@ function load(){
 function note(t){const l=`[T${S.day}] ${t}`;S.log.unshift(l);if(S.log.length>200)S.log.pop();S.rlog.push(t);}
 
 // Power-Budget
-function powerGen(){return Object.values(S.base.rooms).filter(r=>r.type==='generator').length*10;}
+function powerGen(){
+  const base=Object.values(S.base.rooms).filter(r=>r.type==='generator').length*10;
+  return base+(S.commander==='landry'?10:0);
+}
 function powerUse(){return Object.values(S.base.rooms).reduce((s,r)=>s+Math.max(0,-ROOMS[r.type].power),0);}
 function powerOk(){return powerGen()>=powerUse();}
 
@@ -378,6 +589,7 @@ function roomOutput(r){
   if(!staff.length||!powerOk())return 0;
   let mult=staff.length===1?1:1.8;
   if(r.type==='lab'&&staff.some(m=>m.cls==='scientist'))mult*=1.5;
+  if(r.type==='lab'&&S.commander==='weir')mult*=1.25;
   if(r.type==='workshop'&&staff.some(m=>m.cls==='engineer'))mult*=1.5;
   return Math.round(mult*10);
 }
@@ -437,6 +649,33 @@ function endDay(){
   if(q&&S.research.rp>=q[3]){S.research.rp-=q[3];S.research.done.push(q[0]);S.research.queue=null;note(`🔬 Forschung abgeschlossen: ${q[1]}`);S.rlog.push(`🔬 Forschung abgeschlossen: ${q[1]}`);}
   // Passive Income
   S.res.ore+=20;S.res.tech+=5;S.res.medicine+=5;S.res.food+=10;
+  // Kolonien: Tägliche Produktion & Verteidigungscheck
+  if(S.colonies){
+    let colOre=0,colTech=0,colMed=0;
+    Object.values(S.colonies).forEach(col=>{
+      if(!col||!col.founded)return;
+      const stats=getColonyStats(col);
+      colOre+=stats.yield.ore||0;
+      colTech+=stats.yield.tech||0;
+      colMed+=stats.yield.medicine||0;
+      const p=PLANETS[col.planet];
+      if(p&&(p.type==='hostile'||p.type==='space')&&Math.random()<0.25){
+        if(stats.defense>=25){
+          note(`🛡 ${col.name}: Feindlicher Jaffa-Überfall durch Garnison & Abwehr zurückgeschlagen!`);
+          S.rlog.push(`🛡 ${col.name}: Feindangriff erfolgreich abgewehrt (Verteidigung: ${stats.defense})`);
+        }else{
+          const dmg=Math.min(15,Math.round(25-stats.defense));
+          note(`⚠️ ${col.name}: Jaffa-Raid durchbrach schwache Abwehr! (${dmg} Erz geplündert)`);
+          S.rlog.push(`⚠️ ${col.name}: Jaffa-Raid (-${dmg} Erz)`);
+          S.res.ore=Math.max(0,S.res.ore-dmg);
+        }
+      }
+    });
+    if(colOre||colTech||colMed){
+      S.res.ore+=colOre;S.res.tech+=colTech;S.res.medicine+=colMed;
+      S.rlog.push(`🪐 Kolonien-Ertrag: ⛏+${colOre} · ⚙+${colTech} · ✚+${colMed}`);
+    }
+  }
   // Staff-Tick
   const rec=S.roster.filter(m=>m.recruited&&!m.dead);
   rec.forEach(m=>{
@@ -524,3 +763,80 @@ function openMissions(){
 }
 function curMissions(){return CHAPTERS[S.chapter].missions;}
 function discover(id){if(S.planets[id]&&!S.planets[id].disc){S.planets[id].disc=true;note(`🛰 Neu entdeckt: ${PLANETS[id].name}`);}}
+
+// ===================== Inventar, SG-Teams & Kommandanten (Phase 1 / 1.5) =====================
+function craftItem(catOrKey,maybeKey){
+  if(!S.inventory)S.inventory=defaultInventory();
+  if(!S.inventory.specials)S.inventory.specials=S.inventory.special;
+  let cat=catOrKey,key=maybeKey;
+  if(!key&&RECIPES[catOrKey]){
+    cat=RECIPES[catOrKey].cat;
+    key=RECIPES[catOrKey].item;
+  }
+  if(cat==='specials')cat='special';
+  const table=cat==='weapons'?WEAPONS:cat==='armor'?ARMORS:cat==='special'?SPECIALS:null;
+  const spec=table&&table[key];
+  if(!spec||!spec.cost)return R(false,'Item nicht herstellbar.');
+  if(spec.minChap&&S.chapter<spec.minChap)return R(false,`Erst ab Kapitel ${spec.minChap+1} verfügbar.`);
+  for(const k in spec.cost)if((S.res[k]||0)<spec.cost[k])return R(false,`Nicht genug ${k}.`);
+  for(const k in spec.cost)S.res[k]-=spec.cost[k];
+  S.inventory[cat][key]=(S.inventory[cat][key]||0)+1;
+  note(`🔫 Armory hergestellt: ${spec.name} (Bestand: ${S.inventory[cat][key]})`);
+  return R(true,`${spec.name} hergestellt!`);
+}
+
+function equipItem(charId,slot,key){
+  const m=S.roster[charId];
+  if(!m)return R(false,'Charakter nicht gefunden.');
+  if(!S.inventory)S.inventory=defaultInventory();
+  if(!S.inventory.specials)S.inventory.specials=S.inventory.special;
+  const cat=slot==='weapon'?'weapons':slot==='armor'?'armor':slot==='special'?'special':null;
+  if(!cat)return R(false,'Ungültiger Slot.');
+  const prev=m[slot];
+  if(prev===key||(prev===null&&!key))return R(true);
+  const unlim=(slot==='weapon'&&['pistol','rifle'].includes(key))||(slot==='armor'&&key==='light');
+  if(key&&!unlim){
+    if((S.inventory[cat][key]||0)<=0)return R(false,'Nicht im Lagerbestand (in Armory herstellen).');
+    S.inventory[cat][key]--;
+  }
+  const prevUnlim=(slot==='weapon'&&['pistol','rifle'].includes(prev))||(slot==='armor'&&prev==='light');
+  if(prev&&!prevUnlim){
+    S.inventory[cat][prev]=(S.inventory[cat][prev]||0)+1;
+  }
+  m[slot]=key||null;
+  return R(true,`${m.name.split(' ')[0]} ausgerüstet.`);
+}
+
+function assignTeam(charId,teamId){
+  const m=S.roster[charId];
+  if(!m)return R(false,'Charakter nicht gefunden.');
+  const tSpec=Array.isArray(SG_TEAMS)?SG_TEAMS.find(t=>t.id===teamId):SG_TEAMS[teamId];
+  if(!tSpec)return R(false,'Team existiert nicht.');
+  if(S.chapter<tSpec.unlockChap)return R(false,`${tSpec.name} wird erst in Kapitel ${tSpec.unlockChap+1} freigeschaltet.`);
+  m.team=teamId;
+  return R(true,`${m.name.split(' ')[0]} → ${tSpec.name}`);
+}
+
+function setCommander(cmdId){
+  if(!COMMANDERS[cmdId])return R(false,'Unbekannter Kommandant.');
+  S.commander=cmdId;
+  note(`🎖 Kommandowechsel: ${COMMANDERS[cmdId].name} übernimmt die Leitung des SGC.`);
+  return R(true,`${COMMANDERS[cmdId].name} im Dienst.`);
+}
+
+if(typeof window!=='undefined'){
+  window.COLONY_BUILDINGS=COLONY_BUILDINGS;
+  window.defaultKeybinds=defaultKeybinds;
+  window.createColonyState=createColonyState;
+  window.getColonyStats=getColonyStats;
+  window.foundColony=foundColony;
+  window.buildColonySector=buildColonySector;
+  window.upgradeColonySector=upgradeColonySector;
+  window.demolishColonySector=demolishColonySector;
+}
+if(typeof module!=='undefined'&&module.exports){
+  module.exports={
+    COLONY_BUILDINGS,defaultKeybinds,createColonyState,getColonyStats,
+    foundColony,buildColonySector,upgradeColonySector,demolishColonySector
+  };
+}
