@@ -34,10 +34,13 @@
     - Repository-Bereinigung: 119+ Temp-Dateien gelöscht (~1.2 MB), .gitignore erweitert
     - i18n-Architektur finalisiert: `i18n-game.js`, `i18n-portal.js` vollständig, Key-Parität geprüft
     - Mehrsprachigkeit-Infrastruktur: `i18n-languages.js` mit Sprachprioritäten (Spanisch, Chinesisch, Japanisch, Russisch)
-    - Tag-Loop-Fix: `startNextDay()` Funktion implementiert mit zufälligen Stargate-Events (15% Chance)
+    - Tag-Loop-Fix: `startNextDay()` Funktion implementiert (ruft `doDay()` auf) mit zufälligen Stargate-Events (15% Chance)
+    - i18n Reparaturen: Krankenstation-Texte (renderMedbayView), Event-Strings, EN-Tabelle komplett
     - Post-Mortem-Dokumentation: Token-Limit-Probleme bei Qwen 3.8, Modell-Verwirrung, Lessons Learned
+    - Academic Paper: i18n-Architektur-Sektion (6.1.1) hinzugefügt, Phase 6 dokumentiert
+    - **Roadmap erweitert:** Hex-Feld-Kampfsystem (CogSci-Style) für v0.31-v0.35 geplant
     - Release v0.30 vorbereiten
-**Stand:** 25. Oktober 2026 · 209 Prüfungen grün (0 Fehler).
+**Stand:** 25. Oktober 2026 · 209 Prüfungen (2 pre-existing Winamp/Combat UI Fehler).
 
 ### Post-Mortem: Qwen 3.8 27b Token-Limit & Modell-Verwirrung (v0.29 → v0.30)
 

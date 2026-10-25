@@ -115,6 +115,66 @@
 - [x] **10-facher Performance-Boost im Kampf**: Beseitigung von Layout-Thrashing (`resizeCombatViewport` aus der 60-FPS-Schleife verbannt), Dirty-State-Caching für die Combat-DOM-Elemente und wiederverwendbare TypedArrays für die Audio-Visualisierung.
 - [x] **Musik-Ablauf**: Intro (Stargate Thema) → Basis (Remix 1, `theme_remix_0`) → Sternenkarte (Remix 3, `theme_remix_2`) → Basis (Remix 1).
 - [x] **Mutieren-Engine repariert**: Setter für `STRUDEL.currentCode` ergänzt; sichere Algorithmus-Transformationen für Noten- und Skalenmodulation ohne Syntaxfehler.
+
+---
+
+## Phase 6: Hex-Feld-Kampfsystem (CogSci Style) – Geplant für v0.31-v0.35 🔴
+
+### 6.1 Hex-Grid Engine (v0.31) 🔴
+- [ ] **Hex-Grid-Datenstruktur**: Umstellung von quadratischem zu hexagonalem Raster (axiale Koordinaten: q, r)
+- [ ] **Hex-Renderer**: Isometrische 2:1-Hex-Darstellung in Pixel- und ASCII-Modus
+- [ ] **Bewegungssystem**: 6 Nachbarn pro Hex (vs. 4 bei Quadraten), Entfernungsberechnung mit Hex-Distanz (max( |q1-q2|, |r1-r2|, |s1-s2| ))
+- [ ] **Kamerasteuerung**: Hex-sensible Pan- und Zoom-Logik (Q/E-Kamera rotation bleibt erhalten)
+
+### 6.2 Taktische Hex-Features (v0.32-v0.33) 🟡
+- [ ] **Deckungssystem**: Hex-basierte Deckungswerte (low/medium/high) basierend auf Gelände-Typ
+- [ ] **Flankierungs-Mechanik**: Bonus-Schaden bei Angriffen von bestimmten Hex-Richtungen
+- [ ] **Hex-spezifische Fähigkeiten**: "Push", "Pull", "Zone of Control" für taktische Tiefe
+- [ ] **ASCII-3D Hex-Renderer**: CP437-Hex-Symbole (◘, ○, ♂, ♀) mit Höhenlinien
+
+### 6.3 Forschung & UI für Hex-System (v0.34) 🟡
+- [ ] **Eigene Forschungs-Fenster**: Modal mit Tech-Tree für Hex-Entwicklung (Gate-Netz, Waffentechnik, Schilde)
+- [ ] **Hex-Research-Integration**: Neue Technologien freischalten (Zat'nik'tel, Stabwaffen,能量护盾)
+- [ ] **Research-UI-Redesign**: Modernes, übersichtliches Layout mit Kategorien (Waffen, Verteidigung, Raumfahrt, Medizin, Kommunikation)
+
+### 6.4 Polishing & Testing (v0.35) 🟢
+- [ ] **Hex-Kampftutorials**: Spieler führt durch Hex-System-Einführung
+- [ ] **Performance-Optimierung**: Hex-Grid-Caching, Batch-Rendering für große Schlachtfelder
+- [ ] **Test-Suite**: 50+ neue Tests für Hex-Bewegung, Deckung, Flankierung
+
+---
+
+## Phase 7: i18n & Internationalisierung (v0.30-v0.40) 🟡
+
+### 7.1 Mehrsprachigkeit (v0.30-v0.35) 🟡
+- [x] **v0.30**: DE/EN vollständig, i18n-Architektur dokumentiert
+- [ ] **v0.31**: Spanisch (es) – Priorität 1 (Lateinamerika, 41M+ Sprecher)
+- [ ] **v0.32**: Chinesisch (zh) – Priorität 2 (Asien, 1B+ Sprecher)
+- [ ] **v0.33**: Japanisch (ja) – Priorität 3 (Asien, 125M Sprecher)
+- [ ] **v0.34**: Russisch (ru) – Priorität 4 (Europa/Asien, 150M+ Sprecher)
+- [ ] **v0.35**: Französisch (fr), Portugiesisch (pt), Arabisch (ar)
+
+### 7.2 i18n-Infrastruktur (v0.30) ✅
+- [x] `i18n-languages.js` mit Sprachprioritäten basierend auf Stargate-Viewership
+- [x] `i18n-game.js` und `i18n-portal.js` mit Key-Paritätstests
+- [x] Dokumentierter 5-Schritt-Prozess für neue Sprachen
+
+---
+
+## Version Release Plan
+
+| Version | Fokus | Geplanter Release |
+|---------|-------|-------------------|
+| v0.30 | i18n, Tag-Loop, Cleanup | 25. Okt 2026 ✅ |
+| v0.31 | Hex-Grid Engine (Basis) | Nov 2026 |
+| v0.32 | Hex-Taktik & Deckung | Dez 2026 |
+| v0.33 | Forschung & Hex-Integration | Jan 2027 |
+| v0.34 | Spanisch i18n | Feb 2027 |
+| v0.35 | Hex Polishing & Testing | Mär 2027 |
+
+---
+
+**Regel:** Nach jedem Durchgang → `Captain's Log` + `HANDOFF.md` + `node test-browser.js` grün.
 - [x] **Neuer Track: 🌌 Melancholic Ambient Phaser Remix**: 74 BPM D-Dorisch mit nativem `.phaser()` DSP-Filter, Supersaw-Pads, Cello-Subbass und einsamer Glocke.
 
 ### 5.5 Outro-Fanfare, Web MIDI, Boot-Screen & Wurmloch-Transit (v0.24 – ERLEDIGT ✅)

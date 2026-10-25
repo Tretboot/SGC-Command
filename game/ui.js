@@ -2085,11 +2085,11 @@ function startNextDay(){
  const eventRoll = Math.random();
  if(eventRoll < 0.15){
   const events = [
-   '🌀 Incoming Wormhole: Unautorisierte Toraktivierung aus dem Omega-Sektor!',
+   I18N.T('game.event.wormhole'),
    '📡 Tok\'ra Alert: Geheime Nachricht durch das Sternentor übermittelt!',
-   '⚠️ Gate Alarm: Chevron 5 hat sich ohne Befehl entsperrt!',
-   '🌌 Stargate Pulse: Energieanomalie im Naquadah-Kern detected!',
-   '🛸 Alien Contact: Ungewöhnliches Signal von P3X-888!'
+   I18N.T('game.event.alarm'),
+   I18N.T('game.event.pulse'),
+   I18N.T('game.event.contact')
   ];
   toast(events[Math.floor(Math.random() * events.length)]);
  }
