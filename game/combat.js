@@ -10,7 +10,7 @@
 // Sound: SFX (sound.js). UX: Angriffsziele SOFORT bei Auswahl sichtbar.
 
 const C={active:false,map:[],units:{},nextId:1,round:1,phase:'player',gatePos:null,objective:null,selected:null,moveRange:[],atkRange:[],coverRange:[],result:null,log:[],mission:null,teamIds:[],hover:null,fx:[],shake:0,firstHint:true,firstJaffa:false,tutorial:null,dialogueActive:false,sceneFlags:{},cameraX:0,cameraY:0,mapVersion:0,loot:[],
- distance(x0,y0,x1,y1){return Math.max(Math.abs(x1-x0),Math.abs(y1-y0));}};
+ distance(x0,y0,x1,y1){return hexOn()?hexDist(x0,y0,x1,y1):Math.max(Math.abs(x1-x0),Math.abs(y1-y0));}};
 const TILE=48;
 let VIEW_W=20,VIEW_H=15;
 let GW=VIEW_W,GH=VIEW_H;
@@ -231,6 +231,7 @@ if(typeof window!=='undefined'){
 }
 
 function startCombat(mission,teamIds){
+  if(typeof MUSIC_PROGRESS!=='undefined')MUSIC_PROGRESS.resetCombat();
   C.active=true;C.mission=mission;C.teamIds=teamIds;
   C.theme=mission.theme||mission.map;C.tileCache={};
   C.round=1;C.phase='player';
@@ -347,6 +348,19 @@ function startCombat(mission,teamIds){
 
 function inB(x,y){return x>=0&&y>=0&&x<GW&&y<GH;}
 function idx(x,y){return y*GW+x;}
+/* ===== v0.34 HEX-TAKTIK =====
+   Das Kampfgitter bleibt ein Array GW×GH; im Hex-Modus wird es als
+   "odd-r offset"-Layout gelesen: ungerade Reihen sind um ein halbes Feld
+   nach rechts versetzt. Dadurch funktionieren Karten, Spawns und Speicherstände
+   unverändert – nur Nachbarschaft, Distanz und Darstellung ändern sich.
+   Referenz: Red Blob Games "Hexagonal Grids" (Offset- & Axial-Koordinaten). */
+function hexOn(){return !!(typeof S!=='undefined'&&S&&S.hexMode!==false);}
+const SQ_DIRS=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
+const HEX_DIRS_EVEN=[[1,0],[-1,0],[0,-1],[-1,-1],[0,1],[-1,1]]; // gerade Reihe: Diagonalen nach links
+const HEX_DIRS_ODD=[[1,0],[-1,0],[1,-1],[0,-1],[1,1],[0,1]];    // ungerade Reihe: nach rechts versetzt
+function stepDirs(x,y){return hexOn()?((y&1)?HEX_DIRS_ODD:HEX_DIRS_EVEN):SQ_DIRS;}
+function offsetToAxial(x,y){return {q:x-((y-(y&1))>>1),r:y};}
+function hexDist(x0,y0,x1,y1){const a=offsetToAxial(x0,y0),b=offsetToAxial(x1,y1);return (Math.abs(a.q-b.q)+Math.abs(a.q+a.r-b.q-b.r)+Math.abs(a.r-b.r))/2;}
 function isWalkable(x,y){if(!inB(x,y))return false;const t=C.map[idx(x,y)].t;return t===0||t===1||t===2||t===6||t===9||t===10;}
 function blocksLOS(x,y){if(!inB(x,y))return true;const t=C.map[idx(x,y)].t;return t===3||t===4||t===5||t===8||t===13;}
 function coverRating(unit){
@@ -407,7 +421,7 @@ function moveRange(unit){
     const cur=queue.shift();
     if(cur.cost>0)range.push({x:cur.x,y:cur.y});
     if(cur.cost>=unit.ap)continue;
-    for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){
+    for(const[dx,dy]of stepDirs(cur.x,cur.y)){ // v0.34: 6 (Hex) oder 8 (Quadrat) Nachbarn
       const nx=cur.x+dx,ny=cur.y+dy,ni=idx(nx,ny);
       if(visited.has(ni)||!canWalkStep(cur.x,cur.y,nx,ny)||unitAt(nx,ny))continue;
       visited.set(ni,cur.cost+1);
@@ -418,6 +432,7 @@ function moveRange(unit){
 }
 function canWalkStep(x,y,nx,ny){
  if(!isWalkable(nx,ny))return false;
+ if(hexOn())return true; // Hex: keine Diagonalen → keine Eck-Prüfung nötig
  const dx=nx-x,dy=ny-y;
  return !dx||!dy||(isWalkable(x+dx,y)&&isWalkable(x,y+dy));
 }
@@ -464,6 +479,8 @@ function doAttack(attacker,target){
     if(arm)dmg=Math.max(1,Math.round(dmg*(1-arm.reduction)));
     if(target.shieldTurns>0)dmg=Math.max(1,Math.round(dmg*0.5));
     target.hp-=dmg;
+    // v0.31: dynamische Musik – erster Treffer / eigener Verwundeter
+    if(typeof MUSIC_PROGRESS!=='undefined')MUSIC_PROGRESS.onCombatEvent(target.side==='player'?'wound':'shot');
     spawnDamage(target.x,target.y,dmg,'#ffd23a');
     spawnFlash(target.x,target.y,'#ff5555');
     sfx('hit');
@@ -770,7 +787,7 @@ function nearestPlayer(u){
 function bestStep(u,target){
   const dirs=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
   let best=null,bd=C.distance(u.x,u.y,target.x,target.y);
-  for(const[dx,dy]of dirs){
+  for(const[dx,dy]of stepDirs(u.x,u.y)){
     const nx=u.x+dx,ny=u.y+dy;
     if(!canWalkStep(u.x,u.y,nx,ny)||unitAt(nx,ny))continue;
     const nd=C.distance(nx,ny,target.x,target.y);
@@ -788,7 +805,7 @@ function pathStep(unit,target){
  const dirs=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
  for(let head=0;head<queue.length;head++){
   const current=queue[head];
-  for(const[dx,dy]of dirs){
+  for(const[dx,dy]of stepDirs(current.x,current.y)){
    const x=current.x+dx,y=current.y+dy,key=idx(x,y);
    if(visited.has(key)||!canWalkStep(current.x,current.y,x,y)||unitAt(x,y))continue;
    const first=current.first||{x,y};
