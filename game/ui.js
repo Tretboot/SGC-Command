@@ -382,6 +382,8 @@ function getWinampTracksForTab(tab, search=''){
   const q=search.trim().toLowerCase();
   if(tab==='sa'){
     list=Object.keys(STRUDEL_TRACKS).filter(k=>k.startsWith('sa_'));
+    // v0.31: nur Starter + über Planeten freigeschaltete Songs zeigen
+    if(typeof MUSIC_PROGRESS!=='undefined')list=MUSIC_PROGRESS.filter(list);
   }else if(tab==='theme'){
     list=[
       'theme_fanfare',
@@ -822,76 +824,9 @@ function showStrudelModal(){
 
       <button id="winamp-8bit-btn" class="winamp-btn ${is8Bit?'active':''}" onclick="STRUDEL.setChiptune(!STRUDEL.chiptuneMode,true)" title="${I18N.T('game.dyn.str.chip_title')}">👾 8-Bit: ${is8Bit?'AN':'AUS'}</button>
       <button class="winamp-btn ${STRUDEL.dynamicEnabled?'active':''}" onclick="STRUDEL.dynamicEnabled=!STRUDEL.dynamicEnabled;toast(I18N.T('game.dyn.str.toast_dyn')+(STRUDEL.dynamicEnabled?I18N.T('game.dyn.str.on'):I18N.T('game.dyn.str.off')));showStrudelModal()" title="${I18N.T('game.dyn.str.dyn_title')}">⚡ DYN: ${STRUDEL.dynamicEnabled?'AN':'AUS'}</button>
-      <button class="winamp-btn" onclick="generateNewSongFromContext()" title="${I18N.T('game.dyn.str.songgen_title')}">🎲 SONGGEN</button>
+      <button class="winamp-btn" onclick="WM.openSliders()" title="Song-Slider + MIDI Learn">🎚 SLIDER</button><button class="winamp-btn" onclick="WM.openDJ()" title="Klangstil / DJ-Filter">🎧 DJ</button><button class="winamp-btn" onclick="FX_PAD.open()" title="Master-FX XY-Pad (Echo, Hall, Drive)">🎛 FX</button><button class="winamp-btn" onclick="MIDI_OUT.open()" title="MIDI Out an externe Synths">🔌 OUT</button><button class="winamp-btn" onclick="PIANOROLL.open()" title="Pianoroll-Fenster">🎹 ROLL</button><button class="winamp-btn" onclick="generateNewSongFromContext()" title="${I18N.T('game.dyn.str.songgen_title')}">🎲 SONGGEN</button>
     </div>
-
-    <!-- REBIRTH RB-338 SYNTH & DRUM RACK (SOUNDBANKS & SLIDERS) -->
-    <div id="rebirth-rack" class="rebirth-chassis" style="display:${WINAMP.rackOpen?'block':'none'}">
-      <!-- SECTION 1: TB-303 BASS SYNTHESIZER -->
-      <div class="rebirth-section rebirth-303">
-        <div class="rebirth-header">
-          <span class="rebirth-title">🎸 BASS / TB-303 ACID RACK</span>
-          <div class="rebirth-banks">
-            <span style="font-size:10px;color:#cbd5e1;margin-right:4px">SOUNDBANK:</span>
-            ${renderBankButtons('bass', rb.bassBank, [
-              {id:'tb303_saw', label:'303 Saw'},
-              {id:'tb303_sq', label:'303 Sq'},
-              {id:'sh101', label:'SH-101'},
-              {id:'sub', label:'Sub'},
-              {id:'slap', label:'Slap'},
-              {id:'chiptune', label:'8-Bit'},
-              {id:'reese', label:'Reese'}
-            ])}
-          </div>
-        </div>
-        <div class="rebirth-knobs-grid">
-          ${renderSliderControl('cutoff', 'CUTOFF', rb.cutoff, 100, 8000, 'Hz')}
-          ${renderSliderControl('resonance', 'RESONANCE', rb.resonance, 0.5, 20, 'Q')}
-          ${renderSliderControl('envMod', 'ENV MOD', Math.round(rb.envMod*100), 0, 100, '%')}
-          ${renderSliderControl('decay', 'DECAY', rb.decay, 0.05, 1.2, 's')}
-          ${renderSliderControl('distortion', 'DISTORTION', Math.round(rb.distortion*100), 0, 100, '%')}
-          ${renderSliderControl('tune', 'TUNE', rb.tune, -12, 12, 'st')}
-        </div>
-      </div>
-
-      <!-- SECTION 2: ROLAND TR DRUM MACHINE -->
-      <div class="rebirth-section rebirth-drums">
-        <div class="rebirth-header">
-          <span class="rebirth-title">🥁 ROLAND DRUM MACHINE (TR-909 / TR-808 / TR-707)</span>
-        </div>
-        <div class="rebirth-drum-banks-row" style="display:flex;flex-direction:column;gap:6px">
-          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-            <b style="font-size:10px;color:#facc15">KICK BANK:</b>
-            ${renderBankButtons('kick', rb.kickBank, [
-              {id:'tr909', label:'TR-909'},
-              {id:'tr808', label:'TR-808'},
-              {id:'tr707', label:'TR-707'},
-              {id:'linn', label:'LinnDrum'},
-              {id:'chiptune', label:'8-Bit'},
-              {id:'acoustic', label:'Acoustic'},
-              {id:'acid', label:'Acid'}
-            ])}
-          </div>
-          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-            <b style="font-size:10px;color:#38bdf8">HI-HAT BANK:</b>
-            ${renderBankButtons('hat', rb.hatBank, [
-              {id:'tr909', label:'TR-909'},
-              {id:'tr808', label:'TR-808'},
-              {id:'tr707', label:'TR-707'},
-              {id:'linn', label:'LinnDrum'},
-              {id:'chiptune', label:'8-Bit'},
-              {id:'noise', label:'Noise Sweep'}
-            ])}
-          </div>
-        </div>
-        <div class="rebirth-knobs-grid" style="margin-top:8px">
-          ${renderSliderControl('bdTune', 'BD TUNE', rb.bdTune, 40, 140, 'Hz')}
-          ${renderSliderControl('bdDecay', 'BD DECAY', rb.bdDecay, 0.08, 0.70, 's')}
-          ${renderSliderControl('hatDecay', 'HAT DECAY', rb.hatDecay, 0.02, 0.35, 's')}
-          ${renderSliderControl('tempoBpm', 'TEMPO', rb.tempoBpm, 80, 180, 'BPM')}
-        </div>
-      </div>
-    </div>
+    <!-- v0.31: ReBirth-Rack entfernt; Drums laufen über game/drum808.js -->
 
     <!-- STRUDEL.CC LIVE CODE INTERFACE (FRONT AND CENTER!) -->
     <div class="winamp-code-panel">

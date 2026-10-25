@@ -1,0 +1,35 @@
+/* SGC Command · theme-90s.css (v0.33) – Late-90s Military-Terminal (Stil A)
+   Phosphorgrün, Scanlines, Wireframe-Ecken. Wird NACH style.css geladen
+   und ändert nur Optik, kein Layout → risikoarm, leicht zurückzunehmen. */
+:root{--t-green:#7CFC8a;--t-dim:#3c8c3c;--t-bg:#050a06;--t-amber:#ffb000}
+.sgc-title{background:radial-gradient(ellipse at center,#0b170c 0%,#020403 75%)!important;transition:opacity .9s ease}
+.sgc-title.fade{opacity:0}
+.sgc-title::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 2px,transparent 2px 4px);animation:sgcflick 4s infinite}
+@keyframes sgcflick{0%,97%,100%{opacity:1}98%{opacity:.85}}
+.sgc-title>div{border:1px solid var(--t-dim)!important;background:rgba(5,12,6,.92)!important;box-shadow:0 0 30px rgba(124,252,138,.15)!important;position:relative}
+.sgc-title>div::before,.sgc-title>div::after{content:"";position:absolute;width:18px;height:18px;border:2px solid var(--t-green)}
+.sgc-title>div::before{top:-3px;left:-3px;border-right:0;border-bottom:0}
+.sgc-title>div::after{bottom:-3px;right:-3px;border-left:0;border-top:0}
+.sgc-title *{color:var(--t-green)!important;font-family:"Courier New",monospace!important}
+.sgc-title button{background:transparent!important;border:1px solid var(--t-green)!important;box-shadow:none!important;animation:sgcblink 1.2s steps(2) infinite}
+@keyframes sgcblink{50%{opacity:.55}}
+.sgc-emblem{width:120px;height:120px;display:block;margin:0 auto 12px;animation:sgcspin 40s linear infinite;filter:drop-shadow(0 0 6px rgba(124,252,138,.6))}
+@keyframes sgcspin{to{transform:rotate(360deg)}}
+.sgc-win{border-color:var(--t-dim);background:rgba(4,10,5,.97);color:#c9f7cf}
+.sgc-win-head{background:linear-gradient(90deg,#0f2a12,#071108);color:var(--t-green);border-bottom:1px solid var(--t-dim)}
+#menu>div{border:1px solid var(--t-dim);box-shadow:0 0 24px rgba(124,252,138,.12)}
+.menu-btn:hover{text-shadow:0 0 6px currentColor}
+.hazard-box{border:2px solid #000;padding:8px;margin-bottom:8px;background:repeating-linear-gradient(45deg,#facc15 0 12px,#111 12px 24px)}
+.hazard-warn{background:#111;color:#facc15;font-weight:bold;padding:4px;font-size:11px;margin-bottom:6px}
+.hazard-cover,.hazard-fire{font-family:monospace;font-weight:bold;padding:6px 10px;border:2px solid #000;cursor:pointer}
+.hazard-cover{background:#111;color:#facc15}.hazard-cover.open{background:#7f1d1d;color:#fff}
+.hazard-fire{background:#450a0a;color:#fca5a5}.hazard-fire:disabled{opacity:.4;cursor:not-allowed}
+.hazard-fire.on{background:#dc2626;color:#fff;animation:sgcblink .4s steps(2) infinite;box-shadow:0 0 16px #dc2626}
+@media (max-width:700px){.sgc-win{left:0!important;width:100vw!important}.sgc-slrow{grid-template-columns:70px 1fr auto}}
+
+/* v0.34 Master-FX-Pad */
+.fx-xy{width:100%;height:180px;display:block;border:1px solid var(--t-dim);cursor:crosshair;touch-action:none}
+.fx-pads{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px;margin:8px 0}
+.fx-pad{font-family:monospace;font-weight:bold;padding:10px 4px;background:#071108;color:var(--t-green);border:1px solid var(--t-dim);border-radius:3px;cursor:pointer;box-shadow:inset 0 -3px 0 rgba(0,0,0,.5)}
+.fx-pad.on{background:var(--t-green);color:#031;box-shadow:0 0 12px rgba(124,252,138,.6)}
+.fx-pad:active{transform:translateY(2px)}

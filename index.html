@@ -135,10 +135,15 @@
     }
     iframe#game-iframe {
       width: 100%;
-      height: 800px;
+      height: min(800px, calc(100vh - 120px));
       border: none;
       display: block;
     }
+    /* v0.34 Vollbild-Fix: Container als Flex-Spalte, iframe füllt den Rest */
+    #game-container:fullscreen{display:flex;flex-direction:column;width:100vw;height:100vh;border:0;border-radius:0}
+    #game-container:fullscreen iframe#game-iframe{flex:1 1 auto;height:auto;min-height:0}
+    #game-container:-webkit-full-screen{display:flex;flex-direction:column;width:100vw;height:100vh}
+    #game-container:-webkit-full-screen iframe#game-iframe{flex:1 1 auto;height:auto}
     /* Cards and Grids */
     .card {
       background: var(--bg-surface);
@@ -283,7 +288,7 @@
       <button class="nav-btn" onclick="showTab('wiki')">📚 <span data-i18n="portal.nav.wiki">Datenbank &amp; Lore</span></button>
       <button class="nav-btn" onclick="showTab('logs')">📜 <span data-i18n="portal.nav.logs">Captain's Log</span></button>
       <button class="nav-btn" onclick="showTab('about')">ℹ️ <span data-i18n="portal.nav.about">Über &amp; Labor</span></button>
-      <button class="nav-btn" id="lang-toggle" title="Sprache wechseln (Switch to English)" data-i18n-title="portal.lang.title" onclick="I18N.setLang(I18N.lang==='de'?'en':'de')">🌐 <span data-i18n="portal.lang.btn">EN</span></button>
+      <select class="lang-select nav-btn" onchange="I18N.setLang(this.value)" aria-label="Language"><option value="de">🇩🇪 DE</option><option value="en">🇬🇧 EN</option></select><button style="display:none" class="nav-btn" id="lang-toggle" title="Sprache wechseln (Switch to English)" data-i18n-title="portal.lang.title" onclick="I18N.setLang(I18N.lang==='de'?'en':'de')">🌐 <span data-i18n="portal.lang.btn">EN</span></button>
     </nav>
   </header>
 
@@ -306,7 +311,7 @@
           <div data-i18n-html="portal.game.status"><b>Status:</b> Betriebsbereit · SGC-AMP v2.80 · C&amp;C Hell March &amp; Lo-Fi Remixes aktiv · Strudel Core Online</div>
           <div data-i18n-html="portal.game.controls">Steuerung: <b>WASD/Pfeile</b> = Kamera · <b>Q/E</b> = 90° Drehung · <b>V</b> = Pixel/ASCII (8-Bit) · <b>TAB</b> = Nächstes Mitglied · <b>ESC</b> = Menü</div>
         </div>
-        <iframe id="game-iframe" src="game/index.html?v=0.24"></iframe>
+        <iframe id="game-iframe" src="game/index.html?v=0.34" allow="fullscreen; midi; autoplay" allowfullscreen></iframe>
       </div>
     </section>
 
@@ -747,7 +752,8 @@ Ergebnis: G-Dur (Root 7), 165 BPM, 35 Takte, 1.380 Events</pre>
     function toggleFullScreenGame() {
       const el = document.getElementById('game-container');
       if (!document.fullscreenElement) {
-        if (el.requestFullscreen) el.requestFullscreen();
+        // Nach dem Umschalten das Spiel neu messen lassen (Canvas-Größen hängen am Viewport)
+        if (el.requestFullscreen) el.requestFullscreen().then(() => setTimeout(() => { try { document.getElementById('game-iframe').contentWindow.dispatchEvent(new Event('resize')); } catch (e) {} }, 120));
       } else {
         if (document.exitFullscreen) document.exitFullscreen();
       }

@@ -605,3 +605,16 @@ a{color:#4fc3f7}
   gap:6px;
   margin-bottom:6px;
 }
+
+/* v0.31: Modals nie größer als der Viewport → nichts wird im Vollbild abgeschnitten */
+#modal>*,#menu>*{max-height:calc(100vh - 24px);max-width:calc(100vw - 24px);overflow:auto;box-sizing:border-box}
+.lang-select{background:#0f172a;color:#e2e8f0;border:1px solid #0284c7;border-radius:4px;font-family:monospace;padding:4px 6px}
+
+/* v0.32 Fenster-Manager: verschiebbare + skalierbare Fenster */
+.sgc-win{position:fixed;display:flex;flex-direction:column;background:rgba(10,15,28,.97);border:1px solid #0284c7;border-radius:6px;box-shadow:0 8px 30px rgba(0,0,0,.6);resize:both;overflow:hidden;min-width:220px;min-height:120px;max-width:100vw;max-height:100vh;font-family:monospace;color:#e2e8f0}
+.sgc-win-head{display:flex;justify-content:space-between;align-items:center;padding:4px 8px;background:#0c4a6e;cursor:move;touch-action:none;user-select:none;font-size:12px;letter-spacing:1px}
+.sgc-win-body{flex:1;overflow:auto;padding:8px;font-size:12px}
+.sgc-slrow{display:grid;grid-template-columns:90px 1fr auto auto;gap:6px;align-items:center;margin-bottom:6px}
+.sgc-slrow label{color:#93c5fd;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sgc-muted{color:#64748b;font-size:11px;margin:6px 0}
+#modal>*>:first-child{cursor:move}
