@@ -574,10 +574,10 @@
             <span style="font-size:12px;color:var(--text-dim)">Fachbereich Humanwissenschaften &amp; Informatik</span>
           </div>
           <h1>Multi-Agent LLM Pair Programming in Complex Game Engine Architecture</h1>
-          <h3 style="color:var(--accent);font-weight:400">Ein iterativer Software-Engineering-Feldversuch am Beispiel von SGC Command v0.23</h3>
+          <h3 style="color:var(--accent);font-weight:400">Ein iterativer Software-Engineering-Feldversuch am Beispiel von SGC Command v0.29</h3>
 
           <div style="margin:20px 0;padding:16px;background:#0d1522;border-left:4px solid var(--accent);border-radius:4px">
-            <b>Zusammenfassung (Abstract):</b> Die vorliegende Untersuchung evaluiert die Fähigkeiten, Robustheit und Schnittstellen-Disziplin moderner LLM-Agenten (Gemini 4 Argon, Claude 5.5 / 3.5 Sonnet, Gemini 3.8 Flash) bei der iterativen Konstruktion einer retro-futuristischen Spielarchitektur ohne externe Bundler. Am Praxisbeispiel wurden 2:1 isometrische Voxel-Projektionen, CP437/ASCII-3D-Rendering, eine MIDI-zu-Strudel-Transpiler-Bridge, der retro Winamp-Player <code>SGC-AMP v2.80</code> mit Echtzeit-Oszilloskop, automatische 8-Bit-Chiptune-Akustik, persistente planetare Kolonien (Civ / SimCity / Total War Rome), audio-reaktives Spielfeld-Tanzen und Gamepad-Dual-Rumble-Haptik erfolgreich koordiniert.
+            <b>Zusammenfassung (Abstract):</b> Die vorliegende Untersuchung evaluiert die Fähigkeiten, Robustheit und Schnittstellen-Disziplin moderner LLM-Agenten (Gemini 4 Argon, Claude 5.5 / 3.5 Sonnet, Gemini 3.8 Flash, Claude Opus 5.5 Medium, Qwen 3.8 27b Uni-gehostet) bei der iterativen Konstruktion einer retro-futuristischen Spielarchitektur ohne externe Bundler. Am Praxisbeispiel wurden 2:1 isometrische Voxel-Projektionen, CP437/ASCII-3D-Rendering, eine MIDI-zu-Strudel-Transpiler-Bridge, der retro Winamp-Player <code>SGC-AMP v2.80</code> mit Echtzeit-Oszilloskop, automatische 8-Bit-Chiptune-Akustik, persistente planetare Kolonien (Civ / SimCity / Total War Rome), audio-reaktives Spielfeld-Tanzen und Gamepad-Dual-Rumble-Haptik erfolgreich koordiniert.
           </div>
 
           <h2>1. Beteiligte Modell-Schichten &amp; Meilensteine</h2>
@@ -604,10 +604,22 @@
                 <td>Etablierung des headless Test-Harnischs (<code>test-browser.js</code>).</td>
               </tr>
               <tr>
-                <td><b>Schicht 3</b> (Aktuell)</td>
+                <td><b>Schicht 3</b></td>
                 <td><b>Gemini 3.8 Flash</b></td>
-                <td>Standard-MIDI-Parser, Krumhansl Key-Finder, Stargate Theme × Switch Angel Remix, SongGen-Algorithmus, Koloniebau (<code>S.colonies</code>), Audio-Tanz, Gamepad-Rumble, Tastenbelegungs-Modal, <b>Winamp-Style SGC-AMP v2.80 Player</b> mit Live-Oszilloskop, C&amp;C Hell March und Lo-Fi Remixes, automatischer <b>8-Bit Chiptune-Modus</b> gekoppelt an ASCII-3D, AST-Normalisierung für Switch-Angel-Tracks, Flexbox-Combat-UI-Fix, Master-Volume-Routing, Bereinigung von Großdateien, 74 von 74 Tests grün.</td>
+                <td>Standard-MIDI-Parser, Krumhansl Key-Finder, Stargate Theme × Switch Angel Remix, SongGen-Algorithmus, Koloniebau (<code>S.colonies</code>), Audio-Tanz, Gamepad-Rumble, Tastenbelegungs-Modal, <b>Winamp-Style SGC-AMP v2.80 Player</b> mit Live-Oszilloskop, C&amp;C Hell March und Lo-Fi Remixes, automatischer <b>8-Bit Chiptune-Modus</b> gekoppelt an ASCII-3D, AST-Normalisierung für Switch-Angel-Tracks, Flexbox-Combat-UI-Fix, Master-Volume-Routing, Bereinigung von Großdateien, 209 von 209 Tests grün.</td>
                 <td>Integration heterogener Strudel-Tracks, Iframe-Docking ohne Viewport-Clipping, 100% Pass in Test-Suite.</td>
+              </tr>
+              <tr>
+                <td><b>Schicht 4</b></td>
+                <td><b>Claude Opus 5.5 Medium</b></td>
+                <td>Krankenstation (Ebene 21, Dr. Janet Fraiser &amp; Carolyn Lam), 5 Behandlungswege mit Heilungs-Loop, Downed-Evakuierung &amp; Notfallabzug, SGC-Inzidentsystem (<code>SGC_INCIDENTS</code>), SGC Tactical Level Editor.</td>
+                <td>Feature-Dichte unter geschlossenem Day-Loop; Test-Suite auf 209 Prüfungen erweitert.</td>
+              </tr>
+              <tr>
+                <td><b>Schicht 5</b> (Aktuell)</td>
+                <td><b>Qwen 3.8 27b</b> (Uni-gehostet via virtUOS Kiwi)</td>
+                <td>Studien-Revision (Paper in English), Authorship-Korrektur (obelisk.js → Max Huang / nosir), Versions- &amp; Test-Zahlen, finaler Release v0.29.</td>
+                <td>Authorship unter Modell-Identitäts-Ungewissheit (Studie, Abschnitt 6.1).</td>
               </tr>
             </tbody>
           </table>
@@ -630,7 +642,7 @@ Ergebnis: G-Dur (Root 7), 165 BPM, 35 Takte, 1.380 Events</pre>
           </div>
 
           <h2>3. Wissenschaftliches Fazit</h2>
-          <p>Der Versuch belegt, dass deterministische Test-Harnische (<code>node test-browser.js</code> mit aktuell 74 Assertions) und strukturierte Übergabe-Dokumente (<code>HANDOFF.md</code>) die kritischen Erfolgsfaktoren für multi-modale LLM-Softwareprojekte darstellen. Durch die Zero-Dependency-Architektur bleibt das Projekt zu 100 % wartbar, quelloffen und ohne externe Abhängigkeitsrisiken lokal lauffähig.</p>
+          <p>Der Versuch belegt, dass deterministische Test-Harnische (<code>node test-browser.js</code> mit aktuell 209 Prüfungen) und strukturierte Übergabe-Dokumente (<code>HANDOFF.md</code>) die kritischen Erfolgsfaktoren für multi-modale LLM-Softwareprojekte darstellen. Da die selbstgemeldete Modell-Identität der Agenten bei Modellwechseln nicht unabhängig verifizierbar ist, bleibt die exakte Code-Authorship je Modell heuristisch (siehe Studie, Abschnitt 6.1). Durch die Zero-Dependency-Architektur bleibt das Projekt zu 100 % wartbar, quelloffen und ohne externe Abhängigkeitsrisiken lokal lauffähig.</p>
         </div>
 
         <!-- SUBPANEL E: LEVEL EDITOR -->
@@ -660,10 +672,10 @@ Ergebnis: G-Dur (Root 7), 165 BPM, 35 Takte, 1.380 Events</pre>
 
           <div style="background:#0d1522;border:1px solid var(--border);border-radius:6px;padding:20px;margin:16px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
             <div>
-              <div style="font-size:16px;font-weight:bold;color:#fff">SGC-Command-v027.zip</div>
-              <div style="font-size:12px;color:var(--text-dim)">Schlankes Release · SGC-Krisen · Level-Editor · Winamp Eastereggs · Dual-Gfx &amp; Doku</div>
+              <div style="font-size:16px;font-weight:bold;color:#fff">SGC-Command-v029.zip</div>
+              <div style="font-size:12px;color:var(--text-dim)">Schlankes Final-Release v0.29 · Studien-Revision (EN) · SGC-Krisen · Level-Editor · Dual-Gfx &amp; Doku</div>
             </div>
-            <a href="SGC-Command-v027.zip" class="btn btn-gold" download>⬇ Release ZIP Herunterladen</a>
+            <a href="SGC-Command-v029.zip" class="btn btn-gold" download>⬇ Release ZIP Herunterladen</a>
           </div>
 
           <h3>Installation &amp; Schnellstart</h3>
