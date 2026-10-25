@@ -1,3 +1,5 @@
+<!-- v0.34: siehe docs/CAPTAINS-LOG-034.md, HANDOFF-NEXT.md -->
+<!-- v0.31: siehe docs/CAPTAINS-LOG-031.md -->
 # 🗺 ROADMAP – SGC COMMAND v0.29 ("Studien-Revision & Final Release")
 
 **Stand:** v0.29 · Studien-Revision (EN) · Authorship-Korrektur · Doku-Abstimmung · Final Release · 209 Prüfungen grün

@@ -1,17 +1,11 @@
+<!-- v0.33 "Die 808 drückt jetzt": siehe docs/CAPTAINS-LOG-033.md und HANDOFF-NEXT.md -->
 > **Legal notice:** This is a strictly non-commercial fan project. Stargate is a registered trademark of MGM Studios / Amazon. No copyright infringement intended. This project is unofficial and is not affiliated with, endorsed by, or sponsored by MGM Studios, Amazon, or any Stargate rights holder.
 >
 > **License scope:** The AGPL-3.0-or-later license in this repository applies to the program code identified in [LICENSE](LICENSE). It does not grant any rights to Stargate, its universe, names, characters, settings, story elements, dialogue, trademarks, or any artwork, audio, screenshots, or other non-code material. Rights to third-party materials remain with their respective owners.
 
-### SGC Command v0.30 ("i18n, Tag-Loop & Hex-System Roadmap")
+### SGC Command v0.29 ("Studien-Revision & Final Release")
 
 An experimental, non-commercial fan-made tactical strategy game prototype. Manage a remote base, assemble a team, build offworld colonies, and take turn-based missions through the Stargate — backed by a high-octane algorithmic Strudel live-coding sound engine.
-
-**New in v0.30:**
-- **Internationalization (i18n):** Full DE/EN support with scalable architecture for Spanish, Chinese, Japanese, Russian
-- **Infinite Day Loop:** `startNextDay()` enables endless progression with 15% random Stargate lore events
-- **Medbay i18n Fixes:** All German UI texts now properly internationalized
-- **Research UI Planned:** Dedicated research window with modern categorized layout
-- **Hex Combat Roadmap:** CogSci-style hex-grid combat system planned for v0.31-v0.35 (ASCII + 2D graphics)
 
 The project is a browser game built with plain HTML, CSS, and JavaScript. It has no build step and requires no package installation.
 
