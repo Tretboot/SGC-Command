@@ -5,6 +5,17 @@ temp/
 *.tmp
 *.log
 
+# Build artifacts and outputs
+out_*.txt
+p_out*.txt
+*_tmp_*.js
+*_tmp_*.txt
+*_audit*.txt
+*_out*.txt
+
+# Backup files
+*.bak
+
 # Environment and sensitive keys
 .env
 .env.*
@@ -28,4 +39,8 @@ npm-debug.log*
 chrome-user-data/
 edge-user-data/
 *_user_data/
+
+# MIDI source files (not needed for runtime)
+midi/*.mid
+tools/sources/*.mid
 
