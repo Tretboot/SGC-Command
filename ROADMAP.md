@@ -1,6 +1,6 @@
-# 🗺 ROADMAP – SGC COMMAND v0.24 ("Feldtauglich & Web MIDI Edition")
+# 🗺 ROADMAP – SGC COMMAND v0.29 ("Studien-Revision & Final Release")
 
-**Stand:** v0.24 · Hardware Web MIDI Controller & Akai MPK Presets · Stargate Outro Theme · Cheyenne Boot-Screen · 3D Wurmloch-Tunnel · 122 Tests grün
+**Stand:** v0.29 · Studien-Revision (EN) · Authorship-Korrektur · Doku-Abstimmung · Final Release · 209 Prüfungen grün
 **Zweck:** Klare Prioritäten und technischer Fahrplan für die Weiterentwicklung von SGC Command.
 
 ---

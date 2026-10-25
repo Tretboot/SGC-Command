@@ -1,21 +1,21 @@
 # ⚖️ Lizenz-Audit & GitHub-Kompatibilitätsprüfung (`LICENSE-AUDIT.md`)
 
-**Projekt-Lizenz:** `MIT License` (`Copyright (c) 2026 tretboot`, siehe [`../LICENSE`](../LICENSE))  
-**Stand:** Durchgang 20 (Isometric Voxel / ASCII Overhaul & Strudel Sound Engine)
+**Projekt-Lizenz:** `AGPL-3.0-or-later` (siehe [`../LICENSE`](../LICENSE))  
+**Stand:** Durchgang 21 (Studien-Revision, AGPL-Ausrichtung, Final Release v0.29)
 
 ---
 
-## 1. Zusammenfassung: Was dürfen wir unter unserer MIT-Lizenz nutzen?
+## 1. Zusammenfassung: Was dürfen wir unter unserer AGPL-Lizenz nutzen?
 
-Unsere Repository-Lizenz ist die **MIT-Lizenz** (permissiv). Damit das Repository weiterhin sauber unter MIT vertrieben werden kann, gilt:
+Unsere Repository-Lizenz ist **AGPL-3.0-or-later** (starkes Copyleft, Open Source). Damit das Repository sauber unter AGPL vertrieben werden kann, gilt:
 - **Permissive Lizenzen (MIT, BSD-2-Clause, BSD-3-Clause, ISC, Apache-2.0, CC0 / Public Domain):** **Uneingeschränkt kompatibel.** Code, Algorithmen, Shader, Font-Atlanten und Datenstrukturen dürfen direkt übernommen, portiert und modifiziert werden, solange der ursprüngliche Copyright-Vermerk (`LICENSE`) erhalten bleibt.
-- **Starke Copyleft-Lizenzen (GPLv2, GPLv3, AGPLv3):** **Nicht direkt in MIT-Kerncode einbetten**, wenn das Gesamtprojekt als reines MIT-Projekt ohne Copyleft-Pflichten bleiben soll (AGPLv3 verlangt, dass das gesamte Web-Projekt bei Einbindung unter AGPLv3 gestellt wird).
+- **Copyleft-Lizenzen (GPLv2, GPLv3, AGPLv3):** **AGPLv3 ist mit unserer AGPL-3.0-or-later-Lizenz vollständig kompatibel** (z. B. `@strudel/web` – wesentlicher Grund für die Projekt-Lizenz). GPLv2-/GPLv3-only-Code nur nach gesonderter Prüfung einbetten (GPL-in-AGPL ist einseitig problematisch).
 
 ---
 
 ## 2. Geprüfte GitHub-Repositories im Detail
 
-| Projekt / Repository | URL | Lizenz | Kompatibel mit unserem MIT-Repo? | Verwendung in SGC Command |
+| Projekt / Repository | URL | Lizenz | Kompatibel mit unserem AGPL-Repo? | Verwendung in SGC Command |
 |---|---|---|---|---|
 | **`Tretboot/asciiid`** | <https://github.com/Tretboot/asciiid> | **MIT License** (`Copyright (c) 2021 gumix`) | ✅ **JA (100% kompatibel)** | Referenz & Algorithmus-Vorlage für unseren isometrischen CP437/ASCII-Voxel-Renderer (`game/iso.js`) inkl. Höhenstufen-Schattierung, Silhouetten-Kanten (`─`, `_`), Halbblöcken (`▀▄▌▐`) und Dither-Stufen (`░▒▓`). Lizenz liegt in [`references/asciiid/LICENSE`](asciiid/LICENSE). |
 | **`msokalski/asciicker`** | <https://github.com/msokalski/asciicker> | **MIT License** (`Copyright (c) 2021 gumix`) | ✅ **JA (100% kompatibel)** | Upstream-Repository von `asciiid`. Identische MIT-Lizenz. |
@@ -36,11 +36,11 @@ Laut Strudel-Dokumentation (*Project Start / Licensing*) unterliegt ein Projekt,
 ### Unsere technische & rechtssichere Lösung in SGC Command
 Um deinen Wunsch (*„Als Sound Engine sollte auch Strudel gehen ... Das bitte als Core Soundengine implementieren und dafür alles was nötig ist runterladen"*) vollständig zu erfüllen **und** dir volle Lizenzfreiheit zu lassen, haben wir eine **zweistufige Strudel-Architektur** gebaut:
 
-1. **Eigener MIT-lizenzierter Clean-Room Strudel-DSL-Core in [`game/sound.js`](../game/sound.js):**
+1. **Eigener Clean-Room Strudel-DSL-Core in [`game/sound.js`](../game/sound.js):**
    - Implementiert die Strudel-Pattern-Syntax (`setcps()`, `setTempo()`, `stack()`, `cat()`, `seq()`, `note()`, `n()`, `chord()`, `s()`, `sound()`, `.fast()`, `.slow()`, `.lpf()`, `.hpf()`, `.gain()`, `.attack()`, `.decay()`, `.sustain()`, `.release()`, `.delay()`, `.room()`, `.pan()`, `.crush()`, Mini-Notation `<a b c>`, `[a b]`, `a*4`, `~`, `evaluate()`, `hush()`) direkt auf der nativen Browser-`AudioContext` (Web Audio API) – **komplett ohne fremden AGPL-Code**!
    - Funktioniert sofort beim direkten Öffnen von `game/index.html` über `file://` (ohne Webserver, ohne Internet, ohne CORS-/AudioWorklet-Blockaden) und besteht alle Node-Smoke-Tests (`test-browser.js`).
 2. **Heruntergeladenes Original-Bundle `@strudel/web@1.3.0`:**
    - Liegt lokal unter [`game/vendor/strudel-web.js`](../game/vendor/strudel-web.js) sowie als Referenz in [`references/strudel/strudel-web.js`](strudel/strudel-web.js).
    - Wenn `window.initStrudel` aus dem Bundle geladen ist, kann die Sound-Engine wahlweise an die externe `@strudel/web`-Runtime delegieren oder den internen latenzfreien WebAudio-Strudel-Core nutzen.
-   - **Für einen strikten MIT-Release:** Wenn das Projekt später rein unter MIT (ohne AGPL-Drittanbieter-Datei) veröffentlicht werden soll, genügt es, die Datei `game/vendor/strudel-web.js` wegzulassen – sämtliche Strudel-Musik-Patterns und SFX laufen zu 100 % identisch über unseren MIT-eigenen Strudel-DSL-Core in `game/sound.js` weiter!
+    - **Hinweis:** Das Projekt ist offiziell unter AGPL-3.0-or-later lizenziert (u. a. wegen `@strudel/web`). Wird die AGPL-Drittanbieter-Datei `game/vendor/strudel-web.js` weggelassen, laufen sämtliche Strudel-Musik-Patterns und SFX zu 100 % identisch über unseren internen Strudel-DSL-Core in `game/sound.js` weiter!
 

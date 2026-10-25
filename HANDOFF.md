@@ -1,4 +1,4 @@
-# 📦 HANDOFF – SGC COMMAND (v0.28 – "Krankenstation Ebene 21 & Dr. Janet Fraiser")
+# 📦 HANDOFF – SGC COMMAND (v0.29 – "Studien-Revision & Final Release")
 
 **Projekt:** SGC Command (`g:\AgentHome\SGC-Command`)  
 **Forschungsrahmen:** Universität Osnabrück (Kognitionswissenschaft / Informatik) – KI-Pair-Programming-Studie  
@@ -6,7 +6,7 @@
 1. **Gemini 4 Argon:** 2:1 isometrische Voxel-Projektion, Obelisk-Mathematik, Diamond-Picking, initialer CP437/ASCII-Renderer, Lizenz-Audit.  
 2. **Claude 5.5 / 3.5 Sonnet:** Obelisk/Voxel-Stabilisierung, prozedurale WebAudio-Sample-Synthese, Inventar & Werkbank-Crafting (`INVENTAR-SPEC.md`), Hammonds Klemmbrett.  
 3. **Gemini 3.8 Flash:** Standard-MIDI-Bridge, Krumhansl-Schmuckler-Tonarterkennung, Stargate Theme × Switch Angel Hybrid-Remix-Synthesizer, prozedurale Seed-Song-Generierung (`SONGGEN`), persistenter planetarer Koloniebau, **SGC-AMP v2.80**, Strudel Live-Code Interface, ReBirth-338 Rack, 8-Bit Chiptune-Modus, C&C- und Lo-Fi-Remixes sowie das vereinheitlichte Web-Portal.
-4. **Claude Opus 5.5 Medium (Aktuelle Führungsschicht – v0.27 / v0.28):** 
+4. **Claude Opus 5.5 Medium (v0.25 – v0.28):** 
    - **Krankenstation (Ebene 21 / Dr. Janet Fraiser & Carolyn Lam – v0.28):**
      * Neuer Navigations-Reiter `🏥 Krankenstation` mit direkter Anbindung an Ebene 21 des Cheyenne Mountain Complex.
      * Chefärztin Dr. Janet Fraiser mit prozeduralem Pixel-Porträt, diagnostischen Lageberichten und Bio-Telemetrie-Monitor (EKG).
@@ -21,9 +21,15 @@
    - **SGC Tactical Level Editor (`tools/leveleditor.html` – v0.27):**
      * Standalone Autorenwerkzeug mit 2:1 Isometrie- & 2D-Rasteransicht, Palette, Höhenverstellung (+1/-1 Z), Presets und Export.
    - **Floppy-Disk-Budget & Release-Archiv:**
-     * Release `release/SGC-Command-v028.zip` erzeugt (~630 KB, weit unter der 1,44 MB Floppy-Disk-Grenze).
-     * Alle früheren Versionen (`v0.1.0-rc.1`, `v022`, `v024`, `v025`, `v026`, `v027`) bleiben im `release/`-Verzeichnis gesichert.
-**Stand:** 23. Oktober 2026 · 194 Tests grün (0 Fehler).  
+     * Release `release/SGC-Command-v029.zip` erzeugt (≈ 637 KB, weit unter der 1,44 MB Floppy-Disk-Grenze).
+     * Alle früheren Versionen (`v0.1.0-rc.1`, `v022`, `v024`, `v025`, `v026`, `v027`, `v028`) bleiben im `release/`-Verzeichnis gesichert.
+5. **Qwen 3.8 27b (Aktuelle Schicht – v0.29, Uni-gehostet via virtUOS Kiwi / kiwi-secure):** 
+   - Studien-Revision auf Englisch (CogSci-Paper `blog/uni-osnabrueck-ai-study.md`), Danksagungen gestrafft (virtUOS/Kiwi, Switch Angel, Max Huang, Commander Qwen).
+   - Authorship-Korrektur: `obelisk.js` wird korrekt **Max Huang** (`nosir/obelisk.js`, MIT, 2013) zugeschrieben.
+   - Methodisch-transparente Einschränkung zur selbstgemeldeten Modell-Identität dokumentiert (Studie, Abschnitt 6.1).
+   - Doku-Abstimmung: Test-Zahlen (209 Prüfungen), Lizenz (AGPL-3.0-or-later) und Versionsstand (v0.29) in README, HANDOFF, LICENSE-AUDIT, ROADMAP und Web-Portal.
+   - Finaler Release `release/SGC-Command-v029.zip` (≈ 637 KB) inklusive SHA-256-Prüfsumme.
+**Stand:** 25. Oktober 2026 · 209 Prüfungen grün (0 Fehler).  
 **Lizenz:** AGPL-3.0-or-later.    
 
 ---
@@ -157,7 +163,7 @@
 | `game/base.js` | 28-Level Cheyenne Mountain Schnittzeichnung, Raum-Innenansichten (Pixel & ASCII), Koloniebau |
 | `game/ui.js` | SGC-AMP v2.80 Winamp-Controller, Oszilloskop-Canvas, ReBirth-338 DSP-Regler, Tastenbelegungs-Modal |
 | `index.html` / `hub.html` | Einheitliches Web-Portal mit Spiel-Player, Lore-Archiv, Captain's Log und "Über & Labor" |
-| `test-browser.js` | Headless Test-Suite mit 88 Assertions (100% bestanden ohne NPM-Abhängigkeiten) |
+| `test-browser.js` | Headless Test-Suite mit 209 Prüfungen (100% bestanden ohne NPM-Abhängigkeiten) |
 | `references/NASA-ASSETS.md` | Kuratierter Katalog gemeinfreier NASA-Weltraum- und Planetenbilder |
 
 ---
@@ -167,5 +173,5 @@
 ```powershell
 node test-browser.js
 ```
-Ergebnis: **88 Assertions bestanden (0 Fehler)**.
+Ergebnis: **209 Prüfungen bestanden (0 Fehler)**.
 Verifiziert Kernfunktionen wie Voxel-Projektion, MIDI-Parsing, Strudel-Instrumente, Chiptune-Schaltung, Remixes, Master-Volume-Persistenz, Combat-UI/Einheiten-Auswahl, ReBirth-338 DSP, Intro-Audio-Schaltfläche und Kolonie-Berechnungen.

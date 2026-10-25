@@ -23,7 +23,7 @@ The development process passed through five primary model layers:
 4. **Claude Opus 5.5 Medium (v0.25-v0.28):** infirmary (level 21, Dr. Janet Fraiser) with a closed healing loop, tactical downed-evacuation and emergency withdrawal, SGC incident and crisis system, SGC Tactical Level Editor (`tools/leveleditor.html`).
 5. **Qwen 3.8 27b (university-hosted, current layer / v0.29):** self-hosted at the University of Osnabruck (via the virtUOS kiwi instance); took over the final study revision, correction of authorship and documentation errors, and packaging of the final release.
 
-The results show that multi-agent handoffs with strict separation of data and rendering, backed by a verifying zero-dependency test harness (`test-browser.js`, 209 checks), achieve significantly higher feature density and error-free long-term coherence than monolithic single-prompt approaches. At the same time, the study demonstrates that **attribution of code to individual models (authorship) is only possible heuristically**, since the agents' self-reported model identity proved unreliable across model switches (see Section 6.1).
+The results show that multi-agent handoffs with strict separation of data and rendering, backed by a verifying zero-dependency test harness (`test-browser.js`, 192 assertions), achieve significantly higher feature density and error-free long-term coherence than monolithic single-prompt approaches. At the same time, the study demonstrates that **attribution of code to individual models (authorship) is only possible heuristically**, since the agents' self-reported model identity proved unreliable across model switches (see Section 6.1).
 
 ---
 
@@ -68,7 +68,7 @@ Integration of the MIT-licensed **obelisk.js** algorithm (c. Max Huang, reposito
 
 ### 2.2 CP437 ASCII Terminal
 
-The \"ASCII mode\" maps the entire 3D scene onto a CP437 character grid. The algorithm uses an occlusion list and a color-mapping table to render the game as a living terminal - a technical and aesthetic highlight (see `references/LICENSE-AUDIT.md`).
+The \"ASCII mode\" maps the entire 3D scene onto a CP437 character grid. The algorithm uses an occlusion list and a color-mapping table to render the game as a living terminal - a technical and aesthetic highlight (see *Obelisk vs. asciid* in `LICENSE-AUDIT.md`).
 
 ### 2.3 Strudel Web Sound Engine
 
@@ -106,11 +106,11 @@ Development from version 0.1 to version 0.29 exemplifies a chain of autonomous a
 | **Phase 1** | **Gemini 4 Argon** | 2:1 voxel projection design, diamond-picking formula, Obelisk top/left/right shading, first CP437/ASCII rasterization, license audit (`LICENSE-AUDIT.md`). | Avoidance of external dependencies; clean compilation without an NPM bundler. |
 | **Phase 2** | **Claude 5.5 / 3.5 Sonnet** | Obelisk integration stabilization, offline WAV synthesis for drums, inventory/crafting (`INVENTAR-SPEC.md`), Hammond's clipboard, interior views. | Setup of the Node test harness (`test-browser.js`) to guard against DOM-mock regressions. |
 | **Phase 3** | **Gemini 3.8 Flash** | Standard MIDI bridge, Stargate Theme x Switch Angel remix, SongGen algorithm, persistent colonies (`S.colonies`), audio dance, gamepad rumble, key bindings, Winamp SGC-AMP v2.80, release packaging. | Full integration of all Strudel tracks, removal of 50+ MB of WAV files, test suite expanded to 100% pass. |
-| **Phase 4** | **Claude Opus 5.5 Medium** (v0.25-v0.28) | Infirmary (level 21, Dr. Janet Fraiser and Carolyn Lam), five treatment paths with healing loop, downed evacuation and emergency withdrawal, SGC incident system (`SGC_INCIDENTS`), SGC Tactical Level Editor (`tools/leveleditor.html`). | Sustained feature implementation under a closed day loop (`endDay`); test suite systematically expanded (final state: 209 checks). |
+| **Phase 4** | **Claude Opus 5.5 Medium** (v0.25-v0.28) | Infirmary (level 21, Dr. Janet Fraiser and Carolyn Lam), five treatment paths with healing loop, downed evacuation and emergency withdrawal, SGC incident system (`SGC_INCIDENTS`), SGC Tactical Level Editor (`tools/leveleditor.html`). | Sustained feature implementation under a closed day loop (`endDay`); test suite systematically expanded to 192 assertions. |
 | **Phase 5** | **Qwen 3.8 27b** (university-hosted, current) | Final study revision, authorship correction (obelisk.js to Max Huang), correction of version and test figures, packaging of final release `v0.29`. | Authorship attribution under model-identity uncertainty (see 6.1); documentation consistency across five model families. |
 ### Findings on Handoff Quality:
 1. **Central documentation artifacts:** *Spec* files (e.g., `INVENTAR-SPEC.md`, `LEVELEDITOR-SPEC.md`, `references/LICENSE-AUDIT.md`) function as "long-term memory" for the agents.
-2. **Automated gate tests:** `test-browser.js` (209 checks in the final state, 0 external dependencies) served as the quality gate at every handoff - only a 100% green status was passed to the next model.
+2. **Automated gate tests:** `test-browser.js` (192 assertions in the final state, 0 external dependencies) served as the quality gate at every handoff - only a 100% green status was passed to the next model.
 3. **Model-specific strengths:**
    - *Gemini 4 Argon:* mathematical scaffolding, strict license compliance, clean architecture.
    - *Claude 5.5 Sonnet:* robust integration of third-party components, stable DOM test harness.
@@ -136,9 +136,9 @@ Authorship statements in this study and in the project documentation should ther
 ### 6.2 Acknowledgments and Open-Source Compliance
 
 - **virtUOS / kiwi (University of Osnabruck):** We thank the **virtUOS - Zentrum fur Digitale Lehre, Campus-Management und Hochschuldidaktik** (Center for Digital Teaching, Campus Management and Higher Education Didactics) of the University of Osnabruck (https://www.uni-osnabrueck.de/virtuos) for providing the university community, since summer term 2024, with free, GDPR-compliant access to various LLMs through **kiwi** (https://kiwi.uni-osnabrueck.de/, instances *kiwi-secure* and *kiwi-connect*). A substantial part of this project's software originated in this environment: all Qwen model generations (including the current Qwen 3.8 27b, which runs on the university's own servers via *kiwi-secure*), and in the early phase Claude 5.5 Sonnet - later also via Google AI Pro in Visual Studio Code.
-- **Switch Angel:** Special thanks to **Switch Angel** for the pioneering work on the isometric voxel world, the Strudel sound patterns, and the SGC-AMP visual design.
+- **Switch Angel:** Special thanks to **Switch Angel** for the pioneering work on the Strudel sound patterns and her dedication to open source, her github helped the project.
 - **obelisk.js:** Thanks to **Max Huang** (`nosir/obelisk.js`, MIT, c. 2013) for the isometric voxel projection algorithm that forms the mathematical core of the renderer.
-- **Human leadership:** Thanks to the project commander ("Commander Qwen") for the abstract directives, quality control, and release decisions.
+- **Agent leadership:** Thanks to the project commander ("Commander Qwen") for the abstract directives, quality control, and release decisions.
 
 All integrated third-party components are documented with their exact licenses in `references/LICENSE-AUDIT.md`. The project itself is released under **AGPL-3.0-or-later** (see `LICENSE`).
 

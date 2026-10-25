@@ -1,8 +1,8 @@
 > **Legal notice:** This is a strictly non-commercial fan project. Stargate is a registered trademark of MGM Studios / Amazon. No copyright infringement intended. This project is unofficial and is not affiliated with, endorsed by, or sponsored by MGM Studios, Amazon, or any Stargate rights holder.
 >
-> **License scope:** The MIT License in this repository applies only to the original program code identified in [LICENSE](LICENSE). It does not grant any rights to Stargate, its universe, names, characters, settings, story elements, dialogue, trademarks, or any artwork, audio, screenshots, or other non-code material. Rights to third-party materials remain with their respective owners.
+> **License scope:** The AGPL-3.0-or-later license in this repository applies to the program code identified in [LICENSE](LICENSE). It does not grant any rights to Stargate, its universe, names, characters, settings, story elements, dialogue, trademarks, or any artwork, audio, screenshots, or other non-code material. Rights to third-party materials remain with their respective owners.
 
-### SGC Command v0.28 ("Krankenstation Ebene 21 & Dr. Janet Fraiser")
+### SGC Command v0.29 ("Studien-Revision & Final Release")
 
 An experimental, non-commercial fan-made tactical strategy game prototype. Manage a remote base, assemble a team, build offworld colonies, and take turn-based missions through the Stargate — backed by a high-octane algorithmic Strudel live-coding sound engine.
 
@@ -35,10 +35,10 @@ Open index.html (or hub.html)
 ```
 
 The Web Hub provides an integrated suite combining:
-1. **Interactive Game Player:** Full-featured embedded view of *SGC Command v0.27*.
+1. **Interactive Game Player:** Full-featured embedded view of *SGC Command v0.29*.
 2. **SGC Wiki & Lore Database:** Lore, planet telemetry, weapons, SG-teams, and colony structures.
-3. **Captain's Log Archive:** Multi-agent development logs ([Log 027](blog/captains-log-027.md), [Log 026](blog/captains-log-026.md), [Log 025](blog/captains-log-025.md), [Log 024](blog/captains-log-024.md)).
-4. **Über & Labor:** Integrated sub-portal combining the SGC Tactical Level Editor ([`tools/leveleditor.html`](tools/leveleditor.html)), Strudel & Winamp Sound Lab, academic research notes, and clean offline release downloads (`SGC-Command-v027.zip`).
+3. **Captain's Log Archive:** Multi-agent development logs ([Log 029](blog/captains-log-029.md), [Log 028](blog/captains-log-028.md), [Log 027](blog/captains-log-027.md), [Log 026](blog/captains-log-026.md), [Log 025](blog/captains-log-025.md), [Log 024](blog/captains-log-024.md)).
+4. **Über & Labor:** Integrated sub-portal combining the SGC Tactical Level Editor ([`tools/leveleditor.html`](tools/leveleditor.html)), Strudel & Winamp Sound Lab, academic research notes, and clean offline release downloads (`SGC-Command-v029.zip`).
 
 If an optional local HTTP server is preferred:
 
@@ -51,10 +51,12 @@ Then navigate to <http://localhost:8080>.
 
 This project originated as an experimental study testing autonomous AI pair-programming and collaborative multi-model architecture at **Universität Osnabrück** (Cognitive Science & Computer Science). 
 
-The codebase was iteratively designed, implemented, and refined across three distinct model shifts:
+The codebase was iteratively designed, implemented, and refined across five distinct model layers:
 * **Shift 1 (Gemini 4 Argon):** Initial mathematical foundation of 2:1 isometric voxel projections, ray-to-diamond picking, CP437 ASCII rasterization, and initial engine scaffolding.
 * **Shift 2 (Claude 5.5 / 3.5 Sonnet):** Engine stabilization, procedural WebAudio sample bank synthesis, inventory and crafting systems, and Hammond's clipboard personal management.
-* **Shift 3 (Gemini 3.8 Flash – Current Shift):** Standard-MIDI file parser, Krumhansl-Schmuckler key detector, Stargate Theme × Switch Angel Live-Coding Remixes, procedural campaign song generator (`SONGGEN`), persistent planetary colonies (`S.colonies`), audio-reactive battlefield dance (`ISO.beatPulse`), Gamepad API dual-rumble haptics, keyboard remapping modal, and unified web hub.
+* **Shift 3 (Gemini 3.8 Flash):** Standard-MIDI file parser, Krumhansl-Schmuckler key detector, Stargate Theme × Switch Angel Live-Coding Remixes, procedural campaign song generator (`SONGGEN`), persistent planetary colonies (`S.colonies`), audio-reactive battlefield dance (`ISO.beatPulse`), Gamepad API dual-rumble haptics, keyboard remapping modal, and unified web hub.
+* **Shift 4 (Claude Opus 5.5 Medium, v0.25-v0.28):** Infirmary (level 21, Dr. Janet Fraiser & Carolyn Lam) with five treatment paths and a closed healing loop, tactical downed-evacuation and emergency withdrawal, SGC incident & crisis system (`SGC_INCIDENTS`), and the SGC Tactical Level Editor.
+* **Shift 5 (Qwen 3.8 27b, university-hosted via virtUOS Kiwi, current, v0.29):** Final study revision in English (CogSci), authorship correction (obelisk.js to Max Huang), documentation consistency across all model layers, and final release packaging.
 
 For full methodology, metrics, and findings, see [`blog/uni-osnabrueck-ai-study.md`](blog/uni-osnabrueck-ai-study.md).
 
@@ -126,6 +128,7 @@ Live coding and procedural audio synthesis are powered by [`@strudel/web`](https
 | [`game/vendor/strudel-web.js`](game/vendor/strudel-web.js) | Local `@strudel/web@1.3.0` bundle |
 | [`blog/captains-log-022.md`](blog/captains-log-022.md) | Development log for v0.22 ("...aber der Soundtrack ist jetzt Fett!", C&C/Lo-Fi remixes, combat UI fix, volume slider fix) |
 | [`blog/captains-log-023.md`](blog/captains-log-023.md) | Development log for v0.23 (combat selection during dialogue, intro audio unlock, release cleanup) |
+| [`blog/captains-log-029.md`](blog/captains-log-029.md) | Development log for v0.29 (English study revision, authorship correction, final release) |
 | [`blog/captains-log-021.md`](blog/captains-log-021.md) | Development log for v0.21 (Winamp Player, Oscilloscope, 8-Bit Chiptune, Switch Angel fixes) |
 | [`blog/captains-log-020.md`](blog/captains-log-020.md) | Development log for v0.20 (Voxel Dual-Gfx, Civ Colonies, Strudel Core) |
 | [`references/NASA-ASSETS.md`](references/NASA-ASSETS.md) | Catalog of public domain NASA space and planet imagery |
@@ -143,7 +146,7 @@ Run the automated headless test suite:
 node test-browser.js
 ```
 
-Verifies all components (DOM mocks, 2:1 isometric projection, MIDI parsing, Tonart analysis, dedicated Strudel instruments, Winamp transport & state, ReBirth-338 DSP rack, soundbank hot-patching, 8-Bit chiptune mode, C&C and Lo-Fi remixes, volume gain routing, Switch Angel track compilation, colony state, crafting, special items, and dual-mode rendering) across 81 assertions with 0 external dependencies.
+Verifies all components (DOM mocks, 2:1 isometric projection, MIDI parsing, Tonart analysis, dedicated Strudel instruments, Winamp transport & state, ReBirth-338 DSP rack, soundbank hot-patching, 8-Bit chiptune mode, C&C and Lo-Fi remixes, volume gain routing, Switch Angel track compilation, colony state, crafting, special items, and dual-mode rendering) across 209 checks with 0 external dependencies.
 
 ## License
 
