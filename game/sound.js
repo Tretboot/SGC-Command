@@ -1187,7 +1187,11 @@ const SFX={
     try{
       const AudioContextClass=window.AudioContext||window.webkitAudioContext;
       if(!AudioContextClass)return;
-      this.ctx=new AudioContextClass();
+      // v0.31 Oszilloskop-Fix: Strudel (superdough) spielt in SEINEM AudioContext.
+      // Erzeugen wir einen zweiten, greift der connect()-Hook nie und der Analyser
+      // bleibt stumm. Darum: Strudels Kontext wiederverwenden, falls vorhanden.
+      const stCtx=(window.strudel&&typeof window.strudel.getAudioContext==='function')?(()=>{try{return window.strudel.getAudioContext();}catch(e){return null;}})():null;
+      this.ctx=stCtx||new AudioContextClass();
       const currentVol=this.getVolume();
       this.master=this.ctx.createGain();
       this.master.gain.value=this.muted?0:currentVol;
@@ -1392,6 +1396,11 @@ const SFX={
   _playStrudelNoise(startT,dur,vol,filterFreq,kind){
     if(!this.ctx||this.muted||!this.musicGain)return;
     const k=String(kind||'white').split(':')[0];
+    // v0.31: Neue TR-808-Simulation hat Vorrang (game/drum808.js); alter Code nur Fallback
+    if(typeof DRUM808!=='undefined'&&DRUM808.play(this.ctx,this.musicGain,k,startT,vol)){
+      if(/^(bd|sbd|lt)/.test(k)||k.includes('kick'))STRUDEL.onVoiceTrigger('kick',36);
+      return;
+    }
     const rb=this.rebirth||{kickBank:'tr909',hatBank:'tr909',bdTune:115,bdDecay:0.24,hatDecay:0.08};
 
     // --- KICK DRUM ENGINE (TR-909 / TR-808 / TR-707 / Linn / 8-Bit / Acoustic / Acid) ---
