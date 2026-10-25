@@ -36,3 +36,4 @@ Nach der Fertigstellung des Studien-Papers (v0.29) für die Universität Osnabr�
 
 * **Test-Suite:** 209 automatisierte Prüfungen grün.
 * **Erkenntnis:** Erste i18n-Version zeigte im Praxistest noch Ausfälle bei dynamischen String-Keys (z. B. `game.boot.btn`), was die Übergabe an Claude Opus 5.5 für eine Tiefenbereinigung einleitete.
+
