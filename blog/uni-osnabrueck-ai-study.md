@@ -1,11 +1,12 @@
 # Multi-Agent LLM Pair Programming in Complex Game Engine Architecture
+## An Iterative Software Engineering Field Experiment Based on the Example of *SGC Command v0.30*
 ## An Iterative Software Engineering Field Experiment Based on the Example of *SGC Command v0.29*
 
 **Project:** Scientific case study within a degree program in Computer Science / Cognitive Science  
 **Institution:** University of Osnabruck  
 **Project Subject:** *SGC Command* (`g:\AgentHome\SGC-Command`)  
-**Model Layers Involved:** Gemini 4 Argon · Claude 3.5 / 5.5 Sonnet · Gemini 3.8 Flash · Claude Opus 5.5 Medium · Qwen 3.8 27b (university-hosted)  
-**Status:** October 2026 · Final release `v0.29`  
+**Model Layers Involved:** Gemini 4 Argon · Claude 3.5 / 5.5 Sonnet · Gemini 3.8 Flash · Claude Opus 5.5 Medium · Qwen 3.8 27b (university-hosted) · Qwen 3.5 122b A10B-FP8 (v0.30)  
+**Status:** October 2026 · Release `v0.30` (i18n infrastructure, tag loop, cleanup)  
 **License:** AGPL-3.0-or-later (open source / academic research)  
 
 ---
@@ -107,7 +108,8 @@ Development from version 0.1 to version 0.29 exemplifies a chain of autonomous a
 | **Phase 2** | **Claude 5.5 / 3.5 Sonnet** | Obelisk integration stabilization, offline WAV synthesis for drums, inventory/crafting (`INVENTAR-SPEC.md`), Hammond's clipboard, interior views. | Setup of the Node test harness (`test-browser.js`) to guard against DOM-mock regressions. |
 | **Phase 3** | **Gemini 3.8 Flash** | Standard MIDI bridge, Stargate Theme x Switch Angel remix, SongGen algorithm, persistent colonies (`S.colonies`), audio dance, gamepad rumble, key bindings, Winamp SGC-AMP v2.80, release packaging. | Full integration of all Strudel tracks, removal of 50+ MB of WAV files, test suite expanded to 100% pass. |
 | **Phase 4** | **Claude Opus 5.5 Medium** (v0.25-v0.28) | Infirmary (level 21, Dr. Janet Fraiser and Carolyn Lam), five treatment paths with healing loop, downed evacuation and emergency withdrawal, SGC incident system (`SGC_INCIDENTS`), SGC Tactical Level Editor (`tools/leveleditor.html`). | Sustained feature implementation under a closed day loop (`endDay`); test suite systematically expanded to 192 assertions. |
-| **Phase 5** | **Qwen 3.8 27b** (university-hosted, current) | Final study revision, authorship correction (obelisk.js to Max Huang), correction of version and test figures, packaging of final release `v0.29`. | Authorship attribution under model-identity uncertainty (see 6.1); documentation consistency across five model families. |
+| **Phase 5** | **Qwen 3.8 27b** (university-hosted) | Final study revision, authorship correction (obelisk.js to Max Huang), correction of version and test figures, packaging of final release `v0.29`. | Authorship attribution under model-identity uncertainty (see 6.1); documentation consistency across five model families; token-limit issues led to temp file chaos (~119 files, ~1.2 MB). |
+| **Phase 6** | **Qwen 3.5 122b A10B-FP8** (v0.30, current) | Repository cleanup (119+ temp files removed), i18n infrastructure finalized (`i18n-game.js`, `i18n-portal.js`, `i18n-languages.js`), tag loop implemented (`startNextDay()`), post-mortem documentation. | Multi-language architecture designed for 95% global coverage (en, es, zh, ja, ru, de); systematic cleanup after model failure; lessons learned for future multi-model chains. |
 ### Findings on Handoff Quality:
 1. **Central documentation artifacts:** *Spec* files (e.g., `INVENTAR-SPEC.md`, `LEVELEDITOR-SPEC.md`, `references/LICENSE-AUDIT.md`) function as "long-term memory" for the agents.
 2. **Automated gate tests:** `test-browser.js` (192 assertions in the final state, 0 external dependencies) served as the quality gate at every handoff - only a 100% green status was passed to the next model.
@@ -132,6 +134,21 @@ The central methodological limitation of this study is that **the attribution of
 4. **Self-referential documentation:** This very study revision (v0.29) was, according to self-report, performed on the university-hosted Qwen 3.8 27b - the correction of the authorship statements is itself part of the attribution problem it describes.
 
 Authorship statements in this study and in the project documentation should therefore be understood as **heuristic attributions based on version history, logs, and context** - a scientifically transparent description of handoff dynamics, not technically verifiable code provenance.
+
+### 6.1.1 i18n Architecture and Multi-Language Infrastructure (v0.30)
+
+In response to the token-limit issues and model confusion during the v0.29 revision, version 0.30 introduced a structured **internationalization (i18n) architecture** designed for extensibility and maintainability:
+
+1. **Central language registry** (`i18n-languages.js`): Documents all planned languages with priority rankings based on Stargate viewership statistics:
+   - Implemented: German (de), English (en)
+   - Planned (95% global coverage): Spanish (es), Chinese (zh), Japanese (ja), Russian (ru)
+   - Additional: French (fr), Portuguese (pt), Arabic (ar)
+
+2. **Separated translation tables**: `i18n-game.js` (game UI), `i18n-portal.js` (web portal), with strict key parity enforced by automated tests.
+
+3. **Extensibility pattern**: Future languages follow a documented 5-step process (create file, register keys, extend tables, update validLang(), add test coverage).
+
+This architecture addresses the **fragmentation problem** observed in v0.29, where translations were scattered across multiple files and led to inconsistent state. The new structure ensures that language additions can be performed by future models without risking code quality or architectural coherence.
 
 ### 6.2 Acknowledgments and Open-Source Compliance
 

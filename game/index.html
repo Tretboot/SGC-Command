@@ -1,19 +1,20 @@
 <!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SGC Command v2 · Isometric Voxel &amp; ASCII Edition</title><link rel="stylesheet" href="style.css"></head><body>
 <header><div class="logo">◎ SGC COMMAND</div><div id="chap"></div><div id="res"></div><div id="round"></div>
-<button id="clipboard-btn" class="small" title="Hammonds Klemmbrett &amp; Büro (Personalübersicht)">📋</button>
-<button id="gfx-btn" class="small" title="Grafikmodus wechseln: Pixel-Voxel / ASCII-3D / 2D (Taste V)">🖥 PIXEL</button>
-<button id="strudel-btn" class="small" title="Strudel Core Sound-Engine &amp; Live-Coding">🎵</button>
-<button id="help" class="small" title="Anleitung">❓</button>
-<button id="sound" class="small" title="Sound an/aus">🔊</button>
-<button id="go">▶ Tag beenden</button><button id="reset" class="small">⟲</button></header>
+<button id="clipboard-btn" class="small" title="Hammonds Klemmbrett &amp; Büro (Personalübersicht)" data-i18n-title="game.clipboard.title">📋</button>
+<button id="gfx-btn" class="small" title="Grafikmodus wechseln: Pixel-Voxel / ASCII-3D / 2D (Taste V)" data-i18n-title="game.gfx.title">🖥 PIXEL</button>
+<button id="strudel-btn" class="small" title="Strudel Core Sound-Engine &amp; Live-Coding" data-i18n-title="game.strudel.title">🎵</button>
+<button id="help" class="small" title="Anleitung" data-i18n-title="game.help.title">❓</button>
+<button id="sound" class="small" title="Sound an/aus" data-i18n-title="game.sound.title">🔊</button>
+<button id="lang-btn" class="small" title="Sprache wechseln (Switch to English)" data-i18n-title="game.lang.title" onclick="I18N.setLang(I18N.lang==='de'?'en':'de')">🌐 <span data-i18n="game.lang.btn">EN</span></button>
+<button id="go" data-i18n="game.go">▶ Tag beenden</button><button id="reset" class="small">⟲</button></header>
 <nav>
-<button data-tab="base">🏗 Basis</button>
-<button data-tab="map">🗺 Sternenkarte</button>
-<button data-tab="colonies">🪐 Kolonien</button>
-<button data-tab="medbay">🏥 Krankenstation</button>
-<button data-tab="roster">👥 Roster &amp; Arsenal</button>
-<button data-tab="log">📜 Protokoll</button>
+<button data-tab="base" data-i18n="game.nav.base">🏗 Basis</button>
+<button data-tab="map" data-i18n="game.nav.map">🗺 Sternenkarte</button>
+<button data-tab="colonies" data-i18n="game.nav.colonies">🪐 Kolonien</button>
+<button data-tab="medbay" data-i18n="game.nav.medbay">🏥 Krankenstation</button>
+<button data-tab="roster" data-i18n="game.nav.roster">👥 Roster &amp; Arsenal</button>
+<button data-tab="log" data-i18n="game.nav.log">📜 Protokoll</button>
 </nav>
 <main>
 <div class="pane" id="pane-base"><div class="split"><div class="base-canvas-scroll"><canvas id="base-cv" width="720" height="1134"></canvas></div><aside id="base-side"></aside></div></div>
@@ -25,56 +26,56 @@
 </main>
 <!-- Gateroom-Overlay (Übergang) -->
 <div id="gate-overlay" style="display:none;position:fixed;inset:0;background:#000;z-index:15;align-items:center;justify-content:center;cursor:pointer">
- <button id="gate-skip" class="gate-skip-btn" style="position:absolute;top:18px;right:22px;z-index:9;background:#0f172a;border:1px solid #38bdf8;color:#e0f2fe;font-family:monospace;font-weight:bold;padding:8px 16px;border-radius:4px;cursor:pointer;box-shadow:0 0 12px rgba(56,189,248,.35)">Überspringen <span>ESC / Klick</span></button>
+ <button id="gate-skip" class="gate-skip-btn" style="position:absolute;top:18px;right:22px;z-index:9;background:#0f172a;border:1px solid #38bdf8;color:#e0f2fe;font-family:monospace;font-weight:bold;padding:8px 16px;border-radius:4px;cursor:pointer;box-shadow:0 0 12px rgba(56,189,248,.35)" data-i18n-html="game.gate.skip">Überspringen <span>ESC / Klick</span></button>
  <canvas id="gate-cv" width="960" height="540" style="max-width:95vw;height:auto"></canvas>
 </div>
 <!-- Boot-Screen (Garantiert WebAudio-Aktivierung für Intro & Spiel) -->
 <div id="boot-screen" data-boot="true" style="display:none;position:fixed;inset:0;background:#030712;z-index:9999;align-items:center;justify-content:center;cursor:pointer;flex-direction:column;font-family:monospace;color:#38bdf8;user-select:none">
  <div style="border:2px solid #0284c7;padding:32px 40px;border-radius:8px;background:rgba(15,23,42,0.96);box-shadow:0 0 40px rgba(56,189,248,0.4);max-width:580px;text-align:center">
   <div style="font-size:20px;font-weight:bold;letter-spacing:4px;color:#93c5fd;margin-bottom:10px">◎ SGC COMMAND TERMINAL</div>
-  <div style="font-size:12px;color:#64748b;letter-spacing:2px;margin-bottom:20px">CHEYENNE MOUNTAIN COMPLEX · SUB-EBENE 28</div>
-  <div style="font-size:13px;color:#cbd5e1;line-height:1.7;margin-bottom:26px">
+  <div style="font-size:12px;color:#64748b;letter-spacing:2px;margin-bottom:20px" data-i18n="game.boot.sublevel">CHEYENNE MOUNTAIN COMPLEX · SUB-EBENE 28</div>
+  <div style="font-size:13px;color:#cbd5e1;line-height:1.7;margin-bottom:26px" data-i18n-html="game.boot.status">
    TORRAUM-STATUS: ENERGIE BEREIT<br>
    AUDIO-SUBSYSTEM &amp; WEBAUDIO-SYNTHESIZER INITIALISIERT
   </div>
-  <button id="boot-btn" style="background:#0284c7;border:1px solid #7dd3fc;color:#fff;font-family:monospace;font-size:16px;font-weight:bold;padding:14px 28px;border-radius:6px;cursor:pointer;box-shadow:0 0 20px rgba(2,132,199,0.7)">
+  <button id="boot-btn" style="background:#0284c7;border:1px solid #7dd3fc;color:#fff;font-family:monospace;font-size:16px;font-weight:bold;padding:14px 28px;border-radius:6px;cursor:pointer;box-shadow:0 0 20px rgba(2,132,199,0.7)" data-i18n="game.boot.btn">
    ▶ KLICKEN / TASTE DRÜCKEN ZUM EINWÄHLEN
   </button>
  </div>
 </div>
 <div id="intro-overlay" style="display:none">
  <canvas id="intro-cv" width="1280" height="720" aria-label="Cinematic Stargate opening"></canvas>
- <button id="intro-audio">🔊 Ton aktivieren</button>
- <button id="intro-skip">Überspringen <span>ESC</span></button>
+ <button id="intro-audio" data-i18n="game.intro.audio">🔊 Ton aktivieren</button>
+ <button id="intro-skip" data-i18n-html="game.intro.skip">Überspringen <span>ESC</span></button>
 </div>
 <div id="story-dialogue" role="dialog" aria-modal="true" aria-live="polite"></div>
 <!-- Combat-Overlay (Canvas oben flex:1, Jagged-Alliance UI unten angedockt) -->
 <div id="combat-overlay" onclick="if(typeof C!=='undefined'&&C.result)combatEnd()" style="display:none;position:fixed;inset:0;background:#000;z-index:20;flex-direction:column;align-items:stretch;justify-content:stretch;overflow:hidden">
  <div class="combat-viewport-wrap" style="flex:1;position:relative;overflow:hidden;width:100%;min-height:0">
-  <canvas id="combat-cv" width="960" height="720" aria-label="Taktische Einsatzkarte" style="touch-action:none;cursor:grab;width:100%;height:100%;display:block"></canvas>
-  <canvas id="combat-minimap" width="256" height="192" aria-label="Minimap: anklicken, um die Kartenansicht zu verschieben"></canvas>
-  <button id="combat-end" onclick="combatEnd()" style="display:none;padding:12px 32px;font-size:16px;cursor:pointer">Weiter</button>
+  <canvas id="combat-cv" width="960" height="720" aria-label="Taktische Einsatzkarte" data-i18n-aria="game.combat.aria.map" style="touch-action:none;cursor:grab;width:100%;height:100%;display:block"></canvas>
+  <canvas id="combat-minimap" width="256" height="192" aria-label="Minimap: anklicken, um die Kartenansicht zu verschieben" data-i18n-aria="game.combat.aria.minimap"></canvas>
+  <button id="combat-end" onclick="combatEnd()" style="display:none;padding:12px 32px;font-size:16px;cursor:pointer" data-i18n="game.combat.continue">Weiter</button>
  </div>
  <div id="combat-ui" style="display:none;flex:0 0 auto"></div>
 </div>
 <div id="menu" style="display:none">
  <div class="menu-box">
   <div class="menu-title">◎ SGC COMMAND</div>
-  <div class="menu-sub">PAUSE &amp; SYSTEM-KONFIGURATION</div>
-  <button class="menu-btn" onclick="hideMenu()">▶ Weiterspielen</button>
-  <div class="menu-diff"><span>🖥 Grafik-Engine</span><select id="menu-gfx" onchange="act(setGfxMode(this.value))"><option value="pixel">Isometrisch Voxel (Pixel-Art)</option><option value="ascii">ASCII-3D (asciiid / asciicker)</option><option value="topdown">Klassisch 2D Top-Down</option></select></div>
-  <div class="menu-diff"><span>⚔ Schwierigkeit</span><select id="menu-diff" onchange="act(setDifficulty(this.value))"><option value="easy">Leicht</option><option value="normal">Normal</option><option value="hard">Hart</option></select></div>
-  <button class="menu-btn" onclick="hideMenu();showStrudelModal()">🎵 Strudel Sound-Engine &amp; Live-Code</button>
-  <button class="menu-btn" onclick="hideMenu();WINAMP.tab='midi';showStrudelModal()">🎛 MIDI Controller (Akai Setup)</button>
-  <button class="menu-btn" onclick="hideMenu();showKeybindModal()">⌨ Tastatur &amp; Tastenbelegung</button>
-  <button class="menu-btn" onclick="hideMenu();showClipboardModal()">📋 Hammonds Klemmbrett (Personal)</button>
-  <button class="menu-btn" onclick="showHelp()">📖 Anleitung</button>
-  <button class="menu-btn" onclick="replayOpeningCinematic()">🎬 Intro erneut ansehen</button>
-  <button class="menu-btn" id="menu-sound" onclick="toggleSound()">🔊 Sound an/aus</button>
-  <button class="menu-btn" onclick="resetGame(false)">⟲ Neues Spiel</button>
-  <button class="menu-btn dim" onclick="resetGame(true)">⏏ Zurücksetzen (ohne Frage)</button>
-  <div class="menu-foot">ESC = Menü · V = Pixel/ASCII · Q/E = Kamera · TAB = Nächstes Mitglied</div>
+  <div class="menu-sub" data-i18n="game.menu.sub">PAUSE &amp; SYSTEM-KONFIGURATION</div>
+  <button class="menu-btn" data-i18n="game.menu.resume" onclick="hideMenu()">▶ Weiterspielen</button>
+  <div class="menu-diff"><span data-i18n="game.menu.gfx">🖥 Grafik-Engine</span><select id="menu-gfx" onchange="act(setGfxMode(this.value))"><option value="pixel" data-i18n="game.menu.gfx.pixel">Isometrisch Voxel (Pixel-Art)</option><option value="ascii">ASCII-3D (asciiid / asciicker)</option><option value="topdown" data-i18n="game.menu.gfx.topdown">Klassisch 2D Top-Down</option></select></div>
+  <div class="menu-diff"><span data-i18n="game.menu.diff">⚔ Schwierigkeit</span><select id="menu-diff" onchange="act(setDifficulty(this.value))"><option value="easy" data-i18n="game.menu.diff.easy">Leicht</option><option value="normal">Normal</option><option value="hard" data-i18n="game.menu.diff.hard">Hart</option></select></div>
+  <button class="menu-btn" data-i18n="game.menu.strudel" onclick="hideMenu();showStrudelModal()">🎵 Strudel Sound-Engine &amp; Live-Code</button>
+  <button class="menu-btn" data-i18n="game.menu.midi" onclick="hideMenu();WINAMP.tab='midi';showStrudelModal()">🎛 MIDI Controller (Akai Setup)</button>
+  <button class="menu-btn" data-i18n="game.menu.keybinds" onclick="hideMenu();showKeybindModal()">⌨ Tastatur &amp; Tastenbelegung</button>
+  <button class="menu-btn" data-i18n="game.menu.clipboard" onclick="hideMenu();showClipboardModal()">📋 Hammonds Klemmbrett (Personal)</button>
+  <button class="menu-btn" data-i18n="game.menu.help" onclick="showHelp()">📖 Anleitung</button>
+  <button class="menu-btn" data-i18n="game.menu.replay" onclick="replayOpeningCinematic()">🎬 Intro erneut ansehen</button>
+  <button class="menu-btn" id="menu-sound" data-i18n="game.menu.sound" onclick="toggleSound()">🔊 Sound an/aus</button>
+  <button class="menu-btn" data-i18n="game.menu.newgame" onclick="resetGame(false)">⟲ Neues Spiel</button>
+  <button class="menu-btn dim" data-i18n="game.menu.reset" onclick="resetGame(true)">⏏ Zurücksetzen (ohne Frage)</button>
+  <div class="menu-foot" data-i18n="game.menu.foot">ESC = Menü · V = Pixel/ASCII · Q/E = Kamera · TAB = Nächstes Mitglied</div>
  </div>
 </div>
 <div id="modal"></div><div id="over"></div><div id="toast"></div>
-<script src="vendor/strudel-web.js?v=0.27"></script><script src="switch-angel.js?v=0.27"></script><script src="midi-data.js?v=0.27"></script><script src="sound.js?v=0.27"></script><script src="midi.js?v=0.27"></script><script src="midi-controller.js?v=0.27"></script><script src="art.js?v=0.27"></script><script src="art2.js?v=0.27"></script><script src="../content/quests.js?v=0.27"></script><script src="../content/intros.js?v=0.27"></script><script src="../content/scenes.js?v=0.27"></script><script src="engine.js?v=0.27"></script><script src="iso.js?v=0.27"></script><script src="combat.js?v=0.27"></script><script src="base.js?v=0.27"></script><script src="cinematic.js?v=0.27"></script><script src="ui.js?v=0.27"></script></body></html>
+<script src="i18n.js"></script><script src="i18n-game.js"></script><script src="vendor/strudel-web.js?v=0.27"></script><script src="switch-angel.js?v=0.27"></script><script src="midi-data.js?v=0.27"></script><script src="sound.js?v=0.27"></script><script src="midi.js?v=0.27"></script><script src="midi-controller.js?v=0.27"></script><script src="art.js?v=0.27"></script><script src="art2.js?v=0.27"></script><script src="../content/quests.js?v=0.27"></script><script src="../content/intros.js?v=0.27"></script><script src="../content/scenes.js?v=0.27"></script><script src="engine.js?v=0.27"></script><script src="iso.js?v=0.27"></script><script src="combat.js?v=0.27"></script><script src="base.js?v=0.27"></script><script src="cinematic.js?v=0.27"></script><script src="ui.js?v=0.27"></script></body></html>

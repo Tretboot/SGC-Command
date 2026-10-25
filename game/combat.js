@@ -253,8 +253,8 @@ function startCombat(mission,teamIds){
   const hasJaffa=mission.enemies&&['jaffa','veteran','elite'].some(t=>mission.enemies[t]>0);
   if(hasJaffa&&!S.jaffaSeen){
     S.jaffaSeen=true;C.firstJaffa=true;
-    clog('⚠ ERSTER KONTAKT: Jaffa!');
-    clog('   „Krieger, die an einen Gott glauben. Respekt. Aber sie schießen trotzdem.“ – O\'Neill');
+    clog(I18N.T('game.dyn.combat.first_contact'));
+    clog(I18N.T('game.dyn.combat.first_contact_quote'));
   }
   const tmpl=mission.map==='hatak'||mission.map==='asgard'?createShipMap(mission.map):
    mission.map==='village'?createVillageMap():MAPS[mission.map]||MAPS.desert;
@@ -332,14 +332,14 @@ function startCombat(mission,teamIds){
   });
   clog(`Mission: ${mission.name} · ${mission.goal}`);
   if(mission.peaceful){
-    clog('🤝 Friedlicher Auftrag: Es gibt keine feindlichen Einheiten.');
-    clog(`   Klicke ${mission.contact.name} an, um Kontakt aufzunehmen.`);
+    clog(I18N.T('game.dyn.combat.peaceful'));
+    clog(I18N.T('game.dyn.combat.contact_hint',[mission.contact.name]));
   } else if(mission.tutorial){
-    clog('🎯 Teal’c entscheidet sich erst, wenn SG-1 den Einsatz erfolgreich abschließt.');
-    clog('   Bewege Jack, nutze Deckung, feuere auf die Wachen und lerne „Warten“.');
+    clog(I18N.T('game.dyn.combat.tealc_wait'));
+    clog(I18N.T('game.dyn.combat.tutorial_hint'));
   } else {
-    clog(`🌀 Ihr kommt durchs Gate. One-Way – zum Zurückkehren müsst ihr es neu wählen.`);
-    clog(`   Sieg = alle Gegner besiegt (100% Beute) · Extraktion = ganzes Team am Gate (50%).`);
+    clog(I18N.T('game.dyn.combat.gate_hint'));
+    clog(I18N.T('game.dyn.combat.objective_hint'));
   }
   nextUnit();
   playCombatScene('arrival');
@@ -468,7 +468,7 @@ function doAttack(attacker,target){
     spawnFlash(target.x,target.y,'#ff5555');
     sfx('hit');
     if(dmg>15)C.shake=6;
-    clog(`${attacker.name} → ${target.name}: ${dmg} Schaden`);
+    clog(I18N.T('game.dyn.combat.dmg',[attacker.name,target.name,dmg]));
     if(target.hp<=0){target.hp=0;killUnit(target);}
     return true;
   } else {clog(`${attacker.name} verfehlt ${target.name}.`);sfx('miss');return false;}
@@ -484,7 +484,7 @@ function useSpecial(unit){
   }else if(unit.special==='shield'){
     unit.shieldTurns=2;
     spawnFlash(unit.x,unit.y,'#4fc3f7');
-    clog(`🛡 ${unit.name} aktiviert Persönlichen Schild (2 Runden).`);
+    clog(I18N.T('game.dyn.combat.shield',[unit.name]));
   }else if(unit.special==='smoke'){
     unit.smokeTurns=2;
     spawnFlash(unit.x,unit.y,'#94a3b8');
@@ -498,10 +498,10 @@ function useSpecial(unit){
       t.hp=Math.max(0,t.hp-8);
       spawnTrace(unit.x,unit.y,t.x,t.y);
       spawnDamage(t.x,t.y,8,'#4fc3f7');
-      clog(`⚡ ${unit.name} EMP → ${t.name}: 8 Schaden & −1 AP.`);
+      clog(I18N.T('game.dyn.combat.emp',[unit.name,t.name]));
       if(t.hp<=0)killUnit(t);
     }else{
-      clog(`⚡ ${unit.name} zündet EMP-Impuls (kein Ziel in R.5).`);
+      clog(I18N.T('game.dyn.combat.emp_none',[unit.name]));
     }
   }
   if(unit.ap>0){C.selected=unit;C.moveRange=moveRange(unit);C.atkRange=attackTargets(unit);C.coverRange=coverTargets(unit);}
@@ -520,7 +520,7 @@ function playerAttackTerrain(unit,x,y){
   tile.hp=Math.max(0,(tile.hp||24)-damage);
   spawnDamage(x,y,damage,'#ffd23a');spawnFlash(x,y,'#ffc857');sfx('hit');
   if(tile.hp===0){
-   tile.t=0;C.mapVersion++;C.tileCache={};clog(`Deckung zerstört bei ${x+1}/${y+1}.`);
+   tile.t=0;C.mapVersion++;C.tileCache={};clog(I18N.T('game.dyn.combat.cover_destroyed',[x+1,y+1]));
   }else clog(`Deckung getroffen (${tile.hp} Strukturpunkte verbleiben).`);
  }else{clog('Schuss auf Deckung verfehlt.');sfx('miss');}
  if(unit.ap>0){C.selected=unit;C.moveRange=moveRange(unit);C.atkRange=attackTargets(unit);C.coverRange=coverTargets(unit);}
@@ -543,18 +543,18 @@ function doMelee(attacker,target){
 }
 function killUnit(u){
   if(u.side==='enemy'){
-    u.dead=true;spawnDeath(u.x,u.y);sfx('death');clog(`💀 ${u.name} zerstört.`);
+    u.dead=true;spawnDeath(u.x,u.y);sfx('death');clog(I18N.T('game.dyn.combat.destroyed',[u.name]));
     // Jaffa-Toten: Zähler + einmaliger „First Blood"-Bonus (der erste Jaffa ist etwas Besonderes).
     if(u.type&&(u.type.startsWith('jaffa')||u.type==='veteran'||u.type==='elite'||u.type==='goauld')){
       S.jaffaKills=(S.jaffaKills||0)+1;
       if(S.jaffaKills===1){
-        clog('★ Erster Jaffa besiegt! +30 XP, +10 Morale (Team).');
+        clog(I18N.T('game.dyn.combat.first_jaffa'));
         Object.values(C.units).forEach(p=>{if(p.side==='player'){const m=S.roster[p.charId];if(m){m.xp+=30;m.morale=Math.min(100,m.morale+10);}}});
       }
     }
     playCombatScene('firstKill');
   }
-  else{u.downed=true;sfx('death');clog(`⚠ ${u.name} ist DOWN!`);checkDowned();}
+  else{u.downed=true;sfx('death');clog(I18N.T('game.dyn.combat.downed',[u.name]));checkDowned();}
 }
 function checkDowned(){
   const downed=Object.values(C.units).filter(u=>u.side==='player'&&u.downed);
@@ -582,46 +582,46 @@ function spawnBattlefieldLoot(mission){
   const lootTypes=[
     {
       type:'crate',
-      name:"Goa'uld-Vorratskiste",
+      name:I18N.T('game.dyn.loot.goauld.name'),
       res:{ore:45+Math.floor(Math.random()*25),tech:15+Math.floor(Math.random()*15)},
       item:Math.random()<0.4?'medkit':null,
       dialog:[
         {portraitId:0,speaker:"Jack O'Neill",role:"SG-1 Commander",text:"Daniel, fass das nicht an, bevor wir wissen, ob es explodiert."},
-        {portraitId:3,speaker:"Teal'c",role:"Jaffa-Krieger",text:"Es ist eine versiegelte Goa'uld-Vorratskiste. Unberührt von Apophis' Patrouillen."},
-        {portraitId:0,speaker:"Jack O'Neill",role:"SG-1 Commander",text:"In der Tat. Einpacken und mitnehmen!"}
+        {portraitId:3,speaker:"Teal'c",role:I18N.T('game.dyn.loot.role.jaffa'),text:I18N.T('game.dyn.loot.goauld.t2')},
+        {portraitId:0,speaker:"Jack O'Neill",role:I18N.T('game.dyn.loot.role.sgc'),text:I18N.T('game.dyn.loot.goauld.t3')}
       ]
     },
     {
       type:'naquadah',
-      name:"Naquadah-Behälter",
+      name:I18N.T('game.dyn.loot.naquadah.name'),
       res:{ore:85+Math.floor(Math.random()*45),tech:20},
       item:null,
       dialog:[
-        {portraitId:1,speaker:"Samantha Carter",role:"Astrophysikerin",text:"Sir! Ein schwerer Druckbehälter mit hochreinem Naquadah!"},
-        {portraitId:0,speaker:"Jack O'Neill",role:"SG-1 Commander",text:"Ausgezeichnet, Carter. Das SGC-Budget dankt es Ihnen."},
-        {portraitId:1,speaker:"Samantha Carter",role:"Astrophysikerin",text:"Das sichert den Energiebedarf für die Basis auf Wochen."}
+        {portraitId:1,speaker:"Samantha Carter",role:I18N.T('game.dyn.loot.role.astro'),text:I18N.T('game.dyn.loot.naquadah.t1')},
+        {portraitId:0,speaker:"Jack O'Neill",role:I18N.T('game.dyn.loot.role.sgc'),text:I18N.T('game.dyn.loot.naquadah.t3')},
+        {portraitId:1,speaker:"Samantha Carter",role:I18N.T('game.dyn.loot.role.astro'),text:I18N.T('game.dyn.loot.naquadah.t2')}
       ]
     },
     {
       type:'artifact',
-      name:"Antiker-Datenkristall",
+      name:I18N.T('game.dyn.loot.crystal.name'),
       res:{tech:55+Math.floor(Math.random()*35),ore:20},
       item:Math.random()<0.5?'shield':'emp',
       dialog:[
-        {portraitId:2,speaker:"Daniel Jackson",role:"Archäologe",text:"Faszinierend! Ein intakter Speicherkristall der Antiker mit proto-babylonischen Inschriften!"},
-        {portraitId:0,speaker:"Jack O'Neill",role:"SG-1 Commander",text:"Daniel... bitte nicht vorlesen. Einfach in den Rucksack packen."},
-        {portraitId:2,speaker:"Daniel Jackson",role:"Archäologe",text:"Das könnte der Schlüssel zu den Schild-Codes sein, Jack!"}
+        {portraitId:2,speaker:"Daniel Jackson",role:I18N.T('game.dyn.loot.role.arch'),text:I18N.T('game.dyn.loot.crystal.t1')},
+        {portraitId:0,speaker:"Jack O'Neill",role:I18N.T('game.dyn.loot.role.sgc'),text:I18N.T('game.dyn.loot.crystal.t2')},
+        {portraitId:2,speaker:"Daniel Jackson",role:I18N.T('game.dyn.loot.role.arch'),text:I18N.T('game.dyn.loot.crystal.t3')}
       ]
     },
     {
       type:'zat',
-      name:"Jaffa-Waffenkiste",
+      name:I18N.T('game.dyn.loot.jaffa.name'),
       res:{tech:30,ore:40},
       item:'zat',
       dialog:[
-        {portraitId:3,speaker:"Teal'c",role:"Jaffa-Krieger",text:"Eine Reserve an Zat'nik'tels. Ein Schuss betäubt, zwei töten."},
-        {portraitId:0,speaker:"Jack O'Neill",role:"SG-1 Commander",text:"Und der dritte lässt die Leiche verschwinden, ich weiß. Gute Arbeit, Teal'c."},
-        {portraitId:3,speaker:"Teal'c",role:"Jaffa-Krieger",text:"In der Tat."}
+        {portraitId:3,speaker:"Teal'c",role:I18N.T('game.dyn.loot.role.jaffa'),text:I18N.T('game.dyn.loot.jaffa.t1')},
+        {portraitId:0,speaker:"Jack O'Neill",role:I18N.T('game.dyn.loot.role.sgc'),text:I18N.T('game.dyn.loot.jaffa.t2')},
+        {portraitId:3,speaker:"Teal'c",role:I18N.T('game.dyn.loot.role.jaffa'),text:I18N.T('game.dyn.loot.jaffa.t3')}
       ]
     }
   ];
@@ -661,9 +661,9 @@ function collectCombatLoot(unit,loot){
     S.inventory.special[loot.item]=(S.inventory.special[loot.item]||0)+1;
   }
   spawnDamage(loot.x,loot.y,`+${loot.name}`,'#f59e0b');
-  clog(`📦 ${unit.name} birgt ${loot.name}! (+${loot.res.ore||0} Erz, +${loot.res.tech||0} Tech${loot.item?', +'+loot.item:''})`);
+  clog(I18N.T('game.dyn.combat.loot_buried',[unit.name,loot.name,loot.res.ore||0,loot.res.tech||0,loot.item?', +'+loot.item:'']));
   if(loot.dialog&&typeof showStorySequence==='function'&&!C.tutorial){
-    showStorySequence(loot.dialog,`BERGETEAM · ${loot.name.toUpperCase()}`,'Verstanden',null,'field');
+    showStorySequence(loot.dialog,I18N.T('game.dyn.combat.loot_kicker',[loot.name.toUpperCase()]),I18N.T('game.dyn.help.understood'),null,'field');
   }
 }
 
@@ -697,7 +697,7 @@ function interactWithContact(contact){
  if(C.distance(unit.x,unit.y,contact.x,contact.y)<=1){playCombatScene('contact');return;}
  const reachable=moveRange(unit).sort((a,b)=>C.distance(a.x,a.y,contact.x,contact.y)-C.distance(b.x,b.y,contact.x,contact.y));
  const next=reachable.find(p=>C.distance(p.x,p.y,contact.x,contact.y)<=1)||reachable[0];
- if(!next){clog(`${unit.name} findet keinen sicheren Weg zu ${contact.name}.`);return;}
+ if(!next){clog(I18N.T('game.dyn.combat.no_path',[unit.name,contact.name]));return;}
  playerMove(unit,next.x,next.y);
  if(C.distance(unit.x,unit.y,contact.x,contact.y)<=1)playCombatScene('contact');
 }
@@ -818,13 +818,13 @@ function checkEnd(){
   if(C.result)return;
   const enemies=Object.values(C.units).filter(u=>u.side==='enemy'&&!u.dead);
   const players=Object.values(C.units).filter(u=>u.side==='player'&&!u.dead);
-  if(players.length===0||players.every(p=>p.downed)){C.result='defeat';sfx('defeat');clog('💀 Team ausgelöscht.');return;}
+  if(players.length===0||players.every(p=>p.downed)){C.result='defeat';sfx('defeat');clog(I18N.T('game.dyn.combat.team_wiped'));return;}
   if(C.mission&&C.mission.peaceful){
-    if(C.contactComplete){C.result='victory';sfx('victory');clog('🤝 Friedlicher Erstkontakt hergestellt.');}
+    if(C.contactComplete){C.result='victory';sfx('victory');clog(I18N.T('game.dyn.combat.contact_done'));}
     return;
   }
-  if(enemies.length===0){C.result='victory';sfx('victory');clog('✔ Alle Gegner besiegt!');return;}
-  if(C.objective.type==='survive'&&C.round>C.objective.rounds){C.result='victory';sfx('victory');clog('✔ Halte-Mission erfolgreich!');return;}
+  if(enemies.length===0){C.result='victory';sfx('victory');clog(I18N.T('game.dyn.combat.all_enemies'));return;}
+  if(C.objective.type==='survive'&&C.round>C.objective.rounds){C.result='victory';sfx('victory');clog(I18N.T('game.dyn.combat.hold_success'));return;}
 }
 // One-Way-Gate: Extraktion = das Gate NEU WÄHLEN, um zurück zu kommen.
 // Funktioniert, wenn alle noch mobilen Teammitglieder am Gate stehen.
@@ -839,12 +839,12 @@ function gateReady(){
 function extract(forceEmergency=false){
   if(C.result)return false;
   const g=gateReady();
-  if(!forceEmergency&&g.at<g.total){clog(`⚠ Extraktion nicht möglich: nur ${g.at}/${g.total} mobile Einheiten am Gate.`);return false;}
+  if(!forceEmergency&&g.at<g.total){clog(I18N.T('game.dyn.combat.extract_fail',[g.at,g.total]));return false;}
   C.result='extracted';sfx('gate');
   if(g.downed>0||forceEmergency){
-    clog(`🚨 NOT-EVAKUIERUNG! Team extrahiert unter Deckung (${g.downed||0} Verwundete geborgen).`);
+    clog(I18N.T('game.dyn.combat.not_evac',[g.downed||0]));
   } else {
-    clog('🌀 Gate neu gewählt – Team extrahiert. (50% Beute)');
+    clog(I18N.T('game.dyn.combat.gate_extracted'));
   }
   return true;
 }
@@ -866,16 +866,16 @@ function applyCombatResult(){
     const m=S.roster[u.charId];if(!m)return;
     if(u.dead||u.downed){
       if(m.sg1){logNote(`⚠ ${m.name} down. Duplikat-Klausel greift.`);m.hp=Math.max(10,m.hp-30);m.injuries+=2;}
-      else if(u.dead){m.dead=true;S.memorial.push(m.name);logNote(`💀 ${m.name} ist gefallen. Gedenktafel angebracht.`);
+      else if(u.dead){m.dead=true;S.memorial.push(m.name);logNote(I18N.T('game.dyn.combat.killed',[m.name]));
         S.roster.forEach(x=>{if(x.recruited&&!x.dead)x.morale=Math.max(0,x.morale-10);});}
-      else{m.hp=Math.max(15,Math.round(m.maxHp*0.35));m.injuries=(m.injuries||0)+1;logNote(`🩹 ${m.name} schwer verwundet (MedBay empfohlen).`);}
+      else{m.hp=Math.max(15,Math.round(m.maxHp*0.35));m.injuries=(m.injuries||0)+1;logNote(I18N.T('game.dyn.combat.wounded_note',[m.name]));}
     } else {m.hp=u.hp;m.fatigue=Math.min(100,m.fatigue+20);m.morale=Math.max(0,m.morale-5);}
   });
   failQuests();
   // Extraktion schließt normale Missionen ab; der Pilotauftrag braucht den Sieg, damit Teal’c mitkommt.
   if(result==='victory'||result==='extracted'){
     if(m.tutorial&&result!=='victory'){
-      logNote('⚠ Teal’c bleibt auf Chulak. SG-1 muss den Einsatz erfolgreich abschließen.');
+      logNote(I18N.T('game.dyn.combat.tealc_stays'));
     } else {
       const full=result==='victory';
       let lootPct=full?1:(0.5+(has('G1')?0.1:0));
@@ -904,11 +904,11 @@ function applyCombatResult(){
       }
       if(m.recruit!==undefined&&!S.roster[m.recruit].recruited){
         S.roster[m.recruit].recruited=true;
-        logNote(m.recruit===3&&m.id==='1-1'?'🤝 Teal’c widersetzt sich Apophis und schließt sich SG-1 an.':`＋ Neuer Rekrut: ${S.roster[m.recruit].name}`);
+        logNote(m.recruit===3&&m.id==='1-1'?I18N.T('game.dyn.combat.tealc_joins'):I18N.T('game.dyn.combat.new_recruit',[S.roster[m.recruit].name]));
       }
     }
   }
-  else if(result==='defeat'){S.integrity=Math.max(0,S.integrity-10);logNote(`💀 Niederlage bei ${m.name}.`);}
+  else if(result==='defeat'){S.integrity=Math.max(0,S.integrity-10);logNote(I18N.T('game.dyn.combat.defeat_note',[m.name]));}
   C.active=false;save();
 }
 
@@ -1111,11 +1111,11 @@ function renderCombat(cv){
         c.fillStyle=hu.side==='player'?'#4ade80':hu.side==='neutral'?'#ffe493':'#f87171';c.font='bold 11px monospace';c.textAlign='left';
         c.fillText(hu.name,bx+6,by+15);
         c.fillStyle='#d6e0ec';c.font='10px monospace';
-        c.fillText(`HP ${hu.hp}/${hu.maxHp} · Bew ${hu.move}`,bx+6,by+29);
+        c.fillText(I18N.T('game.dyn.combat.hover_stats',[hu.hp,hu.maxHp,hu.move]),bx+6,by+29);
         const w=WEAPONS[hu.weapon];
         if(w)c.fillText(`${w.name} ${w.min}–${w.max} (R.${w.range})`,bx+6,by+43);
       }else{
-        const tile=C.map[idx(hx,hy)],coverName=tile.t===2?'SCHWERE DECKUNG':tile.t===1?'LEICHTE DECKUNG':tile.t===6?'TRÜMMER':null;
+        const tile=C.map[idx(hx,hy)],coverName=tile.t===2?I18N.T('game.dyn.combat.cover_heavy'):tile.t===1?I18N.T('game.dyn.combat.cover_light'):tile.t===6?I18N.T('game.dyn.combat.cover_rubble'):null;
         if(coverName){
           const sx=(hx-C.cameraX)*TILE,sy=(hy-C.cameraY)*TILE,bx=Math.min(sx+TILE+4,W-170),by=Math.max(40,sy-10);
           c.fillStyle='rgba(6,10,16,0.92)';c.fillRect(bx,by,160,36);
@@ -1137,37 +1137,37 @@ function renderCombat(cv){
   c.fillStyle='#e8b040';c.font='bold 13px monospace';c.textAlign='left';
   const phase=C.phase==='player'?'▶ SPIELER':'⚔ GEGNER';
   const goal=C.objective.type==='survive'?`Halte ${C.objective.rounds} Runden`:
-   C.objective.type==='contact'?`Kontakt ${C.contactComplete?'hergestellt':'herstellen'}`:'Alle Gegner besiegen';
+   C.objective.type==='contact'?(C.contactComplete?I18N.T('game.dyn.combat.obj_contact_done'):I18N.T('game.dyn.combat.obj_contact_todo')):I18N.T('game.dyn.combat.obj_kill');
   c.fillText(`Runde ${C.round}  ·  ${phase}  ·  🎯 ${goal}`,10,21);
   const g=gateReady();
   c.fillStyle=(g.at===g.total&&g.total>0)?'#4ade80':'#8a9ab0';c.font='bold 12px monospace';c.textAlign='right';
-  c.fillText(C.mission.peaceful?`🤝 Kontakt: ${C.contactComplete?'hergestellt':'offen'}`:`🌀 Gate: ${g.at}/${g.total} bereit`,W-12,21);
+  c.fillText(C.mission.peaceful?I18N.T('game.dyn.combat.obj_peaceful',[C.contactComplete?I18N.T('game.dyn.cui.contact_done'):I18N.T('game.dyn.combat.obj_open')]):I18N.T('game.dyn.combat.obj_gate',[g.at,g.total]),W-12,21);
   c.textAlign='left';
   // Ersthinweis
   if(C.firstHint&&!C.result){
     c.fillStyle='rgba(6,10,16,0.94)';c.fillRect(W/2-280,H-96,560,74);
     c.strokeStyle='#4fc3f7';c.lineWidth=2;c.strokeRect(W/2-280,H-96,560,74);
     c.fillStyle='#4fc3f7';c.font='bold 14px monospace';c.textAlign='center';
-    c.fillText('SO KÄMPFST DU',W/2,H-74);
+    c.fillText(I18N.T('game.dyn.combat.how_title'),W/2,H-74);
     c.fillStyle='#d6e0ec';c.font='12px monospace';
-    c.fillText('1. Einheit anklicken   2. BLAU = bewegen · ROTER GEGNER = schießen   3. ⏸ Warten',W/2,H-52);
+    c.fillText(I18N.T('game.dyn.combat.how_line'),W/2,H-52);
     c.fillStyle='#8a9ab0';c.font='10px monospace';
-    c.fillText('(Hinweis verschwindet nach der ersten Aktion)',W/2,H-32);
+    c.fillText(I18N.T('game.dyn.combat.how_note'),W/2,H-32);
   }
   if(C.tutorial&&!C.result){
     const steps=[
-      ['1 · JACK WÄHLEN','Klicke Jack an. Blau zeigt seine möglichen Bewegungsfelder.'],
-      ['2 · BEWEGUNG & DECKUNG','Bewege Jack auf ein blaues Feld. Bäume und Trümmer geben Deckung.'],
-      ['3 · JETZT FEUERN','Klicke einen rot markierten Jaffa an, um zu schießen.'],
-      ['4 · AKTIONSPUNKTE','„Warten“ gibt die übrigen Aktionspunkte deiner Einheit ab.'],
-      ['5 · TEAL’C HERAUSHOLEN','Besiege die Wachen. Teal’c hat sich gegen Apophis entschieden.'],
+      [I18N.T('game.dyn.combat.tut1'),I18N.T('game.dyn.combat.tut1d')],
+      [I18N.T('game.dyn.combat.tut2'),I18N.T('game.dyn.combat.tut2d')],
+      [I18N.T('game.dyn.combat.tut3'),I18N.T('game.dyn.combat.tut3d')],
+      [I18N.T('game.dyn.combat.tut4'),I18N.T('game.dyn.combat.tut4d')],
+      [I18N.T('game.dyn.combat.tut5'),I18N.T('game.dyn.combat.tut5d')],
     ];
     const [title,text]=steps[Math.min(C.tutorial.step,steps.length-1)];
     const tw=580,th=66,tx=(W-tw)/2,ty=H-100;
     c.fillStyle='rgba(5,10,18,.94)';c.fillRect(tx,ty,tw,th);
     c.strokeStyle='#e8b040';c.lineWidth=2;c.strokeRect(tx,ty,tw,th);
     c.fillStyle='#e8b040';c.font='bold 13px monospace';c.textAlign='center';
-    c.fillText(`CHULAK · EINSATZLEITFADEN  ${title}`,W/2,ty+22);
+    c.fillText(I18N.T('game.dyn.combat.tutorial_head',[title]),W/2,ty+22);
     c.fillStyle='#d6e0ec';c.font='12px monospace';
     c.fillText(text,W/2,ty+46);
   }
@@ -1178,11 +1178,11 @@ function renderCombat(cv){
     const tealcJoins=C.mission&&C.mission.tutorial&&C.result==='victory';
     const peacefulContact=C.mission&&C.mission.peaceful&&C.result==='victory';
     const rt=peacefulContact?'🤝 ERSTKONTAKT HERGESTELLT':tealcJoins?'TEAL’C WECHSELT DIE SEITEN':
-      ({victory:'✔ SIEG',defeat:'💀 NIEDERLAGE',extracted:'🌀 EXTRAKTION'}[C.result]||C.result);
+      ({victory:I18N.T('game.dyn.combat.res_victory'),defeat:I18N.T('game.dyn.combat.res_defeat'),extracted:I18N.T('game.dyn.combat.res_extract')}[C.result]||C.result);
     c.fillText(rt,W/2,tealcJoins?H/2-40:H/2);
     if(tealcJoins&&S.roster[3])drawSoldier(c,W/2,H/2+105,1.25,S.roster[3],0,1);
     c.fillStyle='#d6e0ec';c.font='14px monospace';
-    c.fillText(peacefulContact?'Ein neues Volk hat sich für den Austausch geöffnet.':tealcJoins?'Ein neuer Verbündeter für SG-1.':'Klicke auf "Weiter" unten.',W/2,tealcJoins?H/2+145:H/2+30);
+    c.fillText(peacefulContact?I18N.T('game.dyn.combat.res_contact'):tealcJoins?I18N.T('game.dyn.combat.res_tealc'):I18N.T('game.dyn.combat.res_click'),W/2,tealcJoins?H/2+145:H/2+30);
   }
   drawCombatMinimap();
 }

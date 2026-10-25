@@ -6,78 +6,79 @@
 
 const SAVE_KEY='sgc-command-v4';
 const CLASS_DE={leader:'Leader',fighter:'Kämpfer',scientist:'Wissenschaftler',medic:'Sanitäter',engineer:'Ingenieur'};
+const CLASS_EN={leader:'Leader',fighter:'Fighter',scientist:'Scientist',medic:'Medic',engineer:'Engineer'};
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const ri=n=>rnd(0,n-1);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
 // Waffen: [min, max, range, hitBase]
 const WEAPONS={
-  rifle:{name:'Rifle',min:9,max:13,range:4,hit:70,cost:{ore:15}},
-  shotgun:{name:'Shotgun',min:14,max:18,range:2,hit:90,cost:{ore:20}},
-  pistol:{name:'Pistol',min:7,max:10,range:3,hit:70,cost:{ore:10}},
-  zat:{name:"Zat'nik'tel",min:12,max:16,range:4,hit:78,cost:{ore:30,tech:10},minChap:1},
-  staff:{name:'Staff',min:7,max:11,range:3,hit:70,cost:{ore:25,tech:5},minChap:2},
-  staffLong:{name:'Langer Staff',min:12,max:16,range:5,hit:70,cost:{ore:35,tech:10},minChap:2},
-  melee:{name:'Melee',min:5,max:9,range:1,hit:95},
-  chakram:{name:'Chakram',min:16,max:22,range:1,hit:95},
-  hammer:{name:'Hammer',min:14,max:19,range:1,hit:95},
-  throw:{name:'Wurf',min:15,max:22,range:7,hit:70,ignoreCover:true},
+  rifle:{name:'Rifle',nameEn:'Rifle',min:9,max:13,range:4,hit:70,cost:{ore:15}},
+  shotgun:{name:'Shotgun',nameEn:'Shotgun',min:14,max:18,range:2,hit:90,cost:{ore:20}},
+  pistol:{name:'Pistol',nameEn:'Pistol',min:7,max:10,range:3,hit:70,cost:{ore:10}},
+  zat:{name:"Zat'nik'tel",nameEn:"Zat'nik'tel",min:12,max:16,range:4,hit:78,cost:{ore:30,tech:10},minChap:1},
+  staff:{name:'Staff',nameEn:'Staff',min:7,max:11,range:3,hit:70,cost:{ore:25,tech:5},minChap:2},
+  staffLong:{name:'Langer Staff',nameEn:'Long Staff',min:12,max:16,range:5,hit:70,cost:{ore:35,tech:10},minChap:2},
+  melee:{name:'Melee',nameEn:'Melee',min:5,max:9,range:1,hit:95},
+  chakram:{name:'Chakram',nameEn:'Chakram',min:16,max:22,range:1,hit:95},
+  hammer:{name:'Hammer',nameEn:'Hammer',min:14,max:19,range:1,hit:95},
+  throw:{name:'Wurf',nameEn:'Throw',min:15,max:22,range:7,hit:70,ignoreCover:true},
 };
 
 // Rüstungen (INVENTAR-SPEC.md §4)
 const ARMORS={
-  light:{name:'Leichte Weste',reduction:0.10,movePenalty:0,cost:{ore:10},desc:'−10% Schaden erlitten'},
-  medium:{name:'Komposit-Rüstung',reduction:0.20,movePenalty:0,cost:{ore:25,tech:5},desc:'−20% Schaden erlitten'},
-  heavy:{name:'Schwere Naquadah-Platte',reduction:0.30,movePenalty:1,cost:{ore:40,tech:10},desc:'−30% Schaden, −1 Bewegung'},
+  light:{name:'Leichte Weste',nameEn:'Light Vest',reduction:0.10,movePenalty:0,cost:{ore:10},desc:'−10% Schaden erlitten',descEn:'−10% damage taken'},
+  medium:{name:'Komposit-Rüstung',nameEn:'Composite Armor',reduction:0.20,movePenalty:0,cost:{ore:25,tech:5},desc:'−20% Schaden erlitten',descEn:'−20% damage taken'},
+  heavy:{name:'Schwere Naquadah-Platte',nameEn:'Heavy Naquadah Plate',reduction:0.30,movePenalty:1,cost:{ore:40,tech:10},desc:'−30% Schaden, −1 Bewegung',descEn:'−30% damage, −1 movement'},
 };
 
 // Spezial-Items (INVENTAR-SPEC.md §5)
 const SPECIALS={
-  medkit:{name:'Medkit',icon:'✚',cost:{medicine:5},desc:'+15 HP im Einsatz (1×/Mission)'},
-  shield:{name:'Persönlicher Schild',icon:'🛡',cost:{tech:15},desc:'Halbiert Schaden für 2 Runden'},
-  smoke:{name:'Rauchgranate',icon:'💨',cost:{ore:10},desc:'+25% Ausweichen für 2 Runden'},
-  emp:{name:'EMP-Impuls',icon:'⚡',cost:{tech:20},desc:'Nächster Gegner verliert 1 AP & 8 HP'},
+  medkit:{name:'Medkit',nameEn:'Medkit',icon:'✚',cost:{medicine:5},desc:'+15 HP im Einsatz (1×/Mission)',descEn:'+15 HP in combat (1×/mission)'},
+  shield:{name:'Persönlicher Schild',nameEn:'Personal Shield',icon:'🛡',cost:{tech:15},desc:'Halbiert Schaden für 2 Runden',descEn:'Halves damage for 2 rounds'},
+  smoke:{name:'Rauchgranate',nameEn:'Smoke Grenade',icon:'💨',cost:{ore:10},desc:'+25% Ausweichen für 2 Runden',descEn:'+25% evasion for 2 rounds'},
+  emp:{name:'EMP-Impuls',nameEn:'EMP Pulse',icon:'⚡',cost:{tech:20},desc:'Nächster Gegner verliert 1 AP & 8 HP',descEn:'Next enemy loses 1 AP & 8 HP'},
 };
 
 // Kommandanten für Hammonds Büro / Klemmbrett (ROADMAP.md §1.5.2)
 const COMMANDERS={
-  hammond:{id:'hammond',name:'Gen. George Hammond',title:'USAF · Stargate Command',color:'#e8b040',quote:'„Gehen Sie mit Gott, SG-1.“',bonus:'+10% Moral-Regeneration & Sandwich-Aktion',portraitId:12},
-  weir:{id:'weir',name:'Dr. Elizabeth Weir',title:'Zivile Leitung · IOA',color:'#38bdf8',quote:'„Diplomatie ist unsere erste Verteidigungslinie.“',bonus:'+25% Forschungspunkte (Labor) & +15% Kontakt-Beute',portraitId:1},
-  landry:{id:'landry',name:'Gen. Hank Landry',title:'USAF · Taktische Leitung',color:'#4ade80',quote:'„Feuerkraft löst Probleme, bevor sie entstehen.“',bonus:'+10 Basis-Power & +10% Waffenschaden',portraitId:0},
+  hammond:{id:'hammond',name:'Gen. George Hammond',title:'USAF · Stargate Command',titleEn:'USAF · Stargate Command',color:'#e8b040',quote:'„Gehen Sie mit Gott, SG-1.“',quoteEn:'"Go with God, SG-1."',bonus:'+10% Moral-Regeneration & Sandwich-Aktion',bonusEn:'+10% morale regeneration & sandwich action',portraitId:12},
+  weir:{id:'weir',name:'Dr. Elizabeth Weir',title:'Zivile Leitung · IOA',titleEn:'Civilian Lead · IOA',color:'#38bdf8',quote:'„Diplomatie ist unsere erste Verteidigungslinie.“',quoteEn:'"Diplomacy is our first line of defense."',bonus:'+25% Forschungspunkte (Labor) & +15% Kontakt-Beute',bonusEn:'+25% research points (lab) & +15% contact loot',portraitId:1},
+  landry:{id:'landry',name:'Gen. Hank Landry',title:'USAF · Taktische Leitung',titleEn:'USAF · Tactical Command',color:'#4ade80',quote:'„Feuerkraft löst Probleme, bevor sie entstehen.“',quoteEn:'"Firepower solves problems before they happen."',bonus:'+10 Basis-Power & +10% Waffenschaden',bonusEn:'+10 base power & +10% weapon damage',portraitId:0},
 };
 
 // SG-Teams (KONZEPT-v3.md §2+4 & Progressions-Gatter ROADMAP.md §1.5.1)
 const SG_TEAMS={
-  sg1:{id:'sg1',name:'SG-1',role:'Flaggschiff & Erkundung',color:'#4fc3f7',unlockChap:0,leadId:0},
-  sg2:{id:'sg2',name:'SG-2',role:'Taktischer Sturmtrupp',color:'#4ade80',unlockChap:0,leadId:5},
-  sg3:{id:'sg3',name:'SG-3',role:'Schwere Marines',color:'#f97316',unlockChap:1,leadId:8},
-  sg4:{id:'sg4',name:'SG-4',role:'Medizin & Diplomatie',color:'#a78bfa',unlockChap:2,leadId:4},
-  sg5:{id:'sg5',name:'SG-5',role:'Spezialeinheit',color:'#facc15',unlockChap:3,leadId:7},
+  sg1:{id:'sg1',name:'SG-1',role:'Flaggschiff & Erkundung',roleEn:'Flagship & Exploration',color:'#4fc3f7',unlockChap:0,leadId:0},
+  sg2:{id:'sg2',name:'SG-2',role:'Taktischer Sturmtrupp',roleEn:'Tactical Assault',color:'#4ade80',unlockChap:0,leadId:5},
+  sg3:{id:'sg3',name:'SG-3',role:'Schwere Marines',roleEn:'Heavy Marines',color:'#f97316',unlockChap:1,leadId:8},
+  sg4:{id:'sg4',name:'SG-4',role:'Medizin & Diplomatie',roleEn:'Medicine & Diplomacy',color:'#a78bfa',unlockChap:2,leadId:4},
+  sg5:{id:'sg5',name:'SG-5',role:'Spezialeinheit',roleEn:'Special Ops',color:'#facc15',unlockChap:3,leadId:7},
 };
 
 // Crafting-Rezepte (INVENTAR-SPEC.md §3)
 const RECIPES={
-  rifle:   {name:'🔫 Sturmgewehr (P90/M16)',cat:'weapons',item:'rifle',cost:{ore:15}},
-  shotgun: {name:'🔫 Combat Shotgun',cat:'weapons',item:'shotgun',cost:{ore:20}},
-  zat:     {name:"⚡ Zat'nik'tel",cat:'weapons',item:'zat',cost:{ore:30,tech:10},req:'W2'},
-  staff:   {name:'🔥 Jaffa-Stabwaffe',cat:'weapons',item:'staff',cost:{ore:25,tech:5}},
-  medium:  {name:'🛡 Komposit-Rüstung (−20%)',cat:'armor',item:'medium',cost:{ore:25,tech:5}},
-  heavy:   {name:'🛡 Naquadah-Platte (−30%)',cat:'armor',item:'heavy',cost:{ore:40,tech:10},req:'S1'},
-  medkit:  {name:'✚ Medkit (+15 HP)',cat:'special',item:'medkit',cost:{medicine:5}},
-  shield:  {name:'🛡 Persönlicher Schild',cat:'special',item:'shield',cost:{tech:15},req:'S1'},
-  smoke:   {name:'💨 Rauchgranate',cat:'special',item:'smoke',cost:{ore:10}},
-  emp:     {name:'⚡ EMP-Impuls',cat:'special',item:'emp',cost:{tech:20}},
+  rifle:   {name:'🔫 Sturmgewehr (P90/M16)',nameEn:'🔫 Assault Rifle (P90/M16)',cat:'weapons',item:'rifle',cost:{ore:15}},
+  shotgun: {name:'🔫 Combat Shotgun',nameEn:'🔫 Combat Shotgun',cat:'weapons',item:'shotgun',cost:{ore:20}},
+  zat:     {name:"⚡ Zat'nik'tel",nameEn:"⚡ Zat'nik'tel",cat:'weapons',item:'zat',cost:{ore:30,tech:10},req:'W2'},
+  staff:   {name:'🔥 Jaffa-Stabwaffe',nameEn:'🔥 Jaffa Staff Weapon',cat:'weapons',item:'staff',cost:{ore:25,tech:5}},
+  medium:  {name:'🛡 Komposit-Rüstung (−20%)',nameEn:'🛡 Composite Armor (−20%)',cat:'armor',item:'medium',cost:{ore:25,tech:5}},
+  heavy:   {name:'🛡 Naquadah-Platte (−30%)',nameEn:'🛡 Naquadah Plate (−30%)',cat:'armor',item:'heavy',cost:{ore:40,tech:10},req:'S1'},
+  medkit:  {name:'✚ Medkit (+15 HP)',nameEn:'✚ Medkit (+15 HP)',cat:'special',item:'medkit',cost:{medicine:5}},
+  shield:  {name:'🛡 Persönlicher Schild',nameEn:'🛡 Personal Shield',cat:'special',item:'shield',cost:{tech:15},req:'S1'},
+  smoke:   {name:'💨 Rauchgranate',nameEn:'💨 Smoke Grenade',cat:'special',item:'smoke',cost:{ore:10}},
+  emp:     {name:'⚡ EMP-Impuls',nameEn:'⚡ EMP Pulse',cat:'special',item:'emp',cost:{tech:20}},
 };
 
 // Feind-Typen
 const ENEMIES={
-  jaffa:{name:'Jaffa',hp:32,move:5,weapon:'staff',melee:'melee',color:'#e8a040'},
-  veteran:{name:'Jaffa Veteran',hp:46,move:5,weapon:'staff',melee:'melee',color:'#d06030'},
-  elite:{name:'Elite Jaffa',hp:60,move:6,weapon:'staffLong',melee:'melee',color:'#a040a0'},
-  goauld:{name:"Goa'uld",hp:220,move:3,weapon:'throw',melee:'melee',color:'#ffd700'},
-  repl:{name:'Replikant',hp:50,move:7,weapon:'staff',melee:'melee',color:'#909090'},
-  drone:{name:'Drone',hp:25,move:7,weapon:'staff',melee:null,color:'#c0c0c0'},
-    queen:{name:'Königin',hp:320,move:4,weapon:'staffLong',melee:'melee',color:'#606060'},
+  jaffa:{name:'Jaffa',nameEn:'Jaffa',hp:32,move:5,weapon:'staff',melee:'melee',color:'#e8a040'},
+  veteran:{name:'Jaffa Veteran',nameEn:'Jaffa Veteran',hp:46,move:5,weapon:'staff',melee:'melee',color:'#d06030'},
+  elite:{name:'Elite Jaffa',nameEn:'Elite Jaffa',hp:60,move:6,weapon:'staffLong',melee:'melee',color:'#a040a0'},
+  goauld:{name:"Goa'uld",nameEn:"Goa'uld",hp:220,move:3,weapon:'throw',melee:'melee',color:'#ffd700'},
+  repl:{name:'Replikant',nameEn:'Replicator',hp:50,move:7,weapon:'staff',melee:'melee',color:'#909090'},
+  drone:{name:'Drone',nameEn:'Drone',hp:25,move:7,weapon:'staff',melee:null,color:'#c0c0c0'},
+    queen:{name:'Königin',nameEn:'Queen',hp:320,move:4,weapon:'staffLong',melee:'melee',color:'#606060'},
  };
 
  // ===================== Schwierigkeit =====================
@@ -86,31 +87,31 @@ const ENEMIES={
  // chapterScale in combat.js) macht es zusätzlich nach und nach schwerer –
  // unabhängig von der gewählten Stufe. Werte hier tunen = Balance anpassen.
  const DIFFICULTY={
-  easy:{name:'Leicht',color:'#4ade80',desc:'Zum Reinkommen. Weniger & schwächere Gegner, mehr Zeit.',
+  easy:{name:'Leicht',nameEn:'Easy',color:'#4ade80',desc:'Zum Reinkommen. Weniger & schwächere Gegner, mehr Zeit.',descEn:'For getting started. Fewer & weaker enemies, more time.',
     enemyHp:0.7,enemyDmg:0.7,enemyCount:0.7,playerDmg:1.25},
-  normal:{name:'Normal',color:'#facc15',desc:'Wie in der Serie.',
+  normal:{name:'Normal',nameEn:'Normal',color:'#facc15',desc:'Wie in der Serie.',descEn:'Just like in the series.',
     enemyHp:1.0,enemyDmg:1.0,enemyCount:1.0,playerDmg:1.0},
-  hard:{name:'Hart',color:'#ef4444',desc:'Die Jaffa meinen es ernst. Mehr Gegner, weniger Zeit.',
+  hard:{name:'Hart',nameEn:'Hard',color:'#ef4444',desc:'Die Jaffa meinen es ernst. Mehr Gegner, weniger Zeit.',descEn:'The Jaffa mean business. More enemies, less time.',
     enemyHp:1.3,enemyDmg:1.3,enemyCount:1.25,playerDmg:1.0},
  };
 
 // Charaktere (SG-1 + Rekruten)
 const POOL=[
- {name:"Jack O'Neill",cls:'leader',hp:80,move:5,weapon:'rifle',sg1:true,talent:"Chekhov's Pencil: 1×/Mission verhindert Extraktion"},
- {name:'Samantha Carter',cls:'engineer',hp:75,move:5,weapon:'rifle',sg1:true,talent:'Gate-Genius: Extraktion-Beute +10%'},
- {name:'Daniel Jackson',cls:'scientist',hp:60,move:5,weapon:'pistol',sg1:true,talent:'Schwachpunkt: +25% Schaden 3 Runden'},
- {name:"Teal'c",cls:'fighter',hp:95,move:6,weapon:'rifle',melee:'chakram',sg1:true,talent:'Chakram: +8 Schaden vs Jaffa'},
- {name:'Teyla Emmagan',cls:'medic',hp:70,move:5,weapon:'pistol',talent:'Heilung: +10 HP Verbündeter (1×/Mission)'},
- {name:'Cameron Mitchell',cls:'fighter',hp:75,move:5,weapon:'rifle',talent:'Stoiker: Fatigue-Regen ×2'},
- {name:'Vala Mal Doran',cls:'scientist',hp:65,move:5,weapon:'pistol',talent:'Tech-Beute +40%'},
- {name:'Ronon Dex',cls:'fighter',hp:90,move:5,weapon:'shotgun',talent:'Hammer: +25% Schaden'},
- {name:'John Sheppard',cls:'leader',hp:80,move:5,weapon:'rifle',talent:'Improvisation: 1×/Mission +20% Schaden'},
- {name:'Dr. Beale',cls:'medic',hp:70,move:5,weapon:'pistol',talent:'MedBay-Boost: +50% Heilung'},
- {name:'Eli Wallace',cls:'scientist',hp:55,move:4,weapon:'pistol',talent:'Forschung ×2'},
- {name:"Ba'al",cls:'scientist',hp:70,move:5,weapon:'pistol',talent:"Goa'uld-Wissen: +25% vs Goa'uld"},
- {name:'General Hammond',cls:'leader',hp:60,move:4,weapon:'pistol',talent:'Sandwich: 1×/Kapitel +20 Morale'},
- {name:'Major West',cls:'fighter',hp:75,move:5,weapon:'rifle',talent:'Diplomat: -1 Bedrohung neutral'},
-  {name:'Apophis (Ra)',cls:'leader',hp:85,move:5,weapon:'rifle',talent:'Götter-Charisma: +5% Schaden'},
+ {name:"Jack O'Neill",cls:'leader',hp:80,move:5,weapon:'rifle',sg1:true,talent:"Chekhov's Pencil: 1×/Mission verhindert Extraktion",talentEn:"Chekhov's Pencil: 1×/mission prevents extraction"},
+ {name:'Samantha Carter',cls:'engineer',hp:75,move:5,weapon:'rifle',sg1:true,talent:'Gate-Genius: Extraktion-Beute +10%',talentEn:'Gate Genius: extraction loot +10%'},
+ {name:'Daniel Jackson',cls:'scientist',hp:60,move:5,weapon:'pistol',sg1:true,talent:'Schwachpunkt: +25% Schaden 3 Runden',talentEn:'Weak Spot: +25% damage 3 rounds'},
+ {name:"Teal'c",cls:'fighter',hp:95,move:6,weapon:'rifle',melee:'chakram',sg1:true,talent:'Chakram: +8 Schaden vs Jaffa',talentEn:'Chakram: +8 damage vs Jaffa'},
+ {name:'Teyla Emmagan',cls:'medic',hp:70,move:5,weapon:'pistol',talent:'Heilung: +10 HP Verbündeter (1×/Mission)',talentEn:'Healing: +10 HP to an ally (1×/mission)'},
+ {name:'Cameron Mitchell',cls:'fighter',hp:75,move:5,weapon:'rifle',talent:'Stoiker: Fatigue-Regen ×2',talentEn:'Stoic: fatigue regen ×2'},
+ {name:'Vala Mal Doran',cls:'scientist',hp:65,move:5,weapon:'pistol',talent:'Tech-Beute +40%',talentEn:'Tech loot +40%'},
+ {name:'Ronon Dex',cls:'fighter',hp:90,move:5,weapon:'shotgun',talent:'Hammer: +25% Schaden',talentEn:'Hammer: +25% damage'},
+ {name:'John Sheppard',cls:'leader',hp:80,move:5,weapon:'rifle',talent:'Improvisation: 1×/Mission +20% Schaden',talentEn:'Improvisation: 1×/mission +20% damage'},
+ {name:'Dr. Beale',cls:'medic',hp:70,move:5,weapon:'pistol',talent:'MedBay-Boost: +50% Heilung',talentEn:'MedBay Boost: +50% healing'},
+ {name:'Eli Wallace',cls:'scientist',hp:55,move:4,weapon:'pistol',talent:'Forschung ×2',talentEn:'Research ×2'},
+ {name:"Ba'al",cls:'scientist',hp:70,move:5,weapon:'pistol',talent:"Goa'uld-Wissen: +25% vs Goa'uld",talentEn:"Goa'uld knowledge: +25% vs Goa'uld"},
+ {name:'General Hammond',cls:'leader',hp:60,move:4,weapon:'pistol',talent:'Sandwich: 1×/Kapitel +20 Morale',talentEn:'Sandwich: 1×/chapter +20 morale'},
+ {name:'Major West',cls:'fighter',hp:75,move:5,weapon:'rifle',talent:'Diplomat: -1 Bedrohung neutral',talentEn:'Diplomat: -1 threat (neutral)'},
+  {name:'Apophis (Ra)',cls:'leader',hp:85,move:5,weapon:'rifle',talent:'Götter-Charisma: +5% Schaden',talentEn:'God-Charisma: +5% damage'},
  ];
  // Cannon Fodder: 24 generierte Rekruten (deterministisch via art2.js, Seed 100+i).
  // registerRecruit() trägt Name+Look+Akte in LOOKS/DOSSIERS ein – portrait() und
@@ -121,44 +122,45 @@ const POOL=[
  RECRUIT_SEEDS.forEach((seed,i)=>{
   const reg=registerRecruit(seed,_RC[i%_RC.length]);
   POOL.push({name:reg.name,cls:reg.cls,hp:60+((seed*7)%21),move:5,weapon:_RW[reg.cls],
-   talent:reg.dossier.trait+': '+reg.dossier.bio});
+   talent:reg.dossier.trait+': '+reg.dossier.bio,
+   talentEn:(reg.dossier.traitEn||reg.dossier.trait)+': '+(reg.dossier.bioEn||reg.dossier.bio)});
  });
    const START=[0,1,2]; // Teal'c (3) kommt erst nach Mission 1-1 (Serien-Timeline: bei der 1. Mission ist er noch nicht dabei)
 
 // Planeten (Sternenkarte + Missions-Kontext)
 const PLANETS={
- sgc:{name:'SGC – Cheyenne Mountain',x:105,y:275,type:'base',ch:0,sgc:true,address:'28-26-5-36-11-29',desc:'Kommandozentrale der Erde im Cheyenne Mountain Komplex.'},
- p3x478:{name:'P3X-478',x:255,y:150,type:'neutral',ch:0,desc:'Ruhige Welt mit verstreuten Antiker-Markern.'},
- chulak:{name:'Chulak',x:385,y:320,type:'hostile',ch:0,address:'9-2-23-15-37-20',desc:'Heimatwelt von Teal\'c und Hauptrekrutierungsort der Apophis-Jaffa.'},
- abydos:{name:'Abydos (P4X-544)',x:300,y:370,type:'hostile',ch:0,address:'27-7-15-32-12-30',desc:'Wüstenplanet von Kasuf und Sha\'re, einst von Ra beherrscht.'},
- cimmeria:{name:'Cimmeria (P3X-974)',x:270,y:210,type:'neutral',ch:0,address:'3-12-8-21-14-19',desc:'Asgard-Schutzwelt unter dem Hammer von Thor.'},
- p4x639:{name:'P4X-639',x:325,y:195,type:'empty',ch:0,address:'22-14-9-18-35-3',desc:'Antiker-Zeitschleifen-Station (Kein Ende in Sicht).'},
- p2x416:{name:'P2X-416',x:215,y:265,type:'neutral',ch:0,desc:'Bedrosianer und Optricianer im Streit um das Tor.'},
- p5c353:{name:'P5C-353',x:395,y:255,type:'empty',ch:0,desc:'Ausgestorbener Planet mit einer mysteriösen Sphäre.'},
- orbit1:{name:'Orbit P3X-478b',x:385,y:95,type:'space',ch:0,desc:'Trümmerfeld im Orbit nach Thors Raumschiff-Verteidigung.'},
- p2u744:{name:'P2U-744',x:480,y:185,type:'neutral',ch:1,desc:'Ehemaliger Naquadah-Außenposten der Goa\'uld.'},
- alpha:{name:'Planet Alpha',x:535,y:340,type:'neutral',ch:1,address:'3-28-9-19-24-18',desc:'Geheimer Alpha-Außenposten der Tau\'ri.'},
- tollana:{name:'Tollana (P4X-377)',x:425,y:140,type:'neutral',ch:1,address:'4-29-8-19-22-10',desc:'Heimat der Tollaner mit Ionenkanonen & Phasenverschiebung.'},
- vorash:{name:'Vorash',x:515,y:275,type:'hostile',ch:1,address:'17-25-8-3-12-19',desc:'Tok\'ra-Wüstenbasis mit Kristalltunneln.'},
- langara:{name:'Langara (P3S-452)',x:585,y:220,type:'neutral',ch:1,address:'9-18-27-3-14-22',desc:'Heimat von Jonas Quinn, reich an instabilem Naquadria.'},
- hadante:{name:'Hadante',x:340,y:430,type:'hostile',ch:1,address:'8-21-14-29-3-18',desc:'Unterirdische Gefängniswelt ohne DHD (Linea).'},
- p3x888:{name:'P3X-888',x:470,y:390,type:'hostile',ch:1,address:'14-8-22-31-19-4',desc:'Urwelt der Goa\'uld-Symbionten und wilden Unas.'},
- mobius:{name:'Planet Möbius',x:625,y:105,type:'neutral',ch:1,desc:'Historischer Zeitschleifen-Nexus.'},
- newground:{name:'New Ground',x:660,y:420,type:'neutral',ch:1,desc:'Territorium der Optricianischen Gemeinschaft.'},
- p7j989:{name:'P7J-989',x:450,y:440,type:'empty',ch:1,desc:'Garten-Kuppel mit der virtuellen Realität der Hüter.'},
- delmak:{name:'Delmak',x:670,y:290,type:'hostile',ch:2,address:'1-18-9-24-31-15',desc:'Festungswelt des Sokar und spätere Bastion von Ba\'al.'},
- tartarus:{name:'Tartarus',x:715,y:160,type:'hostile',ch:2,address:'19-14-22-7-35-12',desc:'Anubis\' Brutstätte der unaufhaltsamen Kull-Krieger.'},
- kheb:{name:'Kheb (P9C-882)',x:610,y:370,type:'empty',ch:2,address:'26-35-14-8-19-2',desc:'Heiliger Antiker-Tempel der Aufgestiegenen & Oma Desala.'},
- othala:{name:'Othala (Ida-Galaxie)',x:870,y:80,type:'space',ch:2,address:'3-14-22-8-19-29',desc:'Heimatgalaxie der Asgard und Flottenwerft von Thor.'},
- p5u666:{name:'P5U-666',x:735,y:235,type:'hostile',ch:2,desc:'Uralte Tempelruinen mit astronomischen Karten.'},
- ennui:{name:'Ennui',x:800,y:355,type:'neutral',ch:2,desc:'Herrschaftsbereich eines abtrünnigen Goa\'uld-Prinzen.'},
- dakara:{name:'Dakara',x:790,y:215,type:'hostile',ch:3,address:'28-3-14-26-11-7',desc:'Ursprung der Jaffa-Kultur mit der Antiker-Superwaffe.'},
- camelot:{name:'Camelot (PX1-591)',x:840,y:290,type:'neutral',ch:3,address:'11-20-14-9-27-3',desc:'Merlins Bibliothek, der Sangreal und die Artus-Sage.'},
- proclarush:{name:'Proclarush Taonas',x:880,y:380,type:'hostile',ch:3,address:'18-29-3-14-22-7',desc:'Lava-überströmte Antiker-Kuppel mit ZPM-Kammer.'},
- kern:{name:'Kern-Systeme',x:850,y:120,type:'hostile',ch:3,desc:'Stark befestigtes Goa\'uld-Territorium.'},
- nexus:{name:'Orbit-Nexus',x:765,y:480,type:'space',ch:3,desc:'Knotenpunkt des replizierten Netzwerks.'},
- ori:{name:'Ori-Welt (Celestis)',x:905,y:255,type:'hostile',ch:4,desc:'Zentrum der Priore und der Ori-Armada.'},
- flag:{name:"Apophis' Flaggschiff",x:910,y:440,type:'space',ch:4,desc:'Schweres Ha\'tak-Flaggschiff im Angriffsmodus.'},
+ sgc:{name:'SGC – Cheyenne Mountain',x:105,y:275,type:'base',ch:0,sgc:true,address:'28-26-5-36-11-29',desc:'Kommandozentrale der Erde im Cheyenne Mountain Komplex.',descEn:'Earth command center in the Cheyenne Mountain complex.'},
+ p3x478:{name:'P3X-478',x:255,y:150,type:'neutral',ch:0,desc:'Ruhige Welt mit verstreuten Antiker-Markern.',descEn:'Quiet world with scattered Ancient markers.'},
+ chulak:{name:'Chulak',x:385,y:320,type:'hostile',ch:0,address:'9-2-23-15-37-20',desc:'Heimatwelt von Teal\'c und Hauptrekrutierungsort der Apophis-Jaffa.',descEn:'Home world of Teal\'c and main recruitment ground of the Apophis Jaffa.'},
+ abydos:{name:'Abydos (P4X-544)',x:300,y:370,type:'hostile',ch:0,address:'27-7-15-32-12-30',desc:'Wüstenplanet von Kasuf und Sha\'re, einst von Ra beherrscht.',descEn:'Desert planet of Kasuf and Sha\'re, once ruled by Ra.'},
+ cimmeria:{name:'Cimmeria (P3X-974)',x:270,y:210,type:'neutral',ch:0,address:'3-12-8-21-14-19',desc:'Asgard-Schutzwelt unter dem Hammer von Thor.',descEn:'Asgard-protected world under the Hammer of Thor.'},
+ p4x639:{name:'P4X-639',x:325,y:195,type:'empty',ch:0,address:'22-14-9-18-35-3',desc:'Antiker-Zeitschleifen-Station (Kein Ende in Sicht).',descEn:'Ancient time-loop station (no end in sight).'},
+ p2x416:{name:'P2X-416',x:215,y:265,type:'neutral',ch:0,desc:'Bedrosianer und Optricianer im Streit um das Tor.',descEn:'Bedrosians and Optricians in a dispute over the gate.'},
+ p5c353:{name:'P5C-353',x:395,y:255,type:'empty',ch:0,desc:'Ausgestorbener Planet mit einer mysteriösen Sphäre.',descEn:'Died-out planet with a mysterious sphere.'},
+ orbit1:{name:'Orbit P3X-478b',x:385,y:95,type:'space',ch:0,desc:'Trümmerfeld im Orbit nach Thors Raumschiff-Verteidigung.',descEn:'Debris field in orbit after Thor\'s ship defense.'},
+ p2u744:{name:'P2U-744',x:480,y:185,type:'neutral',ch:1,desc:'Ehemaliger Naquadah-Außenposten der Goa\'uld.',descEn:'Former Goa\'uld Naquadah outpost.'},
+ alpha:{name:'Planet Alpha',x:535,y:340,type:'neutral',ch:1,address:'3-28-9-19-24-18',desc:'Geheimer Alpha-Außenposten der Tau\'ri.',descEn:'Secret Tau\'ri Alpha outpost.'},
+ tollana:{name:'Tollana (P4X-377)',x:425,y:140,type:'neutral',ch:1,address:'4-29-8-19-22-10',desc:'Heimat der Tollaner mit Ionenkanonen & Phasenverschiebung.',descEn:'Home of the Tollan with ion cannons & phase shifting.'},
+ vorash:{name:'Vorash',x:515,y:275,type:'hostile',ch:1,address:'17-25-8-3-12-19',desc:'Tok\'ra-Wüstenbasis mit Kristalltunneln.',descEn:'Tok\'ra desert base with crystal tunnels.'},
+ langara:{name:'Langara (P3S-452)',x:585,y:220,type:'neutral',ch:1,address:'9-18-27-3-14-22',desc:'Heimat von Jonas Quinn, reich an instabilem Naquadria.',descEn:'Home of Jonas Quinn, rich in unstable naquadria.'},
+ hadante:{name:'Hadante',x:340,y:430,type:'hostile',ch:1,address:'8-21-14-29-3-18',desc:'Unterirdische Gefängniswelt ohne DHD (Linea).',descEn:'Underground prison world without DHD (Linea).'},
+ p3x888:{name:'P3X-888',x:470,y:390,type:'hostile',ch:1,address:'14-8-22-31-19-4',desc:'Urwelt der Goa\'uld-Symbionten und wilden Unas.',descEn:'Origin world of the Goa\'uld symbiotes and wild Unas.'},
+ mobius:{name:'Planet Möbius',x:625,y:105,type:'neutral',ch:1,desc:'Historischer Zeitschleifen-Nexus.',descEn:'Historic time-loop nexus.'},
+ newground:{name:'New Ground',x:660,y:420,type:'neutral',ch:1,desc:'Territorium der Optricianischen Gemeinschaft.',descEn:'Territory of the Optrician community.'},
+ p7j989:{name:'P7J-989',x:450,y:440,type:'empty',ch:1,desc:'Garten-Kuppel mit der virtuellen Realität der Hüter.',descEn:'Garden dome with the Guardians\' virtual reality.'},
+ delmak:{name:'Delmak',x:670,y:290,type:'hostile',ch:2,address:'1-18-9-24-31-15',desc:'Festungswelt des Sokar und spätere Bastion von Ba\'al.',descEn:'Fortress world of Sokar and later bastion of Ba\'al.'},
+ tartarus:{name:'Tartarus',x:715,y:160,type:'hostile',ch:2,address:'19-14-22-7-35-12',desc:'Anubis\' Brutstätte der unaufhaltsamen Kull-Krieger.',descEn:'Anubis\' breeding ground of unstoppable Kull warriors.'},
+ kheb:{name:'Kheb (P9C-882)',x:610,y:370,type:'empty',ch:2,address:'26-35-14-8-19-2',desc:'Heiliger Antiker-Tempel der Aufgestiegenen & Oma Desala.',descEn:'Holy Ancient temple of the Ascended & Grandma Desala.'},
+ othala:{name:'Othala (Ida-Galaxie)',x:870,y:80,type:'space',ch:2,address:'3-14-22-8-19-29',desc:'Heimatgalaxie der Asgard und Flottenwerft von Thor.',descEn:'Home galaxy of the Asgard and Thor\'s fleetyard.'},
+ p5u666:{name:'P5U-666',x:735,y:235,type:'hostile',ch:2,desc:'Uralte Tempelruinen mit astronomischen Karten.',descEn:'Ancient temple ruins with astronomical maps.'},
+ ennui:{name:'Ennui',x:800,y:355,type:'neutral',ch:2,desc:'Herrschaftsbereich eines abtrünnigen Goa\'uld-Prinzen.',descEn:'Domain of a renegade Goa\'uld prince.'},
+ dakara:{name:'Dakara',x:790,y:215,type:'hostile',ch:3,address:'28-3-14-26-11-7',desc:'Ursprung der Jaffa-Kultur mit der Antiker-Superwaffe.',descEn:'Origin of Jaffa culture with the Ancient super-weapon.'},
+ camelot:{name:'Camelot (PX1-591)',x:840,y:290,type:'neutral',ch:3,address:'11-20-14-9-27-3',desc:'Merlins Bibliothek, der Sangreal und die Artus-Sage.',descEn:'Merlin\'s library, the Holy Grail and the Arthurian legend.'},
+ proclarush:{name:'Proclarush Taonas',x:880,y:380,type:'hostile',ch:3,address:'18-29-3-14-22-7',desc:'Lava-überströmte Antiker-Kuppel mit ZPM-Kammer.',descEn:'Lava-flooded Ancient dome with ZPM chamber.'},
+ kern:{name:'Kern-Systeme',x:850,y:120,type:'hostile',ch:3,desc:'Stark befestigtes Goa\'uld-Territorium.',descEn:'Heavily fortified Goa\'uld territory.'},
+ nexus:{name:'Orbit-Nexus',x:765,y:480,type:'space',ch:3,desc:'Knotenpunkt des replizierten Netzwerks.',descEn:'Hub of the replicated network.'},
+ ori:{name:'Ori-Welt (Celestis)',x:905,y:255,type:'hostile',ch:4,desc:'Zentrum der Priore und der Ori-Armada.',descEn:'Center of the Preta and the Ori armada.'},
+ flag:{name:"Apophis' Flaggschiff",x:910,y:440,type:'space',ch:4,desc:'Schweres Ha\'tak-Flaggschiff im Angriffsmodus.',descEn:'Heavy Ha\'tak flagship in attack mode.'},
 };
 
 // Kompakte Startsektoren, die der Combat-Renderer um Landschaft und Wege erweitert.
@@ -250,54 +252,54 @@ const MAPS={
 
 // Kapitel & Missionen
 const CHAPTERS=[
- {title:'Kapitel 1 – Erste Schritte',sub:'Ein Tor, eine Basis, ein Gott mit schlechtem Lebenslauf.',missions:[
-     {id:'1-1',name:'Der erste Schritt',planet:'chulak',goal:'SG-1 durch Chulak führen und Teal’cs Seitenwechsel ermöglichen',map:'chulak',theme:'jungle',type:'assault',enemies:{jaffa:3},enemySpawns:[{x:4,y:6},{x:15,y:6},{x:4,y:9}],tutorial:true,timer:30,reward:{ore:80,tech:20},recruit:3,text:'Teal’c schließt sich SG-1 an'},
-   {id:'1-2',name:'Das Dorf am Fluss',planet:'abydos',goal:'Friedlichen Erstkontakt herstellen und Vertrauen gewinnen',map:'village',theme:'jungle',type:'contact',peaceful:true,contact:{id:'village-elder',name:'Siedlungssprecher',x:22,y:13},enemies:{},reward:{ore:60,medicine:15,food:20},text:'Ein neuer Verbündeter auf Abydos'},
-   {id:'1-3',name:'Stand Orders',planet:'p2x416',goal:'Halte-Mission 10 Runden',map:'desert',theme:'desert',type:'defense',enemies:{jaffa:12},timer:28,reward:{ore:75,tech:25},recruit:12,text:'Jaffa-Anatomie I'},
-   {id:'1-4',name:'Steuern beim Schatzamt',planet:'abydos',goal:'Steuereintreiber fassen',map:'city',theme:'city',type:'assault',enemies:{jaffa:8,elite:1},timer:28,reward:{ore:70,tech:30},recruit:9,text:'Trelak befreit'},
-   {id:'1-5',name:'38 Minuten',planet:'orbit1',goal:'Thor reparieren, Raid abwehren',map:'asgard',theme:'asgard',type:'defense',enemies:{jaffa:12,veteran:2,elite:1},timer:17,reward:{tech:40,ore:60},recruit:5,text:'Dock Thor, Asgard-Deckung'},
+ {title:'Kapitel 1 – Erste Schritte',titleEn:'Chapter 1 – First Steps',sub:'Ein Tor, eine Basis, ein Gott mit schlechtem Lebenslauf.',subEn:'One gate, one base, one god with a bad resume.',missions:[
+     {id:'1-1',name:'Der erste Schritt',nameEn:'The First Step',planet:'chulak',goal:'SG-1 durch Chulak führen und Teal’cs Seitenwechsel ermöglichen',goalEn:'Lead SG-1 through Chulak and enable Teal’c’s switch of sides',map:'chulak',theme:'jungle',type:'assault',enemies:{jaffa:3},enemySpawns:[{x:4,y:6},{x:15,y:6},{x:4,y:9}],tutorial:true,timer:30,reward:{ore:80,tech:20},recruit:3,text:'Teal’c schließt sich SG-1 an',textEn:'Teal’c joins SG-1'},
+   {id:'1-2',name:'Das Dorf am Fluss',nameEn:'The Village by the River',planet:'abydos',goal:'Friedlichen Erstkontakt herstellen und Vertrauen gewinnen',goalEn:'Establish peaceful first contact and win trust',map:'village',theme:'jungle',type:'contact',peaceful:true,contact:{id:'village-elder',name:'Siedlungssprecher',nameEn:'Settlement Speaker',x:22,y:13},enemies:{},reward:{ore:60,medicine:15,food:20},text:'Ein neuer Verbündeter auf Abydos',textEn:'A new ally on Abydos'},
+   {id:'1-3',name:'Stand Orders',nameEn:'Stand Orders',planet:'p2x416',goal:'Halte-Mission 10 Runden',goalEn:'Hold mission for 10 rounds',map:'desert',theme:'desert',type:'defense',enemies:{jaffa:12},timer:28,reward:{ore:75,tech:25},recruit:12,text:'Jaffa-Anatomie I',textEn:'Jaffa Anatomy I'},
+   {id:'1-4',name:'Steuern beim Schatzamt',nameEn:'Taxes at the Treasury',planet:'abydos',goal:'Steuereintreiber fassen',goalEn:'Catch the tax collector',map:'city',theme:'city',type:'assault',enemies:{jaffa:8,elite:1},timer:28,reward:{ore:70,tech:30},recruit:9,text:'Trelak befreit',textEn:'Trelak freed'},
+   {id:'1-5',name:'38 Minuten',nameEn:'38 Minutes',planet:'orbit1',goal:'Thor reparieren, Raid abwehren',goalEn:'Repair Thor, repel the raid',map:'asgard',theme:'asgard',type:'defense',enemies:{jaffa:12,veteran:2,elite:1},timer:17,reward:{tech:40,ore:60},recruit:5,text:'Dock Thor, Asgard-Deckung',textEn:'Dock Thor, Asgard cover'},
  ]},
- {title:'Kapitel 2 – Das Netz wächst',sub:'Das Telefon hat jetzt mehrere Leitungen.',missions:[
-  {id:'2-1',name:'Netz',planet:'p2u744',goal:'Jaffa-Nachbasis sabotieren',map:'jungle',theme:'jungle',type:'assault',enemies:{jaffa:8,veteran:4},timer:28,reward:{tech:15,ore:10},recruit:6,text:'Antiquitäten-Lizenz'},
-  {id:'2-2',name:'Serenno',planet:'alpha',goal:'Friedlichen Kontakt mit der Alpha-Gemeinschaft herstellen',map:'village',theme:'jungle',type:'contact',peaceful:true,contact:{id:'alpha-envoy',name:'Koloniegesandte',x:10,y:13},enemies:{},reward:{ore:25,food:10},recruit:13,text:'Alpha-Gemeinschaft'},
-  {id:'2-3',name:'Alpha',planet:'p7j989',goal:'Chain-Dial-Verteidigung',map:'sgc',type:'defense',enemies:{jaffa:4,veteran:4,elite:2},timer:28,reward:{ore:20,tech:10},text:'+1 Dial-Kapazität'},
-  {id:'2-4',name:'Das Auge',planet:'mobius',goal:'Lens-Grundstation zerstören',map:'jungle',theme:'jungle',type:'assault',enemies:{veteran:10,elite:4},timer:28,reward:{tech:20},recruit:10,text:'Gate-Netzwerk I'},
-  {id:'2-5',name:'Das besteuerte Reich',planet:'newground',goal:'Zwei-Schicht-Army vernichten',map:'city',theme:'city',type:'assault',enemies:{jaffa:14,veteran:6,elite:2},timer:32,reward:{food:20,ore:15},recruit:8,text:'Bündnis New Ground'},
-  {id:'2-6',name:'Der erste Gott',planet:'p5c353',goal:'Khepra besiegen',map:'hatak',theme:'hatak',type:'assault',enemies:{veteran:8,elite:10,goauld:1},timer:22,reward:{tech:25,ore:20},text:'Khepra tot'},
+ {title:'Kapitel 2 – Das Netz wächst',titleEn:'Chapter 2 – The Network Grows',sub:'Das Telefon hat jetzt mehrere Leitungen.',subEn:'The phone now has several lines.',missions:[
+  {id:'2-1',name:'Netz',nameEn:'The Network',planet:'p2u744',goal:'Jaffa-Nachbasis sabotieren',goalEn:'Sabotage the Jaffa backup base',map:'jungle',theme:'jungle',type:'assault',enemies:{jaffa:8,veteran:4},timer:28,reward:{tech:15,ore:10},recruit:6,text:'Antiquitäten-Lizenz',textEn:'Antiques license'},
+  {id:'2-2',name:'Serenno',nameEn:'Serenno',planet:'alpha',goal:'Friedlichen Kontakt mit der Alpha-Gemeinschaft herstellen',goalEn:'Establish peaceful contact with the Alpha community',map:'village',theme:'jungle',type:'contact',peaceful:true,contact:{id:'alpha-envoy',name:'Koloniegesandte',nameEn:'Colony Envoy',x:10,y:13},enemies:{},reward:{ore:25,food:10},recruit:13,text:'Alpha-Gemeinschaft',textEn:'Alpha community'},
+  {id:'2-3',name:'Alpha',nameEn:'Alpha',planet:'p7j989',goal:'Chain-Dial-Verteidigung',goalEn:'Chain-dial defense',map:'sgc',type:'defense',enemies:{jaffa:4,veteran:4,elite:2},timer:28,reward:{ore:20,tech:10},text:'+1 Dial-Kapazität',textEn:'+1 dial capacity'},
+  {id:'2-4',name:'Das Auge',nameEn:'The Eye',planet:'mobius',goal:'Lens-Grundstation zerstören',goalEn:'Destroy the Lens base station',map:'jungle',theme:'jungle',type:'assault',enemies:{veteran:10,elite:4},timer:28,reward:{tech:20},recruit:10,text:'Gate-Netzwerk I',textEn:'Gate Network I'},
+  {id:'2-5',name:'Das besteuerte Reich',nameEn:'The Taxed Empire',planet:'newground',goal:'Zwei-Schicht-Army vernichten',goalEn:'Destroy the two-shift army',map:'city',theme:'city',type:'assault',enemies:{jaffa:14,veteran:6,elite:2},timer:32,reward:{food:20,ore:15},recruit:8,text:'Bündnis New Ground',textEn:'New Ground alliance'},
+  {id:'2-6',name:'Der erste Gott',nameEn:'The First God',planet:'p5c353',goal:'Khepra besiegen',goalEn:'Defeat Khepra',map:'hatak',theme:'hatak',type:'assault',enemies:{veteran:8,elite:10,goauld:1},timer:22,reward:{tech:25,ore:20},text:'Khepra tot',textEn:'Khepra dead'},
  ]},
- {title:'Kapitel 3 – Bedrohungen',sub:'Jetzt hat jeder die Telefonnummer.',missions:[
-  {id:'3-1',name:'Gärten des Pharao',planet:'p5u666',goal:'Kalender beschaffen',map:'city',type:'assault',enemies:{veteran:10,elite:4},timer:28,reward:{tech:20},recruit:7,text:'Asgard-Karte'},
-  {id:'3-2',name:'Sohn des Pharao',planet:'ennui',goal:'Prinz Kaelo befreien',map:'jungle',type:'defense',enemies:{veteran:8,elite:6},timer:30,reward:{ore:25,medicine:5},text:'Kaelo als Reservist'},
-  {id:'3-3',name:'Die Schlange',planet:'kern',goal:'Symbiont fassen',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:12,veteran:2},timer:28,reward:{tech:25},text:'2 Gate-Adressen'},
-  {id:'3-4',name:'Überfall',planet:'sgc',goal:'Doppelt-Gate-Verteidigung',map:'sgc',type:'defense',enemies:{veteran:8,elite:8},timer:28,reward:{ore:30,tech:15},text:'Gate-Verteidigung'},
-  {id:'3-5',name:'Apophis',planet:'flag',goal:'Apophis besiegen',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:8,veteran:12,goauld:1},timer:32,reward:{tech:30,ore:25},text:'Apophis tot'},
+ {title:'Kapitel 3 – Bedrohungen',titleEn:'Chapter 3 – Threats',sub:'Jetzt hat jeder die Telefonnummer.',subEn:'Now everyone has the phone number.',missions:[
+  {id:'3-1',name:'Gärten des Pharao',nameEn:'Gardens of the Pharaoh',planet:'p5u666',goal:'Kalender beschaffen',goalEn:'Obtain the calendar',map:'city',type:'assault',enemies:{veteran:10,elite:4},timer:28,reward:{tech:20},recruit:7,text:'Asgard-Karte',textEn:'Asgard map'},
+  {id:'3-2',name:'Sohn des Pharao',nameEn:'Son of the Pharaoh',planet:'ennui',goal:'Prinz Kaelo befreien',goalEn:'Free Prince Kaelo',map:'jungle',type:'defense',enemies:{veteran:8,elite:6},timer:30,reward:{ore:25,medicine:5},text:'Kaelo als Reservist',textEn:'Kaelo as a reservist'},
+  {id:'3-3',name:'Die Schlange',nameEn:'The Snake',planet:'kern',goal:'Symbiont fassen',goalEn:'Capture the symbiote',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:12,veteran:2},timer:28,reward:{tech:25},text:'2 Gate-Adressen',textEn:'2 gate addresses'},
+  {id:'3-4',name:'Überfall',nameEn:'Ambush',planet:'sgc',goal:'Doppelt-Gate-Verteidigung',goalEn:'Double gate defense',map:'sgc',type:'defense',enemies:{veteran:8,elite:8},timer:28,reward:{ore:30,tech:15},text:'Gate-Verteidigung',textEn:'Gate defense'},
+  {id:'3-5',name:'Apophis',nameEn:'Apophis',planet:'flag',goal:'Apophis besiegen',goalEn:'Defeat Apophis',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:8,veteran:12,goauld:1},timer:32,reward:{tech:30,ore:25},text:'Apophis tot',textEn:'Apophis dead'},
  ]},
- {title:'Kapitel 4 – Replikatoren',sub:'Strand, Sand, Drohnen, das Geräusch.',missions:[
-  {id:'4-1',name:'B-612',planet:'p5u666',goal:'Scan + Exfil',map:'desert',type:'assault',enemies:{drone:6,repl:4},timer:30,reward:{tech:15},text:'Replikat-Studie'},
-  {id:'4-2',name:'Die Wehr',planet:'ennui',goal:'Dorf verteidigen',map:'jungle',type:'defense',enemies:{drone:10,repl:6},timer:28,reward:{ore:25,food:10},text:'Jaffa befreit'},
-  {id:'4-3',name:'Die Höhle',planet:'kern',goal:'Mine sichern',map:'city',type:'assault',enemies:{repl:4,drone:8},timer:28,reward:{tech:20},text:'Replikat-Kanone'},
-  {id:'4-4',name:'Der Stock',planet:'p7j989',goal:'Knoten zerstören',map:'desert',type:'assault',enemies:{repl:6,drone:8},timer:28,reward:{tech:25},text:'Stock-Knoten'},
-  {id:'4-5',name:'Die Königin',planet:'nexus',goal:'Königin besiegen',map:'hatak',theme:'hatak',type:'assault',enemies:{repl:6,drone:8,queen:1},timer:32,reward:{tech:30,ore:25},text:'Königin tot'},
+ {title:'Kapitel 4 – Replikatoren',titleEn:'Chapter 4 – Replicators',sub:'Strand, Sand, Drohnen, das Geräusch.',subEn:'Beach, sand, drones, the sound.',missions:[
+  {id:'4-1',name:'B-612',nameEn:'B-612',planet:'p5u666',goal:'Scan + Exfil',goalEn:'Scan + exfil',map:'desert',type:'assault',enemies:{drone:6,repl:4},timer:30,reward:{tech:15},text:'Replikat-Studie',textEn:'Replicate study'},
+  {id:'4-2',name:'Die Wehr',nameEn:'The Militia',planet:'ennui',goal:'Dorf verteidigen',goalEn:'Defend the village',map:'jungle',type:'defense',enemies:{drone:10,repl:6},timer:28,reward:{ore:25,food:10},text:'Jaffa befreit',textEn:'Jaffa freed'},
+  {id:'4-3',name:'Die Höhle',nameEn:'The Cave',planet:'kern',goal:'Mine sichern',goalEn:'Secure the mine',map:'city',type:'assault',enemies:{repl:4,drone:8},timer:28,reward:{tech:20},text:'Replikat-Kanone',textEn:'Replicate cannon'},
+  {id:'4-4',name:'Der Stock',nameEn:'The Staff',planet:'p7j989',goal:'Knoten zerstören',goalEn:'Destroy the node',map:'desert',type:'assault',enemies:{repl:6,drone:8},timer:28,reward:{tech:25},text:'Stock-Knoten',textEn:'Staff node'},
+  {id:'4-5',name:'Die Königin',nameEn:'The Queen',planet:'nexus',goal:'Königin besiegen',goalEn:'Defeat the queen',map:'hatak',theme:'hatak',type:'assault',enemies:{repl:6,drone:8,queen:1},timer:32,reward:{tech:30,ore:25},text:'Königin tot',textEn:'Queen dead'},
  ]},
- {title:'Kapitel 5 – Das Ende',sub:'Neue Götter mit Marketingplan.',missions:[
-  {id:'5-1',name:'Die Sitzung',planet:'ori',goal:'3 Lords besiegen',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:8,goauld:3},timer:32,reward:{tech:30},text:'Lords besiegt'},
-  {id:'5-2',name:'Das zweite Gate',planet:'flag',goal:'Gate-Knoten B zerstören',map:'sgc',type:'defense',enemies:{veteran:8,elite:10},timer:28,reward:{tech:25,ore:20},text:'Gate-Verteidigung'},
-  {id:'5-3',name:'Antiker Tor',planet:'p5u666',goal:'Antike Tür öffnen',map:'jungle',theme:'jungle',type:'assault',enemies:{elite:8},timer:28,reward:{tech:30},text:'Antike Tür'},
-  {id:'5-4',name:'Galaxy-Mitte',planet:'kern',goal:'Amon besiegen',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:10,goauld:1},timer:32,reward:{tech:30,ore:25},text:'Amon tot'},
-  {id:'5-5',name:'Der Plan',planet:'nexus',goal:'Super-Gate überlasten',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:12,goauld:2},timer:32,reward:{tech:35},text:'Super-Gate'},
-  {id:'5-6',name:'Home',planet:'sgc',goal:'Zuhause',map:'desert',type:'defense',enemies:{veteran:12},timer:30,reward:{},text:'Zuhause'},
+ {title:'Kapitel 5 – Das Ende',titleEn:'Chapter 5 – The End',sub:'Neue Götter mit Marketingplan.',subEn:'New gods with a marketing plan.',missions:[
+  {id:'5-1',name:'Die Sitzung',nameEn:'The Board Meeting',planet:'ori',goal:'3 Lords besiegen',goalEn:'Defeat 3 Lords',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:8,goauld:3},timer:32,reward:{tech:30},text:'Lords besiegt',textEn:'Lords defeated'},
+  {id:'5-2',name:'Das zweite Gate',nameEn:'The Second Gate',planet:'flag',goal:'Gate-Knoten B zerstören',goalEn:'Destroy gate node B',map:'sgc',type:'defense',enemies:{veteran:8,elite:10},timer:28,reward:{tech:25,ore:20},text:'Gate-Verteidigung',textEn:'Gate defense'},
+  {id:'5-3',name:'Antiker Tor',nameEn:'Ancient Door',planet:'p5u666',goal:'Antike Tür öffnen',goalEn:'Open the ancient door',map:'jungle',theme:'jungle',type:'assault',enemies:{elite:8},timer:28,reward:{tech:30},text:'Antike Tür',textEn:'Ancient door'},
+  {id:'5-4',name:'Galaxy-Mitte',nameEn:'Galaxy Center',planet:'kern',goal:'Amon besiegen',goalEn:'Defeat Amon',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:10,goauld:1},timer:32,reward:{tech:30,ore:25},text:'Amon tot',textEn:'Amon dead'},
+  {id:'5-5',name:'Der Plan',nameEn:'The Plan',planet:'nexus',goal:'Super-Gate überlasten',goalEn:'Overload the super-gate',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:12,goauld:2},timer:32,reward:{tech:35},text:'Super-Gate',textEn:'Super-Gate'},
+  {id:'5-6',name:'Home',nameEn:'Home',planet:'sgc',goal:'Zuhause',goalEn:'Home',map:'desert',type:'defense',enemies:{veteran:12},timer:30,reward:{},text:'Zuhause',textEn:'Home'},
  ]},
 ];
 
 // Tech-Tree
 const TECH=[
- ['G1','Gate-Stabilisierer','Extraktion-Beute +10%',20,'g',null],
- ['G2','Fast Dialing','+1 Dial-Kapazität',25,'g','G1'],
- ['W1','Stunner','+5 Morale nach Sieg',20,'w',null],
- ['W2','Zat',"+20% Schaden vs Goa'uld/Replikatoren",30,'w','W1'],
- ['W3','Shielded Weapons','+10% Schaden',45,'w','W2'],
- ['S1','Personal Shields','−20% Schaden erlitten',25,'s',null],
- ['S2','Team Shield','+25% max HP',45,'s','S1'],
+ ['G1','Gate-Stabilisierer','Extraktion-Beute +10%','Gate Stabilizer','Extraction loot +10%',20,'g',null],
+ ['G2','Fast Dialing','+1 Dial-Kapazität','Fast Dialing','+1 dial capacity',25,'g','G1'],
+ ['W1','Stunner','+5 Morale nach Sieg','Stunner','+5 morale after victory',20,'w',null],
+ ['W2','Zat',"+20% Schaden vs Goa'uld/Replikatoren",'Zat',"+20% damage vs Goa'uld/replicators",30,'w','W1'],
+ ['W3','Shielded Weapons','+10% Schaden','Shielded Weapons','+10% damage',45,'w','W2'],
+ ['S1','Personal Shields','−20% Schaden erlitten','Personal Shields','−20% damage taken',25,'s',null],
+ ['S2','Team Shield','+25% max HP','Team Shield','+25% max HP',45,'s','S1'],
 ];
 
 // Basis-Events (Bürokratie-Humor)
@@ -314,6 +316,20 @@ const EVENTS=[
  'O\'Neill\'s Knie. +3 Morale (alle). "Er macht Witze."',
 ];
 
+ // English mirror of EVENTS (Bürokratie-Humor)
+const EVENTS_EN=[
+ 'Form 27B/6 was rejected in triplicate. Nobody knows why.',
+ 'The Pentagon asks whether "Gate" also works without the "Star".',
+ 'The canteen reports: wobbly pudding again. Morale effect: none (habit).',
+ 'A senator demands a report in two paragraphs. He gets three.',
+ 'Thor sends a message: "Please submit complaints in writing." The Asgard don\'t read.',
+ 'Security policy for the gate network revised. Effective yesterday.',
+ 'Someone put Dr. Jackson\'s coffee mug in quarantine.',
+ 'C. has been in the lab for 9 days. O\'Neill: "Teal\'c, lunch. (C.)"',
+ 'Coffee out. −5 morale (3 days). The only event without a counter.',
+ 'O\'Neill\'s knee. +3 morale (all). "He tells jokes."',
+];
+
 const BASE_COLS=8,BASE_LEVELS=28;
 const BASE_ROOM_LEVEL={
  gate:{level:28,x:3},generator:{level:9,x:0},lab:{level:19,x:2},
@@ -324,17 +340,17 @@ const BASE_ROOM_LEVEL={
 
 // Raum-Typen (Shelter-Basis)
 const ROOMS={
- gate:{name:'Gate-Room',w:2,h:1,power:-10,staff:0,cost:{},icon:'◎',desc:'Missions-Launch (fest)'},
- generator:{name:'Generator',w:1,h:1,power:10,staff:1,cost:{ore:220},icon:'⚡',desc:'+10 Power'},
- lab:{name:'Labor',w:1,h:1,power:-2,staff:2,cost:{ore:350,tech:30},icon:'🔬',desc:'+10 RP/Staff'},
- workshop:{name:'Werkstatt',w:1,h:1,power:-3,staff:2,cost:{ore:300,tech:30},icon:'🛠',desc:'+Erz/Staff'},
- barracks:{name:'Kaserne',w:1,h:1,power:-1,staff:4,cost:{ore:220},icon:'🛏',desc:'Beherbergt 4, +Morale'},
- medbay:{name:'MedBay',w:1,h:1,power:-2,staff:2,cost:{ore:380,tech:25},icon:'⚕',desc:'+10 HP/Staff'},
- training:{name:'Training',w:1,h:2,power:-2,staff:2,cost:{ore:500,tech:50},icon:'🏋',desc:'+2 XP/Staff'},
- armory:{name:'Armory',w:1,h:2,power:-2,staff:1,cost:{ore:450,tech:50},icon:'🔫',desc:'+Schaden'},
- water:{name:'Wasserwerk',w:1,h:1,power:-1,staff:1,cost:{ore:260,tech:20},icon:'💧',desc:'Life-Support (Pflicht)'},
- storage:{name:'Lager',w:1,h:1,power:0,staff:0,cost:{ore:180},icon:'📦',desc:'+Kapazität'},
- canteen:{name:'Kantine',w:1,h:1,power:-1,staff:1,cost:{ore:250},icon:'🍽',desc:'+Morale'},
+ gate:{name:'Gate-Room',nameEn:'Gate Room',w:2,h:1,power:-10,staff:0,cost:{},icon:'◎',desc:'Missions-Launch (fest)',descEn:'Mission launch (fixed)'},
+ generator:{name:'Generator',nameEn:'Generator',w:1,h:1,power:10,staff:1,cost:{ore:220},icon:'⚡',desc:'+10 Power',descEn:'+10 power'},
+ lab:{name:'Labor',nameEn:'Lab',w:1,h:1,power:-2,staff:2,cost:{ore:350,tech:30},icon:'🔬',desc:'+10 RP/Staff',descEn:'+10 RP/staff'},
+ workshop:{name:'Werkstatt',nameEn:'Workshop',w:1,h:1,power:-3,staff:2,cost:{ore:300,tech:30},icon:'🛠',desc:'+Erz/Staff',descEn:'+Ore/staff'},
+ barracks:{name:'Kaserne',nameEn:'Barracks',w:1,h:1,power:-1,staff:4,cost:{ore:220},icon:'🛏',desc:'Beherbergt 4, +Morale',descEn:'Houses 4, +morale'},
+ medbay:{name:'MedBay',nameEn:'MedBay',w:1,h:1,power:-2,staff:2,cost:{ore:380,tech:25},icon:'⚕',desc:'+10 HP/Staff',descEn:'+10 HP/staff'},
+ training:{name:'Training',nameEn:'Training',w:1,h:2,power:-2,staff:2,cost:{ore:500,tech:50},icon:'🏋',desc:'+2 XP/Staff',descEn:'+2 XP/staff'},
+ armory:{name:'Armory',nameEn:'Armory',w:1,h:2,power:-2,staff:1,cost:{ore:450,tech:50},icon:'🔫',desc:'+Schaden',descEn:'+damage'},
+ water:{name:'Wasserwerk',nameEn:'Water Works',w:1,h:1,power:-1,staff:1,cost:{ore:260,tech:20},icon:'💧',desc:'Life-Support (Pflicht)',descEn:'Life support (required)'},
+ storage:{name:'Lager',nameEn:'Storage',w:1,h:1,power:0,staff:0,cost:{ore:180},icon:'📦',desc:'+Kapazität',descEn:'+capacity'},
+ canteen:{name:'Kantine',nameEn:'Canteen',w:1,h:1,power:-1,staff:1,cost:{ore:250},icon:'🍽',desc:'+Morale',descEn:'+morale'},
 };
 
 // ===================== Zustand =====================
@@ -352,15 +368,15 @@ function defaultInventory(){
 
 // ===================== Offworld Koloniebau & Persistente Planeten (Civ / SimCity Layer) =====================
 const COLONY_BUILDINGS={
-  gate:{id:'gate',name:'Stargate-Ring',icon:'⛩',cost:{},power:0,def:10,yield:{},desc:'Planetares Sternentor & Verbindung zur Erde (fest)'},
-  gate_defense:{id:'gate_defense',name:'Gate-Befestigung',icon:'🧱',cost:{ore:20,tech:5},power:0,def:20,yield:{},desc:'Sandsäcke & Flak-Stellungen um das Gate (+20 Verteidigung)'},
-  mine:{id:'mine',name:'Naquadah-Mine',icon:'⛏',cost:{ore:35,tech:10},power:-2,def:0,yield:{ore:6},desc:'Tiefenbohrung nach Naquadah-Erz (+6 Erz/Tag, -2 Energie)'},
-  lab:{id:'lab',name:'Antiker-Forschungslabor',icon:'🔬',cost:{ore:30,tech:20},power:-3,def:0,yield:{tech:5},desc:'Analyse außerirdischer Relikte (+5 Tech/Tag, -3 Energie)'},
-  hangar:{id:'hangar',name:'UAV & Jumper-Hangar',icon:'🛸',cost:{ore:45,tech:25},power:-2,def:15,yield:{tech:2,ore:2},desc:'Luftaufklärung & Patrouillen (+15 Verteidigung, +2 Erz, +2 Tech)'},
-  reactor:{id:'reactor',name:'Naquadah-Reaktor',icon:'⚡',cost:{ore:40,tech:15},power:12,def:5,yield:{},desc:'Kompakt-Reaktor (+12 Energie für die Kolonie)'},
-  dome:{id:'dome',name:'Schutzschild-Kuppel',icon:'🛡',cost:{ore:50,tech:30},power:-4,def:30,yield:{},desc:'Antiker-Kraftfeldkuppel (+30 Verteidigung, schützt Kolonie)'},
-  hospital:{id:'hospital',name:'Feldlazarett',icon:'✚',cost:{ore:25,tech:10},power:-1,def:0,yield:{medicine:2},desc:'Medizinische Station (+2 Medizin/Tag, heilt Truppen)'},
-  barracks:{id:'barracks',name:'SG-Garnisonslager',icon:'🏕',cost:{ore:30,tech:10},power:-1,def:15,yield:{},desc:'Stationierte Wachmannschaft (+15 Verteidigung)'},
+  gate:{id:'gate',name:'Stargate-Ring',nameEn:'Stargate Ring',icon:'⛩',cost:{},power:0,def:10,yield:{},desc:'Planetares Sternentor & Verbindung zur Erde (fest)',descEn:'Planetary stargate & link to Earth (fixed)'},
+  gate_defense:{id:'gate_defense',name:'Gate-Befestigung',nameEn:'Gate Fortress',icon:'🧱',cost:{ore:20,tech:5},power:0,def:20,yield:{},desc:'Sandsäcke & Flak-Stellungen um das Gate (+20 Verteidigung)',descEn:'Sandbags & flak positions around the gate (+20 defense)'},
+  mine:{id:'mine',name:'Naquadah-Mine',nameEn:'Naquadah Mine',icon:'⛏',cost:{ore:35,tech:10},power:-2,def:0,yield:{ore:6},desc:'Tiefenbohrung nach Naquadah-Erz (+6 Erz/Tag, -2 Energie)',descEn:'Deep drilling for naquadah ore (+6 ore/day, -2 energy)'},
+  lab:{id:'lab',name:'Antiker-Forschungslabor',nameEn:'Ancient Research Lab',icon:'🔬',cost:{ore:30,tech:20},power:-3,def:0,yield:{tech:5},desc:'Analyse außerirdischer Relikte (+5 Tech/Tag, -3 Energie)',descEn:'Analysis of alien relics (+5 tech/day, -3 energy)'},
+  hangar:{id:'hangar',name:'UAV & Jumper-Hangar',nameEn:'UAV & Jumper Hangar',icon:'🛸',cost:{ore:45,tech:25},power:-2,def:15,yield:{tech:2,ore:2},desc:'Luftaufklärung & Patrouillen (+15 Verteidigung, +2 Erz, +2 Tech)',descEn:'Aerial recon & patrols (+15 defense, +2 ore, +2 tech)'},
+  reactor:{id:'reactor',name:'Naquadah-Reaktor',nameEn:'Naquadah Reactor',icon:'⚡',cost:{ore:40,tech:15},power:12,def:5,yield:{},desc:'Kompakt-Reaktor (+12 Energie für die Kolonie)',descEn:'Compact reactor (+12 energy for the colony)'},
+  dome:{id:'dome',name:'Schutzschild-Kuppel',nameEn:'Shield Dome',icon:'🛡',cost:{ore:50,tech:30},power:-4,def:30,yield:{},desc:'Antiker-Kraftfeldkuppel (+30 Verteidigung, schützt Kolonie)',descEn:'Ancient force-field dome (+30 defense, protects the colony)'},
+  hospital:{id:'hospital',name:'Feldlazarett',nameEn:'Field Hospital',icon:'✚',cost:{ore:25,tech:10},power:-1,def:0,yield:{medicine:2},desc:'Medizinische Station (+2 Medizin/Tag, heilt Truppen)',descEn:'Medical station (+2 medicine/day, heals troops)'},
+  barracks:{id:'barracks',name:'SG-Garnisonslager',nameEn:'SG Garrison Camp',icon:'🏕',cost:{ore:30,tech:10},power:-1,def:15,yield:{},desc:'Stationierte Wachmannschaft (+15 Verteidigung)',descEn:'Stationed garrison (+15 defense)'},
 };
 
 function defaultKeybinds(){
@@ -781,12 +797,12 @@ function endDay(){
   if(healedLog.length>0){
     S.rlog.push(`🏥 Krankenstation (Ebene 21): ${healedLog.join(', ')}`);
   }
-  if(Math.random()<0.45)note('📎 '+EVENTS[ri(EVENTS.length)]);
+  if(Math.random()<0.45)note('📎 '+((typeof I18N!=='undefined'&&I18N.lang==='en')?EVENTS_EN:EVENTS)[ri(10)]);
   // Kapitel-Check
   const ch=CHAPTERS[S.chapter];
   if(ch.missions.every(m=>S.done.includes(m.id))){
-    if(S.chapter>=CHAPTERS.length-1){S.over='win';note('🏆 Kampagne abgeschlossen. SG-1 hat wieder gewonnen.');S.rlog.push('🏆 Kampagne abgeschlossen!');}
-    else{S.chapter++;S.sandUsed=false;S.res.tech+=10;note(`📖 ${CHAPTERS[S.chapter].title} beginnt. (+10 Tech)`);S.rlog.push(`📖 Neues Kapitel: ${CHAPTERS[S.chapter].title} (+10 Tech)`);}
+    if(S.chapter>=CHAPTERS.length-1){S.over='win';note(I18N.T('game.log.campaign_win'));S.rlog.push(I18N.T('game.log.campaign_win_short'));}
+    else{S.chapter++;S.sandUsed=false;S.res.tech+=10;const chTitle=(I18N.lang==='en')?(CHAPTERS[S.chapter].titleEn||CHAPTERS[S.chapter].title):CHAPTERS[S.chapter].title;note(I18N.T('game.log.chapter_start',[chTitle]));S.rlog.push(I18N.T('game.log.new_chapter',[chTitle]));}
   }
   if(S.integrity<=0&&!S.over)S.over='loss';
   checkQuests();

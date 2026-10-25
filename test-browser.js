@@ -94,6 +94,7 @@ assert(fs.existsSync(vendorPath)&&fs.statSync(vendorPath).size>100000,'vendor/st
 const files=[
   'i18n.js',
   'i18n-portal.js',
+  'i18n-game.js',
   'switch-angel.js',
   'midi-data.js',
   'sound.js',
@@ -892,9 +893,12 @@ for(const fn of loadFns){
     }
     return hits;
   }
-  // R1: Portal. → R2: 'game/index.html' nach Bilingualisierung der Spiel-UI ergänzen.
-  const portalHits=scanGermanText('index.html');
-  assert(portalHits.length===0,'portal DOM coverage: no unannotated German text (leftovers: '+JSON.stringify(portalHits.slice(0,8))+')');
+  // R1: Portal · R2: statische Spiel-UI (JS-Views wandern in R3/R4 auf I18N.T())
+  const i18nScanFiles=['index.html','game/index.html'];
+  for(const f of i18nScanFiles){
+    const hits=scanGermanText(f);
+    assert(hits.length===0,f+' DOM coverage: no unannotated German text (leftovers: '+JSON.stringify(hits.slice(0,8))+')');
+  }
   // --- 31d. Toggle-Roundtrip + statische Anwendung + Persistenz ---
   __i18nDom.clear();
   const elT=__i18nDom.make({'data-i18n':'portal.nav.game'});

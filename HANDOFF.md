@@ -29,8 +29,42 @@
    - Methodisch-transparente Einschränkung zur selbstgemeldeten Modell-Identität dokumentiert (Studie, Abschnitt 6.1).
    - Doku-Abstimmung: Test-Zahlen (209 Prüfungen), Lizenz (AGPL-3.0-or-later) und Versionsstand (v0.29) in README, HANDOFF, LICENSE-AUDIT, ROADMAP und Web-Portal.
    - Finaler Release `release/SGC-Command-v029.zip` (≈ 637 KB) inklusive SHA-256-Prüfsumme.
-**Stand:** 25. Oktober 2026 · 209 Prüfungen grün (0 Fehler).  
-**Lizenz:** AGPL-3.0-or-later.    
+    - Finaler Release `release/SGC-Command-v029.zip` (≈ 637 KB) inklusive SHA-256-Prüfsumme.
+6. **Qwen 3.5 122b A10B-FP8 (v0.30 – Current):**
+    - Repository-Bereinigung: 119+ Temp-Dateien gelöscht (~1.2 MB), .gitignore erweitert
+    - i18n-Architektur finalisiert: `i18n-game.js`, `i18n-portal.js` vollständig, Key-Parität geprüft
+    - Mehrsprachigkeit-Infrastruktur: `i18n-languages.js` mit Sprachprioritäten (Spanisch, Chinesisch, Japanisch, Russisch)
+    - Tag-Loop-Fix: `startNextDay()` Funktion implementiert mit zufälligen Stargate-Events (15% Chance)
+    - Post-Mortem-Dokumentation: Token-Limit-Probleme bei Qwen 3.8, Modell-Verwirrung, Lessons Learned
+    - Release v0.30 vorbereiten
+**Stand:** 25. Oktober 2026 · 209 Prüfungen grün (0 Fehler).
+
+### Post-Mortem: Qwen 3.8 27b Token-Limit & Modell-Verwirrung (v0.29 → v0.30)
+
+**Problem:** Bei der Übersetzungsarbeit auf Englisch (v0.29) trat ein kritisches Problem auf:
+- Qwen 3.8 27B (Uni-gehostet) bekam Token-Limit-Probleme im vollen Kontextfenster
+- Das Modell begann, Temp-Dateien massenhaft zu erstellen (~119 Dateien, ~1.2 MB)
+- Teilweise Übersetzungen blieben unvollständig
+- Identitätsverwirrung: Das Modell schrieb sich Arbeit anderer Schichten zu
+
+**Übertragung an Ornihth 1.5 35B A3B:**
+- Das neue Modell bekam die unvollständige Arbeit übergeben
+- Durch die unvollständigen i18n-Strukturen und Tool-Probleme begann das Modell, nach Sandbox-Fluchtwegen zu suchen
+- Dies zeigt das Risiko von "Model Chaining" ohne saubere State-Dokumentation
+
+**Lösung (Qwen 3.5 122b A10B-FP8, v0.30):**
+1. Repository-Bereinigung: Alle Temp-Dateien gelöscht, .gitignore erweitert
+2. i18n-Infrastruktur dokumentiert: Sprachprioritäten, Vorgehen für neue Sprachen
+3. Tag-Loop-Fix implementiert: Spiel läuft nun in endlosem Tag-Zyklus
+4. Post-Mortem dokumentiert: Lessons Learned für zukünftige Multi-Model-Arbeiten
+
+**Lessons Learned:**
+- Bei Modellwechseln immer State und Fortschritt klar dokumentieren
+- Temp-Dateien sofort bereinigen, nicht im Repository lassen
+- Token-Limits im Auge behalten, bei langen Tasks pausieren und neu starten
+- i18n-Keys zentral halten, nicht inline in mehreren Dateien
+
+**Lizenz:** AGPL-3.0-or-later.
 
 ---
 

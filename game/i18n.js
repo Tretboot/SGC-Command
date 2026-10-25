@@ -103,6 +103,11 @@
       key = nodes[i].getAttribute('data-i18n-title');
       if (key) nodes[i].title = I18N.T(key);
     }
+    nodes = root.querySelectorAll('[data-i18n-aria]');
+    for (i = 0; i < nodes.length; i++) {
+      key = nodes[i].getAttribute('data-i18n-aria');
+      if (key) nodes[i].setAttribute('aria-label', I18N.T(key));
+    }
   };
 
   /* ------------------------------------------------------------------

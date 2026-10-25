@@ -10,6 +10,13 @@ const RES_ICON={ore:'⛏',tech:'⚙',medicine:'✚',food:'🍞'};
 const RES_DE={ore:'Erz',tech:'Tech',medicine:'Medizin',food:'Nahrung'};
 const TYPE_DE={hostile:'feindlich',neutral:'neutral',allied:'verbündet',empty:'unbewohnt',base:'Basis',space:'Orbit'};
 const ENEMY_DE={jaffa:'Jaffa',veteran:'Veteran',elite:'Elite',goauld:"Goa'uld",repl:'Replikant',drone:'Drone',queen:'Königin'};
+// i18n (v0.30 R3): Sprach-sensible Datenauswahl — DE = Originalfeld, EN = *En-Feld
+const isEn=()=>typeof I18N!=='undefined'&&I18N.lang==='en';
+const L_=(o,f)=>(!o)?'':(isEn()&&o[f+'En'])?o[f+'En']:o[f];
+const RES_EN={ore:'Ore',tech:'Tech',medicine:'Medicine',food:'Food'};
+const TYPE_EN={hostile:'hostile',neutral:'neutral',allied:'allied',empty:'uninhabited',base:'Base',space:'Orbit'};
+const ENEMY_EN={jaffa:'Jaffa',veteran:'Veteran',elite:'Elite',goauld:"Goa'uld",repl:'Replicator',drone:'Drone',queen:'Queen'};
+const clsName=c=>(isEn()?(CLASS_EN[c]||CLASS_DE[c]):CLASS_DE[c])||c;
 let GATE_STATE=null;
 let combatPanDrag=null;
 // sfx() kommt aus combat.js (global) – hier NICHT erneut deklarieren!
@@ -73,10 +80,10 @@ function showClipboardModal(){
  let h=`<div class="mbox clipboard-box">
   <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #e8b040;padding-bottom:8px">
    <div>
-    <h3 style="margin:0;color:#e8b040">📋 KOMMANDO-KLEMMBRETT · LEVEL 27 BÜRO</h3>
-    <small>Kommandant: <b style="color:${cmd.color}">${cmd.name}</b> (${cmd.title}) · Bonus: ${cmd.bonus}</small>
+    <h3 style="margin:0;color:#e8b040">${I18N.T('game.dyn.clip.title')}</h3>
+    <small>${I18N.T('game.dyn.clip.commander')} <b style="color:${cmd.color}">${cmd.name}</b> (${L_(cmd,'title')}) · ${I18N.T('game.dyn.clip.bonus')} ${L_(cmd,'bonus')}</small>
    </div>
-   <select onchange="act(setCommander(this.value));if(typeof SFX!=='undefined'&&SFX.playTrack)SFX.playTrack('theme_promotion');toast('🎖 Zeremonie: Neuer Kommandant ernannt!');showClipboardModal()" style="background:#0f1622;border-color:#e8b040">
+   <select onchange="act(setCommander(this.value));if(typeof SFX!=='undefined'&&SFX.playTrack)SFX.playTrack('theme_promotion');toast(I18N.T('game.dyn.toast.promoted'));showClipboardModal()" style="background:#0f1622;border-color:#e8b040">
     ${Object.values(COMMANDERS).map(c=>`<option value="${c.id}" ${S.commander===c.id?'selected':''}>🎖 ${c.name}</option>`).join('')}
    </select>
   </div>
@@ -85,34 +92,34 @@ function showClipboardModal(){
    ${(S.memorial&&S.memorial.length)?`
     <div style="background:#1c0b13;border:1px solid #e11d48;border-radius:4px;padding:8px 12px;margin:6px 0;display:flex;justify-content:space-between;align-items:center">
       <div>
-        <b style="color:#fda4af">🕊 GEDENKTAFEL FÜR GEFALLENE HELDEN:</b>
+        <b style="color:#fda4af">${I18N.T('game.dyn.clip.memorial')}</b>
         <span style="color:#fecdd3;margin-left:6px">${S.memorial.join(', ')}</span>
       </div>
-      <button class="winamp-btn" style="background:#4c0519;border-color:#f43f5e;color:#fff;padding:4px 8px;font-size:11px" onclick="if(typeof SFX!=='undefined'&&SFX.playTrack)SFX.playTrack('theme_funeral');toast('🕊 Gedenkzeremonie: Daniel\\'s Farewell')">🕊 Trauermusik</button>
+      <button class="winamp-btn" style="background:#4c0519;border-color:#f43f5e;color:#fff;padding:4px 8px;font-size:11px" onclick="if(typeof SFX!=='undefined'&&SFX.playTrack)SFX.playTrack('theme_funeral');toast(I18N.T('game.dyn.toast.funeral'))">${I18N.T('game.dyn.btn.funeral_music')}</button>
     </div>
    `:''}
-   <h4>🎖 Aktive SG-Teams</h4>
+   <h4>${I18N.T('game.dyn.clip.teams')}</h4>
    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px;margin-bottom:8px">
     ${Object.entries(SG_TEAMS).map(([tid,tinfo])=>{
      const members=rec.filter(p=>(p.team||(p.sg1?'sg1':'sg2'))===tid);
-     return `<div class="item" style="border-color:${tinfo.color}"><b style="color:${tinfo.color}">${tinfo.name}</b> <small>${tinfo.role}</small><br><small>${members.map(p=>p.name.split(' ')[0]).join(', ')||'Keine Zuweisung'}</small></div>`;
+     return `<div class="item" style="border-color:${tinfo.color}"><b style="color:${tinfo.color}">${tinfo.name}</b> <small>${L_(tinfo,'role')}</small><br><small>${members.map(p=>p.name.split(' ')[0]).join(', ')||I18N.T('game.dyn.clip.none')}</small></div>`;
     }).join('')}
    </div>
-   <h4>👥 Vollständige Personalübersicht (${rec.length} aktiv)</h4>
+   <h4>${I18N.T('game.dyn.clip.overview',[rec.length])}</h4>
    <table class="clipboard-table">
-    <thead><tr><th>Name</th><th>Klasse</th><th>SG-Team</th><th>Station (Raum)</th><th>Status</th><th>Ausrüstung</th></tr></thead>
+    <thead><tr><th>${I18N.T('game.dyn.clip.th.name')}</th><th>${I18N.T('game.dyn.clip.th.class')}</th><th>${I18N.T('game.dyn.clip.th.team')}</th><th>${I18N.T('game.dyn.clip.th.station')}</th><th>${I18N.T('game.dyn.clip.th.status')}</th><th>${I18N.T('game.dyn.clip.th.equip')}</th></tr></thead>
     <tbody>
      ${rec.map(p=>{
-      const rm=p.room>=0&&S.base.rooms[p.room]?ROOMS[S.base.rooms[p.room].type].name:'Bereitschaft';
-      const w=WEAPONS[p.weapon]?WEAPONS[p.weapon].name:p.weapon;
-      const ar=ARMORS[p.armor||'light']?ARMORS[p.armor||'light'].name:'Leicht';
-      const sp=p.special&&SPECIALS[p.special]?SPECIALS[p.special].icon+' '+SPECIALS[p.special].name:'–';
+      const rm=p.room>=0&&S.base.rooms[p.room]?L_(ROOMS[S.base.rooms[p.room].type],'name'):I18N.T('game.dyn.standby');
+      const w=WEAPONS[p.weapon]?L_(WEAPONS[p.weapon],'name'):p.weapon;
+      const ar=ARMORS[p.armor||'light']?L_(ARMORS[p.armor||'light'],'name'):I18N.T('game.dyn.cui.light');
+      const sp=p.special&&SPECIALS[p.special]?SPECIALS[p.special].icon+' '+L_(SPECIALS[p.special],'name'):'–';
       const curTeam=p.team||(p.sg1?'sg1':'sg2');
       return `<tr>
        <td><b>${p.name}</b> <small>Lv.${p.lvl}</small></td>
-       <td>${CLASS_DE[p.cls]}</td>
+       <td>${clsName(p.cls)}</td>
        <td><select onchange="act(assignTeam(${p.id},this.value));showClipboardModal()">${Object.entries(SG_TEAMS).map(([tid,ti])=>`<option value="${tid}" ${curTeam===tid?'selected':''}>${ti.name}</option>`).join('')}</select></td>
-       <td><select onchange="act(assignRoom(${p.id},parseInt(this.value)));showClipboardModal()"><option value="-1" ${p.room<0?'selected':''}>Bereitschaft</option>${Object.values(S.base.rooms).map(r=>`<option value="${r.id}" ${p.room===r.id?'selected':''}>${ROOMS[r.type].name}</option>`).join('')}</select></td>
+       <td><select onchange="act(assignRoom(${p.id},parseInt(this.value)));showClipboardModal()"><option value="-1" ${p.room<0?'selected':''}>${I18N.T('game.dyn.standby')}</option>${Object.values(S.base.rooms).map(r=>`<option value="${r.id}" ${p.room===r.id?'selected':''}>${L_(ROOMS[r.type],'name')}</option>`).join('')}</select></td>
        <td>❤ ${p.hp}/${p.maxHp} · 💤 ${p.fatigue}%</td>
        <td><small>🔫 ${w} · 🛡 ${ar} · ${sp}</small></td>
       </tr>`;
@@ -121,8 +128,8 @@ function showClipboardModal(){
    </table>
   </div>
   <div style="display:flex;justify-content:space-between;gap:8px">
-   ${S.roster[12]&&S.roster[12].recruited?`<button ${S.sandUsed?'disabled':''} onclick="act(sandwich());showClipboardModal()">🥪 Hammonds Sandwich (+20 Moral)</button>`:'<span></span>'}
-   <button onclick="$('modal').style.display='none'">Klemmbrett schließen</button>
+   ${S.roster[12]&&S.roster[12].recruited?`<button ${S.sandUsed?'disabled':''} onclick="act(sandwich());showClipboardModal()">${I18N.T('game.dyn.btn.sandwich_clip')}</button>`:'<span></span>'}
+   <button onclick="$('modal').style.display='none'">${I18N.T('game.dyn.btn.close_clip')}</button>
   </div>
  </div>`;
  m.style.display='flex';
@@ -416,13 +423,13 @@ function renderWinampPlaylistHTML(curTrack){
   if(WINAMP.tab==='midi'){
     const midiObj=(typeof SGC_MIDI!=='undefined')?SGC_MIDI:null;
     const isConn=midiObj&&midiObj.connected;
-    const devName=(midiObj&&midiObj.inputs.length>0)?midiObj.inputs.map(i=>i.name).join(', '):'Kein Hardware-MIDI-Gerät erkannt (Web MIDI bereit)';
+    const devName=(midiObj&&midiObj.inputs.length>0)?midiObj.inputs.map(i=>i.name).join(', '):I18N.T('game.dyn.str.midi_nodev');
     const isLearning=midiObj&&!!midiObj.learningParam;
     const kv=(midiObj&&midiObj.knobValues)||{cutoff:2400,resonance:6.0,volume:0.65,distortion:0.20,delay:0.28,tension:0.25,tempoBpm:140,decay:0.28};
     const lastEv=(midiObj&&midiObj.lastEvent)?
       (midiObj.lastEvent.type==='cc'?`CC #${midiObj.lastEvent.cc} = ${midiObj.lastEvent.val}`:
        midiObj.lastEvent.type==='noteon'?`Note ON #${midiObj.lastEvent.note} (Vel ${midiObj.lastEvent.vel})`:
-       `Note OFF #${midiObj.lastEvent.note}`):'Bereit';
+       `Note OFF #${midiObj.lastEvent.note}`):I18N.T('game.dyn.str.midi_ready');
 
     const pads=[
       {note:36,label:'Pad 1: 909 Kick',sound:'bd'},
@@ -437,13 +444,13 @@ function renderWinampPlaylistHTML(curTrack){
 
     const knobs=[
       {key:'cutoff',label:'Filter Cutoff',val:Math.round(kv.cutoff)+' Hz',min:80,max:9200,unit:'Hz'},
-      {key:'resonance',label:'Resonanz / Q',val:Number(kv.resonance).toFixed(1),min:0.5,max:18,unit:''},
+      {key:'resonance',label:I18N.T('game.dyn.str.knob_resonance'),val:Number(kv.resonance).toFixed(1),min:0.5,max:18,unit:''},
       {key:'volume',label:'Master Volume',val:Math.round(kv.volume*100)+' %',min:0.0,max:1.0,unit:'%'},
       {key:'distortion',label:'Distortion / Drive',val:Math.round(kv.distortion*100)+' %',min:0.0,max:1.0,unit:'%'},
       {key:'delay',label:'Delay / Echo',val:Number(kv.delay).toFixed(2),min:0.0,max:0.85,unit:''},
-      {key:'tension',label:'Spannung / Dyn',val:Number(kv.tension).toFixed(2),min:0.0,max:1.0,unit:''},
+      {key:'tension',label:I18N.T('game.dyn.str.knob_tension'),val:Number(kv.tension).toFixed(2),min:0.0,max:1.0,unit:''},
       {key:'tempoBpm',label:'Tempo / BPM',val:Math.round(kv.tempoBpm)+' BPM',min:65,max:175,unit:'BPM'},
-      {key:'decay',label:'Hüllkurve / Decay',val:Number(kv.decay).toFixed(2)+' s',min:0.05,max:1.2,unit:'s'}
+      {key:'decay',label:I18N.T('game.dyn.str.knob_decay'),val:Number(kv.decay).toFixed(2)+' s',min:0.05,max:1.2,unit:'s'}
     ];
 
     return `<div style="padding:12px;background:#090d14;margin:8px;border:1px solid #1e293b;border-radius:4px;display:flex;flex-direction:column;gap:12px">
@@ -455,23 +462,23 @@ function renderWinampPlaylistHTML(curTrack){
           <span style="color:#94a3b8;font-size:12px">${devName}</span>
         </div>
         <div style="display:flex;gap:6px">
-          <button class="winamp-btn" onclick="if(window.SGC_MIDI)SGC_MIDI.resetDefaultAkaiPreset('plus');showStrudelModal()" title="Standard-Belegung für Akai MPK mini Plus (CC 70..77)">🎛 Akai MPK Plus</button>
-          <button class="winamp-btn" onclick="if(window.SGC_MIDI)SGC_MIDI.resetDefaultAkaiPreset('mk2');showStrudelModal()" title="Standard-Belegung für Akai MPK mini mk2 (CC 1..8)">🎛 Akai MPK mk2</button>
-          <button class="winamp-btn" onclick="if(window.SGC_MIDI)SGC_MIDI.init().then(()=>showStrudelModal())" title="Geräte neu scannen">🔄 Scan</button>
+          <button class="winamp-btn" onclick="if(window.SGC_MIDI)SGC_MIDI.resetDefaultAkaiPreset('plus');showStrudelModal()" title="${I18N.T('game.dyn.str.midi_akai_plus')}">🎛 Akai MPK Plus</button>
+          <button class="winamp-btn" onclick="if(window.SGC_MIDI)SGC_MIDI.resetDefaultAkaiPreset('mk2');showStrudelModal()" title="${I18N.T('game.dyn.str.midi_akai_mk2')}">🎛 Akai MPK mk2</button>
+          <button class="winamp-btn" onclick="if(window.SGC_MIDI)SGC_MIDI.init().then(()=>showStrudelModal())" title="${I18N.T('game.dyn.str.midi_scan')}">🔄 Scan</button>
         </div>
       </div>
 
       <!-- MIDI Learn Status Banner -->
       ${isLearning?`
         <div style="padding:8px 12px;background:rgba(234,179,8,0.18);border:1px solid #eab308;color:#fef08a;border-radius:4px;display:flex;justify-content:space-between;align-items:center;font-size:12px">
-          <span>🎯 <b>MIDI LEARN AKTIV:</b> Drehe jetzt den gewünschten Hardware-Regler für <u>${midiObj.learningParam.label}</u>...</span>
-          <button class="winamp-btn" onclick="if(window.SGC_MIDI)SGC_MIDI.cancelLearn();showStrudelModal()">Abbrechen</button>
+          <span>${I18N.T('game.dyn.str.midi_learn',[midiObj.learningParam.label])}</span>
+          <button class="winamp-btn" onclick="if(window.SGC_MIDI)SGC_MIDI.cancelLearn();showStrudelModal()">${I18N.T('game.dyn.btn.cancel')}</button>
         </div>
       `:''}
 
       <!-- 8 Rotary Knobs Section -->
       <div>
-        <div style="font-size:11px;color:#93c5fd;font-weight:bold;margin-bottom:6px;letter-spacing:1px">8 DREHREGLER (CONTINUOUS CC / FILTER / PARAMETER)</div>
+        <div style="font-size:11px;color:#93c5fd;font-weight:bold;margin-bottom:6px;letter-spacing:1px">${I18N.T('game.dyn.str.knobs_head')}</div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px">
           ${knobs.map((k,idx)=>{
             return `<div style="background:#0f172a;border:1px solid #1e293b;border-radius:4px;padding:6px 8px;display:flex;flex-direction:column;gap:4px">
@@ -490,7 +497,7 @@ function renderWinampPlaylistHTML(curTrack){
 
       <!-- 8 Drum Pads Section -->
       <div>
-        <div style="font-size:11px;color:#f472b6;font-weight:bold;margin-bottom:6px;letter-spacing:1px">8 DRUM PADS (BANK A: NOTES 36..43 / CH 10 ODER 1)</div>
+        <div style="font-size:11px;color:#f472b6;font-weight:bold;margin-bottom:6px;letter-spacing:1px">${I18N.T('game.dyn.str.pads_head')}</div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
           ${pads.map(p=>{
             return `<button class="winamp-btn" style="padding:10px 4px;text-align:center;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:4px" onclick="if(typeof SFX!=='undefined'&&SFX.triggerDrum)SFX.triggerDrum('${p.sound}',0.85);if(typeof toast==='function')toast('🥁 ${p.label}');">
@@ -503,25 +510,25 @@ function renderWinampPlaylistHTML(curTrack){
 
       <!-- Live Keys & Monitor Footer -->
       <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #1e293b;padding-top:8px;font-size:11px;color:#94a3b8">
-        <span>🎹 <b>25-Tasten Keyboard:</b> Live spielbar! Tasten werden direkt über den Synthesizer eingemischt.</span>
+        <span>${I18N.T('game.dyn.str.keys25')}</span>
         <span style="font-family:monospace;color:#67e8f9">Signal: ${lastEv}</span>
       </div>
 
       <!-- Interactive MIDI Testing Guide -->
       <div style="background:#0c1322;border:1px solid #1d4ed8;border-radius:4px;padding:8px 12px;font-size:11px;color:#cbd5e1">
         <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="const g=document.getElementById('midi-test-guide');if(g)g.style.display=(g.style.display==='none'?'block':'none')">
-          <span style="font-weight:bold;color:#60a5fa">📖 TEST-ANLEITUNG: Wie teste ich mein MIDI-Keyboard &amp; Akai MPK?</span>
-          <span style="color:#93c5fd;font-size:10px">[ Klicken zum Öffnen / Schließen ]</span>
+          <span style="font-weight:bold;color:#60a5fa">${I18N.T('game.dyn.str.test_head')}</span>
+          <span style="color:#93c5fd;font-size:10px">${I18N.T('game.dyn.str.test_toggle')}</span>
         </div>
         <div id="midi-test-guide" style="display:block;margin-top:8px;line-height:1.6;color:#94a3b8;border-top:1px solid #1e293b;padding-top:6px">
-          <div><b style="color:#e2e8f0">1. Sofort-Test ohne Hardware:</b> Klicke oben einfach auf die 8 Drum-Pads (Pad 1–8) – sie spielen sofort TR-909/808 Kick, Snare, Hi-Hats und TB-303 Acid-Bass ab!</div>
-          <div style="margin-top:4px"><b style="color:#e2e8f0">2. Mit USB-Hardware (z.B. Akai MPK mini Plus / mk2):</b>
-            <br>• <b>Anschließen &amp; Browser-Rechte:</b> Stecke dein Keyboard per USB an. Bestätige bei Nachfrage im Browser (Chrome/Edge/Brave) <i>"MIDI-Geräte zulassen"</i>.
-            <br>• <b>Preset wählen:</b> Klicke oben auf <i>[ 🎛 Akai MPK Plus ]</i> (CC 70..77) oder <i>[ 🎛 Akai MPK mk2 ]</i> (CC 1..8).
-            <br>• <b>Drehregler testen:</b> Drehe an den 8 Hardware-Knobs → Die Werte (Cutoff, Resonanz, Volume) ändern sich live oben in den Feldern!
-            <br>• <b>Drum-Pads testen:</b> Schlage auf die 8 Hardware-Pads (Bank A) → Die Drums ertönen synchron zum Strudel-Beat.
-            <br>• <b>25 Tasten spielen:</b> Drücke Tasten auf der Klaviatur → Der Synthesizer spielt Live-Töne auf den laufenden Soundtrack.
-            <br>• <b>MIDI Learn:</b> Klicke neben einem beliebigen Regler auf <i>[ 🎯 Learn ]</i> und drehe am gewünschten Hardware-Regler → Der Parameter wird dauerhaft gebunden und im Browser gespeichert!
+          <div>${I18N.T('game.dyn.str.test1')}</div>
+          <div style="margin-top:4px">${I18N.T('game.dyn.str.test2')}
+            <br>${I18N.T('game.dyn.str.test2a')}
+            <br>${I18N.T('game.dyn.str.test2b')}
+            <br>${I18N.T('game.dyn.str.test2c')}
+            <br>${I18N.T('game.dyn.str.test2d')}
+            <br>${I18N.T('game.dyn.str.test2e')}
+            <br>${I18N.T('game.dyn.str.test2f')}
           </div>
         </div>
       </div>
@@ -532,22 +539,22 @@ function renderWinampPlaylistHTML(curTrack){
     const danceOn=typeof S!=='undefined'&&S&&S.audioDance!==false;
     const rumbleOn=typeof S!=='undefined'&&S&&S.controllerVibration!==false;
     return `<div style="padding:14px;background:#090d14;margin:8px;border:1px solid #1e293b;border-radius:4px;display:flex;flex-direction:column;gap:10px">
-      <div style="font-size:12px;color:#cbd5e1;font-weight:bold;margin-bottom:4px">⚙ HAPTIK, VIBRATION &amp; AUDIO-REAKTIVES VERHALTEN</div>
+      <div style="font-size:12px;color:#cbd5e1;font-weight:bold;margin-bottom:4px">${I18N.T('game.dyn.str.settings_head')}</div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="winamp-btn ${danceOn?'active':''}" onclick="toggleAudioDance()" title="Lässt das Spielfeld im Takt der Kick/Bass-Beats vibrieren und tanzen">🎵 Spielfeld-Tanzen: ${danceOn?'AN (Audio-Reaktiv)':'AUS'}</button>
-        <button class="winamp-btn ${rumbleOn?'active':''}" onclick="toggleControllerRumble()" title="Gamepad/Controller Dual-Rumble Vibration bei Schüssen & Bass">🎮 Controller-Vibration: ${rumbleOn?'AN':'AUS'}</button>
-        <button class="winamp-btn" onclick="showKeybindModal()">⌨ Tastenbelegung konfigurieren...</button>
+        <button class="winamp-btn ${danceOn?'active':''}" onclick="toggleAudioDance()" title="${I18N.T('game.dyn.str.dance_title')}">${I18N.T('game.dyn.str.dance_label')}${danceOn?I18N.T('game.dyn.str.dance_on'):I18N.T('game.dyn.str.off')}</button>
+        <button class="winamp-btn ${rumbleOn?'active':''}" onclick="toggleControllerRumble()" title="${I18N.T('game.dyn.str.rumble_title')}">${I18N.T('game.dyn.str.rumble_label')}${rumbleOn?I18N.T('game.dyn.str.on'):I18N.T('game.dyn.str.off')}</button>
+        <button class="winamp-btn" onclick="showKeybindModal()">${I18N.T('game.dyn.str.keybinds_btn')}</button>
       </div>
       <div style="font-size:11px;color:#94a3b8;line-height:1.5;margin-top:6px">
-        • <b>Spielfeld-Tanzen:</b> Liest die Bass-Energie von Strudel aus und lässt Kamera &amp; Voxel im Takt pulsieren.<br>
-        • <b>8-Bit Chiptune:</b> Aktiviert sich automatisch im ASCII-3D-Modus für originalgetreues Retro-Feeling.
+        ${I18N.T('game.dyn.str.info_dance')}<br>
+        ${I18N.T('game.dyn.str.info_8bit')}
       </div>
     </div>`;
   }
 
   const trackKeys=getWinampTracksForTab(WINAMP.tab,WINAMP.searchQuery);
   if(!trackKeys.length){
-    return `<div style="padding:20px;text-align:center;color:#64748b;font-size:12px">Keine Tracks gefunden für "${WINAMP.searchQuery}".</div>`;
+    return `<div style="padding:20px;text-align:center;color:#64748b;font-size:12px">${I18N.T('game.dyn.str.no_tracks',[WINAMP.searchQuery])}</div>`;
   }
 
   return `<div class="winamp-playlist">
@@ -560,7 +567,7 @@ function renderWinampPlaylistHTML(curTrack){
         <div>
           <span style="color:#64748b;margin-right:6px">[${num}]</span>
           <b>${isCur?'▶ ':''}${tr.title||tr.name||k}</b>
-          ${isUnlocked?'<span style="color:#facc15;font-size:10px;margin-left:4px" title="Im Spiel freigeschaltet!">⭐</span>':''}
+          ${isUnlocked?`<span style="color:#facc15;font-size:10px;margin-left:4px" title="${I18N.T('game.dyn.str.unlocked')}">⭐</span>`:''}
           <span style="color:#94a3b8;font-size:11px;margin-left:6px">· ${tr.artist||'SGC'}</span>
         </div>
         <div style="font-size:11px;color:#64748b">
@@ -694,7 +701,7 @@ function executeStrudelEditor(){
   if(!ed)return;
   const code=ed.value;
   STRUDEL.evaluate(code,true);
-  if(typeof toast==='function') toast('⚡ Strudel Pattern live ausgeführt! [Ctrl+Enter]');
+  if(typeof toast==='function') toast(I18N.T('game.dyn.str.toast_run'));
 }
 
 function resetCurrentSong(){
@@ -704,7 +711,7 @@ function resetCurrentSong(){
     const ed=document.getElementById('strudel-editor');
     if(ed)ed.value=tr.code;
     STRUDEL.evaluate(tr.code,true);
-    if(typeof toast==='function') toast(`↺ Track „${tr.title||tr.name}“ zurückgesetzt`);
+    if(typeof toast==='function') toast(I18N.T('game.dyn.str.toast_reset',[tr.title||tr.name]));
   }
 }
 
@@ -747,7 +754,7 @@ function applySoundbanksToCode(){
 
   ed.value = code;
   STRUDEL.evaluate(code, true);
-  if(typeof toast==='function') toast('🎹 Gewählte Soundbanks in Code eingefügt!');
+  if(typeof toast==='function') toast(I18N.T('game.dyn.str.toast_banks'));
 }
 
 function closeWinampModal(){
@@ -776,14 +783,14 @@ function showStrudelModal(){
     <div class="winamp-titlebar">
       <span>📻 SGC-AMP v2.80 · STRUDEL CORE SOUND-ENGINE &amp; REBIRTH-338</span>
       <div style="display:flex;gap:4px">
-        <button class="winamp-title-btn" onclick="toggleRebirthRack()" title="ReBirth 338 Rack umschalten">🎛 RACK</button>
+        <button class="winamp-title-btn" onclick="toggleRebirthRack()" title="${I18N.T('game.dyn.str.rack_title')}">🎛 RACK</button>
         <button class="winamp-title-btn" onclick="closeWinampModal()">✕</button>
       </div>
     </div>
 
     <!-- Main Deck: LCD & Oscilloscope -->
     <div class="winamp-display">
-      <div class="winamp-lcd" onclick="triggerWinampEasterEgg()" style="cursor:pointer" title="Klicken für SGC-Easteregg &amp; Zitate!">
+      <div class="winamp-lcd" onclick="triggerWinampEasterEgg()" style="cursor:pointer" title="${I18N.T('game.dyn.str.lcd_title')}">
         <div id="winamp-marquee" class="winamp-marquee">▶ [${tr.artist||'SGC'}] ${tr.title||tr.name||curTrack} · ${tr.style||'Strudel'} (${tr.bpm||140} BPM)</div>
         <div class="winamp-stats-row">
           <span id="winamp-time" class="winamp-time">00:00</span>
@@ -793,29 +800,29 @@ function showStrudelModal(){
         </div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
-        <canvas id="winamp-vis" class="winamp-vis-canvas" width="160" height="48" title="Klicken für Umschaltung: Oszilloskop / Frequenzspektrum" onclick="WINAMP.toggleVisMode()"></canvas>
+        <canvas id="winamp-vis" class="winamp-vis-canvas" width="160" height="48" title="${I18N.T('game.dyn.str.vis_title')}" onclick="WINAMP.toggleVisMode()"></canvas>
         <div id="winamp-vis-label" style="font-size:9px;color:#166534;letter-spacing:1px">${WINAMP.visMode==='wave'?'OSCILLOSCOPE':'SPECTRUM 28-BAND'}</div>
       </div>
     </div>
 
     <!-- Transport Controls -->
     <div class="winamp-controls">
-      <button class="winamp-btn" onclick="SFX.prevTrack()" title="Vorheriger Track">|◀◀</button>
-      <button class="winamp-btn active" onclick="SFX.playTrack(STRUDEL.currentTrack||'sa_lets_talk')" title="Abspielen">▶ PLAY</button>
-      <button class="winamp-btn" onclick="SFX.pause()" title="Pause">⏸ PAUSE</button>
-      <button class="winamp-btn" style="border-color:#ef4444;color:#f87171" onclick="SFX.stop()" title="Stop">⏹ STOP</button>
-      <button class="winamp-btn" onclick="SFX.nextTrack()" title="Nächster Track">▶▶|</button>
+      <button class="winamp-btn" onclick="SFX.prevTrack()" title="${I18N.T('game.dyn.str.prev')}">|◀◀</button>
+      <button class="winamp-btn active" onclick="SFX.playTrack(STRUDEL.currentTrack||'sa_lets_talk')" title="${I18N.T('game.dyn.str.play')}">▶ PLAY</button>
+      <button class="winamp-btn" onclick="SFX.pause()" title="${I18N.T('game.dyn.str.pause')}">⏸ PAUSE</button>
+      <button class="winamp-btn" style="border-color:#ef4444;color:#f87171" onclick="SFX.stop()" title="${I18N.T('game.dyn.str.stop')}">⏹ STOP</button>
+      <button class="winamp-btn" onclick="SFX.nextTrack()" title="${I18N.T('game.dyn.str.next')}">▶▶|</button>
 
       <div class="winamp-vol" style="margin-left:8px">
         <span>VOL:</span>
-        <input type="range" id="winamp-vol-slider" min="0" max="100" value="${Math.round((SFX?SFX.getVolume():0.65)*100)}" oninput="if(SFX&&SFX.setVolume)SFX.setVolume(this.value/100)" title="Master-Lautstärke (Strudel &amp; Effekte)">
+        <input type="range" id="winamp-vol-slider" min="0" max="100" value="${Math.round((SFX?SFX.getVolume():0.65)*100)}" oninput="if(SFX&&SFX.setVolume)SFX.setVolume(this.value/100)" title="${I18N.T('game.dyn.str.vol_title')}">
       </div>
 
       <div style="flex:1"></div>
 
-      <button id="winamp-8bit-btn" class="winamp-btn ${is8Bit?'active':''}" onclick="STRUDEL.setChiptune(!STRUDEL.chiptuneMode,true)" title="Schaltet auf klassischen 8-Bit Chiptune Sound um (Square-Waves &amp; NES Arpeggio)">👾 8-Bit: ${is8Bit?'AN':'AUS'}</button>
-      <button class="winamp-btn ${STRUDEL.dynamicEnabled?'active':''}" onclick="STRUDEL.dynamicEnabled=!STRUDEL.dynamicEnabled;toast('Spannungs-Adaption: '+(STRUDEL.dynamicEnabled?'AN':'AUS'));showStrudelModal()" title="Soundtrack passt sich dynamisch an das Gefecht an">⚡ DYN: ${STRUDEL.dynamicEnabled?'AN':'AUS'}</button>
-      <button class="winamp-btn" onclick="generateNewSongFromContext()" title="Generiert einen neuen Track aus aktuellem Team, Planet, Waffen &amp; Tag">🎲 SONGGEN</button>
+      <button id="winamp-8bit-btn" class="winamp-btn ${is8Bit?'active':''}" onclick="STRUDEL.setChiptune(!STRUDEL.chiptuneMode,true)" title="${I18N.T('game.dyn.str.chip_title')}">👾 8-Bit: ${is8Bit?'AN':'AUS'}</button>
+      <button class="winamp-btn ${STRUDEL.dynamicEnabled?'active':''}" onclick="STRUDEL.dynamicEnabled=!STRUDEL.dynamicEnabled;toast(I18N.T('game.dyn.str.toast_dyn')+(STRUDEL.dynamicEnabled?I18N.T('game.dyn.str.on'):I18N.T('game.dyn.str.off')));showStrudelModal()" title="${I18N.T('game.dyn.str.dyn_title')}">⚡ DYN: ${STRUDEL.dynamicEnabled?'AN':'AUS'}</button>
+      <button class="winamp-btn" onclick="generateNewSongFromContext()" title="${I18N.T('game.dyn.str.songgen_title')}">🎲 SONGGEN</button>
     </div>
 
     <!-- REBIRTH RB-338 SYNTH & DRUM RACK (SOUNDBANKS & SLIDERS) -->
@@ -913,12 +920,12 @@ function showStrudelModal(){
           <small style="color:#94a3b8">Superdough WebAudio Engine</small>
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button class="winamp-btn active" onclick="executeStrudelEditor()" title="Führt den aktuellen Code sofort aus (Tastenkürzel: Strg+Enter)">⚡ RUN (Ctrl+Enter)</button>
+          <button class="winamp-btn active" onclick="executeStrudelEditor()" title="${I18N.T('game.dyn.str.run_title')}">⚡ RUN (Ctrl+Enter)</button>
           <button class="winamp-btn" onclick="SFX.stop()" title="Wiedergabe stoppen">⏹ STOP</button>
           <button class="winamp-btn" onclick="mutateCurrentSong()" title="Mutiert das Pattern algorithmisch">🧬 MUTIEREN</button>
           <button class="winamp-btn" onclick="saveCustomSong()" title="Speichert die bearbeitete Version dauerhaft">💾 SPEICHERN</button>
-          <button class="winamp-btn" onclick="resetCurrentSong()" title="Setzt das Stück auf das Original-Skript zurück">↺ RESET</button>
-          <button class="winamp-btn" onclick="applySoundbanksToCode()" title="Fügt die gewählten Soundbanks (Kick, Hat, Bass) in den Code ein">✍ SOUNDBANKS ANWENDEN</button>
+          <button class="winamp-btn" onclick="resetCurrentSong()" title="${I18N.T('game.dyn.str.reset_title')}">↺ RESET</button>
+          <button class="winamp-btn" onclick="applySoundbanksToCode()" title="${I18N.T('game.dyn.str.banks_title')}">${I18N.T('game.dyn.str.banks_btn')}</button>
         </div>
       </div>
 
@@ -931,13 +938,13 @@ function showStrudelModal(){
     <!-- Playlist Tabs -->
     <div class="winamp-tabs">
       <button class="winamp-tab ${WINAMP.tab==='theme'?'on':''}" onclick="WINAMP.tab='theme';showStrudelModal()">🎺 Stargate Themes (15)</button>
-      <button class="winamp-tab ${WINAMP.tab==='core'?'on':''}" onclick="WINAMP.tab='core';showStrudelModal()">📡 SGC Einsatz-Ambiente (7)</button>
-      <button class="winamp-tab ${WINAMP.tab==='sa'?'on':''}" onclick="WINAMP.tab='sa';showStrudelModal()" title="Experimentelle Live-Coding Patterns adaptiert aus Switch Angels öffentlichem Patreon Codevault">📦 Codevault Tracks (20)</button>
-      <button class="winamp-tab ${WINAMP.tab==='seed'?'on':''}" onclick="WINAMP.tab='seed';showStrudelModal()">🌱 Eigene &amp; Seed</button>
+      <button class="winamp-tab ${WINAMP.tab==='core'?'on':''}" onclick="WINAMP.tab='core';showStrudelModal()">${I18N.T('game.dyn.str.tab_core')}</button>
+      <button class="winamp-tab ${WINAMP.tab==='sa'?'on':''}" onclick="WINAMP.tab='sa';showStrudelModal()" title="${I18N.T('game.dyn.str.tab_sa_title')}">📦 Codevault Tracks (20)</button>
+      <button class="winamp-tab ${WINAMP.tab==='seed'?'on':''}" onclick="WINAMP.tab='seed';showStrudelModal()">${I18N.T('game.dyn.str.tab_seed')}</button>
       <button class="winamp-tab ${WINAMP.tab==='midi'?'on':''}" onclick="WINAMP.tab='midi';showStrudelModal()">🎛 MIDI Controller</button>
-      <button class="winamp-tab ${WINAMP.tab==='settings'?'on':''}" onclick="WINAMP.tab='settings';showStrudelModal()">⚙ Haptik &amp; Tanz</button>
+      <button class="winamp-tab ${WINAMP.tab==='settings'?'on':''}" onclick="WINAMP.tab='settings';showStrudelModal()">${I18N.T('game.dyn.str.tab_settings')}</button>
       <div style="flex:1"></div>
-      <input type="text" id="winamp-search" placeholder="🔍 Suchen..." value="${WINAMP.searchQuery}" oninput="WINAMP.searchQuery=this.value;renderWinampPlaylistItems()" style="background:#0b111a;color:#fff;border:1px solid #374151;font-size:11px;padding:2px 6px;border-radius:3px;max-width:140px">
+      <input type="text" id="winamp-search" placeholder="${I18N.T('game.dyn.str.search_ph')}" value="${WINAMP.searchQuery}" oninput="WINAMP.searchQuery=this.value;renderWinampPlaylistItems()" style="background:#0b111a;color:#fff;border:1px solid #374151;font-size:11px;padding:2px 6px;border-radius:3px;max-width:140px">
     </div>
 
     <!-- Playlist View -->
@@ -948,7 +955,7 @@ function showStrudelModal(){
     <!-- Bottom status bar -->
     <div style="padding:6px 10px;background:#111827;border-top:1px solid #374151;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#94a3b8">
       <span>Strudel v1.3.0 · Switch Angel Prebake · ReBirth-338 Rack · AGPL-3.0-or-later</span>
-      <button class="winamp-btn" onclick="closeWinampModal()">Schließen [ESC]</button>
+      <button class="winamp-btn" onclick="closeWinampModal()">${I18N.T('game.dyn.str.close_esc')}</button>
     </div>
   </div>`;
 
@@ -984,7 +991,7 @@ function generateNewSongFromContext(){
       STRUDEL.lastCode = res.code;
       if(typeof SFX!=='undefined') SFX.playTrack('generated_seed');
     }
-    toast(`🎲 Neuer Song aus Seed ${res.seed.toString(16).toUpperCase()} generiert (${res.scale}, ${res.bpm} BPM)!`);
+    toast(I18N.T('game.dyn.str.toast_new_song',[res.seed.toString(16).toUpperCase(),res.scale,res.bpm]));
     WINAMP.tab = 'seed';
     showStrudelModal();
   }
@@ -996,7 +1003,7 @@ function mutateCurrentSong(){
   const fallback = STRUDEL.currentCode || (STRUDEL_TRACKS[STRUDEL.currentTrack] ? STRUDEL_TRACKS[STRUDEL.currentTrack].code : '');
   const curCode=(ed&&ed.value.trim())?ed.value:fallback;
   if(!curCode){
-    toast('⚠ Kein Song zum Mutieren aktiv.');
+    toast(I18N.T('game.dyn.str.toast_no_mutate'));
     return;
   }
   const mutated=STRUDEL.mutateCode(curCode, 0.65);
@@ -1004,7 +1011,7 @@ function mutateCurrentSong(){
   STRUDEL.currentCode=mutated;
   if(ed)ed.value=mutated;
   STRUDEL.evaluate(mutated, true);
-  toast('🎲 Soundtrack mutiert: Stimmen gemixt, Ribbon & Rhythmus gewürfelt!');
+  toast(I18N.T('game.dyn.str.toast_mutated'));
   if(typeof updateWinampDisplay==='function')updateWinampDisplay();
 }
 
@@ -1025,7 +1032,7 @@ function toggleAudioDance(){
   if(typeof S!=='undefined'&&S){
     S.audioDance = (S.audioDance === false) ? true : false;
     save();
-    toast(`🎵 Spielfeld-Tanzen: ${S.audioDance ? 'AN (Audio-Reaktiv)' : 'AUS'}`);
+    toast(I18N.T('game.dyn.str.dance_label')+(S.audioDance ? I18N.T('game.dyn.str.dance_on') : I18N.T('game.dyn.str.off')));
     showStrudelModal();
   }
 }
@@ -1034,7 +1041,7 @@ function toggleControllerRumble(){
   if(typeof S!=='undefined'&&S){
     S.controllerVibration = (S.controllerVibration === false) ? true : false;
     save();
-    toast(`🎮 Controller-Vibration: ${S.controllerVibration ? 'AN' : 'AUS'}`);
+    toast(I18N.T('game.dyn.str.rumble_label')+(S.controllerVibration ? I18N.T('game.dyn.str.on') : I18N.T('game.dyn.str.off')));
     showStrudelModal();
   }
 }
@@ -1047,42 +1054,42 @@ function showKeybindModal(){
  const m=$('modal');if(!m)return;
  const binds=(typeof S!=='undefined'&&S&&S.keybinds)||defaultKeybinds();
  const labels={
-  moveUp:'Kamera nach oben',
-  moveDown:'Kamera nach unten',
-  moveLeft:'Kamera nach links',
-  moveRight:'Kamera nach rechts',
-  rotateLeft:'Kamera links drehen (Q)',
-  rotateRight:'Kamera rechts drehen (E)',
-  cycleGfx:'Grafikmodus umschalten (V)',
-  nextUnit:'Nächstes SG-Mitglied (TAB)',
-  endTurn:'Runde beenden / Dialog weiter (Space)',
-  pause:'Pause-Menü (ESC)',
-  zoomIn:'Kamera Zoom In (+)',
-  zoomOut:'Kamera Zoom Out (-)'
+  moveUp:I18N.T('game.dyn.kb.act.moveUp'),
+  moveDown:I18N.T('game.dyn.kb.act.moveDown'),
+  moveLeft:I18N.T('game.dyn.kb.act.moveLeft'),
+  moveRight:I18N.T('game.dyn.kb.act.moveRight'),
+  rotateLeft:I18N.T('game.dyn.kb.act.rotateLeft'),
+  rotateRight:I18N.T('game.dyn.kb.act.rotateRight'),
+  cycleGfx:I18N.T('game.dyn.kb.act.cycleGfx'),
+  nextUnit:I18N.T('game.dyn.kb.act.nextUnit'),
+  endTurn:I18N.T('game.dyn.kb.act.endTurn'),
+  pause:I18N.T('game.dyn.kb.act.pause'),
+  zoomIn:I18N.T('game.dyn.kb.act.zoomIn'),
+  zoomOut:I18N.T('game.dyn.kb.act.zoomOut')
  };
  m.style.display='flex';
  m.innerHTML=`<div class="mbox" style="max-width:540px">
-  <h3>⌨ TASTATUR &amp; TASTENBELEGUNG</h3>
+  <h3>${I18N.T('game.dyn.kb.title')}</h3>
   <div class="mbody">
-   <p style="color:#94a3b8;margin-bottom:8px">Klicke auf "Ändern", um eine Taste frei neu zuzuweisen. Gespeichert im Profil.</p>
+   <p style="color:#94a3b8;margin-bottom:8px">${I18N.T('game.dyn.kb.hint')}</p>
    <table style="width:100%;border-collapse:collapse;margin:8px 0;font-size:13px">
-    <thead><tr style="border-bottom:1px solid #334155;color:#e8b040;text-align:left"><th style="padding:6px">Aktion</th><th style="padding:6px">Aktuelle Taste</th><th style="padding:6px;text-align:right">Aktion</th></tr></thead>
+    <thead><tr style="border-bottom:1px solid #334155;color:#e8b040;text-align:left"><th style="padding:6px">${I18N.T('game.dyn.kb.th.action')}</th><th style="padding:6px">${I18N.T('game.dyn.kb.th.key')}</th><th style="padding:6px;text-align:right">${I18N.T('game.dyn.kb.th.action')}</th></tr></thead>
     <tbody>
       ${Object.entries(labels).map(([actKey,label])=>{
         const curKey=binds[actKey]||'-';
         const isRemap=remappingAction===actKey;
         return `<tr style="border-bottom:1px solid #1e293b">
           <td style="padding:6px">${label}</td>
-          <td style="padding:6px"><code style="background:#0f172a;padding:3px 8px;border-radius:4px;color:${isRemap?'#38bdf8':'#4ade80'};border:1px solid ${isRemap?'#38bdf8':'#334155'}">${isRemap?'Taste drücken...':curKey}</code></td>
-          <td style="padding:6px;text-align:right"><button class="small" onclick="startRemapKey('${actKey}')">${isRemap?'Abbrechen':'Ändern'}</button></td>
+          <td style="padding:6px"><code style="background:#0f172a;padding:3px 8px;border-radius:4px;color:${isRemap?'#38bdf8':'#4ade80'};border:1px solid ${isRemap?'#38bdf8':'#334155'}">${isRemap?I18N.T('game.dyn.kb.press'):curKey}</code></td>
+          <td style="padding:6px;text-align:right"><button class="small" onclick="startRemapKey('${actKey}')">${isRemap?I18N.T('game.dyn.btn.cancel'):I18N.T('game.dyn.kb.change')}</button></td>
         </tr>`;
       }).join('')}
     </tbody>
    </table>
    <div style="display:flex;gap:8px;margin-top:10px">
-    <button class="small" onclick="resetKeybinds()">↺ Standard wiederherstellen</button>
+    <button class="small" onclick="resetKeybinds()">${I18N.T('game.dyn.kb.reset')}</button>
     <div style="flex:1"></div>
-    <button onclick="$('modal').style.display='none';remappingAction=null">Fertig</button>
+    <button onclick="$('modal').style.display='none';remappingAction=null">${I18N.T('game.dyn.kb.done')}</button>
    </div>
   </div>
  </div>`;
@@ -1098,7 +1105,7 @@ function resetKeybinds(){
  if(typeof S!=='undefined'&&S)S.keybinds=defaultKeybinds();
  try{localStorage.removeItem('sgc_keybinds');}catch(e){}
  remappingAction=null;
- toast('Tastenbelegung auf Standard zurückgesetzt.');
+ toast(I18N.T('game.dyn.toast.keybinds_reset'));
  showKeybindModal();
 }
 
@@ -1108,60 +1115,60 @@ function showHelp(){
  const m=$('modal');
  m.style.display='flex';
  m.innerHTML=`<div class="mbox help">
-  <h3>📖 ANLEITUNG · ISOMETRISCH VOXEL &amp; ASCII EDITION</h3>
+  <h3>${I18N.T('game.dyn.help.title')}</h3>
   <div class="mbody">
-   <h4>🖥 GRAFIK-MODI (PIXEL-VOXEL &amp; ASCII-3D)</h4>
-   <div>Schalte jederzeit oben über <b>🖥 PIXEL / ⌨ ASCII</b>, mit der Taste <b>V</b> oder im Pause-Menü (ESC) zwischen der <b>Isometrischen Voxel-Pixel-Grafik</b> und dem <b>3D-ASCII-Modus</b> (inspiriert von <code>asciiid</code> / <code>asciicker</code>) um. Mit <b>Q</b> und <b>E</b> drehst du die isometrische Kamera um 90°!</div>
-   <h4>🏗 BASIS &amp; OFFWORLD-BASENBAU (C&amp;C / SimCity)</h4>
-   <div>Im Cheyenne Mountain baust du Räume, fertigst in der <b>Waffenkammer/Werkbank</b> neue Ausrüstung (P90, Zat, Rüstungen, Medkits, Schilde, EMP) und klickst Räume für die <b>begehbare Innenansicht</b> an. Auf Offworld-Missionen kannst du im Kampf über <b>🏗 Feld-Bau</b> direkt <b>Barrikaden, Auto-Geschütztürme, Naquadah-Feldreaktoren und Bunker</b> errichten!</div>
-   <h4>⚔ KAMPF (Syndicate / X-COM / Jagged Alliance)</h4>
-   <div><b>1.</b> Klicke auf eine deiner Einheiten → <span style="color:#4fc3f7">BLAU</span> = Bewegungsfelder.</div>
-   <div><b>2.</b> Klicke ein <span style="color:#4fc3f7">BLAUES FELD</span> → Bewegung (1 AP).</div>
-   <div><b>3.</b> Klicke einen <span style="color:#ef4444">ROTEN GEGNER (✛)</span> → Schießen (1 AP).</div>
-   <div><b>4.</b> Nutze <b>💊/🛡/💨/⚡ Spezial-Items</b> oder <b>⏸ Warten</b>.</div>
-   <h4>🎵 STRUDEL SOUND-ENGINE</h4>
-   <div>Klicke oben auf <b>🎵</b>, um die integrierte Strudel-Live-Coding-Konsole zu öffnen, eigene Synth-Patterns zu schreiben oder zwischen den 6 dynamischen Soundtracks zu wechseln.</div>
+   <h4>${I18N.T('game.dyn.help.h1')}</h4>
+   <div>${I18N.T('game.dyn.help.t1')}</div>
+   <h4>${I18N.T('game.dyn.help.h2')}</h4>
+   <div>${I18N.T('game.dyn.help.t2')}</div>
+   <h4>${I18N.T('game.dyn.help.h3')}</h4>
+   <div>${I18N.T('game.dyn.help.s1')}</div>
+   <div>${I18N.T('game.dyn.help.s2')}</div>
+   <div>${I18N.T('game.dyn.help.s3')}</div>
+   <div>${I18N.T('game.dyn.help.s4')}</div>
+   <h4>${I18N.T('game.dyn.help.h4')}</h4>
+   <div>${I18N.T('game.dyn.help.t4')}</div>
   </div>
-  <button onclick="$('modal').style.display='none'">Verstanden</button>
+  <button onclick="$('modal').style.display='none'">${I18N.T('game.dyn.help.understood')}</button>
  </div>`;
 }
 
 // ===================== Header =====================
 function renderHeader(){
  const ch=CHAPTERS[S.chapter];
- $('res').innerHTML=Object.keys(S.res).map(k=>`<span class="res" title="${RES_DE[k]}">${RES_ICON[k]} ${Math.floor(S.res[k])}</span>`).join('')+
-  `<span class="res" title="Forschungspunkte">🔬 ${Math.floor(S.research.rp)}</span>`;
+ $('res').innerHTML=Object.keys(S.res).map(k=>`<span class="res" title="${(isEn()?RES_EN:RES_DE)[k]}">${RES_ICON[k]} ${Math.floor(S.res[k])}</span>`).join('')+
+  `<span class="res" title="${I18N.T('game.dyn.res.research')}">🔬 ${Math.floor(S.research.rp)}</span>`;
  const cmd=(typeof COMMANDERS!=='undefined'&&COMMANDERS[S.commander])||COMMANDERS.hammond;
  $('chap').innerHTML=`<b>${ch.title}</b><small>${ch.sub} · 🎖 ${cmd.name}</small>`;
  const pw=powerGen(),pu=powerUse();
  const D=diff();
- $('round').innerHTML=`Tag <b>${S.day}</b> · <span class="integ" title="Power">⚡ ${pw>=pu?pw-pu:0}/${pw} ${bar(pw>=pu?100:pu/pw*100,pw>=pu?'#4ade80':'#ef4444')}</span> · <span class="diff" style="color:${D.color}" title="Schwierigkeit (im Pause-Menü änderbar)">⚔ ${D.name}</span>`;
+ $('round').innerHTML=`${I18N.T('game.dyn.day')} <b>${S.day}</b> · <span class="integ" title="${I18N.T('game.dyn.power.tooltip')}">⚡ ${pw>=pu?pw-pu:0}/${pw} ${bar(pw>=pu?100:pu/pw*100,pw>=pu?'#4ade80':'#ef4444')}</span> · <span class="diff" style="color:${D.color}" title="${I18N.T('game.dyn.diff.tooltip')}">⚔ ${D.name}</span>`;
  const gb=$('gfx-btn');
  if(gb){
   const gm=typeof getGfxMode==='function'?getGfxMode():'pixel';
   gb.textContent=gm==='ascii'?'⌨ ASCII':gm==='topdown'?'🗺 2D':'🖥 PIXEL';
  }
  $('go').disabled=!!S.over||C.active||GR.phase!=='idle';
- $('go').title=S.over?'Spiel beendet':C.active?'Einsatz läuft':GR.phase!=='idle'?'Sternentor aktiv':'Tag abschließen und Ressourcen generieren';
+ $('go').title=S.over?I18N.T('game.dyn.go.over'):C.active?I18N.T('game.dyn.go.combat'):GR.phase!=='idle'?I18N.T('game.dyn.go.gate'):I18N.T('game.dyn.go.day');
 }
 
 // ===================== Basis (Shelter-Grid + Raum-Innenansicht + Crafting) =====================
 function renderBaseSide(){
  const pw=powerGen(),pu=powerUse(),ok=pw>=pu;
  const headlines=[
-  'Kantine meldet: Blauer Wackelpudding stabil. O’Neill zufrieden.',
-  'Aufzugverkehr normal. Niemand hat den Knopf zum 28. Stock gefunden.',
-  'Forschung testet neue Strudel-Subraum-Harmonien im Labor.',
-  'Sicherheitsstufe bleibt gleich. Die Formulare wurden trotzdem verdoppelt.',
-  'Wurmloch-Team bittet darum, den blauen Ereignishorizont nicht anzufassen.'
+  I18N.T('game.dyn.headline.0'),
+  I18N.T('game.dyn.headline.1'),
+  I18N.T('game.dyn.headline.2'),
+  I18N.T('game.dyn.headline.3'),
+  I18N.T('game.dyn.headline.4')
  ];
  const headline=headlines[(Math.max(1,S.day)-1)%headlines.length];
  const activeStaff=S.roster.filter(m=>m.recruited&&!m.dead).length;
  let h=`<section class="base-news" aria-label="Mountain Network Nachrichten">
-  <div class="base-news-head"><span>⦿ MOUNTAIN NETWORK</span><b><i></i> NACHRICHTEN</b></div>
-  <div class="base-news-tag">AUSGABE ${String(S.day).padStart(2,'0')} · CHEYENNE MOUNTAIN</div>
+  <div class="base-news-head"><span>⦿ MOUNTAIN NETWORK</span><b><i></i> ${I18N.T('game.dyn.mountain.news')}</b></div>
+  <div class="base-news-tag">${I18N.T('game.dyn.mountain.issue')} ${String(S.day).padStart(2,'0')} · CHEYENNE MOUNTAIN</div>
   <div class="base-news-title">${headline}</div>
-  <div class="base-news-footer"><span>PERSONAL <b>${activeStaff}</b></span><span>GRAFIK <b>${(S.gfxMode||'pixel').toUpperCase()}</b></span></div>
+  <div class="base-news-footer"><span>${I18N.T('game.dyn.mountain.staff')} <b>${activeStaff}</b></span><span>${I18N.T('game.dyn.mountain.gfx')} <b>${(S.gfxMode||'pixel').toUpperCase()}</b></span></div>
  </section>`;
  // Wenn ein Raum ausgewählt ist: Begehbare Innenansicht anzeigen (ROADMAP §1.5.3)
  if(B.selRoom&&S.base.rooms[B.selRoom]){
@@ -1171,13 +1178,13 @@ function renderBaseSide(){
   </div>`;
  }
  h+=`<div style="display:flex;gap:6px;margin-bottom:6px">
-  <button style="flex:1;border-color:#e8b040;color:#e8b040" onclick="showClipboardModal()">📋 Hammonds Büro &amp; Klemmbrett</button>
-  ${S.roster[12]&&S.roster[12].recruited?`<button ${S.sandUsed?'disabled':''} onclick="act(sandwich())" title="1× pro Kapitel: +20 Moral, −20 Erschöpfung">🥪 Sandwich</button>`:''}
+  <button style="flex:1;border-color:#e8b040;color:#e8b040" onclick="showClipboardModal()">${I18N.T('game.dyn.btn.hammond')}</button>
+  ${S.roster[12]&&S.roster[12].recruited?`<button ${S.sandUsed?'disabled':''} onclick="act(sandwich())" title="${I18N.T('game.dyn.sandwich.title')}">${I18N.T('game.dyn.btn.sandwich')}</button>`:''}
  </div>`;
- h+=`<h3>Power-Budget</h3><div class="gbox">Produktion <b style="color:${ok?'#4ade80':'#ef4444'}">${pw}</b> · Verbrauch <b>${pu}</b> ${ok?'✔':'⚠ OFFLINE'}</div>`;
- h+=`<h3>Bau</h3>`;
+ h+=`<h3>${I18N.T('game.dyn.power')}</h3><div class="gbox">${I18N.T('game.dyn.power.prod')} <b style="color:${ok?'#4ade80':'#ef4444'}">${pw}</b> · ${I18N.T('game.dyn.power.cons')} <b>${pu}</b> ${ok?'✔':I18N.T('game.dyn.power.offline')}</div>`;
+ h+=`<h3>${I18N.T('game.dyn.build')}</h3>`;
  if(B.buildMode){
-  h+=`<div class="warnbox item">Baumodus: <b>${ROOMS[B.buildType].name}</b> – klicke auf ein freies Feld. <button onclick="B.buildMode=false;renderAll()">Abbrechen</button></div>`;
+  h+=`<div class="warnbox item">${I18N.T('game.dyn.build.mode',[ROOMS[B.buildType].name])} <button onclick="B.buildMode=false;renderAll()">${I18N.T('game.dyn.btn.cancel')}</button></div>`;
  } else {
   h+=`<div class="bgrid">`+Object.keys(ROOMS).filter(t=>t!=='gate').map(t=>{
    const R=ROOMS[t],cost=Object.entries(R.cost).map(e=>RES_ICON[e[0]]+e[1]).join(' ')||'–';
@@ -1186,37 +1193,37 @@ function renderBaseSide(){
  }
  // Waffenkammer & Werkbank (INVENTAR-SPEC.md)
  if(typeof RECIPES!=='undefined'&&S.inventory){
-  h+=`<h3>🔧 Arsenal &amp; Werkbank</h3><div class="bgrid">`+Object.entries(RECIPES).map(([k,rec])=>{
+  h+=`<h3>${I18N.T('game.dyn.arsenal')}</h3><div class="bgrid">`+Object.entries(RECIPES).map(([k,rec])=>{
    const cost=Object.entries(rec.cost).map(e=>RES_ICON[e[0]]+e[1]).join(' ');
    const count=(S.inventory[rec.cat]&&S.inventory[rec.cat][rec.item])||0;
    const locked=rec.req&&!S.research.done.includes(rec.req);
    return `<button class="item" style="text-align:left" ${locked?'disabled':''} onclick="act(craftItem('${k}'))">
-    <b>${rec.name}</b> <span class="tag" style="float:right;background:#1a2535;color:#4ade80">Lager: ${count}</span><br>
+    <b>${rec.name}</b> <span class="tag" style="float:right;background:#1a2535;color:#4ade80">${I18N.T('game.dyn.stock',[count])}</span><br>
     <small>${cost}${locked?` · 🔒 ${rec.req}`:''}</small>
    </button>`;
   }).join('')+`</div>`;
  }
- h+=`<h3>Räume <small>(Klick = Innenansicht)</small></h3>`;
+ h+=`<h3>${I18N.T('game.dyn.rooms')} <small>${I18N.T('game.dyn.rooms.hint')}</small></h3>`;
  const rooms=Object.values(S.base.rooms);
  h+=rooms.map(r=>{
   const R=ROOMS[r.type],out=roomOutput(r);
   const staff=r.staff.map(id=>S.roster[id]).filter(m=>m&&m.recruited&&!m.dead);
   return `<div class="item ${B.selRoom===r.id?'warnbox':''}" style="cursor:pointer" onclick="B.selRoom=${r.id};renderAll()">
    <b>${R.icon} ${R.name}</b> ${r.type!=='gate'?`<button class="small" style="float:right" onclick="event.stopPropagation();act(demolishRoom(${r.id}))">✕</button>`:''}
-   <br><small>Staff ${staff.length}/${R.staff} ${out?`· Output ${out}`:''}
+   <br><small>${I18N.T('game.dyn.room.staff',[staff.length,R.staff])} ${out?`· Output ${out}`:''}
    ${staff.length?'<br>'+staff.map(m=>`<span class="tag" style="background:#1a2535;color:#4fc3f7">${m.name.split(' ')[0]}</span>`).join(' '):''}</small>
-   ${r.type==='medbay'?`<button class="small" style="background:#134e4a;border-color:#2dd4bf;color:#ccfbf1;margin-top:6px;width:100%" onclick="event.stopPropagation();setTab('medbay')">🏥 Krankenstation öffnen (Ebene 21)</button>`:''}</div>`;
+   ${r.type==='medbay'?`<button class="small" style="background:#134e4a;border-color:#2dd4bf;color:#ccfbf1;margin-top:6px;width:100%" onclick="event.stopPropagation();setTab('medbay')">${I18N.T('game.dyn.btn.medbay_open')}</button>`:''}</div>`;
  }).join('');
  const q=S.research.queue&&TECH.find(t=>t[0]===S.research.queue);
- h+=`<h3>Forschung</h3><p>${q?`Aktuell: <b>${q[1]}</b> ${bar(S.research.rp/q[3]*100,'#4fc3f7')} ${Math.floor(S.research.rp)}/${q[3]}`:'Keine Forschung gewählt.'}</p><div class="tree">`;
- [['g','Gate-Netz'],['w','Waffentechnik'],['s','Schilde']].forEach(([br,nm])=>{
+ h+=`<h3>${I18N.T('game.dyn.research')}</h3><p>${q?`${I18N.T('game.dyn.research.current',[q[1]])} ${bar(S.research.rp/q[3]*100,'#4fc3f7')} ${Math.floor(S.research.rp)}/${q[3]}`:I18N.T('game.dyn.research.none')}</p><div class="tree">`;
+ [['g',I18N.T('game.dyn.branch.g')],['w',I18N.T('game.dyn.branch.w')],['s',I18N.T('game.dyn.branch.s')]].forEach(([br,nm])=>{
   h+=`<div><h4>${nm}</h4>`+TECH.filter(t=>t[4]===br).map(t=>{
    const done=S.research.done.includes(t[0]),av=techAvailable(t);
    return `<button class="tech ${done?'done':''} ${S.research.queue===t[0]?'on':''}" ${(!av&&!done)?'disabled':''} onclick="act(setResearch('${S.research.queue===t[0]?'':t[0]}'))"><b>${t[0]} ${t[1]}</b><br><small>${t[2]} · ${t[3]} RP</small></button>`;
   }).join('')+'</div>';});
  h+='</div>';
  if(S.memorial.length){
-  h+=`<h3>Gedenktafel</h3><div class="gbox" style="border-color:#ef4444">${S.memorial.map(n=>`<div>🕯 ${n}</div>`).join('')}<button class="btn small" style="margin-top:6px;width:100%;background:#3b1e2a;border-color:#f43f5e;color:#fecdd3" onclick="if(typeof SFX!=='undefined'&&SFX.playTrack)SFX.playTrack('theme_funeral');toast('🕊 Gedenkmusik: Daniel\\'s Farewell')">🕊 Trauermusik abspielen</button></div>`;
+  h+=`<h3>${I18N.T('game.dyn.memorial')}</h3><div class="gbox" style="border-color:#ef4444">${S.memorial.map(n=>`<div>🕯 ${n}</div>`).join('')}<button class="btn small" style="margin-top:6px;width:100%;background:#3b1e2a;border-color:#f43f5e;color:#fecdd3" onclick="if(typeof SFX!=='undefined'&&SFX.playTrack)SFX.playTrack('theme_funeral');toast(I18N.T('game.dyn.toast.funeral'))">${I18N.T('game.dyn.btn.funeral_play')}</button></div>`;
  }
  $('base-side').innerHTML=h;
  if(B.selRoom&&S.base.rooms[B.selRoom]&&typeof drawRoomInteriorCanvas==='function'){
@@ -1256,11 +1263,11 @@ function drawMap(cv,now){
    pg.addColorStop(0,shade(base,50));pg.addColorStop(1,base);c.fillStyle=pg;c.beginPath();c.arc(P.x,P.y,r,0,7);c.fill();c.strokeStyle=col;c.lineWidth=2;c.stroke();}
   const hasM=openMissions().some(o=>o.planet===id);
   if(disc&&hasM){c.fillStyle='#f2c230';c.font='bold 18px sans-serif';c.textAlign='center';c.fillText('!',P.x+r+6,P.y-r+4+Math.sin(now/250)*2);}
-  c.fillStyle=disc?'#d6e4f0':'#6b7a90';c.font='12px sans-serif';c.textAlign='center';c.fillText(disc?P.name:'Unbekannt',P.x,P.y+r+18);
+  c.fillStyle=disc?'#d6e4f0':'#6b7a90';c.font='12px sans-serif';c.textAlign='center';c.fillText(disc?P.name:I18N.T('game.dyn.map.unknown'),P.x,P.y+r+18);
  }
  c.textAlign='left';
  c.fillStyle='rgba(6,10,16,.7)';c.fillRect(8,Ht-40,232,32);c.font='11px sans-serif';
- [['#ef4444','feindlich'],['#facc15','neutral'],['#4ade80','unbewohnt'],['#a78bfa','Orbit']].forEach(([col,l],i)=>{c.fillStyle=col;c.fillRect(14+(i%2)*116,Ht-32,8,8);c.fillStyle='#b8c6d6';c.fillText(l,26+(i%2)*116,Ht-24);});
+ [['#ef4444',I18N.T('game.dyn.legend.hostile')],['#facc15',I18N.T('game.dyn.legend.neutral')],['#4ade80',I18N.T('game.dyn.legend.empty')],['#a78bfa',I18N.T('game.dyn.legend.space')]].forEach(([col,l],i)=>{c.fillStyle=col;c.fillRect(14+(i%2)*116,Ht-32,8,8);c.fillStyle='#b8c6d6';c.fillText(l,26+(i%2)*116,Ht-24);});
 }
 function selectTeamPreset(teamId){
  document.querySelectorAll('.tpick').forEach(cb=>{
@@ -1273,22 +1280,22 @@ function selectTeamPreset(teamId){
 }
 function renderMapSide(){
  if(!MAP.sel){
-  $('map-side').innerHTML=`<h3>Sternenkarte</h3><p class="dim">Klicke auf einen Planeten. „!" = offene Mission. „?" = unentdeckt.</p>
-  <h3>Offene Missionen</h3>`+openMissions().map(m=>
+  $('map-side').innerHTML=`<h3>${I18N.T('game.dyn.map.title')}</h3><p class="dim">${I18N.T('game.dyn.map.hint')}</p>
+  <h3>${I18N.T('game.dyn.map.open')}</h3>`+openMissions().map(m=>
    `<div class="item" onclick="MAP.sel='${m.planet}';renderAll()" style="cursor:pointer"><b>${m.name}</b> <small>${PLANETS[m.planet].name}</small></div>`).join('');
   return;
  }
  const P=PLANETS[MAP.sel],disc=S.planets[MAP.sel].disc;
- let h=`<h3>${disc?P.name:'Unbekanntes Signal'}</h3>`;
- if(!disc){h+=`<p class="dim">Ein ungewähltes Gate-Signal.</p><button onclick="discover('${MAP.sel}');act({ok:true})">🛰 Sonde senden</button>`;$('map-side').innerHTML=h;return;}
- h+=`<p>${TYPE_DE[P.type]}</p>`;
+ let h=`<h3>${disc?P.name:I18N.T('game.dyn.map.unk_signal')}</h3>`;
+ if(!disc){h+=`<p class="dim">${I18N.T('game.dyn.map.unk_text')}</p><button onclick="discover('${MAP.sel}');act({ok:true})">${I18N.T('game.dyn.map.probe')}</button>`;$('map-side').innerHTML=h;return;}
+ h+=`<p>${(isEn()?TYPE_EN:TYPE_DE)[P.type]}</p>`;
  const ms=openMissions().filter(m=>m.planet===MAP.sel);
  if(ms.length){
   ms.forEach(m=>{
-   h+=`<div class="item"><b>${m.name}</b><br><small>${m.goal}<br>${m.peaceful?'Missionstyp: Friedlicher Erstkontakt · keine Feinde':`Gegner: ${Object.entries(m.enemies).map(e=>e[1]+'× '+ENEMY_DE[e[0]]).join(', ')||'keine'}`}<br>${m.peaceful?'Zivilisten ansprechen und den Dialog abschließen.':m.tutorial?'Tutorial: Bewegung · Deckung · Schießen · Aktionspunkte · Teal’c':'Ende: Sieg (100%) oder Extraktion am Gate (50%)'}<br>Beute: ${Object.entries(m.reward).map(e=>RES_ICON[e[0]]+e[1]).join(' ')||'–'}</small></div>`;
+   h+=`<div class="item"><b>${m.name}</b><br><small>${m.goal}<br>${m.peaceful?I18N.T('game.dyn.map.contact_type'):`${I18N.T('game.dyn.map.enemy_count')}: ${Object.entries(m.enemies).map(e=>e[1]+'× '+ENEMY_DE[e[0]]).join(', ')||I18N.T('game.dyn.map.none')}`}<br>${m.peaceful?I18N.T('game.dyn.map.contact_do'):m.tutorial?I18N.T('game.dyn.map.tutorial'):I18N.T('game.dyn.map.extract')}<br>${I18N.T('game.dyn.map.loot')}: ${Object.entries(m.reward).map(e=>RES_ICON[e[0]]+e[1]).join(' ')||'–'}</small></div>`;
   });
   const avail=S.roster.filter(m=>m.recruited&&!m.dead);
-  h+=`<h3>Team-Auswahl <small>(max 6)</small></h3>`;
+  h+=`<h3>${I18N.T('game.dyn.map.team')} <small>${I18N.T('game.dyn.map.team_max')}</small></h3>`;
   if(!ms[0].tutorial&&typeof SG_TEAMS!=='undefined'){
    h+=`<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">`+
     Object.entries(SG_TEAMS).map(([tid,ti])=>`<button class="small" style="border-color:${ti.color};color:${ti.color}" onclick="selectTeamPreset('${tid}')">${ti.name}</button>`).join('')+
@@ -1300,13 +1307,13 @@ function renderMapSide(){
     const ti=SG_TEAMS&&SG_TEAMS[mt];
     return `<label class="gl"><input type="checkbox" class="tpick" value="${m.id}" ${(ms[0].tutorial||mt==='sg1')?'checked':''} ${ms[0].tutorial?'disabled':''}> ${pic(m)} <span>${m.name.split(' ')[0]}</span> <small style="color:${ti?ti.color:'#8a9ab0'}">${ti?ti.name:''} · 🔫${WEAPONS[m.weapon]?WEAPONS[m.weapon].name:m.weapon}</small></label>`;
    }).join('')+`</div>`;
-  h+=`<button id="launch" style="width:100%;margin-top:8px;background:#1f6f3a;border-color:#34c76a">▶ Mission starten</button>`;
- } else {h+=`<p class="dim">Keine offenen Missionen auf diesem Planeten.</p>`;}
+  h+=`<button id="launch" style="width:100%;margin-top:8px;background:#1f6f3a;border-color:#34c76a">${I18N.T('game.dyn.btn.launch')}</button>`;
+ } else {h+=`<p class="dim">${I18N.T('game.dyn.map.no_missions')}</p>`;}
  $('map-side').innerHTML=h;
  const btn=$('launch');
  if(btn)btn.onclick=()=>{
   const ids=[...document.querySelectorAll('.tpick:checked')].map(c=>parseInt(c.value)).slice(0,6);
-  if(!ids.length){toast('Wähle mindestens ein Team-Mitglied.');return;}
+  if(!ids.length){toast(I18N.T('game.dyn.map.toast.select'));return;}
   launchMission(ms[0],ids);
  };
 }
@@ -1315,7 +1322,7 @@ function renderMapSide(){
 function launchMission(mission,teamIds){
  const briefing=MISSION_BRIEFINGS&&MISSION_BRIEFINGS[mission.id];
  if(briefing){
-  showStorySequence(briefing.lines,`FELDBRIEFING · ${mission.name}`,'Tor anwählen',()=>activateMission(mission,teamIds),'briefing',briefing.objective);
+  showStorySequence(briefing.lines,I18N.T('game.dyn.story.briefing_kicker',[mission.name]),I18N.T('game.dyn.story.btn_dial'),()=>activateMission(mission,teamIds),'briefing',briefing.objective);
   return;
  }
  activateMission(mission,teamIds);
@@ -1358,7 +1365,7 @@ function activateMission(mission,teamIds){
    document.body.style.overflow='';
    C.active=false;
    GR.phase='idle';
-   if(typeof toast==='function')toast('Fehler beim Missionsstart: '+(err.message||err));
+   if(typeof toast==='function')toast(I18N.T('game.dyn.story.toast_mission_err',[err.message||err]));
    renderAll();
   }
  }, false);
@@ -1373,16 +1380,16 @@ function showStorySequence(lines,title,buttonText,onComplete,kind,objective){
   const line=lines[index],member=S.roster[line.portraitId],image=member?portrait(member):'';
   const last=index===lines.length-1;
   host.innerHTML=`<div class="story-box ${kind||''}">
-   <div class="story-kicker">${isCombat?'EINSATZPROTOKOLL':'STARGATE COMMAND · EINSATZPLANUNG'}</div>
+   <div class="story-kicker">${isCombat?I18N.T('game.dyn.story.kicker_field'):I18N.T('game.dyn.story.kicker_briefing')}</div>
    <h2>${title}</h2>
-   ${objective?`<div class="story-objective"><span>AUFTRAG</span>${objective}</div>`:''}
+   ${objective?`<div class="story-objective"><span>${I18N.T('game.dyn.story.objective_lbl')}</span>${objective}</div>`:''}
    <div class="story-speaker">
     ${image?`<img src="${image}" alt="">`:''}
     <div><b>${line.speaker}</b><small>${line.role}</small></div>
    </div>
    <p class="story-line">${line.text}</p>
-   <div class="story-controls"><span>${String(index+1).padStart(2,'0')} / ${String(lines.length).padStart(2,'0')} · ENTER / KLICK WEITER</span>
-    <button id="story-next" style="cursor:pointer">${last?buttonText:'Weiter'} <span>›</span></button>
+   <div class="story-controls"><span>${String(index+1).padStart(2,'0')} / ${String(lines.length).padStart(2,'0')} · ${I18N.T('game.dyn.story.enter_click')}</span>
+    <button id="story-next" style="cursor:pointer">${last?buttonText:I18N.T('game.combat.continue')} <span>›</span></button>
    </div>
   </div>`;
   host.style.display='flex';
@@ -1406,18 +1413,18 @@ function playCombatScene(trigger){
  const scenes=MISSION_SCENES&&MISSION_SCENES[C.mission.id],lines=scenes&&scenes[trigger];
  if(!lines||C.sceneFlags[trigger])return;
  C.sceneFlags[trigger]=true;
- showStorySequence(lines,`${PLANETS[C.mission.planet].name} · ${C.mission.name}`,'Weiter',()=>{
+ showStorySequence(lines,`${PLANETS[C.mission.planet].name} · ${C.mission.name}`,I18N.T('game.combat.continue'),()=>{
   if(trigger==='contact'){C.contactComplete=true;checkEnd();renderCombatUI();resizeCombatViewport();}
  },'field');
 }
 function showPilotOpening(){
  const lines=[
-  {speaker:'General Hammond',role:'Kommandierender Offizier · SGC',portraitId:12,text:'Das Tor hat uns eine Verbindung zu Welten geöffnet, die wir kaum verstehen. Heute beginnt die erste Mission unserer neuen Einheit.'},
-  {speaker:'Jack O’Neill',role:'Teamführung · SG-1',portraitId:0,text:'Dann sollten wir die Theorie kurz halten. Wir sehen uns auf der anderen Seite.'}
+  {speaker:'General Hammond',role:I18N.T('game.dyn.story.pilot.role1'),portraitId:12,text:I18N.T('game.dyn.story.pilot.line1')},
+  {speaker:'Jack O’Neill',role:I18N.T('game.dyn.story.pilot.role2'),portraitId:0,text:I18N.T('game.dyn.story.pilot.line2')}
  ];
- showStorySequence(lines,'ERSTER EINSATZ · CHULAK','Sternenkarte öffnen',()=>{
+ showStorySequence(lines,I18N.T('game.dyn.story.pilot.title'),I18N.T('game.dyn.story.pilot.btn'),()=>{
   S.pilotBriefingSeen=true;save();MAP.sel='chulak';setTab('map');
- },'briefing','Ein unbekanntes Signal führt SG-1 zu einer Entscheidung, die das Team verändern wird.');
+ },'briefing',I18N.T('game.dyn.story.pilot.objective'));
 }
 
 function getCombatTileFromMouse(cv,mx,my){
@@ -1533,8 +1540,8 @@ function renderCombatUI(force=false){
   h+=`<div class="cui-left">
    <div class="cui-portrait">${m?pic(m,'pt big'):''}</div>
    <div class="cui-info">
-    <div class="cui-name">${sel.name} ${sel.shieldTurns>0?'<span class="tag" style="background:#0284c7;color:#fff">🛡 SCHILD</span>':''}</div>
-    <div class="cui-class">${CLASS_DE[sel.cls]} · Lv ${m?m.lvl:'?'} · 🛡 ${ar?ar.name:'Leicht'}</div>
+    <div class="cui-name">${sel.name} ${sel.shieldTurns>0?`<span class="tag" style="background:#0284c7;color:#fff">${I18N.T('game.dyn.cui.shield')}</span>`:''}</div>
+    <div class="cui-class">${CLASS_DE[sel.cls]} · Lv ${m?m.lvl:'?'} · 🛡 ${ar?ar.name:I18N.T('game.dyn.cui.light')}</div>
     <div class="cui-bars">
      <div>HP ${bar(sel.hp/sel.maxHp*100,sel.hp>sel.maxHp*0.3?'#4ade80':'#ef4444')} ${sel.hp}/${sel.maxHp}</div>
      <div>AP <span class="cui-ap">${'●'.repeat(sel.ap)}${'○'.repeat(2-sel.ap)}</span></div>
@@ -1544,22 +1551,22 @@ function renderCombatUI(force=false){
    </div>
   </div>`;
  } else {
-  h+=`<div class="cui-left"><div class="cui-info"><div class="cui-name" style="color:#6b7a90">Keine Einheit ausgewählt</div><div class="cui-class">Klicke auf einen Agenten (Q/E = Kamera · V = Pixel/ASCII)</div></div></div>`;
+  h+=`<div class="cui-left"><div class="cui-info"><div class="cui-name" style="color:#6b7a90">${I18N.T('game.dyn.cui.none_sel')}</div><div class="cui-class">${I18N.T('game.dyn.cui.none_hint')}</div></div></div>`;
  }
  h+=`<div class="cui-actions">`;
  if(C.phase==='player'&&!C.result){
-  h+=`<button class="cui-btn end-turn-btn" style="border-color:#f59e0b;color:#fde68a;font-weight:bold;background:rgba(245,158,11,0.22)" onclick="endPlayerPhase()" title="Spielerzug beenden und Feindphase einleiten (Enter)">⏭ Runde beenden [Enter]</button>`;
+  h+=`<button class="cui-btn end-turn-btn" style="border-color:#f59e0b;color:#fde68a;font-weight:bold;background:rgba(245,158,11,0.22)" onclick="endPlayerPhase()" title="${I18N.T('game.dyn.cui.end_turn.title')}">${I18N.T('game.dyn.cui.end_turn')}</button>`;
  }
- h+=`<button class="cui-btn" style="border-color:#4fc3f7;color:#4fc3f7;font-weight:bold" onclick="cycleSGMember(1)" title="Nächstes Team-Mitglied auswählen [TAB]">⇥ Nächstes SG-Mitglied [TAB]</button>`;
+ h+=`<button class="cui-btn" style="border-color:#4fc3f7;color:#4fc3f7;font-weight:bold" onclick="cycleSGMember(1)" title="${I18N.T('game.dyn.cui.next.title')}">${I18N.T('game.dyn.cui.next')}</button>`;
  if(sel&&sel.ap>0&&!C.result){
-  h+=`<button class="cui-btn" onclick="if(C.selected)playerWait(C.selected)" title="Aktionspunkte abgeben">⏳ Warten</button>`;
-  h+=`<button class="cui-btn" onclick="if(C.selected)playerSelect(C.selected)">🔄 Neu wählen</button>`;
+  h+=`<button class="cui-btn" onclick="if(C.selected)playerWait(C.selected)" title="${I18N.T('game.dyn.cui.wait.title')}">${I18N.T('game.dyn.cui.wait')}</button>`;
+  h+=`<button class="cui-btn" onclick="if(C.selected)playerSelect(C.selected)">${I18N.T('game.dyn.cui.reselect')}</button>`;
   if(sel.special&&!sel.specialUsed&&SPECIALS[sel.special]){
    const sp=SPECIALS[sel.special];
    h+=`<button class="cui-btn" style="border-color:#38bdf8;color:#38bdf8" onclick="if(C.selected){act(useSpecial(C.selected));renderCombatUI();}" title="${sp.desc}">${sp.icon} ${sp.name}</button>`;
   }
  } else if(sel&&sel.ap<=0&&!C.result){
-  h+=`<span style="color:#94a3b8;font-size:11px;align-self:center;padding:0 4px">0 AP übrig</span>`;
+  h+=`<span style="color:#94a3b8;font-size:11px;align-self:center;padding:0 4px">${I18N.T('game.dyn.cui.no_ap')}</span>`;
  }
  // Offworld Base Building (C&C / SimCity Feld-Pionierbau)
  if(typeof OFFWORLD_BUILDINGS!=='undefined'&&!C.mission.peaceful){
@@ -1571,17 +1578,17 @@ function renderCombatUI(force=false){
  }
  // Isometric Camera & Pixel/ASCII Controls
  const gm=typeof getGfxMode==='function'?getGfxMode():'pixel';
- h+=`<button class="cui-btn" style="padding:6px 10px" onclick="if(typeof rotateIsoCamera==='function')rotateIsoCamera(-1)" title="Kamera links drehen (Q)">↶ Q</button>`;
- h+=`<button class="cui-btn" style="padding:6px 10px" onclick="if(typeof rotateIsoCamera==='function')rotateIsoCamera(1)" title="Kamera rechts drehen (E)">↷ E</button>`;
- h+=`<button class="cui-btn" style="padding:6px 10px;border-color:#4ade80;color:#4ade80" onclick="cycleGfxMode()" title="Zwischen Pixel-Voxel und 3D-ASCII wechseln (V)">${gm==='ascii'?'⌨ ASCII':'🖥 PIXEL'}</button>`;
+ h+=`<button class="cui-btn" style="padding:6px 10px" onclick="if(typeof rotateIsoCamera==='function')rotateIsoCamera(-1)" title="${I18N.T('game.dyn.cui.rotate_l')}">↶ Q</button>`;
+ h+=`<button class="cui-btn" style="padding:6px 10px" onclick="if(typeof rotateIsoCamera==='function')rotateIsoCamera(1)" title="${I18N.T('game.dyn.cui.rotate_r')}">↷ E</button>`;
+ h+=`<button class="cui-btn" style="padding:6px 10px;border-color:#4ade80;color:#4ade80" onclick="cycleGfxMode()" title="${I18N.T('game.dyn.cui.gfx')}">${gm==='ascii'?'⌨ ASCII':'🖥 PIXEL'}</button>`;
  h+=`<button class="cui-btn" style="padding:6px 10px" onclick="showHelp()">❓</button>`;
  h+=`</div>`;
  const g=gateReady();
  const gReady=g.at===g.total&&g.total>0;
  h+=`<div class="cui-right">
-  <div class="cui-gate">${C.mission&&C.mission.peaceful?`🤝 Erstkontakt: ${C.contactComplete?'hergestellt':'goldene Person ansprechen'}`:C.mission&&C.mission.tutorial?'🎯 Ziel: Teal’c sicher herausbringen':`🌀 Gate: <b style="color:${gReady?'#4ade80':'#8a9ab0'}">${g.at}/${g.total}</b> ${gReady?'bereit':'am Gate'}${g.downed?` <span style="color:#ef4444">(🩹 ${g.downed})</span>`:''}`}</div>
-  ${gReady&&!(C.mission&&(C.mission.tutorial||C.mission.peaceful))?`<button class="cui-btn cui-btn-go" onclick="extract()">🌀 Extrahieren (50%)</button>`:''}
-  ${!C.result&&!(C.mission&&C.mission.tutorial)?`<button class="cui-btn" style="background:#4a151b;border-color:#ef4444;color:#fca5a5;padding:4px 8px;font-size:11px" onclick="if(confirm('Not-Rückzug einleiten? Team evakuiert die Verwundeten sofort durch das Sternentor.'))emergencyRetreat()">🚨 Not-Rückzug</button>`:''}
+  <div class="cui-gate">${C.mission&&C.mission.peaceful?`${I18N.T('game.dyn.cui.first_contact')} ${C.contactComplete?I18N.T('game.dyn.cui.contact_done'):I18N.T('game.dyn.cui.contact_todo')}`:C.mission&&C.mission.tutorial?I18N.T('game.dyn.cui.tutorial_goal'):`${I18N.T('game.dyn.cui.gate')} <b style="color:${gReady?'#4ade80':'#8a9ab0'}">${g.at}/${g.total}</b> ${gReady?I18N.T('game.dyn.cui.ready'):I18N.T('game.dyn.cui.at_gate')}${g.downed?` <span style="color:#ef4444">(🩹 ${g.downed})</span>`:''}`}</div>
+  ${gReady&&!(C.mission&&(C.mission.tutorial||C.mission.peaceful))?`<button class="cui-btn cui-btn-go" onclick="extract()">${I18N.T('game.dyn.cui.extract_btn')}</button>`:''}
+  ${!C.result&&!(C.mission&&C.mission.tutorial)?`<button class="cui-btn" style="background:#4a151b;border-color:#ef4444;color:#fca5a5;padding:4px 8px;font-size:11px" onclick="if(confirm(I18N.T('game.dyn.cui.retreat.confirm')))emergencyRetreat()">${I18N.T('game.dyn.cui.retreat')}</button>`:''}
   <div class="cui-log">${C.log.slice(0,4).map(l=>`<div class="${/✔|💀|🌀/.test(l)?'ok':/⚠|⚡/.test(l)?'bad':''}">${l}</div>`).join('')}</div>
  </div>`;
  panel.innerHTML=h;
@@ -1594,27 +1601,27 @@ function renderRoster(){
  // Quest-Panel
  const qs=(S.quests||[]);
  if(qs.length){
-  topHtml+=`<div style="grid-column:1/-1;background:#0f1622;border:1px solid #243248;border-radius:6px;padding:8px;margin-bottom:4px"><h3 style="margin:0 0 6px">📋 Quests</h3>`+
+  topHtml+=`<div style="grid-column:1/-1;background:#0f1622;border:1px solid #243248;border-radius:6px;padding:8px;margin-bottom:4px"><h3 style="margin:0 0 6px">${I18N.T('game.dyn.roster.quests')}</h3>`+
    qs.map(q=>{
     const col=q.status==='done'?'#4ade80':q.status==='failed'?'#f87171':'#4fc3f7';
     const ico=q.status==='done'?'✔':q.status==='failed'?'💀':'📌';
-    return `<div class="item" style="border-color:${col}"><b style="color:${col}">${ico} ${q.title}</b> <small>${q.char} · Kap. ${q.chapter}</small><br><small>${q.status==='active'?q.intro:q.status==='done'?q.epilogue:q.fail}</small></div>`;
+    return `<div class="item" style="border-color:${col}"><b style="color:${col}">${ico} ${q.title}</b> <small>${q.char} · ${I18N.T('game.dyn.roster.chapter')} ${q.chapter}</small><br><small>${q.status==='active'?q.intro:q.status==='done'?q.epilogue:q.fail}</small></div>`;
    }).join('')+`</div>`;
  }
  // Inventar-Übersicht & Schnell-Werkbank
  if(S.inventory){
-  const invW=Object.entries(S.inventory.weapons||{}).filter(([,v])=>v>0).map(([k,v])=>`🔫 ${WEAPONS[k]?WEAPONS[k].name:k}: <b>${v}</b>`).join(' · ')||'Standardwaffen unbegrenzt';
-  const invA=Object.entries(S.inventory.armor||{}).filter(([,v])=>v>0).map(([k,v])=>`🛡 ${ARMORS[k]?ARMORS[k].name:k}: <b>${v}</b>`).join(' · ')||'Leichte Weste unbegrenzt';
-  const invS=Object.entries(S.inventory.specials||{}).filter(([,v])=>v>0).map(([k,v])=>`${SPECIALS[k]?SPECIALS[k].icon:''} ${SPECIALS[k]?SPECIALS[k].name:k}: <b>${v}</b>`).join(' · ')||'Keine Spezial-Items';
+  const invW=Object.entries(S.inventory.weapons||{}).filter(([,v])=>v>0).map(([k,v])=>`🔫 ${WEAPONS[k]?WEAPONS[k].name:k}: <b>${v}</b>`).join(' · ')||I18N.T('game.dyn.roster.inv_unlim_w');
+  const invA=Object.entries(S.inventory.armor||{}).filter(([,v])=>v>0).map(([k,v])=>`🛡 ${ARMORS[k]?ARMORS[k].name:k}: <b>${v}</b>`).join(' · ')||I18N.T('game.dyn.roster.inv_unlim_a');
+  const invS=Object.entries(S.inventory.specials||{}).filter(([,v])=>v>0).map(([k,v])=>`${SPECIALS[k]?SPECIALS[k].icon:''} ${SPECIALS[k]?SPECIALS[k].name:k}: <b>${v}</b>`).join(' · ')||I18N.T('game.dyn.roster.inv_none_s');
   topHtml+=`<div style="grid-column:1/-1;background:#0f1622;border:1px solid #33465f;border-radius:6px;padding:10px;margin-bottom:4px">
    <div style="display:flex;justify-content:space-between;align-items:center">
-    <h3 style="margin:0">🎒 SGC-Waffenkammer &amp; Team-Ausrüstung</h3>
-    <button class="small" onclick="showClipboardModal()">📋 Hammonds Klemmbrett öffnen</button>
+    <h3 style="margin:0">${I18N.T('game.dyn.roster.arsenal')}</h3>
+    <button class="small" onclick="showClipboardModal()">${I18N.T('game.dyn.btn.clipboard_open')}</button>
    </div>
    <div style="font-size:12px;margin-top:6px;color:#cbd8e4">
-    <div><b>Waffen-Lager:</b> ${invW}</div>
-    <div><b>Rüstungs-Lager:</b> ${invA}</div>
-    <div><b>Spezial-Items:</b> ${invS}</div>
+    <div><b>${I18N.T('game.dyn.roster.inv.weapons')}</b> ${invW}</div>
+    <div><b>${I18N.T('game.dyn.roster.inv.armor')}</b> ${invA}</div>
+    <div><b>${I18N.T('game.dyn.roster.inv.special')}</b> ${invS}</div>
    </div>
   </div>`;
  }
@@ -1633,42 +1640,42 @@ function renderRoster(){
    <div class="bars">❤${bar(m.hp/m.maxHp*100,'#4ade80')} 💤${bar(m.fatigue,'#facc15')} ☺${bar(m.morale,'#60a5fa')}</div>
    <small class="tal">${m.talent}</small>
    <div class="loadout-grid">
-    <select title="Station / Raum" onchange="act(assignRoom(${m.id},parseInt(this.value)))"><option value="-1" ${m.room<0?'selected':''}>🏢 Bereitschaft</option>
+    <select title="${I18N.T('game.dyn.roster.st.station')}" onchange="act(assignRoom(${m.id},parseInt(this.value)))"><option value="-1" ${m.room<0?'selected':''}>🏢 ${I18N.T('game.dyn.standby')}</option>
      ${Object.values(S.base.rooms).map(r=>`<option value="${r.id}" ${m.room===r.id?'selected':''}>🏢 ${ROOMS[r.type].name}</option>`).join('')}</select>
-    <select title="SG-Team" onchange="act(assignTeam(${m.id},this.value))">
+    <select title="${I18N.T('game.dyn.roster.st.team')}" onchange="act(assignTeam(${m.id},this.value))">
      ${Object.entries(SG_TEAMS).map(([tid,ti])=>`<option value="${tid}" ${curTeam===tid?'selected':''}>🎖 ${ti.name}</option>`).join('')}
     </select>
-    <select title="Primärwaffe" onchange="act(equipItem(${m.id},'weapon',this.value))">
+    <select title="${I18N.T('game.dyn.roster.st.weapon')}" onchange="act(equipItem(${m.id},'weapon',this.value))">
      ${rangedKeys.filter(k=>WEAPONS[k]).map(k=>{
       const cnt=(S.inventory&&S.inventory.weapons&&S.inventory.weapons[k])||0;
       const unlim=['pistol','mp5','m16','sniper','shotgun'].includes(k);
       return `<option value="${k}" ${m.weapon===k?'selected':''}>🔫 ${WEAPONS[k].name}${unlim?'':` (${cnt})`}</option>`;
      }).join('')}
     </select>
-    <select title="Rüstung" onchange="act(equipItem(${m.id},'armor',this.value))">
+    <select title="${I18N.T('game.dyn.roster.st.armor')}" onchange="act(equipItem(${m.id},'armor',this.value))">
      ${Object.entries(ARMORS).map(([ak,av])=>{
       const cnt=(S.inventory&&S.inventory.armor&&S.inventory.armor[ak])||0;
       return `<option value="${ak}" ${(m.armor||'light')===ak?'selected':''}>🛡 ${av.name}${ak==='light'?'':` (${cnt})`}</option>`;
      }).join('')}
     </select>
-    <select title="Spezial-Item" onchange="act(equipItem(${m.id},'special',this.value))">
-     <option value="" ${!m.special?'selected':''}>🎒 Kein Item</option>
+    <select title="${I18N.T('game.dyn.roster.st.special')}" onchange="act(equipItem(${m.id},'special',this.value))">
+     <option value="" ${!m.special?'selected':''}>${I18N.T('game.dyn.roster.st.no_item')}</option>
      ${Object.entries(SPECIALS).map(([sk,sv])=>{
       const cnt=(S.inventory&&S.inventory.specials&&S.inventory.specials[sk])||0;
       return `<option value="${sk}" ${m.special===sk?'selected':''}>${sv.icon} ${sv.name} (${cnt})</option>`;
      }).join('')}
     </select>
-    ${dos?`<button class="small" onclick="showDossier(${m.id})" title="Personalakte öffnen">📋 Akte</button>`:`<span></span>`}
-    ${m.hp<m.maxHp||(m.injuries||0)>0?`<button class="small" style="background:#4a151b;border-color:#ef4444;color:#fca5a5;grid-column:span 2" onclick="setTab('medbay')">🏥 In Krankenstation behandeln (${m.hp}/${m.maxHp} HP)</button>`:''}
+    ${dos?`<button class="small" onclick="showDossier(${m.id})" title="${I18N.T('game.dyn.btn.dossier.title')}">${I18N.T('game.dyn.btn.dossier')}</button>`:`<span></span>`}
+    ${m.hp<m.maxHp||(m.injuries||0)>0?`<button class="small" style="background:#4a151b;border-color:#ef4444;color:#fca5a5;grid-column:span 2" onclick="setTab('medbay')">${I18N.T('game.dyn.btn.medbay_treat',[m.hp,m.maxHp])}</button>`:''}
    </div>
   </div></div>`;
  }).join('');
  const waiting=S.roster.filter(m=>!m.recruited);
  let waitHtml='';
  if(waiting.length){
-  waitHtml=`<div class="dim" style="grid-column:1/-1;margin-top:8px">📋 Rekrutierungsbüro – ${waiting.length} Kandidaten warten auf ihre Episode</div>`+
+  waitHtml=`<div class="dim" style="grid-column:1/-1;margin-top:8px">${I18N.T('game.dyn.roster.waiting',[waiting.length])}</div>`+
    waiting.map(m=>`<div class="rc dim" title="${m.talent}">${pic(m,'pt big')}<div class="ri">
-    <b>${m.name}</b> <small>${CLASS_DE[m.cls]} · wird in einer Mission rekrutiert</small>
+    <b>${m.name}</b> <small>${CLASS_DE[m.cls]} · ${I18N.T('game.dyn.roster.waiting.tag')}</small>
     <small class="tal">${m.talent}</small></div></div>`).join('');
  }
  $('roster-body').innerHTML=topHtml+cardsHtml+waitHtml;
@@ -2063,9 +2070,30 @@ function showReport(isDayEnd=false){
   </div>
 
   <div style="display:flex;justify-content:flex-end;gap:10px">
-   <button onclick="$('modal').style.display='none';if(typeof SFX!=='undefined')SFX.music(UI.tab==='map'?'map':'base');renderAll()" style="background:#1f6f3a;border-color:#34c76a;color:#fff;padding:10px 24px;font-weight:bold;cursor:pointer">Tag abschließen & Weiter ›</button>
+   <button onclick="startNextDay()" style="background:#1f6f3a;border-color:#34c76a;color:#fff;padding:10px 24px;font-weight:bold;cursor:pointer">Tag abschließen & Nächster Tag ›</button>
   </div>
  </div>`;
+ renderAll();
+}
+
+// Startet den nächsten Tag (Tag-Loop für unendlichen Spielbetrieb)
+function startNextDay(){
+ $('modal').style.display='none';
+ if(typeof SFX!=='undefined')SFX.music(UI.tab==='map'?'map':'base');
+ 
+ // Zufälliges Stargate-Event für den neuen Tag (15% Chance)
+ const eventRoll = Math.random();
+ if(eventRoll < 0.15){
+  const events = [
+   '🌀 Incoming Wormhole: Unautorisierte Toraktivierung aus dem Omega-Sektor!',
+   '📡 Tok\'ra Alert: Geheime Nachricht durch das Sternentor übermittelt!',
+   '⚠️ Gate Alarm: Chevron 5 hat sich ohne Befehl entsperrt!',
+   '🌌 Stargate Pulse: Energieanomalie im Naquadah-Kern detected!',
+   '🛸 Alien Contact: Ungewöhnliches Signal von P3X-888!'
+  ];
+  toast(events[Math.floor(Math.random() * events.length)]);
+ }
+ 
  renderAll();
 }
 
@@ -2496,4 +2524,12 @@ function init(){
  });
  requestAnimationFrame(frame);
 }
+
+// i18n (v0.30): Sprache wechseln → aktuelle Ansicht neu rendern (R2: Core-UI)
+if (typeof I18N !== 'undefined') {
+  I18N.onChange(function () {
+    try { if (typeof renderAll === 'function') renderAll(); } catch (e) { /* Spiel noch nicht initialisiert */ }
+  });
+}
+
 window.addEventListener('load',init);
