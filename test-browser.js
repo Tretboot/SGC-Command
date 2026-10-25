@@ -43,12 +43,35 @@ global.window={
   innerWidth:1280, innerHeight:800,
   addEventListener:(ev,fn)=>{if(ev==='load')loadFns.push(fn);},
 };
+// i18n DOM-Test-Registry (Pseudo-Elemente für applyStaticI18n-Prüfungen)
+const i18nDomRegistry=[];
+function i18nMakeEl(attrs){
+  return {
+    _attrs:attrs||{},
+    textContent:'', innerHTML:'', title:'',
+    getAttribute(n){ return Object.prototype.hasOwnProperty.call(this._attrs,n)?this._attrs[n]:null; }
+  };
+}
+global.__i18nDom={
+  registry:i18nDomRegistry,
+  make:i18nMakeEl,
+  clear:()=>{ i18nDomRegistry.length=0; }
+};
 global.document={
   body:{style:{}},
   activeElement:null,
+  documentElement:{lang:'de'},
   createElement:()=>makeEl('_tmp'+Math.random()),
   getElementById:id=>makeEl(id),
-  querySelectorAll:()=>[],
+  querySelectorAll:sel=>{
+    // Attribut-Selektoren ([data-i18n] …) bedienen die i18n-Registry,
+    // alle anderen Selektoren verhalten sich wie bisher (leer).
+    if(typeof sel==='string'&&sel.startsWith('[')&&sel.endsWith(']')){
+      const attr=sel.slice(1,-1);
+      return i18nDomRegistry.filter(el=>Object.prototype.hasOwnProperty.call(el._attrs,attr));
+    }
+    return [];
+  },
   addEventListener(){},
 };
 const storageStore={};
@@ -69,6 +92,8 @@ const vendorPath=path.join(__dirname,'game','vendor','strudel-web.js');
 assert(fs.existsSync(vendorPath)&&fs.statSync(vendorPath).size>100000,'vendor/strudel-web.js bundle present ('+fs.statSync(vendorPath).size+' bytes)');
 
 const files=[
+  'i18n.js',
+  'i18n-portal.js',
   'switch-angel.js',
   'midi-data.js',
   'sound.js',
@@ -816,6 +841,94 @@ for(const fn of loadFns){
   assert(els['modal'].style.display === 'flex' && els['modal'].innerHTML.includes('BROCA-VIRUS'), 'showMedbayIncidentModal() displays canonical Stargate medical crisis');
   resolveMedbayIncident(0);
   assert(els['modal'].style.display === 'none', 'resolveMedbayIncident() executes choice and dismisses modal cleanly');
+}
+
+// =====================================================================
+// 31. Test i18n Core (v0.30): Key-Parität, DOM-Abdeckung, Sprach-Toggle
+// =====================================================================
+{
+  // --- 31a. Key-Parität: DE- und EN-Tabelle tragen exakt dieselben Keys ---
+  const deKeys=Object.keys(I18N.tables.de).sort();
+  const enKeys=Object.keys(I18N.tables.en).sort();
+  assert(deKeys.length>0,'i18n tables registered ('+deKeys.length+' keys loaded)');
+  const missingEn=deKeys.filter(k=>!Object.prototype.hasOwnProperty.call(I18N.tables.en,k));
+  const missingDe=enKeys.filter(k=>!Object.prototype.hasOwnProperty.call(I18N.tables.de,k));
+  assert(missingEn.length===0,'i18n key parity: no missing EN keys (missing: '+missingEn.join(', ')+')');
+  assert(missingDe.length===0,'i18n key parity: no missing DE keys (missing: '+missingDe.join(', ')+')');
+  assert(deKeys.every(k=>typeof I18N.tables.de[k]==='string'&&I18N.tables.de[k].trim().length>0),'i18n DE values are non-empty strings');
+  assert(enKeys.every(k=>typeof I18N.tables.en[k]==='string'&&I18N.tables.en[k].trim().length>0),'i18n EN values are non-empty strings');
+  assert(I18N.missing('en').length===0&&I18N.missing('de').length===0,'I18N.missing() reports no gaps in either direction');
+
+  // --- 31b. Sprach-Toggle im Portal-Header vorhanden & verdrahtet ---
+  const portalHtml=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
+  assert(portalHtml.includes('id="lang-toggle"'),'portal header contains language toggle button');
+  assert(/id="lang-toggle"[^>]*onclick="I18N\.setLang/.test(portalHtml),'language toggle wired to I18N.setLang');
+  assert(portalHtml.includes('<script src="game/i18n.js">')&&portalHtml.includes('<script src="game/i18n-portal.js">'),'portal loads i18n.js + i18n-portal.js');
+
+  // --- 31c. DOM-Abdeckung: kein hartes Deutsch mehr im Portal-HTML ---
+  // Ausnahmen: <script>/<style>/HTML-Kommentare + data-i18n*-Unterbäume
+  // (dort liegt der DE-Default, der zur Laufzeit ersetzt wird).
+  const germanUmlaut=/[\u00E4\u00F6\u00FC\u00DF\u00C4\u00D6\u00DC]/;
+  const germanWords=/\b(?:und|oder|aber|auch|nicht|wird|werden|wurde|wurden|sind|ist|mit|auf|von|zu|bei|nach|aus|im|am|vom|zum|dass|wenn|dann|noch|sehr|seine|seinen|ihre|ihren|unser|unsere|diese|dieser|dieses|hier|dort|jetzt|schon|gerade|gleich|Tag|Nacht|Zeit|Weg|Spiel|Weiter|Zurück|Auswahl|Fehler|Runde|Runden|Punkte|Leben|Energie|Karte|Kampf|Angriff|Schaden|Heilung|Waffe|Waffen|Schutz|Kugeln|Munition|Medikamente|Verband|Notfall|Kritisch|Sieg|Niederlage|Kamera|Drehung|Beenden|Optionen|Einstellungen|Regler|Musik|Effekte|Sprache|Deutsch|Englisch|Aktuell|aktuell|bereit|Steuerung|Pfeile|Taste|Vollbild|Durchgang|Schicht|Schichten|Zusammenfassung|Dokumentation|Installation|Schnellstart|Herunterladen|Lizenzen|Danksagung|Bildquellen|Projekt|Studie|Forschungsnotizen|Architektur|Portal|Welten|Stadt|Deckung|Beute|Kolonie|Kolonien|Forschungslabor|Sektor|Sektoren|sowie|zusammen|insgesamt|solche|solcher|vielen|viel|mehr|weniger|als|wie|so|nur|immer|bald|später|früher|heute|gestern|morgen|eine|einen|einem|einer|dem|den|des|der|die|das|ein|keine|keinen|kein|neue|neuer|neues|alle|bereits)\b/i;
+  function stripAnnotated(html){
+    const tags=['title','div','li','td','th','p','pre','b','span','h1','h2','h3','a','button'];
+    for(const t of tags){
+      html=html.replace(new RegExp('<'+t+'[^>]*\\sdata-i18n(?:-html|-title|-skip)?="[^"]*"[^>]*>[\\s\\S]*?</'+t+'>','g'),' ');
+    }
+    return html;
+  }
+  function scanGermanText(file){
+    let html=fs.readFileSync(path.join(__dirname,file),'utf8');
+    html=html.replace(/<!--[\s\S]*?-->/g,' ');
+    html=html.replace(/<style[\s\S]*?<\/style>/gi,' ');
+    html=html.replace(/<script[\s\S]*?<\/script>/gi,' ');
+    html=stripAnnotated(html);
+    html=html.replace(/<[^>]+>/g,' ');
+    const hits=[];
+    const tokenRe=/\S+/g;
+    let m;
+    while((m=tokenRe.exec(html))!==null){
+      if(germanUmlaut.test(m[0])||germanWords.test(m[0])) hits.push(m[0]);
+    }
+    return hits;
+  }
+  // R1: Portal. → R2: 'game/index.html' nach Bilingualisierung der Spiel-UI ergänzen.
+  const portalHits=scanGermanText('index.html');
+  assert(portalHits.length===0,'portal DOM coverage: no unannotated German text (leftovers: '+JSON.stringify(portalHits.slice(0,8))+')');
+  // --- 31d. Toggle-Roundtrip + statische Anwendung + Persistenz ---
+  __i18nDom.clear();
+  const elT=__i18nDom.make({'data-i18n':'portal.nav.game'});
+  const elH=__i18nDom.make({'data-i18n-html':'portal.wiki.gear.1'});
+  const elTitle=__i18nDom.make({'data-i18n-title':'portal.lang.title'});
+  __i18nDom.registry.push(elT,elH,elTitle);
+  const langEvents=[];
+  I18N.onChange(l=>langEvents.push(l));
+
+  I18N.setLang('en');
+  assert(I18N.lang==='en','setLang("en") switches I18N.lang to en');
+  assert(document.documentElement.lang==='en','documentElement.lang updated to en');
+  assert(localStorage.getItem('sgc_lang')==='en','language choice persisted to localStorage');
+  assert(elT.textContent===I18N.tables.en['portal.nav.game'],'applyStaticI18n: data-i18n renders EN textContent');
+  assert(elH.innerHTML===I18N.tables.en['portal.wiki.gear.1'],'applyStaticI18n: data-i18n-html renders EN innerHTML');
+  assert(elTitle.title===I18N.tables.en['portal.lang.title'],'applyStaticI18n: data-i18n-title renders EN title');
+  assert(langEvents.length===1&&langEvents[0]==='en','i18n onChange listener fired with switched language');
+
+  I18N.setLang('de');
+  assert(I18N.lang==='de'&&elT.textContent===I18N.tables.de['portal.nav.game'],'toggle back to DE restores German text');
+  assert(document.documentElement.lang==='de','documentElement.lang restored to de');
+  assert(localStorage.getItem('sgc_lang')==='de','DE choice persisted to localStorage');
+
+  assert(I18N.T('portal.nav.game')==='Spiel','T() resolves DE table value');
+  I18N.setLang('en');
+  assert(I18N.T('portal.nav.game')==='Game','T() resolves EN table value after toggle');
+  assert(I18N.T('portal.nonexistent.key')==='portal.nonexistent.key','T() falls back to key for missing entries');
+  assert(I18N.setLang('xx')==='de','setLang() with unknown code falls back to default (de)');
+
+  localStorage.setItem('sgc_lang','en');
+  assert(I18N.init()==='en','init() restores persisted language from localStorage');
+  I18N.setLang('de');
+  __i18nDom.clear();
+  I18N._listeners.length=0;
 }
 
 for(let i=0;i<5;i++){

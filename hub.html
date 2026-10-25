@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SGC Command – Stargate Command v0.28 ("Krankenstation Ebene 21 & Dr. Janet Fraiser")</title>
+  <title data-i18n="portal.title">SGC Command – Stargate Command v0.29 ("Krankenstation Ebene 21 & Dr. Janet Fraiser")</title>
   <style>
     :root {
       --bg-dark: #070a10;
@@ -275,14 +275,15 @@
       <div class="brand-logo">◎</div>
       <div>
         <div class="brand-title">SGC COMMAND</div>
-        <div class="brand-sub">Stargate Command · v0.27 · "Trotz Contentrot – Unautorisierte Toraktivierung"</div>
+        <div class="brand-sub" data-i18n="portal.brand.sub">Stargate Command · v0.29 · "Trotz Contentrot – Unautorisierte Toraktivierung"</div>
       </div>
     </div>
     <nav class="hub-nav">
-      <button class="nav-btn active" onclick="showTab('game')">🎮 Spiel</button>
-      <button class="nav-btn" onclick="showTab('wiki')">📚 Datenbank &amp; Lore</button>
-      <button class="nav-btn" onclick="showTab('logs')">📜 Captain's Log</button>
-      <button class="nav-btn" onclick="showTab('about')">ℹ️ Über &amp; Labor</button>
+      <button class="nav-btn active" onclick="showTab('game')">🎮 <span data-i18n="portal.nav.game">Spiel</span></button>
+      <button class="nav-btn" onclick="showTab('wiki')">📚 <span data-i18n="portal.nav.wiki">Datenbank &amp; Lore</span></button>
+      <button class="nav-btn" onclick="showTab('logs')">📜 <span data-i18n="portal.nav.logs">Captain's Log</span></button>
+      <button class="nav-btn" onclick="showTab('about')">ℹ️ <span data-i18n="portal.nav.about">Über &amp; Labor</span></button>
+      <button class="nav-btn" id="lang-toggle" title="Sprache wechseln (Switch to English)" data-i18n-title="portal.lang.title" onclick="I18N.setLang(I18N.lang==='de'?'en':'de')">🌐 <span data-i18n="portal.lang.btn">EN</span></button>
     </nav>
   </header>
 
@@ -291,19 +292,19 @@
     <section id="tab-game" class="tab-section active">
       <div class="card" style="margin-bottom:12px;padding:12px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
         <div>
-          <b>🎮 SGC Command v0.28 Live-Instanz</b>
-          <span style="color:var(--text-dim);font-size:13px;margin-left:8px">Dual-Engine: Isometrisch Voxel (Pixel-Art) ⇄ 3D-ASCII (CP437, Taste [V]) · SGC-AMP v2.80</span>
+          <b data-i18n="portal.game.title">🎮 SGC Command v0.29 Live-Instanz</b>
+          <span style="color:var(--text-dim);font-size:13px;margin-left:8px" data-i18n="portal.game.sub">Dual-Engine: Isometrisch Voxel (Pixel-Art) ⇄ 3D-ASCII (CP437, Taste [V]) · SGC-AMP v2.80</span>
         </div>
         <div style="display:flex;gap:8px">
-          <a href="game/index.html" target="_blank" class="btn btn-outline">↗ In neuem Tab öffnen</a>
-          <button class="btn btn-primary" onclick="toggleFullScreenGame()">⛶ Vollbild</button>
+          <a href="game/index.html" target="_blank" class="btn btn-outline" data-i18n="portal.game.openTab">↗ In neuem Tab öffnen</a>
+          <button class="btn btn-primary" onclick="toggleFullScreenGame()" data-i18n="portal.game.fullscreen">⛶ Vollbild</button>
         </div>
       </div>
 
       <div class="game-frame-wrapper" id="game-container">
         <div class="game-controls-bar">
-          <div><b>Status:</b> Betriebsbereit · SGC-AMP v2.80 · C&amp;C Hell March &amp; Lo-Fi Remixes aktiv · Strudel Core Online</div>
-          <div>Steuerung: <b>WASD/Pfeile</b> = Kamera · <b>Q/E</b> = 90° Drehung · <b>V</b> = Pixel/ASCII (8-Bit) · <b>TAB</b> = Nächstes Mitglied · <b>ESC</b> = Menü</div>
+          <div data-i18n-html="portal.game.status"><b>Status:</b> Betriebsbereit · SGC-AMP v2.80 · C&amp;C Hell March &amp; Lo-Fi Remixes aktiv · Strudel Core Online</div>
+          <div data-i18n-html="portal.game.controls">Steuerung: <b>WASD/Pfeile</b> = Kamera · <b>Q/E</b> = 90° Drehung · <b>V</b> = Pixel/ASCII (8-Bit) · <b>TAB</b> = Nächstes Mitglied · <b>ESC</b> = Menü</div>
         </div>
         <iframe id="game-iframe" src="game/index.html?v=0.24"></iframe>
       </div>
@@ -312,38 +313,38 @@
     <!-- TAB 2: WIKI & LORE -->
     <section id="tab-wiki" class="tab-section">
       <div class="card">
-        <h2>📚 SGC Datenbank &amp; Handbuch</h2>
-        <p>Willkommen im Archiv des Cheyenne Mountain Complex (Ebene 28). Zugriff autorisiert für Stufe 4+ Personal.</p>
+        <h2 data-i18n="portal.wiki.h2">📚 SGC Datenbank &amp; Handbuch</h2>
+        <p data-i18n="portal.wiki.intro">Willkommen im Archiv des Cheyenne Mountain Complex (Ebene 28). Zugriff autorisiert für Stufe 4+ Personal.</p>
 
         <div class="grid-3" style="margin-top:16px">
           <div class="card" style="margin-bottom:0">
-            <h3 style="color:var(--accent-gold)">🪐 Planetensysteme</h3>
+            <h3 style="color:var(--accent-gold)" data-i18n="portal.wiki.planets.h3">🪐 Planetensysteme</h3>
             <ul style="padding-left:18px;font-size:13px;color:#cbd5e1">
-              <li><b>Abydos (P4X-544):</b> Wüstenwelt, antike Pyramiden, Ra-Kult.</li>
-              <li><b>Chulak:</b> Dschungel/Heimatwelt der Jaffa-Krieger unter Apophis.</li>
-              <li><b>Planet Alpha:</b> SGC-Außenposten und Zufluchtsort.</li>
-              <li><b>Tollana:</b> Hochtechnisierte neutrale Zivilisation mit Ionenkanonen.</li>
-              <li><b>Kern-Systeme:</b> Ha'tak-Flottenverbände und Goa'uld-Festungen.</li>
+              <li data-i18n-html="portal.wiki.planets.1"><b>Abydos (P4X-544):</b> Wüstenwelt, antike Pyramiden, Ra-Kult.</li>
+              <li data-i18n-html="portal.wiki.planets.2"><b>Chulak:</b> Dschungel/Heimatwelt der Jaffa-Krieger unter Apophis.</li>
+              <li data-i18n-html="portal.wiki.planets.3"><b>Planet Alpha:</b> SGC-Außenposten und Zufluchtsort.</li>
+              <li data-i18n-html="portal.wiki.planets.4"><b>Tollana:</b> Hochtechnisierte neutrale Zivilisation mit Ionenkanonen.</li>
+              <li data-i18n-html="portal.wiki.planets.5"><b>Kern-Systeme:</b> Ha'tak-Flottenverbände und Goa'uld-Festungen.</li>
             </ul>
           </div>
           <div class="card" style="margin-bottom:0">
-            <h3 style="color:var(--accent)">🛡 Taktische Ausrüstung</h3>
+            <h3 style="color:var(--accent)" data-i18n="portal.wiki.gear.h3">🛡 Taktische Ausrüstung</h3>
             <ul style="padding-left:18px;font-size:13px;color:#cbd5e1">
-              <li><b>FN P90 Sturmgewehr:</b> Hohe Kadenz, Reichweite 5.</li>
-              <li><b>Zat'nik'tel:</b> Betäubung / Energieschock, Reichweite 4.</li>
-              <li><b>Jaffa-Stabwaffe:</b> Plasma-Entladung mit hoher Zerstörungskraft.</li>
-              <li><b>Persönlicher Schutzschild:</b> Absorbiert Schaden für 2 Runden.</li>
-              <li><b>Auto-Turret &amp; Reaktor:</b> Feldbau-Strukturen im Gefecht.</li>
+              <li data-i18n-html="portal.wiki.gear.1"><b>FN P90 Sturmgewehr:</b> Hohe Kadenz, Reichweite 5.</li>
+              <li data-i18n-html="portal.wiki.gear.2"><b>Zat'nik'tel:</b> Betäubung / Energieschock, Reichweite 4.</li>
+              <li data-i18n-html="portal.wiki.gear.3"><b>Jaffa-Stabwaffe:</b> Plasma-Entladung mit hoher Zerstörungskraft.</li>
+              <li data-i18n-html="portal.wiki.gear.4"><b>Persönlicher Schutzschild:</b> Absorbiert Schaden für 2 Runden.</li>
+              <li data-i18n-html="portal.wiki.gear.5"><b>Auto-Turret &amp; Reaktor:</b> Feldbau-Strukturen im Gefecht.</li>
             </ul>
           </div>
           <div class="card" style="margin-bottom:0">
-            <h3 style="color:var(--accent-green)">🏗 Kolonie-Management</h3>
+            <h3 style="color:var(--accent-green)" data-i18n="portal.wiki.colony.h3">🏗 Kolonie-Management</h3>
             <ul style="padding-left:18px;font-size:13px;color:#cbd5e1">
-              <li><b>Stargate-Ring:</b> Primäre Verbindung zur Erde (Sektor 2,2).</li>
-              <li><b>Naquadah-Mine:</b> Ertrag +6 Erz/Tag (-2 Energie).</li>
-              <li><b>Forschungslabor:</b> Ertrag +5 Tech/Tag (-3 Energie).</li>
-              <li><b>Schutzschild-Kuppel:</b> Kraftfeld schützt Kolonie (+30 Def).</li>
-              <li><b>UAV-Hangar:</b> Luftpatrouillen &amp; Vorwarnung vor Jaffa-Raids.</li>
+              <li data-i18n-html="portal.wiki.colony.1"><b>Stargate-Ring:</b> Primäre Verbindung zur Erde (Sektor 2,2).</li>
+              <li data-i18n-html="portal.wiki.colony.2"><b>Naquadah-Mine:</b> Ertrag +6 Erz/Tag (-2 Energie).</li>
+              <li data-i18n-html="portal.wiki.colony.3"><b>Forschungslabor:</b> Ertrag +5 Tech/Tag (-3 Energie).</li>
+              <li data-i18n-html="portal.wiki.colony.4"><b>Schutzschild-Kuppel:</b> Kraftfeld schützt Kolonie (+30 Def).</li>
+              <li data-i18n-html="portal.wiki.colony.5"><b>UAV-Hangar:</b> Luftpatrouillen &amp; Vorwarnung vor Jaffa-Raids.</li>
             </ul>
           </div>
         </div>
@@ -354,28 +355,28 @@
     <section id="tab-logs" class="tab-section">
       <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:16px">
-          <h2>📜 SGC Captain's Log Archive</h2>
+          <h2 data-i18n="portal.logs.h2">📜 SGC Captain's Log Archive</h2>
           <div style="display:flex;gap:8px">
-            <button class="btn btn-outline" onclick="showLogEntry('log027')">Log 027 (Trotz Contentrot)</button>
-            <button class="btn btn-outline" onclick="showLogEntry('log026')">Log 026 (In der Tat)</button>
-            <button class="btn btn-outline" onclick="showLogEntry('log023')">Log 023 (Mission-UI &amp; Intro-Audio)</button>
-            <button class="btn btn-outline" onclick="showLogEntry('log022')">Log 022 (Soundtrack Fett &amp; Polish)</button>
+            <button class="btn btn-outline" onclick="showLogEntry('log027')" data-i18n="portal.logs.quick.027">Log 027 (Trotz Contentrot)</button>
+            <button class="btn btn-outline" onclick="showLogEntry('log026')" data-i18n="portal.logs.quick.026">Log 026 (In der Tat)</button>
+            <button class="btn btn-outline" onclick="showLogEntry('log023')" data-i18n="portal.logs.quick.023">Log 023 (Mission-UI &amp; Intro-Audio)</button>
+            <button class="btn btn-outline" onclick="showLogEntry('log022')" data-i18n="portal.logs.quick.022">Log 022 (Soundtrack Fett &amp; Polish)</button>
           </div>
         </div>
 
         <!-- LOG 027 -->
         <article id="log-entry-027" class="log-entry">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-            <span class="tag tag-green">Aktueller Durchgang 027</span>
-            <span style="font-size:12px;color:var(--text-dim)">23. Oktober 2026 · SGC Krisen-System, Woolsey-Audit, Replikatoren &amp; Contentrot</span>
+            <span class="tag tag-green" data-i18n="portal.log027.tag">Aktueller Durchgang 027</span>
+            <span style="font-size:12px;color:var(--text-dim)" data-i18n="portal.log027.date">23. Oktober 2026 · SGC Krisen-System, Woolsey-Audit, Replikatoren &amp; Contentrot</span>
           </div>
-          <h3 style="color:#fff">Captain's Log 027 – „Trotz Contentrot – Unautorisierte Toraktivierung“</h3>
-          <p style="color:var(--text-dim);font-size:13px">Dramatischer Tagesabschluss mit Notfall-Krisen, Richard Woolsey NID-Revision, Replikator-Alarm und Winamp-Eastereggs</p>
+          <h3 style="color:#fff" data-i18n="portal.log027.title">Captain's Log 027 – „Trotz Contentrot – Unautorisierte Toraktivierung“</h3>
+          <p style="color:var(--text-dim);font-size:13px" data-i18n="portal.log027.lead">Dramatischer Tagesabschluss mit Notfall-Krisen, Richard Woolsey NID-Revision, Replikator-Alarm und Winamp-Eastereggs</p>
           <div style="background:#090e17;border-left:4px solid var(--accent-green);padding:14px;border-radius:4px;margin:16px 0">
             <ul style="padding-left:18px;margin-top:6px;font-size:13px;color:#cbd5e1;line-height:1.7">
-              <li><b>SGC Krisen- &amp; Vorfall-System bei Tag-Ende:</b> ~55% Chance auf dramatische Zwischenfälle mit Entscheidungsauswahl: Unautorisierte Toraktivierung (Iris schließen vs. SG-3 Feuerschutz), Richard Woolseys NID-Revision (blauer Wackelpudding vs. Daniels Steuervortrag), Replikator-Invasion in den WebAudio-Leitungen und Altair-Harlans Duplikate („Comtrya!“).</li>
-              <li><b>Meta-AI Humor &amp; Eastereggs:</b> Contentrot-Notizen, Reese' Replikator-Spielzeug, Zitate von O'Neill &amp; Teal'c sowie geheime Klick-Eastereggs auf dem Winamp-LCD-Display.</li>
-              <li><b>Stabilität &amp; Budget:</b> 172 automatisierte Tests grün (0 Fehler), Release-Paket mit ~625 KB strikt unter der 1,44 MB Floppy-Disk-Grenze.</li>
+              <li data-i18n-html="portal.log027.li1"><b>SGC Krisen- &amp; Vorfall-System bei Tag-Ende:</b> ~55% Chance auf dramatische Zwischenfälle mit Entscheidungsauswahl: Unautorisierte Toraktivierung (Iris schließen vs. SG-3 Feuerschutz), Richard Woolseys NID-Revision (blauer Wackelpudding vs. Daniels Steuervortrag), Replikator-Invasion in den WebAudio-Leitungen und Altair-Harlans Duplikate („Comtrya!“).</li>
+              <li data-i18n-html="portal.log027.li2"><b>Meta-AI Humor &amp; Eastereggs:</b> Contentrot-Notizen, Reese' Replikator-Spielzeug, Zitate von O'Neill &amp; Teal'c sowie geheime Klick-Eastereggs auf dem Winamp-LCD-Display.</li>
+              <li data-i18n-html="portal.log027.li3"><b>Stabilität &amp; Budget:</b> 172 automatisierte Tests grün (0 Fehler), Release-Paket mit ~625 KB strikt unter der 1,44 MB Floppy-Disk-Grenze.</li>
             </ul>
           </div>
         </article>
@@ -383,17 +384,17 @@
         <!-- LOG 026 -->
         <article id="log-entry-026" class="log-entry">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-            <span class="tag tag-green">Aktueller Durchgang 026</span>
-            <span style="font-size:12px;color:var(--text-dim)">23. Oktober 2026 · Taktische Level-Überarbeitung, Beutesystem &amp; Level-Editor</span>
+            <span class="tag tag-green" data-i18n="portal.log026.tag">Aktueller Durchgang 026</span>
+            <span style="font-size:12px;color:var(--text-dim)" data-i18n="portal.log026.date">23. Oktober 2026 · Taktische Level-Überarbeitung, Beutesystem &amp; Level-Editor</span>
           </div>
-          <h3 style="color:#fff">Captain's Log 026 – „In der Tat – Fast ein Spiel“</h3>
-          <p style="color:var(--text-dim);font-size:13px">Stadt-Plaza-Design, X-COM/JA2-Deckungslogik, taktische Beutekisten mit Team-Banter &amp; SGC Level Editor</p>
+          <h3 style="color:#fff" data-i18n="portal.log026.title">Captain's Log 026 – „In der Tat – Fast ein Spiel“</h3>
+          <p style="color:var(--text-dim);font-size:13px" data-i18n="portal.log026.lead">Stadt-Plaza-Design, X-COM/JA2-Deckungslogik, taktische Beutekisten mit Team-Banter &amp; SGC Level Editor</p>
           <div style="background:#090e17;border-left:4px solid var(--accent-green);padding:14px;border-radius:4px;margin:16px 0">
             <ul style="padding-left:18px;margin-top:6px;font-size:13px;color:#cbd5e1;line-height:1.7">
-              <li><b>Taktische Level-Überarbeitung (Stadt &amp; Welten):</b> Enge 1-Kachel-Engpässe im Stadtsektor beseitigt. Neues Design mit 3-Kachel-Boulevards, offenem Marktplatz (Plaza), Ruinen mit Fenstern/Türen und doppelten Flussbrücken für echte Flankenmanöver.</li>
-              <li><b>In-Combat Beutesystem &amp; Team-Banter:</b> Prozedural platzierte Goa'uld-Vorratskisten, Naquadah-Kanister und Antiker-Datenkristalle auf dem Schlachtfeld. Bergung triggert authentische Stargate-Felddialoge (O'Neill, Carter, Jackson, Teal'c) und belohnt mit Ressourcen und Spezials.</li>
-              <li><b>SGC Tactical Level Editor (<code>tools/leveleditor.html</code>):</b> Vollwertiges Autorenwerkzeug mit 2:1 Isometrie- &amp; 2D-Rasteransicht, Terrain-/Deckungs-Pinsel, Höhenverstellung (+1/-1 Z), Presets und sofortigem <code>MAPS[]</code>-Code-Export.</li>
-              <li><b>Rundenabschluss &amp; Outro-Audio:</b> Rundenende per Enter/Button und Stargate Outro Theme beim Tagesabschluss mit SGC-Tagesbericht und Logbuch-Geschichten.</li>
+              <li data-i18n-html="portal.log026.li1"><b>Taktische Level-Überarbeitung (Stadt &amp; Welten):</b> Enge 1-Kachel-Engpässe im Stadtsektor beseitigt. Neues Design mit 3-Kachel-Boulevards, offenem Marktplatz (Plaza), Ruinen mit Fenstern/Türen und doppelten Flussbrücken für echte Flankenmanöver.</li>
+              <li data-i18n-html="portal.log026.li2"><b>In-Combat Beutesystem &amp; Team-Banter:</b> Prozedural platzierte Goa'uld-Vorratskisten, Naquadah-Kanister und Antiker-Datenkristalle auf dem Schlachtfeld. Bergung triggert authentische Stargate-Felddialoge (O'Neill, Carter, Jackson, Teal'c) und belohnt mit Ressourcen und Spezials.</li>
+              <li data-i18n-html="portal.log026.li3"><b>SGC Tactical Level Editor (<code>tools/leveleditor.html</code>):</b> Vollwertiges Autorenwerkzeug mit 2:1 Isometrie- &amp; 2D-Rasteransicht, Terrain-/Deckungs-Pinsel, Höhenverstellung (+1/-1 Z), Presets und sofortigem <code>MAPS[]</code>-Code-Export.</li>
+              <li data-i18n-html="portal.log026.li4"><b>Rundenabschluss &amp; Outro-Audio:</b> Rundenende per Enter/Button und Stargate Outro Theme beim Tagesabschluss mit SGC-Tagesbericht und Logbuch-Geschichten.</li>
             </ul>
           </div>
         </article>
@@ -401,19 +402,19 @@
         <!-- LOG 024 -->
         <article id="log-entry-024" class="log-entry">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-            <span class="tag tag-green">Aktueller Durchgang 024</span>
-            <span style="font-size:12px;color:var(--text-dim)">22. Oktober 2026 · 10× Performance, Sound-Vollendung &amp; Stabilität</span>
+            <span class="tag tag-green" data-i18n="portal.log024.tag">Aktueller Durchgang 024</span>
+            <span style="font-size:12px;color:var(--text-dim)" data-i18n="portal.log024.date">22. Oktober 2026 · 10× Performance, Sound-Vollendung &amp; Stabilität</span>
           </div>
-          <h3 style="color:#fff">Captain's Log 024 – Feldtauglich &amp; Sound-Vollendung</h3>
-          <p style="color:var(--text-dim);font-size:13px">Wartungszyklus, 10-facher Kampffluss, Winamp-Spektrum und Musik-Dramaturgie</p>
+          <h3 style="color:#fff" data-i18n="portal.log024.title">Captain's Log 024 – Feldtauglich &amp; Sound-Vollendung</h3>
+          <p style="color:var(--text-dim);font-size:13px" data-i18n="portal.log024.lead">Wartungszyklus, 10-facher Kampffluss, Winamp-Spektrum und Musik-Dramaturgie</p>
           <div style="background:#090e17;border-left:4px solid var(--accent-green);padding:14px;border-radius:4px;margin:16px 0">
             <ul style="padding-left:18px;margin-top:6px;font-size:13px;color:#cbd5e1;line-height:1.7">
-              <li><b>Missionsabschluss &amp; „Weiter“-Button:</b> Namenskollision zwischen Strudels Notenparser (<code>window.note</code>) und der internen Logging-Funktion behoben. Der Kampfabschluss ist wieder uneingeschränkt funktionsfähig (inkl. Enter/Leertaste).</li>
-              <li><b>10-facher Performance-Boost:</b> Beseitigung von Layout-Thrashing (<code>resizeCombatViewport</code>) und dirty-state HTML-Caching senkten die Framedauer im Kampf von 90 ms (~11 FPS) auf 8 ms (120+ FPS).</li>
-              <li><b>Musik-Dramaturgie:</b> Intro leitet beim ersten Klick oder Betreten der Basis auf Remix 1 (<code>theme_remix_0</code>) über; die Sternenkarte spielt nahtlos Remix 3 (<code>theme_remix_2</code>).</li>
-              <li><b>Winamp-Spektrum &amp; Audio:</b> 28-Band-Spektrumanalysator mit logarithmischen Frequenzbändern und flüssig fallenden Peak-Kappen verfeinert; unterbrochene WebAudio-Zustände werden robust abgefangen.</li>
-              <li><b>Neuer Song:</b> 🌌 Stargate × Melancholic Ambient Phaser Remix (74 BPM, D-Dorisch mit nativem Phaser-DSP) ergänzt das Repertoire.</li>
-              <li><b>Bereinigung &amp; Release:</b> Versehentliche temporäre Testdaten wurden bereinigt und durch <code>.gitignore</code> dauerhaft abgeschirmt. Neue Version als <code>release/SGC-Command-v026.zip</code> hinterlegt.</li>
+              <li data-i18n-html="portal.log024.li1"><b>Missionsabschluss &amp; „Weiter“-Button:</b> Namenskollision zwischen Strudels Notenparser (<code>window.note</code>) und der internen Logging-Funktion behoben. Der Kampfabschluss ist wieder uneingeschränkt funktionsfähig (inkl. Enter/Leertaste).</li>
+              <li data-i18n-html="portal.log024.li2"><b>10-facher Performance-Boost:</b> Beseitigung von Layout-Thrashing (<code>resizeCombatViewport</code>) und dirty-state HTML-Caching senkten die Framedauer im Kampf von 90 ms (~11 FPS) auf 8 ms (120+ FPS).</li>
+              <li data-i18n-html="portal.log024.li3"><b>Musik-Dramaturgie:</b> Intro leitet beim ersten Klick oder Betreten der Basis auf Remix 1 (<code>theme_remix_0</code>) über; die Sternenkarte spielt nahtlos Remix 3 (<code>theme_remix_2</code>).</li>
+              <li data-i18n-html="portal.log024.li4"><b>Winamp-Spektrum &amp; Audio:</b> 28-Band-Spektrumanalysator mit logarithmischen Frequenzbändern und flüssig fallenden Peak-Kappen verfeinert; unterbrochene WebAudio-Zustände werden robust abgefangen.</li>
+              <li data-i18n-html="portal.log024.li5"><b>Neuer Song:</b> 🌌 Stargate × Melancholic Ambient Phaser Remix (74 BPM, D-Dorisch mit nativem Phaser-DSP) ergänzt das Repertoire.</li>
+              <li data-i18n-html="portal.log024.li6"><b>Bereinigung &amp; Release:</b> Versehentliche temporäre Testdaten wurden bereinigt und durch <code>.gitignore</code> dauerhaft abgeschirmt. Neue Version als <code>release/SGC-Command-v026.zip</code> hinterlegt.</li>
             </ul>
           </div>
         </article>
@@ -422,16 +423,16 @@
         <article id="log-entry-023" class="log-entry">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
             <span class="tag tag-cyan">v0.23</span>
-            <span style="font-size:12px;color:var(--text-dim)">22. Oktober 2026 · Mission UI, Intro-Audio &amp; Release-Polish</span>
+            <span style="font-size:12px;color:var(--text-dim)" data-i18n="portal.log023.date">22. Oktober 2026 · Mission UI, Intro-Audio &amp; Release-Polish</span>
           </div>
-          <h3 style="color:#fff">Captain's Log 023 – Einsatzbereit</h3>
-          <p style="color:var(--text-dim);font-size:13px">Mission-Interaktion, Intro-Sound und Release-Bereinigung</p>
+          <h3 style="color:#fff" data-i18n="portal.log023.title">Captain's Log 023 – Einsatzbereit</h3>
+          <p style="color:var(--text-dim);font-size:13px" data-i18n="portal.log023.lead">Mission-Interaktion, Intro-Sound und Release-Bereinigung</p>
           <div style="background:#090e17;border-left:4px solid var(--accent-green);padding:14px;border-radius:4px;margin:16px 0">
             <ul style="padding-left:18px;margin-top:6px;font-size:13px;color:#cbd5e1;line-height:1.7">
-              <li><b>Kampf während Ankunftsdialogen:</b> Das Story-Panel blockiert nicht mehr die ganze Einsatzkarte. Eigene Einheiten können bereits ausgewählt werden; Bewegungs- und Angriffsaktionen bleiben bis zum Ende des Dialogs gesperrt.</li>
-              <li><b>Intro-Musik:</b> Die Titelmusik wird beim Intro vorbereitet. Ein eigener Audio-Button ermöglicht das browserkonforme Freischalten, ohne die Sequenz zu überspringen.</li>
-              <li><b>Responsive Aktionsleiste:</b> Das untere Kampfpanel bleibt bei schmalen und niedrigen Viewports sichtbar und scrollbar.</li>
-              <li><b>Qualitätssicherung:</b> Tests ergänzen Auswahl- und Panelprüfungen. Das Release-Paket v0.23 enthält den geprüften Stand und die aktuelle Dokumentation.</li>
+              <li data-i18n-html="portal.log023.li1"><b>Kampf während Ankunftsdialogen:</b> Das Story-Panel blockiert nicht mehr die ganze Einsatzkarte. Eigene Einheiten können bereits ausgewählt werden; Bewegungs- und Angriffsaktionen bleiben bis zum Ende des Dialogs gesperrt.</li>
+              <li data-i18n-html="portal.log023.li2"><b>Intro-Musik:</b> Die Titelmusik wird beim Intro vorbereitet. Ein eigener Audio-Button ermöglicht das browserkonforme Freischalten, ohne die Sequenz zu überspringen.</li>
+              <li data-i18n-html="portal.log023.li3"><b>Responsive Aktionsleiste:</b> Das untere Kampfpanel bleibt bei schmalen und niedrigen Viewports sichtbar und scrollbar.</li>
+              <li data-i18n-html="portal.log023.li4"><b>Qualitätssicherung:</b> Tests ergänzen Auswahl- und Panelprüfungen. Das Release-Paket v0.23 enthält den geprüften Stand und die aktuelle Dokumentation.</li>
             </ul>
           </div>
         </article>
@@ -439,23 +440,23 @@
         <!-- LOG 022 -->
         <article id="log-entry-022" class="log-entry">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-            <span class="tag tag-green">Aktueller Durchgang 022</span>
-            <span style="font-size:12px;color:var(--text-dim)">22. Oktober 2026 · Schicht: Gemini 3.8 Flash (Polishing &amp; Stabilisierung)</span>
+            <span class="tag tag-green" data-i18n="portal.log022.tag">Aktueller Durchgang 022</span>
+            <span style="font-size:12px;color:var(--text-dim)" data-i18n="portal.log022.date">22. Oktober 2026 · Schicht: Gemini 3.8 Flash (Polishing &amp; Stabilisierung)</span>
           </div>
-          <h3 style="color:#fff">Captain's Log 022 – "...aber der Soundtrack ist jetzt Fett!"</h3>
-          <p style="color:var(--text-dim);font-size:13px">Autoren-Schichten: Gemini 4 Argon, Claude 5.5 Sonnet, Gemini 3.8 Flash</p>
+          <h3 style="color:#fff" data-i18n="portal.log022.title">Captain's Log 022 – "...aber der Soundtrack ist jetzt Fett!"</h3>
+          <p style="color:var(--text-dim);font-size:13px" data-i18n="portal.log022.lead">Autoren-Schichten: Gemini 4 Argon, Claude 5.5 Sonnet, Gemini 3.8 Flash</p>
 
           <div style="background:#090e17;border-left:4px solid var(--accent-green);padding:14px;border-radius:4px;margin:16px 0">
-            <b>Zusammenfassung der Maßnahmen:</b>
+            <b data-i18n-html="portal.logsum">Zusammenfassung der Maßnahmen:</b>
             <ul style="padding-left:18px;margin-top:6px;font-size:13px;color:#cbd5e1;line-height:1.7">
-              <li><b>Lautstärkeregler repariert:</b> Interne Superdough- und WebAudio-Knoten werden nun strikt über <code>SFX.master</code> und <code>SFX.analyser</code> geroutet. Volle Lautstärkekontrolle und <code>localStorage</code>-Persistenz im Winamp-Header.</li>
-              <li><b>Neuer Soundtrack: C&amp;C Hell March &amp; Lo-Fi Chillhop:</b> Zwei neue handgefertigte Stargate-Themen hinzugefügt: <code>theme_remix_cnc</code> ("🪖 Stargate × C&amp;C Hell March Industrial Remix", 132 BPM, 909-Kick, verzerrter Bass, Fanfare) und <code>theme_remix_lofi</code> ("☕ Stargate × Midnight Lo-Fi Chillhop", 84 BPM, Rhodes Piano, Tape Saturation, sanfter Beat).</li>
-              <li><b>Combat-UI Layout-Fix:</b> <code>#combat-ui</code> wurde direkt in <code>#combat-overlay</code> verschoben und dynamisch per CSS-Flexbox verankert. Das Aktionspanel wird in keiner Bildschirmauflösung und in keinem Iframe mehr abgeschnitten.</li>
-              <li><b>Menü-General entfernt:</b> Die manuelle Kommandantenauswahl im Pause-Menü wurde entfernt, da Generäle über das Kampagnen- und Quest-System freigeschaltet werden.</li>
-              <li><b>Hub-Navigation entschlackt:</b> Aufdringliche Abzeichen entfernt; Forschungsnotizen, Winamp-Labor und Downloads in den aufgeräumten Bereich <b>"ℹ️ Über &amp; Labor"</b> konsolidiert.</li>
-              <li><b>Entschlackung des Release-Pakets:</b> Unnötige schwere Screenshot-PNGs aus dem Paket entfernt, um die ZIP-Downloadgröße minimal zu halten.</li>
-              <li><b>Gemeinfreie NASA-Assets:</b> Kuratierter Katalog gemeinfreier Weltraum- und Planetenbilder (Mars-Dünen, Eye of the Sahara, Webb Cosmic Cliffs, Cassini-Eiswelten) in <code>references/NASA-ASSETS.md</code> hinterlegt.</li>
-              <li><b>Test-Abdeckung:</b> 74 automatisierte Assertions in <code>test-browser.js</code> laufen mit 0 Fehlern durch (100% grün).</li>
+              <li data-i18n-html="portal.log022.li1"><b>Lautstärkeregler repariert:</b> Interne Superdough- und WebAudio-Knoten werden nun strikt über <code>SFX.master</code> und <code>SFX.analyser</code> geroutet. Volle Lautstärkekontrolle und <code>localStorage</code>-Persistenz im Winamp-Header.</li>
+              <li data-i18n-html="portal.log022.li2"><b>Neuer Soundtrack: C&amp;C Hell March &amp; Lo-Fi Chillhop:</b> Zwei neue handgefertigte Stargate-Themen hinzugefügt: <code>theme_remix_cnc</code> ("🪖 Stargate × C&amp;C Hell March Industrial Remix", 132 BPM, 909-Kick, verzerrter Bass, Fanfare) und <code>theme_remix_lofi</code> ("☕ Stargate × Midnight Lo-Fi Chillhop", 84 BPM, Rhodes Piano, Tape Saturation, sanfter Beat).</li>
+              <li data-i18n-html="portal.log022.li3"><b>Combat-UI Layout-Fix:</b> <code>#combat-ui</code> wurde direkt in <code>#combat-overlay</code> verschoben und dynamisch per CSS-Flexbox verankert. Das Aktionspanel wird in keiner Bildschirmauflösung und in keinem Iframe mehr abgeschnitten.</li>
+              <li data-i18n-html="portal.log022.li4"><b>Menü-General entfernt:</b> Die manuelle Kommandantenauswahl im Pause-Menü wurde entfernt, da Generäle über das Kampagnen- und Quest-System freigeschaltet werden.</li>
+              <li data-i18n-html="portal.log022.li5"><b>Hub-Navigation entschlackt:</b> Aufdringliche Abzeichen entfernt; Forschungsnotizen, Winamp-Labor und Downloads in den aufgeräumten Bereich <b>"ℹ️ Über &amp; Labor"</b> konsolidiert.</li>
+              <li data-i18n-html="portal.log022.li6"><b>Entschlackung des Release-Pakets:</b> Unnötige schwere Screenshot-PNGs aus dem Paket entfernt, um die ZIP-Downloadgröße minimal zu halten.</li>
+              <li data-i18n-html="portal.log022.li7"><b>Gemeinfreie NASA-Assets:</b> Kuratierter Katalog gemeinfreier Weltraum- und Planetenbilder (Mars-Dünen, Eye of the Sahara, Webb Cosmic Cliffs, Cassini-Eiswelten) in <code>references/NASA-ASSETS.md</code> hinterlegt.</li>
+              <li data-i18n-html="portal.log022.li8"><b>Test-Abdeckung:</b> 74 automatisierte Assertions in <code>test-browser.js</code> laufen mit 0 Fehlern durch (100% grün).</li>
             </ul>
           </div>
         </article>
@@ -463,21 +464,21 @@
         <!-- LOG 021 -->
         <article id="log-entry-021" class="log-entry" style="margin-top:24px;border-top:1px solid var(--border);padding-top:20px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-            <span class="tag tag-blue">Durchgang 021</span>
-            <span style="font-size:12px;color:var(--text-dim)">22. Oktober 2026 · Schicht: Gemini 3.8 Flash (Fertigstellung)</span>
+            <span class="tag tag-blue" data-i18n="portal.log021.tag">Durchgang 021</span>
+            <span style="font-size:12px;color:var(--text-dim)" data-i18n="portal.log021.date">22. Oktober 2026 · Schicht: Gemini 3.8 Flash (Fertigstellung)</span>
           </div>
-          <h3 style="color:#fff">Captain's Log 021 – Winamp Retro-Player, Oszilloskop, 8-Bit Chiptune &amp; Switch Angel Audio-Fixes</h3>
-          <p style="color:var(--text-dim);font-size:13px">Autoren-Schichten: Gemini 4 Argon, Claude 5.5 Sonnet, Gemini 3.8 Flash</p>
+          <h3 style="color:#fff" data-i18n="portal.log021.title">Captain's Log 021 – Winamp Retro-Player, Oszilloskop, 8-Bit Chiptune &amp; Switch Angel Audio-Fixes</h3>
+          <p style="color:var(--text-dim);font-size:13px" data-i18n="portal.log021.lead">Autoren-Schichten: Gemini 4 Argon, Claude 5.5 Sonnet, Gemini 3.8 Flash</p>
 
           <div style="background:#090e17;border-left:4px solid var(--accent);padding:14px;border-radius:4px;margin:16px 0">
-            <b>Zusammenfassung der Maßnahmen:</b>
+            <b data-i18n-html="portal.logsum">Zusammenfassung der Maßnahmen:</b>
             <ul style="padding-left:18px;margin-top:6px;font-size:13px;color:#cbd5e1;line-height:1.7">
-              <li><b>Switch Angel Laufzeit-Reparaturen:</b> AST-Präprozessor normalisiert veraltete HTML-String-Methoden (<code>String.sub</code>) und sichert <code>String.prototype.seg</code>, <code>add</code> und <code>pk</code> ab. Alle 20 Stücke (inkl. <code>extra_slippy</code>, <code>Lets_Talk</code>, <code>MUTEK4am</code>, <code>did_i_make_this</code>, <code>AUTOTOMATONE</code>) starten sofort.</li>
-              <li><b>SGC-AMP v2.80 Retro-Player:</b> Vollwertiges Winamp v2 Interface mit grünem LCD-Matrix-Display, eindeutigen Status-Plaketten (PLAYING/PAUSED/STOPPED), Playlist-Suchfilter und klappbarem Live-Coding-Drawer.</li>
-              <li><b>Echtzeit-Oszilloskop &amp; 28-Band-Spektrumanalysator:</b> 60 FPS HTML5-Canvas direkt an den WebAudio <code>AnalyserNode</code> angebunden.</li>
-              <li><b>Automatischer 8-Bit Chiptune Modus:</b> Gekoppelt an die Umschaltung in den 3D-ASCII-Look (Taste <code>V</code>); reine Rechteckwellen und 40-Hz-Arpeggio-Flutter; auch manuell schaltbar.</li>
-              <li><b>Stargate Theme MIDI Direct:</b> Zerlegung der MIDI-Spuren in 16-Step Takte mit spezifischen Strudel-Instrumenten ($MELODY Waldhorn, $BASS E-Bass, $HARMONY Power-Brass, $DRUMS Pauken &amp; Orchester-Kit).</li>
-              <li><b>Schlankheitskur:</b> Bereinigung um 50+ MB schwere WAV-Dateien; <code>references/</code> als saubere Inbox für künftige Drops vorbereitet.</li>
+              <li data-i18n-html="portal.log021.li1"><b>Switch Angel Laufzeit-Reparaturen:</b> AST-Präprozessor normalisiert veraltete HTML-String-Methoden (<code>String.sub</code>) und sichert <code>String.prototype.seg</code>, <code>add</code> und <code>pk</code> ab. Alle 20 Stücke (inkl. <code>extra_slippy</code>, <code>Lets_Talk</code>, <code>MUTEK4am</code>, <code>did_i_make_this</code>, <code>AUTOTOMATONE</code>) starten sofort.</li>
+              <li data-i18n-html="portal.log021.li2"><b>SGC-AMP v2.80 Retro-Player:</b> Vollwertiges Winamp v2 Interface mit grünem LCD-Matrix-Display, eindeutigen Status-Plaketten (PLAYING/PAUSED/STOPPED), Playlist-Suchfilter und klappbarem Live-Coding-Drawer.</li>
+              <li data-i18n-html="portal.log021.li3"><b>Echtzeit-Oszilloskop &amp; 28-Band-Spektrumanalysator:</b> 60 FPS HTML5-Canvas direkt an den WebAudio <code>AnalyserNode</code> angebunden.</li>
+              <li data-i18n-html="portal.log021.li4"><b>Automatischer 8-Bit Chiptune Modus:</b> Gekoppelt an die Umschaltung in den 3D-ASCII-Look (Taste <code>V</code>); reine Rechteckwellen und 40-Hz-Arpeggio-Flutter; auch manuell schaltbar.</li>
+              <li data-i18n-html="portal.log021.li5"><b>Stargate Theme MIDI Direct:</b> Zerlegung der MIDI-Spuren in 16-Step Takte mit spezifischen Strudel-Instrumenten ($MELODY Waldhorn, $BASS E-Bass, $HARMONY Power-Brass, $DRUMS Pauken &amp; Orchester-Kit).</li>
+              <li data-i18n-html="portal.log021.li6"><b>Schlankheitskur:</b> Bereinigung um 50+ MB schwere WAV-Dateien; <code>references/</code> als saubere Inbox für künftige Drops vorbereitet.</li>
             </ul>
           </div>
         </article>
@@ -485,21 +486,21 @@
         <!-- LOG 020 -->
         <article id="log-entry-020" class="log-entry" style="margin-top:24px;border-top:1px solid var(--border);padding-top:20px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-            <span class="tag tag-amber">Durchgang 020</span>
-            <span style="font-size:12px;color:var(--text-dim)">22. Oktober 2026 · Schichten: Gemini 4 Argon, Claude 5.5, Gemini 3.8 Flash</span>
+            <span class="tag tag-amber" data-i18n="portal.log020.tag">Durchgang 020</span>
+            <span style="font-size:12px;color:var(--text-dim)" data-i18n="portal.log020.date">22. Oktober 2026 · Schichten: Gemini 4 Argon, Claude 5.5, Gemini 3.8 Flash</span>
           </div>
-          <h3 style="color:#fff">Captain's Log 020 – Dual-Gfx (Pixel-Voxel ⇄ 3D-ASCII), Civ Kolonien &amp; Strudel Engine Core</h3>
-          <p style="color:var(--text-dim);font-size:13px">Autoren-Schichten: Gemini 4 Argon, Claude 5.5 Sonnet, Gemini 3.8 Flash</p>
+          <h3 style="color:#fff" data-i18n="portal.log020.title">Captain's Log 020 – Dual-Gfx (Pixel-Voxel ⇄ 3D-ASCII), Civ Kolonien &amp; Strudel Engine Core</h3>
+          <p style="color:var(--text-dim);font-size:13px" data-i18n="portal.log020.lead">Autoren-Schichten: Gemini 4 Argon, Claude 5.5 Sonnet, Gemini 3.8 Flash</p>
 
           <div style="background:#090e17;border-left:4px solid var(--accent-gold);padding:14px;border-radius:4px;margin:16px 0">
-            <b>Zusammenfassung der Maßnahmen:</b>
+            <b data-i18n-html="portal.logsum">Zusammenfassung der Maßnahmen:</b>
             <ul style="padding-left:18px;margin-top:6px;font-size:13px;color:#cbd5e1;line-height:1.7">
-              <li><b>2:1 Isometrische Voxel-Engine:</b> Echte 3D-Höhenstufen, Diamant-Picking, Obelisk-Top/Left/Right-Shading und 4-Wege-Kameradrehung (<code>Q</code>/<code>E</code>).</li>
-              <li><b>CP437 3D-ASCII Engine:</b> Retro-Terminal-Grafik inspiriert von <code>asciiid</code> und <code>asciicker</code>; nahtlos mit Taste <code>V</code> umschaltbar.</li>
-              <li><b>Persistenter Koloniebau (Civ / SimCity / Total War Rome):</b> Planetare Außenposten mit Minen, Reaktoren, Forschungslaboren, Schutzschilden und UAV-Hangars auf einem 6×5 Sektoren-Gitter.</li>
-              <li><b>Strudel Core &amp; WebAudio Fallback:</b> Autonome Live-Pattern-Synthese mit prozeduralen Drum-WAVs ohne externe Server.</li>
-              <li><b>Spielfeld-Tanzen &amp; Gamepad Dual-Rumble:</b> Audio-reaktiver Bounce (<code>ISO.beatPulse</code>) und taktile Controller-Vibration.</li>
-              <li><b>Squad-Cycling &amp; Keybindings:</b> Nächstes SG-Mitglied mit <code>Tab</code> und freie Tastenbelegungs-Konfiguration.</li>
+              <li data-i18n-html="portal.log020.li1"><b>2:1 Isometrische Voxel-Engine:</b> Echte 3D-Höhenstufen, Diamant-Picking, Obelisk-Top/Left/Right-Shading und 4-Wege-Kameradrehung (<code>Q</code>/<code>E</code>).</li>
+              <li data-i18n-html="portal.log020.li2"><b>CP437 3D-ASCII Engine:</b> Retro-Terminal-Grafik inspiriert von <code>asciiid</code> und <code>asciicker</code>; nahtlos mit Taste <code>V</code> umschaltbar.</li>
+              <li data-i18n-html="portal.log020.li3"><b>Persistenter Koloniebau (Civ / SimCity / Total War Rome):</b> Planetare Außenposten mit Minen, Reaktoren, Forschungslaboren, Schutzschilden und UAV-Hangars auf einem 6×5 Sektoren-Gitter.</li>
+              <li data-i18n-html="portal.log020.li4"><b>Strudel Core &amp; WebAudio Fallback:</b> Autonome Live-Pattern-Synthese mit prozeduralen Drum-WAVs ohne externe Server.</li>
+              <li data-i18n-html="portal.log020.li5"><b>Spielfeld-Tanzen &amp; Gamepad Dual-Rumble:</b> Audio-reaktiver Bounce (<code>ISO.beatPulse</code>) und taktile Controller-Vibration.</li>
+              <li data-i18n-html="portal.log020.li6"><b>Squad-Cycling &amp; Keybindings:</b> Nächstes SG-Mitglied mit <code>Tab</code> und freie Tastenbelegungs-Konfiguration.</li>
             </ul>
           </div>
         </article>
@@ -510,58 +511,58 @@
     <section id="tab-about" class="tab-section">
       <div class="card">
         <div class="subnav-bar">
-          <button id="subnav-btn-soundlab" class="subnav-btn active" onclick="showAboutSection('soundlab')">🎵 Strudel &amp; Winamp Lab</button>
-          <button id="subnav-btn-study" class="subnav-btn" onclick="showAboutSection('study')">📄 Forschungsnotizen &amp; Architektur</button>
-          <button id="subnav-btn-editor" class="subnav-btn" onclick="showAboutSection('editor')">🗺️ Level-Editor</button>
-          <button id="subnav-btn-downloads" class="subnav-btn" onclick="showAboutSection('downloads')">📦 Offline-Paket &amp; Download</button>
-          <button id="subnav-btn-license" class="subnav-btn" onclick="showAboutSection('license')">⚖️ Lizenzen &amp; Danksagung</button>
+          <button id="subnav-btn-soundlab" class="subnav-btn active" onclick="showAboutSection('soundlab')">🎵 <span data-i18n="portal.about.soundlab">Strudel &amp; Winamp Lab</span></button>
+          <button id="subnav-btn-study" class="subnav-btn" onclick="showAboutSection('study')">📄 <span data-i18n="portal.about.study">Forschungsnotizen &amp; Architektur</span></button>
+          <button id="subnav-btn-editor" class="subnav-btn" onclick="showAboutSection('editor')">🗺️ <span data-i18n="portal.about.editor">Level-Editor</span></button>
+          <button id="subnav-btn-downloads" class="subnav-btn" onclick="showAboutSection('downloads')">📦 <span data-i18n="portal.about.downloads">Offline-Paket &amp; Download</span></button>
+          <button id="subnav-btn-license" class="subnav-btn" onclick="showAboutSection('license')">⚖️ <span data-i18n="portal.about.license">Lizenzen &amp; Danksagung</span></button>
         </div>
 
         <!-- SUBPANEL A: SOUND LAB -->
         <div id="about-soundlab" class="about-subpanel active">
-          <h2>🎵 Strudel Core, SGC-AMP v2.80 &amp; ReBirth-338 Sound Studio</h2>
-          <p>Die Sound-Engine von SGC Command basiert auf modernster algorithmischer Live-Pattern-Synthese nach dem Vorbild von <b>Strudel</b> und <b>TidalCycles</b>, kombiniert mit einem retro Winamp-Player, ReBirth RB-338 Synthesizer-Rack mit Roland Soundbanks und einem Strudel.cc Live-Code Interface.</p>
+          <h2 data-i18n="portal.lab.h2">🎵 Strudel Core, SGC-AMP v2.80 &amp; ReBirth-338 Sound Studio</h2>
+          <p data-i18n-html="portal.lab.intro">Die Sound-Engine von SGC Command basiert auf modernster algorithmischer Live-Pattern-Synthese nach dem Vorbild von <b>Strudel</b> und <b>TidalCycles</b>, kombiniert mit einem retro Winamp-Player, ReBirth RB-338 Synthesizer-Rack mit Roland Soundbanks und einem Strudel.cc Live-Code Interface.</p>
 
           <div class="grid-2" style="margin-top:16px">
             <div class="card" style="margin-bottom:0">
-              <h3>🪖 Neue Remixes: C&amp;C Hell March &amp; Lo-Fi Chillhop</h3>
-              <p>Der Stargate-Soundtrack wurde um zwei neue, handgefertigte Strudel-Remixe erweitert:</p>
+              <h3 data-i18n="portal.lab.c1.h3">🪖 Neue Remixes: C&amp;C Hell March &amp; Lo-Fi Chillhop</h3>
+              <p data-i18n="portal.lab.c1.p">Der Stargate-Soundtrack wurde um zwei neue, handgefertigte Strudel-Remixe erweitert:</p>
               <ul style="padding-left:18px;font-size:13px;color:#cbd5e1;line-height:1.7">
-                <li><b>🪖 Stargate × C&amp;C Hell March Remix:</b> 132 BPM, Frank-Klepacki-Industrial-Vibe, treibende Roland TR-909 Kick, verzerrter E-Bass Chug, schneidende Brass-Fanfare für dramatische Bodengefechte und Bosskämpfe.</li>
-                <li><b>☕ Stargate × Midnight Lo-Fi Chillhop Remix:</b> 84 BPM, entspannte Half-Time Beats, Rhodes E-Piano mit Tape-Saturation, sanfte Flöte und dezentes Vinyl-Knistern für Basenbau und Forschung.</li>
+                <li data-i18n-html="portal.lab.c1.li1"><b>🪖 Stargate × C&amp;C Hell March Remix:</b> 132 BPM, Frank-Klepacki-Industrial-Vibe, treibende Roland TR-909 Kick, verzerrter E-Bass Chug, schneidende Brass-Fanfare für dramatische Bodengefechte und Bosskämpfe.</li>
+                <li data-i18n-html="portal.lab.c1.li2"><b>☕ Stargate × Midnight Lo-Fi Chillhop Remix:</b> 84 BPM, entspannte Half-Time Beats, Rhodes E-Piano mit Tape-Saturation, sanfte Flöte und dezentes Vinyl-Knistern für Basenbau und Forschung.</li>
               </ul>
             </div>
 
             <div class="card" style="margin-bottom:0">
-              <h3>🎛 ReBirth RB-338 Rack &amp; Roland Soundbanks</h3>
-              <p>Inspiriert von der legendären Propellerhead ReBirth RB-338 Software:</p>
+              <h3 data-i18n="portal.lab.c2.h3">🎛 ReBirth RB-338 Rack &amp; Roland Soundbanks</h3>
+              <p data-i18n="portal.lab.c2.p">Inspiriert von der legendären Propellerhead ReBirth RB-338 Software:</p>
               <ul style="padding-left:18px;font-size:13px;color:#cbd5e1;line-height:1.7">
-                <li><b>TB-303 Acid Bass Rack:</b> Soundbanks für <code>303 Saw</code>, <code>303 Sq</code>, <code>SH-101</code>, <code>Sub</code>, <code>Slap</code>, <code>8-Bit</code> und <code>Reese</code>. Drehregler für Cutoff, Resonanz, Env Mod, Decay, Distortion und Tune.</li>
-                <li><b>Roland Drum Machine:</b> 1-Klick Soundbank-Wechsler für <b>Kick</b> (<code>TR-909</code>, <code>TR-808</code>, <code>TR-707</code>, <code>LinnDrum</code>, <code>8-Bit</code>, <code>Acoustic</code>, <code>Acid</code>) und <b>Hi-Hat</b> (<code>TR-909</code>, <code>TR-808</code>, <code>TR-707</code>, <code>LinnDrum</code>, <code>8-Bit</code>, <code>Noise Sweep</code>).</li>
-                <li><b>Hot-Injection in den Code:</b> Button <code>[ ✍ SOUNDBANKS ANWENDEN ]</code> überträgt die ausgewählten Sounds direkt in den Code-Text.</li>
+                <li data-i18n-html="portal.lab.c2.li1"><b>TB-303 Acid Bass Rack:</b> Soundbanks für <code>303 Saw</code>, <code>303 Sq</code>, <code>SH-101</code>, <code>Sub</code>, <code>Slap</code>, <code>8-Bit</code> und <code>Reese</code>. Drehregler für Cutoff, Resonanz, Env Mod, Decay, Distortion und Tune.</li>
+                <li data-i18n-html="portal.lab.c2.li2"><b>Roland Drum Machine:</b> 1-Klick Soundbank-Wechsler für <b>Kick</b> (<code>TR-909</code>, <code>TR-808</code>, <code>TR-707</code>, <code>LinnDrum</code>, <code>8-Bit</code>, <code>Acoustic</code>, <code>Acid</code>) und <b>Hi-Hat</b> (<code>TR-909</code>, <code>TR-808</code>, <code>TR-707</code>, <code>LinnDrum</code>, <code>8-Bit</code>, <code>Noise Sweep</code>).</li>
+                <li data-i18n-html="portal.lab.c2.li3"><b>Hot-Injection in den Code:</b> Button <code>[ ✍ SOUNDBANKS ANWENDEN ]</code> überträgt die ausgewählten Sounds direkt in den Code-Text.</li>
               </ul>
             </div>
           </div>
 
           <div class="grid-2" style="margin-top:16px">
             <div class="card" style="margin-bottom:0">
-              <h3>📻 SGC-AMP v2.80 (Winamp Retro Player)</h3>
-              <p>Optisch und funktional an das legendäre Winamp v2 angelehnt:</p>
+              <h3 data-i18n="portal.lab.c3.h3">📻 SGC-AMP v2.80 (Winamp Retro Player)</h3>
+              <p data-i18n="portal.lab.c3.p">Optisch und funktional an das legendäre Winamp v2 angelehnt:</p>
               <ul style="padding-left:18px;font-size:13px;color:#cbd5e1;line-height:1.7">
-                <li><b>Grünes Phosphor-LCD:</b> Marquee-Lauftext, Spielzeit, BPM, CPS und Bitrate.</li>
-                <li><b>Status-Badges:</b> Klar visualisiert mit <code>[ ▶ PLAYING ]</code> (pulsierend grün), <code>[ ⏸ PAUSED ]</code> (bernstein) und <code>[ ⏹ STOPPED ]</code> (rot).</li>
-                <li><b>Echtzeit-Oszilloskop / Visualizer:</b> HTML5-Canvas greift über einen <code>AnalyserNode</code> das Gesamtsignal ab – umschaltbar zwischen grüner Phosphor-Welle und 28-Band-Spektrumanalysator.</li>
-                <li><b>Master-Lautstärkeregler:</b> Steuert den AudioContext Master-Gain mit linear-to-exponential Scaling und <code>localStorage</code>-Speicherung.</li>
+                <li data-i18n-html="portal.lab.c3.li1"><b>Grünes Phosphor-LCD:</b> Marquee-Lauftext, Spielzeit, BPM, CPS und Bitrate.</li>
+                <li data-i18n-html="portal.lab.c3.li2"><b>Status-Badges:</b> Klar visualisiert mit <code>[ ▶ PLAYING ]</code> (pulsierend grün), <code>[ ⏸ PAUSED ]</code> (bernstein) und <code>[ ⏹ STOPPED ]</code> (rot).</li>
+                <li data-i18n-html="portal.lab.c3.li3"><b>Echtzeit-Oszilloskop / Visualizer:</b> HTML5-Canvas greift über einen <code>AnalyserNode</code> das Gesamtsignal ab – umschaltbar zwischen grüner Phosphor-Welle und 28-Band-Spektrumanalysator.</li>
+                <li data-i18n-html="portal.lab.c3.li4"><b>Master-Lautstärkeregler:</b> Steuert den AudioContext Master-Gain mit linear-to-exponential Scaling und <code>localStorage</code>-Speicherung.</li>
               </ul>
             </div>
 
             <div class="card" style="margin-bottom:0">
-              <h3>👾 Automatischer 8-Bit Chiptune Modus</h3>
-              <p>Spielfeld-Ästhetik und Akustik greifen nahtlos ineinander:</p>
+              <h3 data-i18n="portal.lab.c4.h3">👾 Automatischer 8-Bit Chiptune Modus</h3>
+              <p data-i18n="portal.lab.c4.p">Spielfeld-Ästhetik und Akustik greifen nahtlos ineinander:</p>
               <ul style="padding-left:18px;font-size:13px;color:#cbd5e1;line-height:1.7">
-                <li><b>Kopplung an ASCII-Look:</b> Beim Wechsel in den 3D-ASCII-Modus (Taste <code>V</code>) schaltet die Audio-Engine automatisch in den 8-Bit Chiptune-Modus.</li>
-                <li><b>NES- &amp; C64-Klangcharakter:</b> Reine Rechteckwellen (<code>square</code>), angehobene Filterfrequenzen und <b>40-Hz-Arpeggio-Flutter</b> für gehaltene Akkorde.</li>
-                <li><b>Manuelle Kontrolle:</b> Jederzeit auch im Pixel-Modus über den Player-Button <code>[ 👾 8-Bit: AN/AUS ]</code> umschaltbar.</li>
+                <li data-i18n-html="portal.lab.c4.li1"><b>Kopplung an ASCII-Look:</b> Beim Wechsel in den 3D-ASCII-Modus (Taste <code>V</code>) schaltet die Audio-Engine automatisch in den 8-Bit Chiptune-Modus.</li>
+                <li data-i18n-html="portal.lab.c4.li2"><b>NES- &amp; C64-Klangcharakter:</b> Reine Rechteckwellen (<code>square</code>), angehobene Filterfrequenzen und <b>40-Hz-Arpeggio-Flutter</b> für gehaltene Akkorde.</li>
+                <li data-i18n-html="portal.lab.c4.li3"><b>Manuelle Kontrolle:</b> Jederzeit auch im Pixel-Modus über den Player-Button <code>[ 👾 8-Bit: AN/AUS ]</code> umschaltbar.</li>
               </ul>
             </div>
           </div>
@@ -570,140 +571,140 @@
         <!-- SUBPANEL B: ACADEMIC STUDY -->
         <div id="about-study" class="about-subpanel">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-            <span class="tag tag-blue">Projektstudie · Multi-Agent Pair Programming</span>
-            <span style="font-size:12px;color:var(--text-dim)">Fachbereich Humanwissenschaften &amp; Informatik</span>
+            <span class="tag tag-blue" data-i18n="portal.study.tag">Projektstudie · Multi-Agent Pair Programming</span>
+            <span style="font-size:12px;color:var(--text-dim)" data-i18n="portal.study.faculty">Fachbereich Humanwissenschaften &amp; Informatik</span>
           </div>
           <h1>Multi-Agent LLM Pair Programming in Complex Game Engine Architecture</h1>
-          <h3 style="color:var(--accent);font-weight:400">Ein iterativer Software-Engineering-Feldversuch am Beispiel von SGC Command v0.29</h3>
+          <h3 style="color:var(--accent);font-weight:400" data-i18n="portal.study.subtitle">Ein iterativer Software-Engineering-Feldversuch am Beispiel von SGC Command v0.29</h3>
 
-          <div style="margin:20px 0;padding:16px;background:#0d1522;border-left:4px solid var(--accent);border-radius:4px">
+          <div style="margin:20px 0;padding:16px;background:#0d1522;border-left:4px solid var(--accent);border-radius:4px" data-i18n-html="portal.study.summary">
             <b>Zusammenfassung (Abstract):</b> Die vorliegende Untersuchung evaluiert die Fähigkeiten, Robustheit und Schnittstellen-Disziplin moderner LLM-Agenten (Gemini 4 Argon, Claude 5.5 / 3.5 Sonnet, Gemini 3.8 Flash, Claude Opus 5.5 Medium, Qwen 3.8 27b Uni-gehostet) bei der iterativen Konstruktion einer retro-futuristischen Spielarchitektur ohne externe Bundler. Am Praxisbeispiel wurden 2:1 isometrische Voxel-Projektionen, CP437/ASCII-3D-Rendering, eine MIDI-zu-Strudel-Transpiler-Bridge, der retro Winamp-Player <code>SGC-AMP v2.80</code> mit Echtzeit-Oszilloskop, automatische 8-Bit-Chiptune-Akustik, persistente planetare Kolonien (Civ / SimCity / Total War Rome), audio-reaktives Spielfeld-Tanzen und Gamepad-Dual-Rumble-Haptik erfolgreich koordiniert.
           </div>
 
-          <h2>1. Beteiligte Modell-Schichten &amp; Meilensteine</h2>
+          <h2 data-i18n="portal.study.h2.1">1. Beteiligte Modell-Schichten &amp; Meilensteine</h2>
           <table>
             <thead>
               <tr>
-                <th>Schicht</th>
-                <th>Modell</th>
-                <th>Kernbeiträge &amp; Meilensteine</th>
-                <th>Architektonische Herausforderung</th>
+                <th data-i18n="portal.study.th.1">Schicht</th>
+                <th data-i18n="portal.study.th.2">Modell</th>
+                <th data-i18n="portal.study.th.3">Kernbeiträge &amp; Meilensteine</th>
+                <th data-i18n="portal.study.th.4">Architektonische Herausforderung</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><b>Schicht 1</b></td>
+                <td><b data-i18n="portal.study.r1.s">Schicht 1</b></td>
                 <td><b>Gemini 4 Argon</b></td>
-                <td>Konzeption der 2:1 Isometrie, Diamant-Picking, Obelisk.js Geometrie-Integration, initiales CP437/ASCII-Rendering, Lizenz-Audit.</td>
-                <td>Verzicht auf externe Bundler; Standalone-Kompilierung im Browser.</td>
+                <td data-i18n-html="portal.study.r1.c">Konzeption der 2:1 Isometrie, Diamant-Picking, Obelisk.js Geometrie-Integration, initiales CP437/ASCII-Rendering, Lizenz-Audit.</td>
+                <td data-i18n-html="portal.study.r1.h">Verzicht auf externe Bundler; Standalone-Kompilierung im Browser.</td>
               </tr>
               <tr>
-                <td><b>Schicht 2</b></td>
+                <td><b data-i18n="portal.study.r2.s">Schicht 2</b></td>
                 <td><b>Claude 5.5 / 3.5 Sonnet</b></td>
-                <td>Engine-Stabilisierung, prozedurale WebAudio-Sample-Synthese, Inventar &amp; Waffenkammer-Crafting, Hammonds Klemmbrett.</td>
-                <td>Etablierung des headless Test-Harnischs (<code>test-browser.js</code>).</td>
+                <td data-i18n-html="portal.study.r2.c">Engine-Stabilisierung, prozedurale WebAudio-Sample-Synthese, Inventar &amp; Waffenkammer-Crafting, Hammonds Klemmbrett.</td>
+                <td data-i18n-html="portal.study.r2.h">Etablierung des headless Test-Harnischs (<code>test-browser.js</code>).</td>
               </tr>
               <tr>
-                <td><b>Schicht 3</b></td>
+                <td><b data-i18n="portal.study.r3.s">Schicht 3</b></td>
                 <td><b>Gemini 3.8 Flash</b></td>
-                <td>Standard-MIDI-Parser, Krumhansl Key-Finder, Stargate Theme × Switch Angel Remix, SongGen-Algorithmus, Koloniebau (<code>S.colonies</code>), Audio-Tanz, Gamepad-Rumble, Tastenbelegungs-Modal, <b>Winamp-Style SGC-AMP v2.80 Player</b> mit Live-Oszilloskop, C&amp;C Hell March und Lo-Fi Remixes, automatischer <b>8-Bit Chiptune-Modus</b> gekoppelt an ASCII-3D, AST-Normalisierung für Switch-Angel-Tracks, Flexbox-Combat-UI-Fix, Master-Volume-Routing, Bereinigung von Großdateien, 209 von 209 Tests grün.</td>
-                <td>Integration heterogener Strudel-Tracks, Iframe-Docking ohne Viewport-Clipping, 100% Pass in Test-Suite.</td>
+                <td data-i18n-html="portal.study.r3.c">Standard-MIDI-Parser, Krumhansl Key-Finder, Stargate Theme × Switch Angel Remix, SongGen-Algorithmus, Koloniebau (<code>S.colonies</code>), Audio-Tanz, Gamepad-Rumble, Tastenbelegungs-Modal, <b>Winamp-Style SGC-AMP v2.80 Player</b> mit Live-Oszilloskop, C&amp;C Hell March und Lo-Fi Remixes, automatischer <b>8-Bit Chiptune-Modus</b> gekoppelt an ASCII-3D, AST-Normalisierung für Switch-Angel-Tracks, Flexbox-Combat-UI-Fix, Master-Volume-Routing, Bereinigung von Großdateien, 209 von 209 Tests grün.</td>
+                <td data-i18n-html="portal.study.r3.h">Integration heterogener Strudel-Tracks, Iframe-Docking ohne Viewport-Clipping, 100% Pass in Test-Suite.</td>
               </tr>
               <tr>
-                <td><b>Schicht 4</b></td>
+                <td><b data-i18n="portal.study.r4.s">Schicht 4</b></td>
                 <td><b>Claude Opus 5.5 Medium</b></td>
-                <td>Krankenstation (Ebene 21, Dr. Janet Fraiser &amp; Carolyn Lam), 5 Behandlungswege mit Heilungs-Loop, Downed-Evakuierung &amp; Notfallabzug, SGC-Inzidentsystem (<code>SGC_INCIDENTS</code>), SGC Tactical Level Editor.</td>
-                <td>Feature-Dichte unter geschlossenem Day-Loop; Test-Suite auf 209 Prüfungen erweitert.</td>
+                <td data-i18n-html="portal.study.r4.c">Krankenstation (Ebene 21, Dr. Janet Fraiser &amp; Carolyn Lam), 5 Behandlungswege mit Heilungs-Loop, Downed-Evakuierung &amp; Notfallabzug, SGC-Inzidentsystem (<code>SGC_INCIDENTS</code>), SGC Tactical Level Editor.</td>
+                <td data-i18n-html="portal.study.r4.h">Feature-Dichte unter geschlossenem Day-Loop; Test-Suite auf 209 Prüfungen erweitert.</td>
               </tr>
               <tr>
-                <td><b>Schicht 5</b> (Aktuell)</td>
-                <td><b>Qwen 3.8 27b</b> (Uni-gehostet via virtUOS Kiwi)</td>
-                <td>Studien-Revision (Paper in English), Authorship-Korrektur (obelisk.js → Max Huang / nosir), Versions- &amp; Test-Zahlen, finaler Release v0.29.</td>
-                <td>Authorship unter Modell-Identitäts-Ungewissheit (Studie, Abschnitt 6.1).</td>
+                <td><b data-i18n="portal.study.r5.s">Schicht 5 (Aktuell)</b></td>
+                <td data-i18n-html="portal.study.r5.model"><b>Qwen 3.8 27b</b> (Uni-gehostet via virtUOS Kiwi)</td>
+                <td data-i18n-html="portal.study.r5.c">Studien-Revision (Paper in English), Authorship-Korrektur (obelisk.js → Max Huang / nosir), Versions- &amp; Test-Zahlen, finaler Release v0.29.</td>
+                <td data-i18n-html="portal.study.r5.h">Authorship unter Modell-Identitäts-Ungewissheit (Studie, Abschnitt 6.1).</td>
               </tr>
             </tbody>
           </table>
 
-          <h2>2. Wichtigste mathematische &amp; algorithmische Innovationen</h2>
+          <h2 data-i18n="portal.study.h2.2">2. Wichtigste mathematische &amp; algorithmische Innovationen</h2>
           <div class="grid-2">
             <div class="card" style="margin-bottom:0">
-              <h3>📐 2:1 Isometrische Projektion &amp; Picking</h3>
-              <p>Umrechnung von Gitter- auf Bildschirmkoordinaten unter Einbezug von Höhensäulen (<code>baseZ</code> + <code>blockH</code>):</p>
-              <pre>x_screen = W/2 + (x - y) * (tw / 2)
+              <h3 data-i18n="portal.study.m1.h3">📐 2:1 Isometrische Projektion &amp; Picking</h3>
+              <p data-i18n-html="portal.study.m1.p">Umrechnung von Gitter- auf Bildschirmkoordinaten unter Einbezug von Höhensäulen (<code>baseZ</code> + <code>blockH</code>):</p>
+              <pre data-i18n-html="portal.study.m1.pre">x_screen = W/2 + (x - y) * (tw / 2)
 y_screen = H/2 + (x + y) * (th / 2) - z * tz</pre>
-              <p>Die analytische Rückprojektion (Ray-to-Diamond Picking) garantiert pixelgenaues Anklicken von Feldern und Einheiten selbst bei 90°-Kameradrehung (<code>Q</code>/<code>E</code>).</p>
+              <p data-i18n-html="portal.study.m1.note">Die analytische Rückprojektion (Ray-to-Diamond Picking) garantiert pixelgenaues Anklicken von Feldern und Einheiten selbst bei 90°-Kameradrehung (<code>Q</code>/<code>E</code>).</p>
             </div>
             <div class="card" style="margin-bottom:0">
-              <h3>🎼 Krumhansl-Schmuckler Tonarterkennung</h3>
-              <p>Deterministische Tonartbestimmung der Stargate-Main-Theme-MIDI-Datei durch Korrelation der Notendauern mit empirischen Dur/Moll-Gewichtungsprofilen:</p>
-              <pre>Key = argmax_{r, mode} sum_{i=0}^{11} hist[(i+r)%12] * Profile_mode[i]
+              <h3 data-i18n="portal.study.m2.h3">🎼 Krumhansl-Schmuckler Tonarterkennung</h3>
+              <p data-i18n-html="portal.study.m2.p">Deterministische Tonartbestimmung der Stargate-Main-Theme-MIDI-Datei durch Korrelation der Notendauern mit empirischen Dur/Moll-Gewichtungsprofilen:</p>
+              <pre data-i18n-html="portal.study.m2.pre">Key = argmax_{r, mode} sum_{i=0}^{11} hist[(i+r)%12] * Profile_mode[i]
 Ergebnis: G-Dur (Root 7), 165 BPM, 35 Takte, 1.380 Events</pre>
             </div>
           </div>
 
-          <h2>3. Wissenschaftliches Fazit</h2>
-          <p>Der Versuch belegt, dass deterministische Test-Harnische (<code>node test-browser.js</code> mit aktuell 209 Prüfungen) und strukturierte Übergabe-Dokumente (<code>HANDOFF.md</code>) die kritischen Erfolgsfaktoren für multi-modale LLM-Softwareprojekte darstellen. Da die selbstgemeldete Modell-Identität der Agenten bei Modellwechseln nicht unabhängig verifizierbar ist, bleibt die exakte Code-Authorship je Modell heuristisch (siehe Studie, Abschnitt 6.1). Durch die Zero-Dependency-Architektur bleibt das Projekt zu 100 % wartbar, quelloffen und ohne externe Abhängigkeitsrisiken lokal lauffähig.</p>
+          <h2 data-i18n="portal.study.h2.3">3. Wissenschaftliches Fazit</h2>
+          <p data-i18n-html="portal.study.conclusion">Der Versuch belegt, dass deterministische Test-Harnische (<code>node test-browser.js</code> mit aktuell 209 Prüfungen) und strukturierte Übergabe-Dokumente (<code>HANDOFF.md</code>) die kritischen Erfolgsfaktoren für multi-modale LLM-Softwareprojekte darstellen. Da die selbstgemeldete Modell-Identität der Agenten bei Modellwechseln nicht unabhängig verifizierbar ist, bleibt die exakte Code-Authorship je Modell heuristisch (siehe Studie, Abschnitt 6.1). Durch die Zero-Dependency-Architektur bleibt das Projekt zu 100 % wartbar, quelloffen und ohne externe Abhängigkeitsrisiken lokal lauffähig.</p>
         </div>
 
         <!-- SUBPANEL E: LEVEL EDITOR -->
         <div id="about-editor" class="about-subpanel">
           <h2>🗺️ SGC Tactical Level Editor (Toolchain)</h2>
-          <p>Ein vollwertiges, browserbasiertes Autorenwerkzeug zur Erstellung, visuellen Prüfung und dynamischen Skriptierung taktischer Gefechtskarten nach X-COM- und Jagged-Alliance-Prinzipien (Deckungs-Klassen, breite Boulevards, Flankenwege, Missions-Spawns und Beute-Caches).</p>
+          <p data-i18n="portal.editor.p">Ein vollwertiges, browserbasiertes Autorenwerkzeug zur Erstellung, visuellen Prüfung und dynamischen Skriptierung taktischer Gefechtskarten nach X-COM- und Jagged-Alliance-Prinzipien (Deckungs-Klassen, breite Boulevards, Flankenwege, Missions-Spawns und Beute-Caches).</p>
           <div style="background:#0d1522;border:1px solid var(--border);border-radius:6px;padding:20px;margin:16px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
             <div>
               <div style="font-weight:bold;font-size:15px;color:#fff;display:flex;align-items:center;gap:8px">
-                <span>📐 Dual-Mode: 2:1 Isometrie &amp; 2D-Raster</span>
+                <span data-i18n="portal.editor.dual">📐 Dual-Mode: 2:1 Isometrie &amp; 2D-Raster</span>
                 <span class="badge" style="background:#0284c7;color:#fff;font-size:11px;padding:2px 8px;border-radius:4px">Standalone Tool</span>
               </div>
-              <div style="color:var(--text-dim);font-size:13px;margin-top:6px;line-height:1.6">
+              <div style="color:var(--text-dim);font-size:13px;margin-top:6px;line-height:1.6" data-i18n-html="portal.editor.desc">
                 Unterstützt Pinsel-Malen, Flutfüllen, Höhenstufen (+1/-1 Z), Deckungs-Hierarchie (Halb-/Voll-Deckung), Stargate-Platzierung, taktische Beute-Kisten und sofortigen Export als <code>MAPS[]</code>-JavaScript-Array.
               </div>
             </div>
             <a href="tools/leveleditor.html" target="_blank" class="btn btn-primary" style="text-decoration:none;display:inline-flex;align-items:center;gap:8px;padding:10px 18px">
-              <span>🚀 Level-Editor im Vollbild öffnen</span>
+              <span data-i18n="portal.editor.open">🚀 Level-Editor im Vollbild öffnen</span>
             </a>
           </div>
         </div>
 
         <!-- SUBPANEL C: DOWNLOADS -->
         <div id="about-downloads" class="about-subpanel">
-          <h2>📦 Offline-Paket &amp; Download</h2>
-          <p>Lade das schlanke, bereinigte Release-Paket herunter. Vollständig offline lauffähig ohne Installation oder Node-Server.</p>
+          <h2 data-i18n="portal.dl.h2">📦 Offline-Paket &amp; Download</h2>
+          <p data-i18n="portal.dl.p">Lade das schlanke, bereinigte Release-Paket herunter. Vollständig offline lauffähig ohne Installation oder Node-Server.</p>
 
           <div style="background:#0d1522;border:1px solid var(--border);border-radius:6px;padding:20px;margin:16px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
             <div>
               <div style="font-size:16px;font-weight:bold;color:#fff">SGC-Command-v029.zip</div>
-              <div style="font-size:12px;color:var(--text-dim)">Schlankes Final-Release v0.29 · Studien-Revision (EN) · SGC-Krisen · Level-Editor · Dual-Gfx &amp; Doku</div>
+              <div style="font-size:12px;color:var(--text-dim)" data-i18n="portal.dl.meta">Schlankes Final-Release v0.29 · Studien-Revision (EN) · SGC-Krisen · Level-Editor · Dual-Gfx &amp; Doku</div>
             </div>
-            <a href="SGC-Command-v029.zip" class="btn btn-gold" download>⬇ Release ZIP Herunterladen</a>
+            <a href="SGC-Command-v029.zip" class="btn btn-gold" download data-i18n="portal.dl.btn">⬇ Release ZIP Herunterladen</a>
           </div>
 
-          <h3>Installation &amp; Schnellstart</h3>
+          <h3 data-i18n="portal.dl.h3">Installation &amp; Schnellstart</h3>
           <ol style="padding-left:20px;font-size:14px;color:#cbd5e1;line-height:1.8">
-            <li>ZIP-Archiv in ein beliebiges Verzeichnis entpacken.</li>
-            <li><code>index.html</code> (dieses Portal) oder <code>game/index.html</code> direkt im Browser per Doppelklick öffnen (kein lokaler Webserver nötig).</li>
-            <li>Optional: Lokale Tests mit <code>node test-browser.js</code> ausführen (benötigt lediglich Node.js ohne npm-Pakete).</li>
+            <li data-i18n="portal.dl.li1">ZIP-Archiv in ein beliebiges Verzeichnis entpacken.</li>
+            <li data-i18n-html="portal.dl.li2"><code>index.html</code> (dieses Portal) oder <code>game/index.html</code> direkt im Browser per Doppelklick öffnen (kein lokaler Webserver nötig).</li>
+            <li data-i18n-html="portal.dl.li3">Optional: Lokale Tests mit <code>node test-browser.js</code> ausführen (benötigt lediglich Node.js ohne npm-Pakete).</li>
           </ol>
         </div>
 
         <!-- SUBPANEL D: LICENSES & CREDITS -->
         <div id="about-license" class="about-subpanel">
-          <h2>⚖️ Lizenzen, Danksagungen &amp; Bildquellen</h2>
+          <h2 data-i18n="portal.lic.h2">⚖️ Lizenzen, Danksagungen &amp; Bildquellen</h2>
           
-          <h3>Projekt-Lizenz</h3>
-          <p>Das Projekt steht unter der <b>GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later)</b>. Dies garantiert, dass die originale <code>@strudel/web</code>-Engine und die Switch-Angel-Prebake-Bibliotheken in voller Lizenzkonformität betrieben werden können.</p>
+          <h3 data-i18n="portal.lic.h3.1">Projekt-Lizenz</h3>
+          <p data-i18n-html="portal.lic.p.1">Das Projekt steht unter der <b>GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later)</b>. Dies garantiert, dass die originale <code>@strudel/web</code>-Engine und die Switch-Angel-Prebake-Bibliotheken in voller Lizenzkonformität betrieben werden können.</p>
 
-          <h3>Danksagung: Switch Angel</h3>
-          <p>Ein besonderer Dank gilt der Live-Coderin <b>Switch Angel</b> für ihre visionären Strudel-Skripte und rhythmischen Pattern. Sämtliche eingebetteten Tracks dienen der Demonstration und Weiterentwicklung der algorithmischen Sound-Engine in einem universitären Forschungskontext.</p>
+          <h3 data-i18n="portal.lic.h3.2">Danksagung: Switch Angel</h3>
+          <p data-i18n-html="portal.lic.p.2">Ein besonderer Dank gilt der Live-Coderin <b>Switch Angel</b> für ihre visionären Strudel-Skripte und rhythmischen Pattern. Sämtliche eingebetteten Tracks dienen der Demonstration und Weiterentwicklung der algorithmischen Sound-Engine in einem universitären Forschungskontext.</p>
 
-          <h3>Gemeinfreie Weltraum-Bilder (NASA / Public Domain)</h3>
-          <p>Für künftige visuelle Erweiterungen (Abydos-Dünen, Exoplaneten, James Webb Deep Fields, Cassini-Eiswelten) wurden gemeinfreie Aufnahmen der NASA, des JPL und der ESA kuratiert. Details und Verlinkungen finden sich in <code>references/NASA-ASSETS.md</code>.</p>
+          <h3 data-i18n="portal.lic.h3.3">Gemeinfreie Weltraum-Bilder (NASA / Public Domain)</h3>
+          <p data-i18n-html="portal.lic.p.3">Für künftige visuelle Erweiterungen (Abydos-Dünen, Exoplaneten, James Webb Deep Fields, Cassini-Eiswelten) wurden gemeinfreie Aufnahmen der NASA, des JPL und der ESA kuratiert. Details und Verlinkungen finden sich in <code>references/NASA-ASSETS.md</code>.</p>
 
-          <h3>Open-Source-Komponenten</h3>
+          <h3 data-i18n="portal.lic.h3.4">Open-Source-Komponenten</h3>
           <ul style="padding-left:18px;font-size:13px;color:#cbd5e1;line-height:1.7">
-            <li><b>obelisk.js</b> – Isometrisches Pixel-Voxel Rendering (MIT Lizenz)</li>
-            <li><b>asciiid &amp; asciicker</b> – CP437 ASCII-3D Terrain- und Raytracing-Inspirationen (MIT Lizenz)</li>
-            <li><b>Strudel REPL &amp; Superdough</b> – Algorithmische Live-Synthese (AGPLv3)</li>
+            <li data-i18n-html="portal.lic.li1"><b>obelisk.js</b> – Isometrisches Pixel-Voxel Rendering (MIT Lizenz)</li>
+            <li data-i18n-html="portal.lic.li2"><b>asciiid &amp; asciicker</b> – CP437 ASCII-3D Terrain- und Raytracing-Inspirationen (MIT Lizenz)</li>
+            <li data-i18n-html="portal.lic.li3"><b>Strudel REPL &amp; Superdough</b> – Algorithmische Live-Synthese (AGPLv3)</li>
           </ul>
         </div>
       </div>
@@ -711,10 +712,12 @@ Ergebnis: G-Dur (Root 7), 165 BPM, 35 Takte, 1.380 Events</pre>
   </main>
 
   <footer>
-    <div>◎ STARGATE COMMAND · SGC COMMAND v0.27 · "Trotz Contentrot – Unautorisierte Toraktivierung"</div>
-    <div style="margin-top:4px">Entwickelt im autonomen Multi-Agenten-Pair-Programming (Gemini 4 Argon · Claude 5.5 · Gemini 3.8 Flash) · Lizenziert unter AGPL-3.0-or-later</div>
+    <div data-i18n="portal.footer.1">◎ STARGATE COMMAND · SGC COMMAND v0.29 · "Trotz Contentrot – Unautorisierte Toraktivierung"</div>
+    <div style="margin-top:4px" data-i18n="portal.footer.2">Entwickelt im autonomen Multi-Agenten-Pair-Programming (Gemini 4 Argon · Claude 5.5 · Gemini 3.8 Flash) · Lizenziert unter AGPL-3.0-or-later</div>
   </footer>
 
+  <script src="game/i18n.js"></script>
+  <script src="game/i18n-portal.js"></script>
   <script>
     function showTab(tabId) {
       document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
