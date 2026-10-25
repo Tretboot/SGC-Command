@@ -130,7 +130,7 @@
     'game.menu.sound': '🔊 Sound on/off',
     'game.menu.newgame': '⟲ New Game',
     'game.menu.reset': '⏏ Reset (without asking)',
-    'game.menu.foot': 'ESC = Menu · V = Pixel/ASCII · Q/E = Camera · TAB = Next Member'
+    'game.menu.foot': 'ESC = Menu · V = Pixel/ASCII · Q/E = Camera · TAB = Next Member',
      /* Krankenstation */
      'game.medbay.title': '🏥 Medbay · Level 21',
      'game.medbay.chief': 'CHIEF MEDICAL OFFICER DR. JANET FRAISER · CHEYENNE MOUNTAIN COMPLEX',
@@ -178,7 +178,7 @@
      'game.day.quiet': 'A quiet day at the Cheyenne Mountain Complex.',
      /* Stargate Events */
      'game.event.wormhole': '🌀 Incoming Wormhole: Unauthorized Gate Activation from Omega Sector!',
-     'game.event.tokra': '📡 Tok'ra Alert: Secret Message Transmitted Through the Stargate!',
+     'game.event.tokra': '📡 Tok’ra Alert: Secret Message Transmitted Through the Stargate!',
      'game.event.alarm': '⚠️ Gate Alarm: Chevron 5 Unlocked Without Authorization!',
      'game.event.pulse': '🌌 Stargate Pulse: Energy Anomaly Detected in Naquadah Core!',
      'game.event.contact': '🛸 Alien Contact: Unusual Signal from P3X-888!',
