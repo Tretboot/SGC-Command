@@ -938,6 +938,59 @@ for(const fn of loadFns){
   I18N._listeners.length=0;
 }
 
+// 33. Test SGC Research Engine, Laboratory Modal & Spoiler-Free Roster
+{
+  // Test getTech normalization
+  const g1 = getTech('G1');
+  assert(g1 && g1.id === 'G1' && g1.cost === 20 && g1.branch === 'g' && g1.prereq === null, 'getTech resolves G1 schema correctly');
+  assert(g1.name === 'Gate-Stabilisierer', 'getTech resolves German name');
+  
+  I18N.setLang('en');
+  const g1En = getTech('G1');
+  assert(g1En.name === 'Gate Stabilizer', 'getTech resolves English name in EN mode');
+  I18N.setLang('de');
+
+  // Test techAvailable prerequisite checking
+  S.research = { rp: 50, queue: null, done: [] };
+  assert(techAvailable('G1') === true, 'G1 available with no prereqs');
+  assert(techAvailable('G2') === false, 'G2 locked before G1 researched');
+
+  // Test setResearch
+  setResearch('G1');
+  assert(S.research.queue === 'G1', 'setResearch queues G1');
+
+  // Test endDay research completion
+  endDay();
+  assert(S.research.done.includes('G1'), 'endDay completes research when RP >= cost');
+  assert(S.research.queue === null, 'Research queue cleared after completion');
+  assert(techAvailable('G2') === true, 'G2 becomes available once G1 is done');
+
+  // Test Mission RP rewards in combat
+  C.mission = CHAPTERS[0].missions[0];
+  C.result = 'victory';
+  const prevRp = S.research.rp || 0;
+  S.chapter = 1;
+  applyCombatResult();
+  assert(S.research.rp > prevRp, 'Missions award research points (RP) upon victory');
+
+  // Test showResearchModal renders
+  showResearchModal();
+  const modalHtml = $('modal').innerHTML;
+  assert(modalHtml.includes('SGC FORSCHUNGSLABOR'), 'showResearchModal renders Level 19 Lab');
+  assert(modalHtml.includes('G2') && modalHtml.includes('Fast Dialing'), 'showResearchModal renders tech cards');
+
+  // Test unrecruited candidates hidden from Roster
+  renderRoster();
+  const rosterHtml = $('roster-body').innerHTML;
+  assert(!rosterHtml.includes('Kandidaten warten auf ihre Episode') && !rosterHtml.includes('Rekrutierungsbüro'), 'Unrecruited candidate spoilers hidden from roster');
+
+  // Test Winamp size persistence in localStorage
+  localStorage.setItem('sgc_winamp_size', JSON.stringify({ w: '580px', h: '420px' }));
+  showStrudelModal();
+  const winampEl = $('modal').innerHTML;
+  assert(winampEl.includes('width:580px'), 'Saved winamp size restored on open');
+}
+
 for(let i=0;i<5;i++){
   now+=16;
   const cb=rafCb; rafCb=null;

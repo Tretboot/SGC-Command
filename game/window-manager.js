@@ -54,9 +54,17 @@
     function up() { document.removeEventListener('pointermove', mv); document.removeEventListener('pointerup', up); }
     document.addEventListener('pointermove', mv); document.addEventListener('pointerup', up);
   });
-  /* Wenn das Modal neu gerendert wird, Verschiebung beibehalten */
+  /* Wenn das Modal neu gerendert wird, Verschiebung beibehalten & Resize merken */
   if (typeof MutationObserver !== 'undefined') new MutationObserver(function () {
     var b = document.querySelector('#modal > *'); if (b && (off.x || off.y)) b.style.transform = 'translate(' + off.x + 'px,' + off.y + 'px)';
+    if (b && b.classList.contains('winamp-chassis') && typeof ResizeObserver !== 'undefined' && !b._observed) {
+      b._observed = true;
+      new ResizeObserver(function () {
+        if (b.style.width || b.style.height) {
+          try { localStorage.setItem('sgc_winamp_size', JSON.stringify({ w: b.style.width, h: b.style.height })); } catch (e) { }
+        }
+      }).observe(b);
+    }
   }).observe(document.getElementById('modal') || document.body, { childList: true });
 
   /* ===================== PIANOROLL (Mini-Fenster) =====================
@@ -87,5 +95,6 @@
   /* Kurzbefehle für das Spiel / die Konsole */
   WM.openSliders = function () { WM.open('sliders', '🎚 Song-Slider · MIDI', function () { return (typeof SGC_SLIDERS !== 'undefined' ? SGC_SLIDERS.html() : '') + '<button class="small" onclick="SGC_SLIDERS.autoMap()">🎛 Auto-Map auf Knobs 1–8</button>'; }, { x: 40, y: 90, w: 380, h: 260 }); };
   WM.openDJ = function () { WM.open('dj', '🎚 DJ · Klangstil', function () { return SOUND_STYLES.html(); }, { x: 40, y: 370, w: 380, h: 210 }); };
+  WM.openResearch = function () { if (typeof showResearchModal === 'function') showResearchModal(); };
   globalThis.WM = WM; globalThis.PIANOROLL = PR;
 })();

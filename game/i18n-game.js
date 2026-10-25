@@ -44,6 +44,7 @@
   /* ---------- Statische Spiel-UI (game/index.html) ---------- */
   I18N.add('de', {
     'game.clipboard.title': 'Hammonds Klemmbrett & Büro (Personalübersicht)',
+    'game.research.header_title': 'SGC Labor & Forschung (Ebene 19)',
     'game.gfx.title': 'Grafikmodus wechseln: Pixel-Voxel / ASCII-3D / 2D (Taste V)',
     'game.strudel.title': 'Strudel Core Sound-Engine & Live-Coding',
     'game.help.title': 'Anleitung',
@@ -89,6 +90,7 @@
   });
   I18N.add('en', {
     'game.clipboard.title': 'Hammond\'s Clipboard & Office (Personnel Overview)',
+    'game.research.header_title': 'SGC Lab & Research (Level 19)',
     'game.gfx.title': 'Switch graphics mode: Pixel-Voxel / ASCII-3D / 2D (Key V)',
     'game.strudel.title': 'Strudel Core Sound Engine & Live-Coding',
     'game.help.title': 'Help',
@@ -222,12 +224,14 @@
     'game.dyn.rooms.hint': '(Klick = Innenansicht)',
     'game.dyn.room.staff': 'Personal {0}/{1}',
     'game.dyn.btn.medbay_open': '🏥 Krankenstation öffnen (Ebene 21)',
+    'game.dyn.btn.lab_open': '🔬 Labor & Forschung öffnen (Ebene 19)',
     'game.dyn.research': 'Forschung',
     'game.dyn.research.current': 'Aktuell: <b>{0}</b>',
     'game.dyn.research.none': 'Keine Forschung gewählt.',
     'game.dyn.branch.g': 'Gate-Netz',
     'game.dyn.branch.w': 'Waffentechnik',
     'game.dyn.branch.s': 'Schilde',
+    'game.dyn.branch.a': 'Antiker-Wissen',
     'game.dyn.memorial': 'Gedenktafel',
     'game.dyn.btn.funeral_play': '🕊 Trauermusik abspielen',
      'game.medbay.title': '🏥 Krankenstation · Ebene 21',
@@ -587,12 +591,14 @@
     'game.dyn.rooms.hint': '(click = interior view)',
     'game.dyn.room.staff': 'Staff {0}/{1}',
     'game.dyn.btn.medbay_open': '🏥 Open Medbay (Level 21)',
+    'game.dyn.btn.lab_open': '🔬 Open Research Lab (Level 19)',
     'game.dyn.research': 'Research',
     'game.dyn.research.current': 'Currently: <b>{0}</b>',
     'game.dyn.research.none': 'No research selected.',
     'game.dyn.branch.g': 'Gate Network',
     'game.dyn.branch.w': 'Weapon Tech',
     'game.dyn.branch.s': 'Shields',
+    'game.dyn.branch.a': 'Ancient Knowledge',
     'game.dyn.memorial': 'Memorial Plaque',
     'game.dyn.btn.funeral_play': '🕊 Play funeral music',
     /* Starmap */

@@ -136,6 +136,96 @@ function showClipboardModal(){
  m.innerHTML=h;
 }
 
+// ===================== SGC Forschungslabor (Ebene 19) =====================
+function showResearchModal(){
+ hideMenu();
+ const m=$('modal');if(!m)return;
+ const qTech=S.research&&S.research.queue?getTech(S.research.queue):null;
+ const rp=Math.floor((S.research&&S.research.rp)||0);
+
+ const branches=[
+  {id:'g',name:I18N.T('game.dyn.branch.g')||'Gate-Netz',icon:'🌀'},
+  {id:'w',name:I18N.T('game.dyn.branch.w')||'Waffentechnik',icon:'⚡'},
+  {id:'s',name:I18N.T('game.dyn.branch.s')||'Schilde',icon:'🛡'},
+  {id:'a',name:I18N.T('game.dyn.branch.a')||'Antiker-Wissen',icon:'🏛'}
+ ];
+
+ let h=`<div class="mbox research-box">
+  <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #38bdf8;padding-bottom:8px">
+   <div>
+    <h3 style="margin:0;color:#38bdf8">🔬 SGC FORSCHUNGSLABOR &amp; ASTROPHYSIK (EBENE 19)</h3>
+    <small style="color:#94a3b8">Leitung: Maj. Samantha Carter &amp; Dr. Daniel Jackson · Verfügbare Forschungspunkte: <b style="color:#38bdf8">${rp} RP</b></small>
+   </div>
+   <button class="winamp-btn" style="padding:4px 10px;background:#0c4a6e;border-color:#38bdf8;color:#fff" onclick="$('modal').style.display='none'">✕ ${I18N.T('game.dyn.btn.close')||'Schließen'}</button>
+  </div>
+  <div class="mbody" style="overflow-y:auto;padding-right:4px">
+   <div style="background:#0f172a;border-left:3px solid #38bdf8;padding:8px 12px;margin:6px 0;font-style:italic;color:#cbd5e1">
+    „Die Naquadah-Isotopenanalyse und Kristallmuster aus den letzten SG-Einsätzen liefern uns unschätzbare Daten. Mit jedem erfolgreichen Tor-Einsatz gewinnen wir neue Forschungspunkte (RP)!“
+   </div>
+
+   <div style="background:#082f49;border:1px solid #0284c7;border-radius:6px;padding:10px;margin:8px 0">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+     <b style="color:#e0f2fe">${I18N.T('game.dyn.research')}:</b>
+     ${qTech?`<button class="winamp-btn" style="background:#7f1d1d;border-color:#ef4444;color:#fecaca;padding:2px 8px;font-size:11px" onclick="act(setResearch(''));showResearchModal()">✕ Abbrechen</button>`:''}
+    </div>
+    ${qTech?`
+     <div style="margin-top:6px">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px">
+       <b style="color:#38bdf8">${qTech.id} · ${qTech.name}</b>
+       <span>${rp} / ${qTech.cost} RP (${Math.min(100,Math.floor(rp/qTech.cost*100))}%)</span>
+      </div>
+      <div style="background:#0b1320;height:12px;border-radius:6px;overflow:hidden;border:1px solid #0369a1">
+       <div style="background:linear-gradient(90deg,#0284c7,#38bdf8);height:100%;width:${Math.min(100,Math.floor(rp/qTech.cost*100))}%;transition:width .3s"></div>
+      </div>
+      <div style="font-size:12px;color:#cbd5e1;margin-top:4px">${qTech.desc}</div>
+     </div>
+    `:`<div style="color:#94a3b8;font-size:13px;margin-top:4px">${I18N.T('game.dyn.research.none')} Wähle unten ein Projekt aus dem Forschungsbaum!</div>`}
+   </div>
+
+   <div class="research-grid">
+    ${branches.map(b=>{
+      const bTechs=TECH.map(t=>getTech(t)).filter(t=>t&&t.branch===b.id);
+      return `
+       <div style="background:#071526;border:1px solid #1e293b;border-radius:6px;padding:8px">
+        <h4 style="margin:0 0 8px;color:#38bdf8;border-bottom:1px solid #1e293b;padding-bottom:4px;font-size:13px">${b.icon} ${b.name}</h4>
+        <div style="display:flex;flex-direction:column;gap:6px">
+         ${bTechs.map(t=>{
+           const done=S.research&&S.research.done&&S.research.done.includes(t.id);
+           const isQueue=S.research&&S.research.queue===t.id;
+           const av=techAvailable(t);
+           let statusBadge='';
+           if(done)statusBadge='<span style="color:#4ade80;font-weight:bold;font-size:11px">✔ Erforscht</span>';
+           else if(isQueue)statusBadge='<span style="color:#38bdf8;font-weight:bold;font-size:11px">⚙ Läuft...</span>';
+           else if(av)statusBadge=`<span style="color:#facc15;font-size:11px">${t.cost} RP</span>`;
+           else statusBadge=`<span style="color:#64748b;font-size:11px">🔒 Benötigt: ${t.prereq}</span>`;
+
+           return `
+            <div class="tech-card ${done?'done':''} ${isQueue?'active':''} ${(!av&&!done)?'locked':''}">
+             <div style="display:flex;justify-content:space-between;align-items:flex-start">
+              <b style="font-size:12px;color:${done?'#4ade80':isQueue?'#38bdf8':'#e2e8f0'}">${t.id} ${t.name}</b>
+              ${statusBadge}
+             </div>
+             <p style="font-size:11px;color:#94a3b8;margin:4px 0 6px">${t.desc}</p>
+             ${done?'':`
+              <button class="winamp-btn" style="width:100%;padding:3px;font-size:11px;${isQueue?'background:#0369a1;color:#fff':av?'background:#0f2b46;color:#38bdf8;border-color:#0284c7':'background:#1e293b;color:#475569'}" ${(!av&&!isQueue)?'disabled':''} onclick="act(setResearch('${isQueue?'':t.id}'));showResearchModal()">
+               ${isQueue?'Abbrechen':av?`Erforschen (${t.cost} RP)`:'Gesperrt'}
+              </button>
+             `}
+            </div>
+           `;
+         }).join('')}
+        </div>
+       </div>
+      `;
+    }).join('')}
+   </div>
+  </div>
+ </div>`;
+
+ m.style.display='flex';
+ m.innerHTML=h;
+}
+
 // ===================== SGC AMP v2.80 — Winamp Retro Audio Player =====================
 const WINAMP = {
   visMode: 'wave', // 'wave' | 'spectrum'
@@ -779,8 +869,12 @@ function showStrudelModal(){
     bdTune:115, bdDecay:0.24, hatDecay:0.08, tempoBpm:140
   };
 
+  let savedWinampSize = null;
+  try { savedWinampSize = JSON.parse(localStorage.getItem('sgc_winamp_size')); } catch(e){}
+  const winampSizeStyle = savedWinampSize && savedWinampSize.w ? `style="width:${savedWinampSize.w};${savedWinampSize.h ? 'height:'+savedWinampSize.h : ''}"` : '';
+
   m.style.display='flex';
-  m.innerHTML=`<div class="winamp-chassis">
+  m.innerHTML=`<div class="winamp-chassis" ${winampSizeStyle}>
     <!-- Window Titlebar -->
     <div class="winamp-titlebar">
       <span>📻 SGC-AMP v2.80 · STRUDEL CORE SOUND-ENGINE &amp; REBIRTH-338</span>
@@ -1147,17 +1241,24 @@ function renderBaseSide(){
    <b>${R.icon} ${R.name}</b> ${r.type!=='gate'?`<button class="small" style="float:right" onclick="event.stopPropagation();act(demolishRoom(${r.id}))">✕</button>`:''}
    <br><small>${I18N.T('game.dyn.room.staff',[staff.length,R.staff])} ${out?`· Output ${out}`:''}
    ${staff.length?'<br>'+staff.map(m=>`<span class="tag" style="background:#1a2535;color:#4fc3f7">${m.name.split(' ')[0]}</span>`).join(' '):''}</small>
-   ${r.type==='medbay'?`<button class="small" style="background:#134e4a;border-color:#2dd4bf;color:#ccfbf1;margin-top:6px;width:100%" onclick="event.stopPropagation();setTab('medbay')">${I18N.T('game.dyn.btn.medbay_open')}</button>`:''}</div>`;
+   ${r.type==='medbay'?`<button class="small" style="background:#134e4a;border-color:#2dd4bf;color:#ccfbf1;margin-top:6px;width:100%" onclick="event.stopPropagation();setTab('medbay')">${I18N.T('game.dyn.btn.medbay_open')}</button>`:''}
+    ${r.type==='lab'?`<button class="small" style="background:#0e7490;border-color:#38bdf8;color:#cffafe;margin-top:6px;width:100%" onclick="event.stopPropagation();showResearchModal()">${I18N.T('game.dyn.btn.lab_open')}</button>`:''}</div>`;
  }).join('');
- const q=S.research.queue&&TECH.find(t=>t[0]===S.research.queue);
- h+=`<h3>${I18N.T('game.dyn.research')}</h3><p>${q?`${I18N.T('game.dyn.research.current',[q[1]])} ${bar(S.research.rp/q[3]*100,'#4fc3f7')} ${Math.floor(S.research.rp)}/${q[3]}`:I18N.T('game.dyn.research.none')}</p><div class="tree">`;
- [['g',I18N.T('game.dyn.branch.g')],['w',I18N.T('game.dyn.branch.w')],['s',I18N.T('game.dyn.branch.s')]].forEach(([br,nm])=>{
-  h+=`<div><h4>${nm}</h4>`+TECH.filter(t=>t[4]===br).map(t=>{
-   const done=S.research.done.includes(t[0]),av=techAvailable(t);
-   return `<button class="tech ${done?'done':''} ${S.research.queue===t[0]?'on':''}" ${(!av&&!done)?'disabled':''} onclick="act(setResearch('${S.research.queue===t[0]?'':t[0]}'))"><b>${t[0]} ${t[1]}</b><br><small>${t[2]} · ${t[3]} RP</small></button>`;
-  }).join('')+'</div>';});
- h+='</div>';
- if(S.memorial.length){
+ const qTech = S.research && S.research.queue ? getTech(S.research.queue) : null;
+  h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+   <h3 style="margin:0">${I18N.T('game.dyn.research')}</h3>
+   <button class="small" style="background:#0e7490;border-color:#38bdf8;color:#cffafe" onclick="showResearchModal()">${I18N.T('game.dyn.btn.lab_open')}</button>
+  </div>
+  <p>${qTech?`${I18N.T('game.dyn.research.current',[qTech.name])} ${bar(S.research.rp/qTech.cost*100,'#38bdf8')} ${Math.floor(S.research.rp)}/${qTech.cost} RP`:I18N.T('game.dyn.research.none')}</p>
+  <div class="tree">`;
+  [['g',I18N.T('game.dyn.branch.g')||'Gate-Netz'],['w',I18N.T('game.dyn.branch.w')||'Waffentechnik'],['s',I18N.T('game.dyn.branch.s')||'Schilde'],['a',I18N.T('game.dyn.branch.a')||'Antiker-Wissen']].forEach(([br,nm])=>{
+   h+=`<div><h4>${nm}</h4>`+TECH.map(t=>getTech(t)).filter(t=>t&&t.branch===br).map(t=>{
+    const done=S.research&&S.research.done&&S.research.done.includes(t.id),av=techAvailable(t);
+    return `<button class="tech ${done?'done':''} ${S.research.queue===t.id?'on':''}" ${(!av&&!done)?'disabled':''} onclick="act(setResearch('${S.research.queue===t.id?'':t.id}'))"><b>${t.id} ${t.name}</b><br><small>${t.desc} · ${t.cost} RP</small></button>`;
+   }).join('')+'</div>';
+  });
+  h+='</div>';
+  if(S.memorial.length){
   h+=`<h3>${I18N.T('game.dyn.memorial')}</h3><div class="gbox" style="border-color:#ef4444">${S.memorial.map(n=>`<div>🕯 ${n}</div>`).join('')}<button class="btn small" style="margin-top:6px;width:100%;background:#3b1e2a;border-color:#f43f5e;color:#fecdd3" onclick="if(typeof SFX!=='undefined'&&SFX.playTrack)SFX.playTrack('theme_funeral');toast(I18N.T('game.dyn.toast.funeral'))">${I18N.T('game.dyn.btn.funeral_play')}</button></div>`;
  }
  $('base-side').innerHTML=h;
@@ -1605,15 +1706,7 @@ function renderRoster(){
    </div>
   </div></div>`;
  }).join('');
- const waiting=S.roster.filter(m=>!m.recruited);
- let waitHtml='';
- if(waiting.length){
-  waitHtml=`<div class="dim" style="grid-column:1/-1;margin-top:8px">${I18N.T('game.dyn.roster.waiting',[waiting.length])}</div>`+
-   waiting.map(m=>`<div class="rc dim" title="${m.talent}">${pic(m,'pt big')}<div class="ri">
-    <b>${m.name}</b> <small>${CLASS_DE[m.cls]} · ${I18N.T('game.dyn.roster.waiting.tag')}</small>
-    <small class="tal">${m.talent}</small></div></div>`).join('');
- }
- $('roster-body').innerHTML=topHtml+cardsHtml+waitHtml;
+ $('roster-body').innerHTML=topHtml+cardsHtml;
 }
 
 // ===================== Krankenstation (Ebene 21 / Dr. Janet Fraiser) =====================
@@ -2386,6 +2479,7 @@ function init(){
  if($('sound'))$('sound').onclick=toggleSound;
  if($('gfx-btn'))$('gfx-btn').onclick=cycleGfxMode;
  if($('clipboard-btn'))$('clipboard-btn').onclick=showClipboardModal;
+ if($('research-btn'))$('research-btn').onclick=showResearchModal;
  if($('strudel-btn'))$('strudel-btn').onclick=showStrudelModal;
 
  // Tastatursteuerung (inkl. Q/E für Iso-Rotation, V für Pixel/ASCII Toggle, TAB für nächstes Mitglied, freie Belegung)

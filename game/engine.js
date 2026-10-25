@@ -291,15 +291,21 @@ const CHAPTERS=[
  ]},
 ];
 
-// Tech-Tree
+// Tech-Tree (Gate, Waffen, Schilde, Antiker/Alien-Wissen)
 const TECH=[
  ['G1','Gate-Stabilisierer','Extraktion-Beute +10%','Gate Stabilizer','Extraction loot +10%',20,'g',null],
  ['G2','Fast Dialing','+1 Dial-Kapazität','Fast Dialing','+1 dial capacity',25,'g','G1'],
+ ['G3','Subraum-Puffer','Verringert Erkundungsrisiko um 15%','Subspace Buffer','Reduces exploration threat by 15%',40,'g','G2'],
  ['W1','Stunner','+5 Morale nach Sieg','Stunner','+5 morale after victory',20,'w',null],
  ['W2','Zat',"+20% Schaden vs Goa'uld/Replikatoren",'Zat',"+20% damage vs Goa'uld/replicators",30,'w','W1'],
  ['W3','Shielded Weapons','+10% Schaden','Shielded Weapons','+10% damage',45,'w','W2'],
+ ['W4','Trinium-Munition','+15% Panzerdurchschlagskraft','Trinium Munitions','+15% armor piercing damage',55,'w','W3'],
  ['S1','Personal Shields','−20% Schaden erlitten','Personal Shields','−20% damage taken',25,'s',null],
  ['S2','Team Shield','+25% max HP','Team Shield','+25% max HP',45,'s','S1'],
+ ['S3','Naquadah-Legierung','+15% Basis-Integrität & Abwehr','Naquadah Alloy','+15% base integrity & defense',50,'s','S2'],
+ ['A1','Kristall-Datenbank','+30% schnellere Forschungspunkte (RP)','Crystal Database','+30% faster research point gain',30,'a',null],
+ ['A2','Antike Heilmatrix','+50% Heilungsrate in der Krankenstation','Ancient Healing Matrix','+50% healing rate in Infirmary',45,'a','A1'],
+ ['A3','ZPM-Interface','Maximale Energie-Effizienz (+25 permanente Energie)','ZPM Interface','Maximum energy efficiency (+25 permanent power)',65,'a','A2'],
 ];
 
 // Basis-Events (Bürokratie-Humor)
@@ -719,8 +725,16 @@ function endDay(){
   S.res.ore+=ore;
   if(rp||ore||heal||xp)S.rlog.push(`🏗 Produktion: 🔬+${rp} · ⛏+${ore} · ✚${heal} · 🎓${xp}`);
   S.rlog.push(`📦 Passive Versorgung: ⛏+50 · ⚙+15 · ✚+10 · 🍞+15`);
-  const q=S.research.queue&&TECH.find(t=>t[0]===S.research.queue);
-  if(q&&S.research.rp>=q[3]){S.research.rp-=q[3];S.research.done.push(q[0]);S.research.queue=null;note(`🔬 Forschung abgeschlossen: ${q[1]}`);S.rlog.push(`🔬 Forschung abgeschlossen: ${q[1]}`);}
+  const qId=S.research.queue;
+  const qTech=qId&&getTech(qId);
+  if(qTech&&S.research.rp>=qTech.cost){
+    S.research.rp-=qTech.cost;
+    S.research.done.push(qTech.id);
+    S.research.queue=null;
+    const msg=`🔬 Forschung abgeschlossen: ${qTech.name}`;
+    note(msg);
+    S.rlog.push(msg);
+  }
   // Passive Income
   S.res.ore+=50;S.res.tech+=15;S.res.medicine+=10;S.res.food+=15;
   // Kolonien: Tägliche Produktion & Verteidigungscheck
@@ -846,9 +860,46 @@ function demolishRoom(roomId){
   note('Raum abgerissen.');
   return R(true);
 }
-function setResearch(id){S.research.queue=id||null;return R(true);}
-function techAvailable(t){return !S.research.done.includes(t[0])&&(!t[5]||S.research.done.includes(t[5]));}
-function has(t){return S.research.done.includes(t);}
+function getTech(tOrId){
+  if(!tOrId) return null;
+  const t = typeof tOrId === 'string' ? TECH.find(x => x[0] === tOrId) : tOrId;
+  if(!t) return null;
+  const isEn = typeof I18N !== 'undefined' && I18N.lang === 'en';
+  const hasEn = t.length >= 8;
+  const cost = hasEn ? t[5] : t[3];
+  const branch = hasEn ? t[6] : t[4];
+  const prereq = hasEn ? t[7] : t[5];
+  const name = (isEn && hasEn && t[3]) ? t[3] : t[1];
+  const desc = (isEn && hasEn && t[4]) ? t[4] : t[2];
+  return {
+    id: t[0],
+    name,
+    desc,
+    cost,
+    branch,
+    prereq,
+    raw: t
+  };
+}
+
+function setResearch(id){
+  if(!id){ S.research.queue=null; return R(true); }
+  const tech = getTech(id);
+  if(!tech) return R(false, 'Technologie nicht gefunden.');
+  if(!techAvailable(tech)) return R(false, 'Voraussetzungen nicht erfüllt.');
+  S.research.queue = tech.id;
+  note(`🔬 Forschung gestartet: ${tech.name} (${tech.cost} RP)`);
+  return R(true, `${tech.name} wird erforscht.`);
+}
+
+function techAvailable(tOrId){
+  const tech = getTech(tOrId);
+  if(!tech || !S.research || !S.research.done) return false;
+  if(S.research.done.includes(tech.id)) return false;
+  return !tech.prereq || S.research.done.includes(tech.prereq);
+}
+
+function has(t){return S.research && S.research.done && S.research.done.includes(t);}
 // Schwierigkeit: aktuelle Stufe + Setter (gilt ab der nächsten Mission)
 function diff(){return DIFFICULTY[S.difficulty]||DIFFICULTY.normal;}
 function setDifficulty(d){if(!DIFFICULTY[d])return R(false,'Unbekannte Schwierigkeit.');

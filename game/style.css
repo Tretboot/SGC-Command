@@ -143,11 +143,15 @@ a{color:#4fc3f7}
   box-shadow:0 12px 40px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.15);
   font-family:'Courier New', monospace;
   color:#a3e635;
-  width:100%;
-  max-width:860px;
+  width:min(660px, 92vw);
+  max-width:92vw;
+  min-width:420px;
+  min-height:360px;
   max-height:94vh;
-  overflow-y:auto;
+  resize:both;
+  overflow:auto;
   user-select:none;
+  box-sizing:border-box;
 }
 .winamp-titlebar{
   background:linear-gradient(90deg,#0e4b85,#1a73e8,#0e4b85);
@@ -618,3 +622,13 @@ a{color:#4fc3f7}
 .sgc-slrow label{color:#93c5fd;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sgc-muted{color:#64748b;font-size:11px;margin:6px 0}
 #modal>*>:first-child{cursor:move}
+
+/* v0.35: SGC Forschungslabor & Astrophysik (Ebene 19) */
+.research-box{width:min(920px,95vw);max-height:88vh;border-color:#38bdf8;background:radial-gradient(ellipse at top,#0c233c,#0a101d 70%)}
+.research-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:8px}
+.tech-card{background:#111c2e;border:1px solid #1e293b;border-radius:6px;padding:8px;display:flex;flex-direction:column;justify-content:space-between;transition:all .15s}
+.tech-card:hover{border-color:#38bdf8}
+.tech-card.active{border-color:#38bdf8;box-shadow:0 0 10px rgba(56,189,248,.3);background:#0c2a47}
+.tech-card.done{border-color:#4ade80;background:#062319;opacity:.9}
+.tech-card.locked{opacity:.45}
+

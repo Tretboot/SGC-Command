@@ -900,7 +900,10 @@ function applyCombatResult(){
       S.done.push(m.id);
       advanceQuests(m.id);
       for(const k in m.reward)S.res[k]=(S.res[k]||0)+Math.round(m.reward[k]*lootPct);
-      logNote(full?`✔ ${m.name}: ${m.text}`:`🌀 ${m.name}: Extraktion (${Math.round(lootPct*100)}% Beute).`);
+      const rpReward = Math.round((12 + S.chapter * 6) * lootPct);
+      if(!S.research) S.research = { rp: 0, queue: null, done: [] };
+      S.research.rp = (S.research.rp || 0) + rpReward;
+      logNote(full?`✔ ${m.name}: ${m.text} (+${rpReward} RP)`:`🌀 ${m.name}: Extraktion (${Math.round(lootPct*100)}% Beute, +${rpReward} RP).`);
       teamUnits.forEach(u=>{const m=S.roster[u.charId];if(m&&!m.dead)m.xp+=Math.round((20+S.chapter*5)*(full?1:0.5));});
       // Beute-Drops fürs Inventar (INVENTAR-SPEC.md §9)
       const defeated=Object.values(C.units).filter(u=>u.side==='enemy'&&u.dead).length;
