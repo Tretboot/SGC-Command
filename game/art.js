@@ -385,50 +385,7 @@ function drawGateroom(cv,now,state){
   c.fillText('▶ Klick / Leertaste / ESC: Überspringen',W-290,26);
  }
 }
-// ===================== Sternenkarte =====================
+// ===================== Sternenkarte (Datenbasis, Rendering in ui.js / gl3d.js) =====================
 const STARS=Array.from({length:140},(_,i)=>({x:(i*127.1%960),y:(i*311.7%540),r:0.5+(i*7%10)/9,p:i}));
 const MAP={nodes:[],sel:null};
 const GCOL={stable:'#4ade80',degrading:'#facc15',unstable:'#fb923c',destroyed:'#ef4444',dormant:'#6b7280'};
-function nodeColor(id){const ps=S.planets[id],P=PLANETS[id];if(!ps.disc)return '#4a5568';
- if(P.sgc)return '#4fc3f7';if(ps.gate)return ps.gate.dormant?GCOL.dormant:GCOL[ps.gate.status];return '#a78bfa';}
-function drawMap(cv,now){
- const c=cv.getContext('2d'),W=cv.width,Ht=cv.height;
- let g=c.createRadialGradient(W/2,Ht/2,50,W/2,Ht/2,W*.7);g.addColorStop(0,'#101a2e');g.addColorStop(1,'#04060b');c.fillStyle=g;c.fillRect(0,0,W,Ht);
- [[220,140,'#3b1d6e'],[640,360,'#0e3a55'],[820,150,'#5a1a2a']].forEach(([x,y,col])=>{const n=c.createRadialGradient(x,y,0,x,y,220);n.addColorStop(0,col+'66');n.addColorStop(1,col+'00');c.fillStyle=n;c.fillRect(x-220,y-220,440,440);});
- STARS.forEach(s=>{c.fillStyle=`rgba(255,255,255,${.35+.35*Math.sin(now/900+s.p)})`;c.fillRect(s.x,s.y,s.r,s.r);});
- c.strokeStyle='rgba(79,195,247,.07)';c.lineWidth=1;for(let x=0;x<W;x+=60){c.beginPath();c.moveTo(x,0);c.lineTo(x,Ht);c.stroke();}for(let y=0;y<Ht;y+=60){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke();}
- MAP.nodes=[];const sgc=PLANETS.sgc;
- const vis=id=>PLANETS[id].ch<=S.chapter;
- // Verbindungen
- for(const id in PLANETS){if(!vis(id))continue;const P=PLANETS[id],ps=S.planets[id];if(P.sgc)continue;
-  const from=P.parent?PLANETS[P.parent]:sgc;
-  if(!ps.disc){c.setLineDash([3,7]);c.strokeStyle='rgba(120,140,170,.25)';}
-  else if(P.parent){c.setLineDash([6,5]);c.strokeStyle='rgba(167,139,250,.5)';}
-  else{c.setLineDash([]);const col=nodeColor(id);c.strokeStyle=col;c.globalAlpha=.35+.25*Math.sin(now/500);}
-  if(!ps.disc&&!P.parent){c.beginPath();c.moveTo(sgc.x,sgc.y);c.lineTo(P.x,P.y);c.stroke();}
-  else{c.beginPath();c.moveTo(from.x,from.y);c.lineTo(P.x,P.y);c.stroke();}
-  c.globalAlpha=1;c.setLineDash([]);}
- // Knoten
- for(const id in PLANETS){if(!vis(id))continue;const P=PLANETS[id],ps=S.planets[id],col=nodeColor(id);
-  const r=P.sgc?20:ps.disc?14:11;MAP.nodes.push({id,x:P.x,y:P.y,r:r+8});
-  if(S.manual[id]||S.probes[id]){c.strokeStyle='#e8b040';c.lineWidth=2;c.beginPath();c.arc(P.x,P.y,r+9+2*Math.sin(now/200),0,7);c.stroke();}
-  if(MAP.sel===id){c.strokeStyle='#fff';c.lineWidth=2;c.setLineDash([4,3]);c.beginPath();c.arc(P.x,P.y,r+14,0,7);c.stroke();c.setLineDash([]);}
-  const gl=c.createRadialGradient(P.x,P.y,2,P.x,P.y,r*2.4);gl.addColorStop(0,col+'88');gl.addColorStop(1,col+'00');c.fillStyle=gl;c.beginPath();c.arc(P.x,P.y,r*2.4,0,7);c.fill();
-  if(!ps.disc){c.fillStyle='#1b2433';c.strokeStyle='#5a6a80';c.lineWidth=2;c.setLineDash([3,3]);c.beginPath();c.arc(P.x,P.y,r,0,7);c.fill();c.stroke();c.setLineDash([]);
-   c.fillStyle='#8a9ab0';c.font='bold 16px sans-serif';c.textAlign='center';c.fillText('?',P.x,P.y+6);}
-  else if(P.sgc){c.fillStyle='#0f2a3f';c.strokeStyle=col;c.lineWidth=3;c.beginPath();c.arc(P.x,P.y,r,0,7);c.fill();c.stroke();
-   c.beginPath();c.arc(P.x,P.y,r-8,0,7);c.stroke();c.fillStyle=col;for(let i=0;i<7;i++){const a=i/7*6.28;c.fillRect(P.x+Math.cos(a)*(r-3)-1,P.y+Math.sin(a)*(r-3)-1,3,3);}}
-  else if(P.type==='space'){c.fillStyle='#241a40';c.strokeStyle=col;c.lineWidth=2;c.beginPath();c.moveTo(P.x,P.y-r);c.lineTo(P.x+r,P.y+r*.7);c.lineTo(P.x-r,P.y+r*.7);c.closePath();c.fill();c.stroke();}
-  else{const pg=c.createRadialGradient(P.x-4,P.y-4,2,P.x,P.y,r);const base=P.type==='hostile'?'#7a2a2a':P.type==='empty'?'#2a5a4a':P.type==='allied'?'#2a4a7a':'#4a5a3a';
-   pg.addColorStop(0,shade(base,50));pg.addColorStop(1,base);c.fillStyle=pg;c.beginPath();c.arc(P.x,P.y,r,0,7);c.fill();c.strokeStyle=col;c.lineWidth=2;c.stroke();
-   if(ps.gate&&!ps.gate.dormant&&ps.gate.status!=='destroyed'){const f=Math.min(1,ps.gate.neglect/neglectThr());c.strokeStyle=f>0.7?'#ef4444':'#e8b040';c.lineWidth=3;c.beginPath();c.arc(P.x,P.y,r+4,-Math.PI/2,-Math.PI/2+f*6.283);c.stroke();}
-   if(S.alpha.includes(id)){c.fillStyle='#4fc3f7';c.fillRect(P.x+r-2,P.y-r-6,8,8);}}
-  // Missionsmarker
-  if(ps.disc&&openMissions().some(o=>o.m.planet===id)){c.fillStyle='#f2c230';c.font='bold 18px sans-serif';c.textAlign='center';c.fillText('!',P.x+r+6,P.y-r+4+Math.sin(now/250)*2);}
-  c.fillStyle=ps.disc?'#d6e4f0':'#6b7a90';c.font='12px sans-serif';c.textAlign='center';c.fillText(ps.disc?P.name:'Unbekannt',P.x,P.y+r+18);
-  if(ps.disc&&ps.gate&&ps.gate.degr>0){c.fillStyle='#ef4444';c.fillRect(P.x-16,P.y+r+22,32*ps.gate.degr/100,3);}
- }
- c.textAlign='left';
- c.fillStyle='rgba(6,10,16,.7)';c.fillRect(8,Ht-58,232,50);c.font='11px sans-serif';
- [['stable','stabil'],['degrading','verfällt'],['unstable','instabil'],['destroyed','zerstört'],['dormant','Schlafmodus']].forEach(([k,l],i)=>{c.fillStyle=GCOL[k];c.fillRect(14+(i%3)*76,Ht-50+Math.floor(i/3)*18,8,8);c.fillStyle='#b8c6d6';c.fillText(l,26+(i%3)*76,Ht-42+Math.floor(i/3)*18);});
-}
