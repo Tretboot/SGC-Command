@@ -95,6 +95,8 @@ const files=[
   'i18n.js',
   'i18n-portal.js',
   'i18n-game.js',
+  'i18n-game-extra.js',
+  'i18n-languages.js',
   'switch-angel.js',
   'midi-data.js',
   'sound.js',
@@ -107,6 +109,7 @@ const files=[
   '../content/scenes.js',
   'engine.js',
   'iso.js',
+  'gl3d.js',
   'combat.js',
   'base.js',
   'cinematic.js',
@@ -514,7 +517,7 @@ for(const fn of loadFns){
   // Verify Winamp Theme Tab lists all themes including Outro
   const themeList = getWinampTracksForTab('theme');
   assert(themeList.includes('theme_outro') && themeList.includes('theme_atlantis'), 'Winamp Theme playlist tab contains Outro and Atlantis themes');
-  assert(themeList.length === 15, 'Winamp Theme playlist tab contains all 15 Stargate tracks');
+  assert(themeList.length === 18, 'Winamp Theme playlist tab contains all 18 Stargate tracks');
 
   // Verify Track Unlocking Progression
   unlockTrack('theme_asgard');
@@ -1187,6 +1190,221 @@ for(const fn of loadFns){
   toggleCombatAudio();
   assert(SFX.muted === !wasMuted, 'toggleCombatAudio toggles SFX.muted state');
   toggleCombatAudio(); // restore
+
+  // F: Gemini 4 Argon Pass – Cheyenne Mountain Portal, 3D-WebGL Layer, Jukebox Progression & Zoom Minimap
+  assert(typeof _drawRazorWireFence === 'function' && typeof _drawMountainPine === 'function', 'Cheyenne Mountain surface tunnel & razor-wire routines registered');
+  assert(typeof GL3D !== 'undefined' && typeof GL3D.renderCombat === 'function' && typeof GL3D.renderStarMap === 'function', 'Zero-Dependency GL3D 3D-WebGL engine loaded');
+  setGfxMode('webgl3d');
+  assert(getGfxMode() === 'webgl3d', 'setGfxMode switches to 3D-WebGL mode (webgl3d)');
+  renderBase($('base-cv'));
+  drawMap($('map-cv'), performance.now());
+  assert(MAP.nodes.length > 0, 'GL3D.renderStarMap projects 3D holographic planet nodes for interactive picking');
+  startCombat(CHAPTERS[0].missions[0], [0, 1, 2, 3]);
+  renderCombat($('combat-cv'));
+  assert(ISO.lastHitMap.length > 0, 'GL3D.renderCombat populates 3D perspective hit-map for tactical tile picking');
+
+  // Zoom UI & Minimap Zoom-Scaling
+  resetIsoZoom();
+  assert(ISO.zoom === 1.0, 'resetIsoZoom resets camera zoom to 100% (1.0)');
+  drawCombatMinimap();
+  const rect100 = Object.assign({}, C.minimapViewRect);
+  zoomIsoCamera(0.3);
+  assert(ISO.zoom > 1.0, 'zoomIsoCamera(0.3) increases zoom level');
+  drawCombatMinimap();
+  const rectZoomed = Object.assign({}, C.minimapViewRect);
+  assert(rectZoomed.w < rect100.w && rectZoomed.h < rect100.h, 'Minimap viewport rectangle scales down proportionally when zoomed in');
+  resetIsoZoom();
+  setGfxMode('pixel');
+  C.active = false;
+
+  // Jukebox Progression: Locked tracks hidden until unlocked
+  WINAMP.tab = 'theme';
+  WINAMP.searchQuery = '';
+  S.unlockedTracks = ['theme_fanfare', 'theme_remix_0'];
+  const unlockedThemesBefore = getWinampTracksForTab('theme', '', true);
+  assert(!unlockedThemesBefore.includes('theme_remix_foothold'), 'Locked track theme_remix_foothold is hidden in filtered playlist before discovery');
+  const playlistHtmlBefore = renderWinampPlaylistHTML('theme_fanfare');
+  assert(!playlistHtmlBefore.includes('data-track="theme_remix_foothold"'), 'Winamp playlist DOM hides locked tracks until discovered');
+  unlockTrack('theme_remix_foothold');
+  const playlistHtmlAfter = renderWinampPlaylistHTML('theme_fanfare');
+  assert(playlistHtmlAfter.includes('data-track="theme_remix_foothold"'), 'Winamp playlist DOM reveals track immediately after unlockTrack()');
+
+  // G: Regression Tests for User Screenshot 1 (Uncovered 2x2 Gate Room) & Screenshot 2 (Strudel [mini] parse error guard)
+  {
+    const drawOrder = [];
+    const origArch = drawLevelArchitecture;
+    const origBuilt = drawBuiltRoom;
+    drawLevelArchitecture = function(c, screenY, level) {
+      drawOrder.push('arch_' + level);
+      return origArch(c, screenY, level);
+    };
+    drawBuiltRoom = function(c, r) {
+      drawOrder.push('room_' + r.type);
+      return origBuilt(c, r);
+    };
+    ensureGateLayout(S.base);
+    setGfxMode('pixel');
+    renderBase($('base-cv'));
+    drawLevelArchitecture = origArch;
+    drawBuiltRoom = origBuilt;
+    const lastArchIdx = drawOrder.lastIndexOf('arch_28');
+    const gateRoomIdx = drawOrder.indexOf('room_gate');
+    assert(lastArchIdx >= 0 && gateRoomIdx > lastArchIdx, 'renderBase draws 2x2 Gate Room AFTER all 28 level corridors so L27/L28 never cover the Stargate');
+
+    // Simulate Strudel's global window.strudel.note mini-notation parser throwing on emojis ("🎵")
+    let strudelCalledWithEmoji = false;
+    window.strudel = {
+      note: (arg) => {
+        if (/[^\x00-\x7F]/.test(String(arg))) {
+          strudelCalledWithEmoji = true;
+          throw new Error('[mini] parse error at line 1: Expected "<", "[", but "🎵" found.');
+        }
+        return { _mockMini: arg };
+      }
+    };
+    let noteErr = null;
+    try {
+      note('🎵 Neuer Soundtrack im SGC-AMP freigeschaltet: Gate Room Ambient');
+    } catch (e) {
+      noteErr = e;
+    }
+    assert(noteErr === null && !strudelCalledWithEmoji && S.log[0].includes('🎵 Neuer Soundtrack'), 'note("🎵 ...") routes to gameNote log and never triggers Strudel [mini] parse error');
+    delete window.strudel;
+
+    // Extended Zoom Range (0.50 .. 2.25) & 2D Top-Down Zoom Picking
+    resetIsoZoom();
+    zoomIsoCamera(-1.0);
+    assert(ISO.zoom === 0.50, 'zoomIsoCamera clamps minimum zoom to 50% (0.50)');
+    zoomIsoCamera(3.0);
+    assert(ISO.zoom === 2.25, 'zoomIsoCamera allows zooming in up to 225% (2.25)');
+    setGfxMode('topdown');
+    C.active = true;
+    C.cameraX = 2;
+    C.cameraY = 3;
+    const centerTile = isoScreenToTile(360, 260, 720, 520);
+    resetIsoZoom();
+    const centerTile100 = isoScreenToTile(360, 260, 720, 520);
+    assert(centerTile.x === centerTile100.x && centerTile.y === centerTile100.y, '2D Top-Down zoom scales around viewport center and preserves center tile picking');
+    setGfxMode('pixel');
+    C.active = false;
+
+    // H: 9 Global Languages (DE, EN, ES, ZH, JA, RU, FR, PT, AR) & 3D Base/Colony Fixes
+    assert(typeof I18N_LANGUAGES === 'object' && getImplementedLanguages().length === 9, 'All 9 planned Stargate languages (DE, EN, ES, ZH, JA, RU, FR, PT, AR) are implemented');
+    for (const lg of ['es', 'fr', 'zh', 'ja', 'ru', 'pt', 'ar']) {
+      assert(I18N.missing(lg).length === 0, 'Language pack "' + lg + '" has 100% key coverage (0 missing keys)');
+    }
+    I18N.setLang('es');
+    assert(I18N.T('game.nav.map').includes('Mapa Estelar'), 'Spanish (es) translation resolves game.nav.map');
+    I18N.setLang('fr');
+    assert(I18N.T('game.nav.map').includes('Carte Stellaire'), 'French (fr) translation resolves game.nav.map');
+    I18N.setLang('ja');
+    assert(I18N.T('game.nav.base').includes('基地'), 'Japanese (ja) translation resolves game.nav.base');
+    I18N.setLang('de');
+
+    // Verify GL3D.renderBase draws SGC Command Rooms (Walter, Briefing, Hammond, MALP) on L27/L28
+    let sgcCmdRoomsDrawn = false;
+    const origCmdRooms = drawSgcCommandRooms;
+    drawSgcCommandRooms = function(c, now) {
+      sgcCmdRoomsDrawn = true;
+      return origCmdRooms(c, now);
+    };
+    setGfxMode('webgl3d');
+    renderBase($('base-cv'));
+    drawSgcCommandRooms = origCmdRooms;
+    assert(sgcCmdRoomsDrawn === true, 'GL3D.renderBase renders L27/L28 SGC Command Rooms (Kontrollraum Walter, Besprechung SG-1, Büro Hammond, MALP)');
+
+    // Verify GL3D.renderColony renders true 3D colony grid & populates 30 sector hitmap entries
+    COLONY_ISO.lastHitMap = [];
+    renderColonyCanvas($('colony-cv'), 'abydos');
+    assert(COLONY_ISO.lastHitMap.length === 30, 'GL3D.renderColony projects all 30 planetary sectors (6x5) with 3D Stargate on (2,2)');
+    setGfxMode('pixel');
+
+    // I: v0.37 Final Polish Pass – Codevault Discovery, SGC Core Songs, Armory/Workshop/Storage Window,
+    //    55 Planets & Playable Patrol Missions, Medbay Localization, Single-Click doDay(), Hex Zoom & 3D Orbit/Gate Intro
+    vm.runInThisContext(fs.readFileSync(path.join(__dirname, 'game', 'music-progress.js'), 'utf8'), { filename: 'music-progress.js' });
+    vm.runInThisContext(fs.readFileSync(path.join(__dirname, 'game', 'hex.js'), 'utf8'), { filename: 'hex.js' });
+    vm.runInThisContext(fs.readFileSync(path.join(__dirname, 'game', 'hex-render.js'), 'utf8'), { filename: 'hex-render.js' });
+
+    // 1. Codevault (sa_*) tracks hidden at game start and unlocked via planet exploration
+    newGame();
+    const saUnlockedStart = getWinampTracksForTab('sa', '', true);
+    assert(saUnlockedStart.length === 0, 'Codevault (sa_*) tracks are hidden on Day 1 until discovered (got ' + saUnlockedStart.length + ')');
+    discover('abydos');
+    const saUnlockedAfterAbydos = getWinampTracksForTab('sa', '', true);
+    assert(saUnlockedAfterAbydos.length >= 1, 'Exploring Abydos unlocks Codevault track dynamically (got ' + saUnlockedAfterAbydos.join(', ') + ')');
+
+    // 2. SGC Core new tracks (armory, cheyenne) & boosted gain
+    assert(typeof STRUDEL_TRACKS.armory !== 'undefined' && typeof STRUDEL_TRACKS.cheyenne !== 'undefined', 'New SGC Core songs (armory & cheyenne) registered in STRUDEL_TRACKS');
+    const coreTracks = getWinampTracksForTab('core', '', true);
+    assert(coreTracks.includes('armory') && coreTracks.includes('cheyenne'), 'New SGC Core songs are available in the SGC Core playlist tab');
+
+    // 3. Dedicated Armory, Workshop & Storage Window + Storage Room in Base
+    const storageRoom = Object.values(S.base.rooms).find(r => r.type === 'storage');
+    assert(storageRoom && storageRoom.y === (BASE_LEVELS - 4), 'SGC Main Storage (Hauptlager) room exists on Level 4 from game start');
+    showArmoryModal('workshop');
+    assert(els['modal'].style.display === 'flex' && els['modal'].innerHTML.includes('armory-modal-cv'), 'showArmoryModal("workshop") opens dedicated Workshop/Armory/Storage window with live room canvas');
+    showArmoryModal('storage');
+    assert(els['modal'].innerHTML.includes('Hauptlager') || els['modal'].innerHTML.includes('Main Storage'), 'showArmoryModal("storage") switches to Storage Depot view');
+    closeArmoryModal();
+
+    // 4. Medbay & UI Localization in non-German languages (EN / ES)
+    I18N.setLang('en');
+    renderMedbayView();
+    assert(els['medbay-body'].innerHTML.includes('SGC INFIRMARY / MEDBAY') && !els['medbay-body'].innerHTML.includes('Keine Patienten auf Station'), 'renderMedbayView() localizes all hospital UI strings when language is EN');
+    I18N.setLang('es');
+    renderMedbayView();
+    assert(els['medbay-body'].innerHTML.includes('SGC INFIRMARY / MEDBAY'), 'renderMedbayView() localizes hospital UI strings when language is ES');
+    I18N.setLang('de');
+
+    // 5. Campaign Playability Guarantee: 55 Planets, 51 Missions & getPlanetPatrolMission() on every world
+    assert(Object.keys(PLANETS).length >= 55, 'At least 55 canonical Stargate worlds registered');
+    const nonSgcPlanets = Object.keys(PLANETS).filter(pid => !PLANETS[pid].sgc);
+    const allHaveMissions = nonSgcPlanets.every(pid => {
+      const patrol = getPlanetPatrolMission(pid);
+      return patrol && patrol.planet === pid && patrol.repeatable === true;
+    });
+    assert(allHaveMissions, 'Every single non-SGC planet has a playable fallback mission via getPlanetPatrolMission() so no planet is ever stuck');
+
+    // 6. Single-Click doDay() Reliability
+    const dayBefore = S.day;
+    els['story-dialogue'].style.display = 'flex';
+    doDay();
+    assert(S.day === dayBefore + 1 && els['story-dialogue'].style.display === 'none', 'Single doDay() call cleanly dismisses open story-dialogue and advances S.day');
+    doDay();
+    assert(S.day === dayBefore + 2, 'Consecutive doDay() call advances to next day without multi-click lockup');
+    startNextDay();
+
+    // 7. Hex-Grid Zoom Scaling & Picking + Free 360° 3D Orbit & Gate Emergence Intro
+    assert(typeof HEX_RENDER !== 'undefined' && typeof HEX_RENDER.getS === 'function', 'Upgraded 3D Hex-Grid renderer (HEX_RENDER) is active');
+    S.hexMode = true;
+    startCombat(CHAPTERS[0].missions[0], [0, 1, 2]);
+    assert(typeof C.gateIntroStart === 'number' && C.gateIntroStart > 0, 'startCombat() initializes C.gateIntroStart for the 3D Gate Emergence camera intro');
+    resetIsoZoom();
+    const hexS100 = HEX_RENDER.getS();
+    const c100 = HEX_RENDER.center(5, 4);
+    const pick100 = HEX_RENDER.pick(c100.x - C.cameraX * Math.sqrt(3) * hexS100, c100.y - C.cameraY * 1.5 * hexS100);
+    assert(pick100.x === 5 && pick100.y === 4, 'Hex-Grid mouse picking round-trips tile (5,4) at 100% zoom');
+    zoomIsoCamera(0.5);
+    const hexS150 = HEX_RENDER.getS();
+    assert(hexS150 > hexS100 * 1.4, 'Hex-Grid radius scales proportionally with ISO.zoom (150%)');
+    const c150 = HEX_RENDER.center(5, 4);
+    const pick150 = HEX_RENDER.pick(c150.x - C.cameraX * Math.sqrt(3) * hexS150, c150.y - C.cameraY * 1.5 * hexS150);
+    assert(pick150.x === 5 && pick150.y === 4, 'Hex-Grid mouse picking round-trips tile (5,4) accurately at 150% zoom');
+    renderCombat($('combat-cv'));
+
+    // Free 360° 3D Orbit test
+    S.hexMode = false;
+    setGfxMode('webgl3d');
+    GL3D.resetOrbit();
+    GL3D.orbit(0.85, 1.5);
+    assert(Math.abs(GL3D.yawOffset - 0.85) < 0.001 && Math.abs(GL3D.pitchOffset - 1.5) < 0.001, 'GL3D.orbit() freely rotates 3D yaw and pitch angles');
+    rotateIsoCamera(1);
+    assert(GL3D.yawOffset > 0.85, 'rotateIsoCamera() smoothly orbits GL3D.yawOffset in 3D-WebGL mode');
+    resetIsoZoom();
+    assert(GL3D.yawOffset === 0 && GL3D.pitchOffset === 0, 'resetIsoZoom() resets 3D orbit angles to default');
+    setGfxMode('pixel');
+    C.active = false;
+  }
 }
 
 for(let i=0;i<5;i++){
