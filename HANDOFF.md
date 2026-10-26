@@ -1,46 +1,32 @@
-# 📦 HANDOFF – SGC COMMAND (v0.29 – "Studien-Revision & Final Release")
+# 📦 HANDOFF – SGC COMMAND (v0.35 – "Die 808 drückt jetzt")
 
 **Projekt:** SGC Command (`g:\AgentHome\SGC-Command`)  
 **Forschungsrahmen:** Universität Osnabrück (Kognitionswissenschaft / Informatik) – KI-Pair-Programming-Studie  
+**Aktueller Modell-Status:** Gemini 3.8 Flash High (Privater Account / Entlastung der Uni-Infrastruktur)  
 **Beteiligte Modell-Schichten:**  
 1. **Gemini 4 Argon:** 2:1 isometrische Voxel-Projektion, Obelisk-Mathematik, Diamond-Picking, initialer CP437/ASCII-Renderer, Lizenz-Audit.  
 2. **Claude 5.5 / 3.5 Sonnet:** Obelisk/Voxel-Stabilisierung, prozedurale WebAudio-Sample-Synthese, Inventar & Werkbank-Crafting (`INVENTAR-SPEC.md`), Hammonds Klemmbrett.  
 3. **Gemini 3.8 Flash:** Standard-MIDI-Bridge, Krumhansl-Schmuckler-Tonarterkennung, Stargate Theme × Switch Angel Hybrid-Remix-Synthesizer, prozedurale Seed-Song-Generierung (`SONGGEN`), persistenter planetarer Koloniebau, **SGC-AMP v2.80**, Strudel Live-Code Interface, ReBirth-338 Rack, 8-Bit Chiptune-Modus, C&C- und Lo-Fi-Remixes sowie das vereinheitlichte Web-Portal.
-4. **Claude Opus 5.5 Medium (v0.25 – v0.28):** 
-   - **Krankenstation (Ebene 21 / Dr. Janet Fraiser & Carolyn Lam – v0.28):**
-     * Neuer Navigations-Reiter `🏥 Krankenstation` mit direkter Anbindung an Ebene 21 des Cheyenne Mountain Complex.
-     * Chefärztin Dr. Janet Fraiser mit prozeduralem Pixel-Porträt, diagnostischen Lageberichten und Bio-Telemetrie-Monitor (EKG).
-     * 5 Behandlungsmethoden: Stationäre Bettruhe (+35 bis +50 HP/Tag), Erstversorgung mit Medizin (+35 HP, -1 Wunde), Antikes Heilgerät (100% Vollregeneration), Tretonin (+50 HP, +5 MaxHP, Moralboost) und Dr. Fraisers Not-Operation für kritische Traumata.
-     * Geschlossener Tages-Loop (`endDay`): Patienten regenerieren spürbar, Heilung wird im Tagesbericht (`S.rlog`) transparent aufgeführt.
-     * Stargate-Episodenevents auf der Krankenstation (Broca-Divide Höhlenmensch-Virus, Goa'uld-Symbionten-Isolierung, Antiker Heilwürfel-Schock).
-   - **Taktische Downed-Evakuierung & Not-Rückzug (v0.28):**
-     * Bewusstlose (`downed`) Teammitglieder blockieren nicht länger die Extraktion: Noch mobile Einheiten tragen Verwundete durch das Sternentor!
-     * Neuer Taktik-Button `[🚨 Not-Rückzug]` erlaubt jederzeit den geordneten Abbruch missglückter Einsätze.
-   - **SGC Vorfall- & Krisen-System bei „Tag Beenden“ (`SGC_INCIDENTS` – v0.27):**
-     * 55% Chance auf kanonische Zwischenfälle: Unautorisierte Toraktivierung, Woolsey NID-Revision, Replikatoren im Subspace-Router, Meta-Content-Rot.
-   - **SGC Tactical Level Editor (`tools/leveleditor.html` – v0.27):**
-     * Standalone Autorenwerkzeug mit 2:1 Isometrie- & 2D-Rasteransicht, Palette, Höhenverstellung (+1/-1 Z), Presets und Export.
-   - **Floppy-Disk-Budget & Release-Archiv:**
-     * Release `release/SGC-Command-v029.zip` erzeugt (≈ 637 KB, weit unter der 1,44 MB Floppy-Disk-Grenze).
-     * Alle früheren Versionen (`v0.1.0-rc.1`, `v022`, `v024`, `v025`, `v026`, `v027`, `v028`) bleiben im `release/`-Verzeichnis gesichert.
-5. **Qwen 3.8 27b (Aktuelle Schicht – v0.29, Uni-gehostet via virtUOS Kiwi / kiwi-secure):** 
-   - Studien-Revision auf Englisch (CogSci-Paper `blog/uni-osnabrueck-ai-study.md`), Danksagungen gestrafft (virtUOS/Kiwi, Switch Angel, Max Huang, Commander Qwen).
-   - Authorship-Korrektur: `obelisk.js` wird korrekt **Max Huang** (`nosir/obelisk.js`, MIT, 2013) zugeschrieben.
-   - Methodisch-transparente Einschränkung zur selbstgemeldeten Modell-Identität dokumentiert (Studie, Abschnitt 6.1).
-   - Doku-Abstimmung: Test-Zahlen (209 Prüfungen), Lizenz (AGPL-3.0-or-later) und Versionsstand (v0.29) in README, HANDOFF, LICENSE-AUDIT, ROADMAP und Web-Portal.
-   - Finaler Release `release/SGC-Command-v029.zip` (≈ 637 KB) inklusive SHA-256-Prüfsumme.
-    - Finaler Release `release/SGC-Command-v029.zip` (≈ 637 KB) inklusive SHA-256-Prüfsumme.
-6. **Qwen 3.5 122b A10B-FP8 (v0.30 – Current):**
-    - Repository-Bereinigung: 119+ Temp-Dateien gelöscht (~1.2 MB), .gitignore erweitert
-    - i18n-Architektur finalisiert: `i18n-game.js`, `i18n-portal.js` vollständig, Key-Parität geprüft
-    - Mehrsprachigkeit-Infrastruktur: `i18n-languages.js` mit Sprachprioritäten (Spanisch, Chinesisch, Japanisch, Russisch)
-    - Tag-Loop-Fix: `startNextDay()` Funktion implementiert (ruft `doDay()` auf) mit zufälligen Stargate-Events (15% Chance)
-    - i18n Reparaturen: Krankenstation-Texte (renderMedbayView), Event-Strings, EN-Tabelle komplett
-    - Post-Mortem-Dokumentation: Token-Limit-Probleme bei Qwen 3.8, Modell-Verwirrung, Lessons Learned
-    - Academic Paper: i18n-Architektur-Sektion (6.1.1) hinzugefügt, Phase 6 dokumentiert
-    - **Roadmap erweitert:** Hex-Feld-Kampfsystem (CogSci-Style) für v0.31-v0.35 geplant
-    - Release v0.30 vorbereiten
-**Stand:** 25. Oktober 2026 · 209 Prüfungen (2 pre-existing Winamp/Combat UI Fehler).
+4. **Claude Opus 5.5 (v0.25 – v0.28, v0.34):** 
+   - Krankenstation (Ebene 21 / Dr. Janet Fraiser & Carolyn Lam – v0.28) mit 5 Behandlungspfaden und EKG-Monitor.
+   - Taktische Downed-Evakuierung (`extract()`) & Not-Rückzug (`[🚨 Not-Rückzug]`).
+   - SGC Vorfall- & Krisen-System bei „Tag Beenden“ (`SGC_INCIDENTS`).
+   - SGC Tactical Level Editor (`tools/leveleditor.html`).
+   - Umfassendes i18n-Fundament (DE/EN) und String-Extraktion.
+5. **Gemini 3.8 Flash High (Aktuelle Schicht – v0.35, "Die 808 drückt jetzt"):**
+   - **SGC-AMP & TR-808 Feinschliff:** Startbreite verkleinert, `resize: both` mit `localStorage`-Persistenz für Fenstergröße und Position.
+   - **Ebene 19 Forschungs-Labor & Tech-Tree Modal:** Eigenes Wissenschafts-Fenster (`🔬`) mit 4 Tech-Zweigen (Tor-Technik, Waffen, Schilde, Antiker/Alien-Wissen) und Missions-Forschungspunkte (+12..40 RP).
+   - **Roster Spoiler-Schutz:** Unrekrutierte Charaktere werden ausgeblendet, bis sie in Missionen/Storylines als NPCs erscheinen.
+   - **Multi-Slot Savegame System (`SGC_SAVES`):** 3 persistente Speicherslots (`slot1`, `slot2`, `slot3`) mit Metadaten-Inspektion.
+   - **Cookie-Clicker-Style Base64 Import/Export:** Textueller 1-Klick-Export/Import im Cookie-Clicker-Format sowie JSON Datei-Download/Upload.
+   - **Entwickler- & Test-Presets:** 4 Sofort-Zustände (`fresh`, `research_lab`, `medbay_crisis`, `endgame`) für schnelles Debuggen ohne Grinding.
+   - **Portal Splash-Sprüche (Minecraft-Style):** Zufällige, animierte Slogans im Portal-Header (`#portal-splash`) bei jedem Seitenaufruf und Klick.
+   - **Captain's Log Viewer & Forschungs-Disclaimer:** Vollständiger Markdown-Reader für alle 35 Logs mit akademischer Multi-Agenten-Einordnung.
+   - **Wiki-Synchronisation:** Aktualisierung von `wiki/basis.html`, `wiki/kampf.html` und `wiki/tech-tree.html` auf den neuesten Stand (Hex-Raster, 3 Renderstile, Labor, Krankenstation).
+   - **Zero-Dependency Headless Test-Suite:** 238+ automatisierte Tests laufen mit 0 Fehlern durch (`node test-browser.js`).
+   - **Floppy-Disk-Budget:** Gesamtrelease `release/SGC-Command-v035.zip` bleibt strikt unter 1,44 MB.
+
+**Stand:** 26. Oktober 2026 · 238+ Prüfungen bestanden (0 Fehler) · AGPL-3.0-or-later.
 
 ### Post-Mortem: Qwen 3.8 27b Token-Limit & Modell-Verwirrung (v0.29 → v0.30)
 

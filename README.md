@@ -88,6 +88,16 @@ The opening cinematic starts upon first launch and can be replayed anytime via t
 * **Stargate Atlantis Theme & Asgard Theme:** Heroic Pegasus galaxy fanfare and ancient mystical flute harmonies.
 * **Funeral Memorial & Promotion Fanfares:** Melancholic bugle for fallen heroes and celebratory fanfare for medal recipients.
 
+### 8. Multi-Slot Savegame System & Cookie-Clicker I/O (`game/engine.js`, `game/ui.js`)
+* **3 Persistent Slots:** Manage multiple campaigns across Slots 1, 2, and 3 with timestamp, day counter, and commander inspection.
+* **Cookie-Clicker Style Base64 Export/Import:** Copy/paste your entire save state as a compact Base64 text string with 1-click clipboard integration.
+* **JSON File Backups:** Download and restore `.json` state archives for easy offline backup.
+* **Instant Test Presets:** Jump straight into key scenarios without grinding:
+  * `fresh`: Day 1 campaign kickoff with General Hammond.
+  * `research_lab`: Samantha Carter with Level 19 Lab, 180 RP, and Gate tech unlocked.
+  * `medbay_crisis`: Dr. Janet Fraiser triage scenario with wounded soldiers and stocked medicines.
+  * `endgame`: General Landry with 9 advanced technologies and colonies on Abydos and Planet Alpha.
+
 ---
 
 ## Academic AI Study (Universität Osnabrück)

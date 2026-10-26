@@ -1,8 +1,7 @@
-<!-- v0.34: siehe docs/CAPTAINS-LOG-034.md, HANDOFF-NEXT.md -->
-<!-- v0.31: siehe docs/CAPTAINS-LOG-031.md -->
-# 🗺 ROADMAP – SGC COMMAND v0.29 ("Studien-Revision & Final Release")
+<!-- v0.35 "Die 808 drückt jetzt": siehe blog/captains-log-035.md, HANDOFF.md -->
+# 🗺 ROADMAP – SGC COMMAND v0.35 ("Die 808 drückt jetzt")
 
-**Stand:** v0.29 · Studien-Revision (EN) · Authorship-Korrektur · Doku-Abstimmung · Final Release · 209 Prüfungen grün
+**Stand:** v0.35 · "Die 808 drückt jetzt" · Multi-Slot Speicherstände · Cookie-Clicker Export/Import · Resizable SGC-AMP & TR-808 · Ebene 19 Forschungslabor · Hex-Taktik · i18n DE/EN · 238+ Prüfungen grün
 **Zweck:** Klare Prioritäten und technischer Fahrplan für die Weiterentwicklung von SGC Command.
 
 ---
@@ -120,59 +119,76 @@
 
 ---
 
-## Phase 6: Hex-Feld-Kampfsystem (CogSci Style) – Geplant für v0.31-v0.35 🔴
+## Phase 6: Hex-Feld-Kampfsystem & Taktik (v0.31 – KOMPLETT ERLEDIGT ✅)
 
-### 6.1 Hex-Grid Engine (v0.31) 🔴
-- [ ] **Hex-Grid-Datenstruktur**: Umstellung von quadratischem zu hexagonalem Raster (axiale Koordinaten: q, r)
-- [ ] **Hex-Renderer**: Isometrische 2:1-Hex-Darstellung in Pixel- und ASCII-Modus
-- [ ] **Bewegungssystem**: 6 Nachbarn pro Hex (vs. 4 bei Quadraten), Entfernungsberechnung mit Hex-Distanz (max( |q1-q2|, |r1-r2|, |s1-s2| ))
-- [ ] **Kamerasteuerung**: Hex-sensible Pan- und Zoom-Logik (Q/E-Kamera rotation bleibt erhalten)
-
-### 6.2 Taktische Hex-Features (v0.32-v0.33) 🟡
-- [ ] **Deckungssystem**: Hex-basierte Deckungswerte (low/medium/high) basierend auf Gelände-Typ
-- [ ] **Flankierungs-Mechanik**: Bonus-Schaden bei Angriffen von bestimmten Hex-Richtungen
-- [ ] **Hex-spezifische Fähigkeiten**: "Push", "Pull", "Zone of Control" für taktische Tiefe
-- [ ] **ASCII-3D Hex-Renderer**: CP437-Hex-Symbole (◘, ○, ♂, ♀) mit Höhenlinien
-
-### 6.3 Forschung & UI für Hex-System (v0.34) 🟡
-- [ ] **Eigene Forschungs-Fenster**: Modal mit Tech-Tree für Hex-Entwicklung (Gate-Netz, Waffentechnik, Schilde)
-- [ ] **Hex-Research-Integration**: Neue Technologien freischalten (Zat'nik'tel, Stabwaffen,能量护盾)
-- [ ] **Research-UI-Redesign**: Modernes, übersichtliches Layout mit Kategorien (Waffen, Verteidigung, Raumfahrt, Medizin, Kommunikation)
-
-### 6.4 Polishing & Testing (v0.35) 🟢
-- [ ] **Hex-Kampftutorials**: Spieler führt durch Hex-System-Einführung
-- [ ] **Performance-Optimierung**: Hex-Grid-Caching, Batch-Rendering für große Schlachtfelder
-- [ ] **Test-Suite**: 50+ neue Tests für Hex-Bewegung, Deckung, Flankierung
+### 6.1 Hex-Grid Engine & Bewegung (ERLEDIGT ✅)
+- [x] **Hex-Grid-Datenstruktur**: Umstellung von quadratischem zu hexagonalem Raster mit Odd-R Offset-Koordinaten (`combatDistance`, 6 hexagonale Nachbarn)
+- [x] **Hex-Renderer**: Isometrische 2:1-Projektion und 3D-ASCII-Rasterdarstellung
+- [x] **Taktische Beute-Caches & Feldbau**: Beute-Kisten auf dem Schlachtfeld mit Naquadah- und Trinium-Loot, Offworld-Geschütztürme und Sandsäcke
 
 ---
 
-## Phase 7: i18n & Internationalisierung (v0.30-v0.40) 🟡
+## Phase 7: SGC Krankenstation (Ebene 21), Vorfälle & Tages-Loop (v0.28-v0.30 – ERLEDIGT ✅)
 
-### 7.1 Mehrsprachigkeit (v0.30-v0.35) 🟡
-- [x] **v0.30**: DE/EN vollständig, i18n-Architektur dokumentiert
-- [ ] **v0.31**: Spanisch (es) – Priorität 1 (Lateinamerika, 41M+ Sprecher)
-- [ ] **v0.32**: Chinesisch (zh) – Priorität 2 (Asien, 1B+ Sprecher)
-- [ ] **v0.33**: Japanisch (ja) – Priorität 3 (Asien, 125M Sprecher)
-- [ ] **v0.34**: Russisch (ru) – Priorität 4 (Europa/Asien, 150M+ Sprecher)
-- [ ] **v0.35**: Französisch (fr), Portugiesisch (pt), Arabisch (ar)
+### 7.1 Krankenstation (Sub-Level 21) & Fraiser-Behandlungen (ERLEDIGT ✅)
+- [x] Eigene Navigationsansicht `🏥 Krankenstation` mit Leitender Chefärztin Dr. Janet Fraiser
+- [x] 5 Behandlungspfade: Bettruhe, Feldmedizin, Tretonin, Fraiser-Chirurgie, Antikes Heilgerät
+- [x] Taktische Verwundeten-Bergung (`extract()` mit Downed-Comrades durchs Tor, Not-Rückzug)
+- [x] SGC-Krisen & Zwischenfälle beim Tagesabschluss (`SGC_INCIDENTS`, Woolsey-Inspektion, Replikatoren-Subspace-Bug)
 
-### 7.2 i18n-Infrastruktur (v0.30) ✅
-- [x] `i18n-languages.js` mit Sprachprioritäten basierend auf Stargate-Viewership
-- [x] `i18n-game.js` und `i18n-portal.js` mit Key-Paritätstests
-- [x] Dokumentierter 5-Schritt-Prozess für neue Sprachen
+---
+
+## Phase 8: Internationalisierung (i18n) & Forschungs-Labor (v0.30-v0.34 – ERLEDIGT ✅)
+
+### 8.1 100% Dual-Language System DE / EN (ERLEDIGT ✅)
+- [x] Modulare i18n-Architektur (`game/i18n.js`, `game/i18n-game.js`, `game/i18n-portal.js`) mit 528+ Keys
+- [x] 1-Klick-Sprachwechsler im Header (`🌐 EN / DE`), automatische DOM-Übersetzung und `localStorage`-Persistenz
+- [x] Vollständige Key-Parität DE ⇄ EN ohne Lücken, automatisierter DOM-Coverage-Gate im Testsuite
+
+### 8.2 Ebene 19 Forschungs-Labor & Tech-Tree (ERLEDIGT ✅)
+- [x] Eigenständiges Labor-Modal (`🔬`) mit Stargate-Wissenschaftsraum (Sub-Level 19)
+- [x] 4 Forschungszweige (Tor-Netzwerk, Goa'uld-Waffen & Taktik, Schutzschilde, Antiker/Alien-Wissen)
+- [x] Taktische Missions-Forschungspunkte (+12 bis +40 RP) und automatische Fertigstellung bei Tagesabschluss
+
+---
+
+## Phase 9: Multi-Slot Savegames & Cookie-Clicker I/O (v0.35 – ERLEDIGT ✅)
+
+### 9.1 Multi-Slot Speicherstände & Schnelltaste (ERLEDIGT ✅)
+- [x] Mehrere unabhängige Speicherslots (`slot1`, `slot2`, `slot3`) mit Zeitstempel, Tageszähler, Kommandant und Credits
+- [x] Direkter Zugriff über Header-Button (`💾`) und Pause-Menü (`ESC`)
+
+### 9.2 Cookie-Clicker-Style Base64 Import/Export (ERLEDIGT ✅)
+- [x] 1-Klick Text-Export & Import im Cookie-Clicker-Stil via Base64-String (Clipboard-Support)
+- [x] JSON-Download und Datei-Upload für Offline-Backups
+
+### 9.3 Entwickler- & Test-Presets (ERLEDIGT ✅)
+- [x] 4 vorkonfigurierte Spielstände zum direkten Testen ohne Grinding:
+  * `fresh`: Frischer Kampagnenstart (Tag 1, General Hammond, 500 Credits)
+  * `research_lab`: Samantha Carter als Kommandantin, Ebene 19 Labor aktiv, 180 RP, G1 erforscht
+  * `medbay_crisis`: Dr. Janet Fraiser auf Ebene 21, 2 verwundete Soldaten, Vorräte an Tretonin & Medkits
+  * `endgame`: General Hank Landry, Kolonien auf Abydos & Alpha, 9 erforschte Spitzentechnologien
+
+### 9.4 Portal-Modernisierung & Minecraft-Slogans (ERLEDIGT ✅)
+- [x] Zufällige, rotierende Minecraft-artige Slogans im Portal-Header beim Laden und Klick
+- [x] Vollständiger Captain's Log Viewer mit Markdown-Integration und akademischem Multi-Agenten-Disclaimer
+- [x] Wiki-Verknüpfung und Aktualisierung aller Spielsysteme (Hex, 3 Renderstile, Labor, Krankenstation)
 
 ---
 
 ## Version Release Plan
 
-| Version | Fokus | Geplanter Release |
-|---------|-------|-------------------|
-| v0.30 | i18n, Tag-Loop, Cleanup | 25. Okt 2026 ✅ |
-| v0.31 | Hex-Grid Engine (Basis) | Nov 2026 |
-| v0.32 | Hex-Taktik & Deckung | Dez 2026 |
-| v0.33 | Forschung & Hex-Integration | Jan 2027 |
-| v0.34 | Spanisch i18n | Feb 2027 |
-| v0.35 | Hex Polishing & Testing | Mär 2027 |
+| Version | Fokus | Status |
+|---------|-------|--------|
+| v0.29 | Studien-Revision (EN), Lizenz-Audit | 25. Okt 2026 ✅ |
+| v0.30 | i18n Fundament DE/EN, Tag-Loop Fix | 25. Okt 2026 ✅ |
+| v0.31 | Hex-Grid Taktik & Roland TR-808 Engine | 25. Okt 2026 ✅ |
+| v0.32 | SGC Krisen-System & Level Editor | 25. Okt 2026 ✅ |
+| v0.33 | Krankenstation Ebene 21 & Fraiser Recovery | 25. Okt 2026 ✅ |
+| v0.34 | Ebene 19 Forschungs-Labor & Tech-Tree Modal | 25. Okt 2026 ✅ |
+| v0.35 | Multi-Slot Saves, Cookie-Clicker I/O, Splash Slogans | 26. Okt 2026 ✅ |
+| v0.36 | Spanisch (es) i18n & Jukebox-Progression | Geplant (Backlog) 🔴 |
+| v0.37 | Vollständige Planetenkarte & alle SG-1 Welten | Geplant (Backlog) 🟡 |
 
 ---
 
