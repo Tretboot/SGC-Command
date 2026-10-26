@@ -3,7 +3,7 @@
 **Projekt:** SGC Command (`g:\AgentHome\SGC-Command`)  
 **Forschungsrahmen:** Universität Osnabrück (Kognitionswissenschaft / Informatik) – KI-Pair-Programming-Studie  
 **Aktueller Modell-Status:** Übergabe an die **Qwen-Schicht (Uni-gehostet)**. Der 0.37-Evolutions-Pass („Chevron 8: Die dritte Dimension" – 3D-WebGL, 9 Sprachen, 55 Planeten) wurde von **Gemini 4 Argon** mit **Claude Opus 5.5** abgeschlossen; die Finalisierungs- und Release-Prüfung (26.10.2026, siehe `blog/captains-log-038.md`) lief im Modell-Wechsel zur Qwen-Schicht.  
-**Release:** SGC Command 0.37 final – lauffähig (Doppelklick auf `index.html` oder `game/index.html`), 100% offline (Zero-Dependency), **357/357 Tests grün** (`node test-browser.js`), Release-Paket `SGC-Command-037-final.zip` mit SHA-256 in `release/` (unter dem 1,44-MB-Floppy-Budget).
+**Release:** SGC Command 0.37 final – lauffähig (Doppelklick auf `index.html` oder `game/index.html`), 100% offline (Zero-Dependency), **377/377 Tests grün** (`node test-browser.js`), Release-Paket `SGC-Command-037-final.zip` mit SHA-256 in `release/` (unter dem 1,44-MB-Floppy-Budget). + Jukebox-Pass 039: 7 neue 80s/90s-Hits (Blue Monday, Confusion ×3, Stil-Hommagen), „Stand Orders"-Song gestrichen, `switch-angel/`-Ordner entfernt (Details: `blog/captains-log-039.md`).
 
 **Beteiligte Modell-Schichten:**  
 1. **Gemini 4 Argon:**
@@ -24,7 +24,7 @@
 
 | Prüfung | Ergebnis |
 |---|---|
-| `node test-browser.js` | **357/357 Prüfungen, 0 Fehler** |
+| `node test-browser.js` | **377/377 Prüfungen, 0 Fehler** |
 | `node --check` für alle `game/*.js` + `test-browser.js` | 32/32 Dateien syntax-clean |
 | Release-ZIP `SGC-Command-037-final.zip` | offline lauffähig (Doppelklick `index.html`), SHA-256 in `release/SGC-Command-037-final.zip.sha256` |
 | Floppy-Budget | ZIP deutlich unter 1,44 MB |
@@ -37,7 +37,10 @@
 * **9 Sprachen komplett** (`game/i18n*.js`): DE/EN/ES/FR/ZH/JA/RU/PT/AR, Sprachwähler in Portal, Hub und In-Game-Header.
 * **Kanonischer Cheyenne Mountain** (`game/base.js`): Doppeltunneleingang, 2×2 Torraum unverdeckt, Walter-Kontrollraum, SG-1-Besprechung, Hammond-Büro, MALP-Halle (Pixel + ASCII + 3D-GL-Parität).
 * **55 Planeten & 51 Missionen** (`game/engine.js`): automatische Kapitel-Fortschaltung, `getPlanetPatrolMission()` garantiert eine spielbare Mission pro entdecktem Planeten.
-* **Jukebox-Progression** (`game/music-progress.js`): Codevault-Tracks (`sa_*`) startverborgen, Freischaltung via Entdeckung/Missionssieg; 2 neue SGC-Core-Songs (`armory`, `cheyenne`).
+* **Jukebox-Progression** (`game/music-progress.js`): Codevault-Tracks (`sa_*` **und** `hit_*`) startverborgen, Freischaltung via Entdeckung/Missionssieg; 2 neue SGC-Core-Songs (`armory`, `cheyenne`).
+* **80s/90s Hit Jukebox** (`game/hit-tracks.js`, Pass 039): 7 Vault-Tracks – Blue Monday (New Order 1983), Confusion (New Order 1983), Confusion „Pump Action Panel Version" (138 BPM), Confusion Version III (120 BPM) aus MIDI-Transkriptionen + 3 Stil-Hommagen mit eigenen Noten (Take On Me, Sweet Dreams, Billie Jean); eigener Winamp-Tab „80s/90s Hits".
+* **„Stand Orders"-Song gestrichen** (Pass 039): `SONGGEN.fromCombat()` erzeugt für Mission 1-3 keinen generierten Track mehr (Fallback: Standard-Kampfmusik); die Mission selbst bleibt erhalten.
+* **`switch-angel/`-Ordner aus dem Repo entfernt** (Pass 039): AGPL-Credit bleibt in `game/switch-angel.js` (eingebettete Codes).
 * **Quartiermeister-Fenster** (`game/ui.js`, `showArmoryModal`): dedizierte Fenster für Werkstatt, Waffenkammer & Hauptlager mit Live-Canvas.
 * **3D-Hex-Taktik & Kamera** (`game/hex-render.js`, `game/iso.js`): echte 3D-Hex-Prismen, Zoom 50–225%, freie 360°-Orbit-Kamera, Gate-Austritts-Intro.
 * **Performance:** Offscreen-Minimap-Cache, FX-Hotpath ohne Idle-Allokationen, Deduplizierung (`drawMap`, `cycleGfxMode`).
@@ -59,7 +62,7 @@
 
 ### 0.5 Regeln für jeden Durchgang (Pflicht)
 
-1. `node test-browser.js` muss am Ende **grün** sein (aktuell 357 Prüfungen – bei neuen Features erweitern).
+1. `node test-browser.js` muss am Ende **grün** sein (aktuell 377 Prüfungen – bei neuen Features erweitern).
 2. **Captain's Log** (nächste Nummer in `blog/`) **und** dieses `HANDOFF.md` aktualisieren.
 3. Neue UI-Strings in **allen 9 Sprachen** anlegen (DE+EN Pflicht; die i18n-Coverage-Prüfungen greifen automatisch).
 4. **Zero-Dependency & Offline-Betrieb** bleiben harte Kriterien: kein npm, kein CDN, keine Assets > 1,44 MB.
@@ -96,15 +99,16 @@ Die vollständige Beschreibung steht in `blog/captains-log-037.md`; hier die Ker
 | `game/iso.js` | 2:1 Voxel-Projektion, Obelisk-Shading, 3D-ASCII CP437 Renderer, Höhen-Picking, Beat-Bounce, freie 360°-Orbit-Kamera (Bridge zu GL3D) |
 | `game/gl3d.js` | **Zero-Dependency 3D-WebGL-Engine:** Float32Array-Matrix-Kernel, WebGL-1.0-Shader-Pipeline + Software-Projection-Fallback, `GL3D.renderCombat/renderStarMap/renderBase/renderColony` |
 | `game/hex-render.js` | 3D-Hex-Prismen-Renderer (schattierte Seitenflächen, Hex-Stargate, Zoom 50–225% inkl. Picking) |
-| `game/sound.js` | AudioContext, Master-Volume-Routing, Oszilloskop-Analyser, Chiptune-Modus, prozedurale Sample-Synthese, SGC-Core-Lautstärken |
-| `game/music-progress.js` | Jukebox-Progression: `S.unlockedTracks`, `MUSIC_PROGRESS.unlockForPlanet()`, Sammlungs-Banner |
+| `game/sound.js` | AudioContext, Master-Volume-Routing, Oszilloskop-Analyser, Chiptune-Modus, prozedurale Sample-Synthese, SGC-Core-Lautstärken, Rollen-Pools mit Vault-Filter |
+| `game/music-progress.js` | Jukebox-Progression: `S.unlockedTracks`, `MUSIC_PROGRESS.unlockForPlanet()` (sa_+hit_), Sammlungs-Banner |
+| `game/hit-tracks.js` | 80s/90s Hit Jukebox (Pass 039): 7 Vault-Tracks aus MIDI-Transkriptionen (Blue Monday, Confusion ×3) + 3 Stil-Hommagen (eigene Noten) |
 | `game/midi.js` | MIDI-Parser, Krumhansl Tonart-Finder, C&C-/Lo-Fi-Remixes, Strudel-DSL-Codegeneratoren |
-| `game/switch-angel.js` | AST-Normalisierung für Switch-Angel-Tracks, sichere Prototypen, 20 Originalstücke (Codevault) |
+| `game/switch-angel.js` | AST-Normalisierung für Switch-Angel-Tracks, sichere Prototypen, 20 Originalstücke (Codevault) – Quell-Ordner `switch-angel/` wurde aus dem Repo entfernt (Pass 039, Credit bleibt) |
 | `game/combat.js` | Rundenbasiertes Taktiksystem, AP-Management, Offworld-Feldbau, Offscreen-Minimap-Cache, Gate-Austritts-Intro |
 | `game/base.js` | 28-Level Cheyenne Mountain Cutaway, Tunneleingang, Raum-Innenansichten (Pixel/ASCII/3D-GL), Koloniebau |
 | `game/ui.js` | SGC-AMP v2.80 Winamp-Controller, Quartiermeister-Fenster (`showArmoryModal`), Oszilloskop, ReBirth-338, Tastenbelegungs-Modal |
 | `index.html` / `hub.html` | Einheitliches Web-Portal mit Spiel-Player, Lore-Wiki, Studien-Doku und Downloads |
-| `test-browser.js` | Headless Test-Suite mit **357 Prüfungen** (100% bestanden, ohne NPM-Abhängigkeiten) |
+| `test-browser.js` | Headless Test-Suite mit **377 Prüfungen** (100% bestanden, ohne NPM-Abhängigkeiten) |
 | `references/NASA-ASSETS.md` | Kuratierter Katalog gemeinfreier NASA-Weltraum- und Planetenbilder |
 
 ---
@@ -115,8 +119,8 @@ Die vollständige Beschreibung steht in `blog/captains-log-037.md`; hier die Ker
 node test-browser.js
 ```
 
-Ergebnis: **357 Prüfungen bestanden (0 Fehler).**  
-Verifiziert u. a.: Voxel-Projektion, 3D-Hex-Zoom & Picking, GL3D-Basis-/Kolonie-Rendering, Orbit-Kamera & Gate-Intro, MIDI-Parsing, Strudel-Instrumente, Jukebox-Lock/Unlock (Codevault `sa_*`), SGC-Core-Playlists, 9-Sprachen-Key-Coverage, lokalisierte Krankenstation, 55-Planeten-Katalog, Patrol-Mission-Fallback, Single-Click-`doDay`, Combat-UI, ReBirth-338 DSP, Intro-Audio und Kolonie-Berechnungen.
+Ergebnis: **377 Prüfungen bestanden (0 Fehler).**  
+Verifiziert u. a.: Voxel-Projektion, 3D-Hex-Zoom & Picking, GL3D-Basis-/Kolonie-Rendering, Orbit-Kamera & Gate-Intro, MIDI-Parsing, Strudel-Instrumente, Jukebox-Lock/Unlock (Codevault `sa_*` + `hit_*` inkl. 80s/90s-Hit-Compilation), SONGGEN-Exklusion für „Stand Orders", SGC-Core-Playlists, 9-Sprachen-Key-Coverage, lokalisierte Krankenstation, 55-Planeten-Katalog, Patrol-Mission-Fallback, Single-Click-`doDay`, Combat-UI, ReBirth-338 DSP, Intro-Audio und Kolonie-Berechnungen.
 
 ---
 

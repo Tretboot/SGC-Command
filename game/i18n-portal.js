@@ -424,7 +424,7 @@
     'portal.study.m2.p': 'Deterministische Tonartbestimmung der Stargate-Main-Theme-MIDI-Datei durch Korrelation der Notendauern mit empirischen Dur/Moll-Gewichtungsprofilen:',
     'portal.study.m2.pre': 'Key = argmax_{r, mode} sum_{i=0}^{11} hist[(i+r)%12] * Profile_mode[i]\nErgebnis: G-Dur (Root 7), 165 BPM, 35 Takte, 1.380 Events',
     'portal.study.h2.3': '3. Wissenschaftliches Fazit',
-    'portal.study.conclusion': 'Der Versuch belegt, dass deterministische Test-Harnische (<code>node test-browser.js</code> mit aktuell 357 Prüfungen) und strukturierte Übergabe-Dokumente (<code>HANDOFF.md</code>) die kritischen Erfolgsfaktoren für multi-modale LLM-Softwareprojekte darstellen. Da die selbstgemeldete Modell-Identität der Agenten bei Modellwechseln nicht unabhängig verifizierbar ist, bleibt die exakte Code-Authorship je Modell heuristisch (siehe Studie, Abschnitt 6.1). Durch die Zero-Dependency-Architektur bleibt das Projekt zu 100 % wartbar, quelloffen und ohne externe Abhängigkeitsrisiken lokal lauffähig.'
+    'portal.study.conclusion': 'Der Versuch belegt, dass deterministische Test-Harnische (<code>node test-browser.js</code> mit aktuell 377 Prüfungen) und strukturierte Übergabe-Dokumente (<code>HANDOFF.md</code>) die kritischen Erfolgsfaktoren für multi-modale LLM-Softwareprojekte darstellen. Da die selbstgemeldete Modell-Identität der Agenten bei Modellwechseln nicht unabhängig verifizierbar ist, bleibt die exakte Code-Authorship je Modell heuristisch (siehe Studie, Abschnitt 6.1). Durch die Zero-Dependency-Architektur bleibt das Projekt zu 100 % wartbar, quelloffen und ohne externe Abhängigkeitsrisiken lokal lauffähig.'
   });
 
   /* ---------- N: Project Study (EN, math + conclusion) ---------- */
@@ -438,7 +438,7 @@
     'portal.study.m2.p': 'Deterministic key detection of the Stargate main theme MIDI file by correlating note durations with empirical major/minor weighting profiles:',
     'portal.study.m2.pre': 'Key = argmax_{r, mode} sum_{i=0}^{11} hist[(i+r)%12] * Profile_mode[i]\nResult: G Major (Root 7), 165 BPM, 35 bars, 1,380 events',
     'portal.study.h2.3': '3. Scientific Conclusion',
-    'portal.study.conclusion': 'The experiment demonstrates that deterministic test harnesses (<code>node test-browser.js</code> with currently 357 checks) and structured handoff documents (<code>HANDOFF.md</code>) are the critical success factors for multi-modal LLM software projects. Since the self-reported model identity of the agents at model switches cannot be independently verified, the exact code authorship per model remains heuristic (see study, section 6.1). Thanks to the zero-dependency architecture, the project remains 100% maintainable, open source and locally runnable without external dependency risks.'
+    'portal.study.conclusion': 'The experiment demonstrates that deterministic test harnesses (<code>node test-browser.js</code> with currently 377 checks) and structured handoff documents (<code>HANDOFF.md</code>) are the critical success factors for multi-modal LLM software projects. Since the self-reported model identity of the agents at model switches cannot be independently verified, the exact code authorship per model remains heuristic (see study, section 6.1). Thanks to the zero-dependency architecture, the project remains 100% maintainable, open source and locally runnable without external dependency risks.'
   });
 
   /* ---------- O: Level-Editor-Panel ---------- */

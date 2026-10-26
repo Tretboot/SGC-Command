@@ -1,7 +1,7 @@
 <!-- 0.37 "Chevron 8: Die dritte Dimension": siehe blog/captains-log-037.md, HANDOFF.md -->
 # 🗺 ROADMAP – SGC COMMAND 0.37 ("Chevron 8: Die dritte Dimension")
 
-**Stand:** 0.37 final · "Chevron 8: Die dritte Dimension" · Zero-Dependency 3D-WebGL Engine (`PIXEL ⇄ ASCII ⇄ 3D-GL ⇄ 2D`) · Cheyenne Mountain Doppeltunnel & 2×2 Torraum · 9 Sprachen (DE, EN, ES, FR, ZH, JA, RU, PT, AR) · Jukebox-Progression · 55 Planeten / 51 Missionen · 357 Prüfungen grün
+**Stand:** 0.37 final · "Chevron 8: Die dritte Dimension" · Zero-Dependency 3D-WebGL Engine (`PIXEL ⇄ ASCII ⇄ 3D-GL ⇄ 2D`) · Cheyenne Mountain Doppeltunnel & 2×2 Torraum · 9 Sprachen (DE, EN, ES, FR, ZH, JA, RU, PT, AR) · Jukebox-Progression · 55 Planeten / 51 Missionen · 377 Prüfungen grün
 **Zweck:** Klare Prioritäten und technischer Fahrplan für die Weiterentwicklung von SGC Command.
 
 ---

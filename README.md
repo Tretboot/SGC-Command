@@ -152,7 +152,7 @@ Run the full automated test suite using Node.js:
 node test-browser.js
 ```
 
-All 357 automated tests run in a headless mock DOM environment without any third-party dependencies, verifying math projections, 3D-WebGL rendering (base, colonies, orbit camera, gate intro), 3D hex zoom & picking, audio synthesis, MIDI analysis, combat state transitions, hospital recovery, research tree mechanics, autobattler AI with camera tracking, auto-resolve simulations, Level 28 tactical map, jukebox/codevault progression and 9-language string parity.
+All 377 automated tests run in a headless mock DOM environment without any third-party dependencies, verifying math projections, 3D-WebGL rendering (base, colonies, orbit camera, gate intro), 3D hex zoom & picking, audio synthesis, MIDI analysis, combat state transitions, hospital recovery, research tree mechanics, autobattler AI with camera tracking, auto-resolve simulations, Level 28 tactical map, jukebox/codevault progression and 9-language string parity.
 
 ---
 
