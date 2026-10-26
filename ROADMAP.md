@@ -1,7 +1,7 @@
-<!-- v0.35 "Die 808 drückt jetzt": siehe blog/captains-log-035.md, HANDOFF.md -->
-# 🗺 ROADMAP – SGC COMMAND v0.35 ("Die 808 drückt jetzt")
+<!-- 0.36 "Die 808 drückt jetzt": siehe blog/captains-log-036.md, HANDOFF.md -->
+# 🗺 ROADMAP – SGC COMMAND 0.36 ("Die 808 drückt jetzt")
 
-**Stand:** v0.35 · "Die 808 drückt jetzt" · Multi-Slot Speicherstände · Cookie-Clicker Export/Import · Resizable SGC-AMP & TR-808 · Ebene 19 Forschungslabor · Hex-Taktik · i18n DE/EN · 238+ Prüfungen grün
+**Stand:** 0.36 · "Die 808 drückt jetzt" · Torraum 4×2 Silo · Kontrollraum mit Walter Harriman · Wache & Reaktionsfeuer (+15% Ausweichen) · In-Combat Autobattler · Auto-Resolve Schnellkampf mit Prognose · 250+ Prüfungen grün
 **Zweck:** Klare Prioritäten und technischer Fahrplan für die Weiterentwicklung von SGC Command.
 
 ---
@@ -176,6 +176,32 @@
 
 ---
 
+## Phase 10: Torraum 4×2, Walter im Kontrollraum, Autobattler & Auto-Resolve (0.36 – ERLEDIGT ✅)
+
+### 10.1 Zweistöckiger Gateroom & Cheyenne Mountain Cutaway (ERLEDIGT ✅)
+- [x] Torraum-Expansion auf 4×2 Raster (`w: 4, h: 2`, $260 \times 72$ px) auf Ebene 28 & 27 in der unteren linken Ecke
+- [x] Naquadah-Ring mit 9 leuchtenden Chevrons, animiertem blauem Wassereffekt-Ereignishorizont (`Math.sin(now / 280)`)
+- [x] Geneigte Stahlrampe mit Sicherheitsmarkierungen und 2 bewaffneten Air-Force-Wachposten (SF)
+- [x] Klick auf Torraum öffnet sofort die Sternenkarte (`setTab('map')`) zur Toranwahl
+
+### 10.2 Kontrollraum & Besprechungsraum (ERLEDIGT ✅)
+- [x] Ebene 28 (Spalten 4–5): Kontrollraum mit Aussichtsfenster, Anwahl-Computer, 3 CRT-Monitoren und Chief Master Sergeant Walter Harriman
+- [x] Klick auf Walter löst Funk-Zitat aus (*„Chevron 7 verriegelt! Wurmloch etabliert, Iris bleibt offen.“*) mit Torsound
+- [x] Ebene 27 (Spalten 4–5): Besprechungsraum mit Konferenztisch (8 Plätze) und taktischem Wanddisplay
+- [x] Ebene 28 (Spalten 6–7): MALP-Tiefensonde und Ausrüstungs-Depot
+
+### 10.3 Taktik: Wache & Reaktionsfeuer (Guard Stance) (ERLEDIGT ✅)
+- [x] Wache stellen bei verbleibenden AP via Taste `[O]` oder Button `[ 🎯 Wache & Reaktionsfeuer ]`
+- [x] +15 % defensiver Ausweich-/Deckungsbonus gegen feindliche Angriffe in Wachstellung (`target.overwatch`)
+- [x] Automatisches Entladen bei feindlicher Bewegung in Sichtlinie und Reichweite
+
+### 10.4 In-Combat Autobattler & Missions-Schnellkampf (ERLEDIGT ✅)
+- [x] In-Combat Autobattler: Umschaltbarer KI-Modus `[ 🤖 Auto-Kampf ]` im Action-Panel (`runAutoBattleTurn()`)
+- [x] Auto-Resolve: Schnellkampf-Button im Briefing mit Erfolgs-Prognose (z. B. 78% Sieg) und Verletzungsrisiko
+- [x] -25% Beute-/XP-Malus zur Belohnung des manuellen Spielens, Boss- und Storymissionen gesperrt
+
+---
+
 ## Version Release Plan
 
 | Version | Fokus | Status |
@@ -187,8 +213,9 @@
 | v0.33 | Krankenstation Ebene 21 & Fraiser Recovery | 25. Okt 2026 ✅ |
 | v0.34 | Ebene 19 Forschungs-Labor & Tech-Tree Modal | 25. Okt 2026 ✅ |
 | v0.35 | Multi-Slot Saves, Cookie-Clicker I/O, Splash Slogans | 26. Okt 2026 ✅ |
-| v0.36 | Spanisch (es) i18n & Jukebox-Progression | Geplant (Backlog) 🔴 |
-| v0.37 | Vollständige Planetenkarte & alle SG-1 Welten | Geplant (Backlog) 🟡 |
+| 0.36 | 4×2 Torraum, Walter, Guard Stance, Autobattler & Auto-Resolve | 26. Okt 2026 ✅ |
+| 0.37 | Spanisch (es) i18n & Jukebox-Progression | Geplant (Backlog) 🔴 |
+| 0.38 | Vollständige Planetenkarte & alle SG-1 Welten | Geplant (Backlog) 🟡 |
 
 ---
 

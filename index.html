@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-i18n="portal.title">SGC Command – Stargate Command v0.35 ("Die 808 drückt jetzt")</title>
+  <title data-i18n="portal.title">SGC Command – Stargate Command 0.36 ("Die 808 drückt jetzt")</title>
   <style>
     :root {
       --bg-dark: #070a10;
@@ -380,7 +380,7 @@
       <div class="brand-logo">◎</div>
       <div>
         <div class="brand-title">SGC COMMAND</div>
-        <div id="portal-splash" class="brand-sub" title="Klicken für neuen Funkspruch!" data-i18n="portal.brand.sub">Stargate Command · v0.35 · "Die 808 drückt jetzt"</div>
+        <div id="portal-splash" class="brand-sub" title="Klicken für neuen Funkspruch!" data-i18n="portal.brand.sub">Stargate Command · 0.36 · "Die 808 drückt jetzt"</div>
       </div>
     </div>
     <nav class="hub-nav">
@@ -397,7 +397,7 @@
     <section id="tab-game" class="tab-section active">
       <div class="card" style="margin-bottom:12px;padding:12px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
         <div>
-          <b data-i18n="portal.game.title">🎮 SGC Command v0.35 Live-Instanz</b>
+          <b data-i18n="portal.game.title">🎮 SGC Command 0.36 Live-Instanz</b>
           <span style="color:var(--text-dim);font-size:13px;margin-left:8px" data-i18n="portal.game.sub">Dual-Engine: Isometrisch Voxel (Pixel-Art) ⇄ 3D-ASCII (CP437, Taste [V]) · SGC-AMP v2.80</span>
         </div>
         <div style="display:flex;gap:8px">
@@ -472,9 +472,10 @@
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
             <label style="font-size:12px;color:var(--text-dim)">Log wählen:</label>
             <select id="log-selector" class="lang-select" onchange="loadLogEntry(this.value)" style="min-width:260px">
-              <optgroup label="🌟 Neueste Meilensteine (v0.30 - v0.35)">
+              <optgroup label="🌟 Neueste Meilensteine (0.30 - 0.36)">
+                <option value="captains-log-036.md" selected>Log 036 (0.36 – Gateroom 4x2, Walter &amp; Autobattler)</option>
                 <option value="essay-hexfelder-und-quadrate.md">⬡ Essay: Hexfelder &amp; Quadrate (Geometrie &amp; Voxel)</option>
-                <option value="captains-log-035.md" selected>Log 035 (v0.35 – i18n, Labor &amp; 808)</option>
+                <option value="captains-log-035.md">Log 035 (0.35 – i18n, Labor &amp; 808)</option>
                 <option value="captains-log-034.md">Log 034 (v0.34 – Master FX &amp; Sliders)</option>
                 <option value="captains-log-033.md">Log 033 (v0.33 – 90s Theme &amp; MIDI Learn)</option>
                 <option value="captains-log-032.md">Log 032 (v0.32 – Window Manager)</option>
@@ -693,10 +694,10 @@ Ergebnis: G-Dur (Root 7), 165 BPM, 35 Takte, 1.380 Events</pre>
 
           <div style="background:#0d1522;border:1px solid var(--border);border-radius:6px;padding:20px;margin:16px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
             <div>
-              <div style="font-size:16px;font-weight:bold;color:#fff">SGC-Command-v035.zip</div>
-              <div style="font-size:12px;color:var(--text-dim)" data-i18n="portal.dl.meta">Schlankes Final-Release v0.29 · Studien-Revision (EN) · SGC-Krisen · Level-Editor · Dual-Gfx &amp; Doku</div>
+              <div style="font-size:16px;font-weight:bold;color:#fff">SGC-Command-036.zip</div>
+              <div style="font-size:12px;color:var(--text-dim)" data-i18n="portal.dl.meta">Schlankes Release 0.36 · TR-808 Live-Coding · SGC-Labor &amp; Torraum 4x2 · Dual-Gfx &amp; Doku</div>
             </div>
-            <a href="SGC-Command-v035.zip" class="btn btn-gold" download data-i18n="portal.dl.btn">⬇ Release ZIP Herunterladen</a>
+            <a href="SGC-Command-036.zip" class="btn btn-gold" download data-i18n="portal.dl.btn">⬇ Release ZIP Herunterladen</a>
           </div>
 
           <h3 data-i18n="portal.dl.h3">Installation &amp; Schnellstart</h3>
@@ -732,8 +733,8 @@ Ergebnis: G-Dur (Root 7), 165 BPM, 35 Takte, 1.380 Events</pre>
   </main>
 
   <footer>
-    <div data-i18n="portal.footer.1">◎ STARGATE COMMAND · SGC COMMAND v0.35 · "Die 808 drückt jetzt"</div>
-    <div style="margin-top:4px" data-i18n="portal.footer.2">Entwickelt im autonomen Multi-Agenten-Pair-Programming (Gemini 4 Argon · Claude 5.5 · Gemini 3.8 Flash) · Lizenziert unter AGPL-3.0-or-later</div>
+    <div data-i18n="portal.footer.1">◎ STARGATE COMMAND · SGC COMMAND 0.36 · "Die 808 drückt jetzt"</div>
+    <div style="margin-top:4px" data-i18n="portal.footer.2">Entwickelt im autonomen Multi-Agenten-Pair-Programming (Gemini 4 Argon · Claude 5.5 / 3.5 Sonnet · Gemini 3.8 Flash · Claude Opus 5.5 · Qwen 3.8 / 3.5) · Lizenziert unter AGPL-3.0-or-later</div>
   </footer>
 
   <script src="game/i18n.js"></script>
@@ -758,27 +759,27 @@ Ergebnis: G-Dur (Root 7), 165 BPM, 35 Takte, 1.380 Events</pre>
     }
 
     const SPLASHES = [
-      'v0.35 · „Die 808 drückt jetzt!“',
-      'v0.35 · „Chevron sieben ist arretiert!“',
-      'v0.35 · „In der Tat. – Teal\'c“',
-      'v0.35 · „Nicht autorisierte Toraktivierung von der Erde!“',
-      'v0.35 · „Gemini 3.8 Flash High am Werk – der Uni-Server schläft noch!“',
-      'v0.35 · „Opus 5.5 hat aufgeräumt, Gemini drückt die Bassdrum!“',
-      'v0.35 · „100% Offline · Läuft auf einer 3.5\"-Floppy!“',
-      'v0.35 · „Woolsey prüft die Budgets, Carter baut den Reaktor!“',
-      'v0.35 · „TB-303 Resonance über 9000!“',
-      'v0.35 · „Kaffee zuerst, Goa\'uld-Invasion später!“',
-      'v0.35 · „Dr. Janet Fraiser hat noch genug Tretonin für alle!“',
-      'v0.35 · „Comtrya! Harlan hat wieder Duplikate gebaut.“',
-      'v0.35 · „Keine Sorge, Jack versteht Daniels Vortrag auch nicht.“',
-      'v0.35 · „Iris schließen! Iris schließen!!“',
-      'v0.35 · „0% Frameworks · 100% Vanilla JS & WebAudio!“',
-      'v0.35 · „Ebene 19: Samantha Carters Quanten-Kaffeemaschine läuft.“',
-      'v0.35 · „Wackelpudding in der Kantine ist heute blau!“',
-      'v0.35 · „Schließe die Iris, Walter!“',
-      'v0.35 · „Trotz Contentrot – Toraktivierung bestätigt!“',
-      'v0.35 · „P90 entsichert, 50 Schuss im Magazin!“',
-      'v0.35 · „Roland TR-808 trifft Stargate-Fanfare!“'
+      '0.36 · „Die 808 drückt jetzt!“',
+      '0.36 · „Chevron 7 ist verriegelt! – Walter Harriman“',
+      '0.36 · „In der Tat. – Teal\'c“',
+      '0.36 · „Nicht autorisierte Toraktivierung von der Erde!“',
+      '0.36 · „Gemini 3.8 Flash High am Werk – der Uni-Server schläft noch!“',
+      '0.36 · „Opus 5.5 hat aufgeräumt, Gemini drückt die Bassdrum!“',
+      '0.36 · „100% Offline · Läuft auf einer 3.5\"-Floppy!“',
+      '0.36 · „Woolsey prüft die Budgets, Carter baut den Reaktor!“',
+      '0.36 · „TB-303 Resonance über 9000!“',
+      '0.36 · „Kaffee zuerst, Goa\'uld-Invasion später!“',
+      '0.36 · „Dr. Janet Fraiser hat noch genug Tretonin für alle!“',
+      '0.36 · „Comtrya! Harlan hat wieder Duplikate gebaut.“',
+      '0.36 · „Keine Sorge, Jack versteht Daniels Vortrag auch nicht.“',
+      '0.36 · „Iris schließen! Iris schließen!!“',
+      '0.36 · „0% Frameworks · 100% Vanilla JS & WebAudio!“',
+      '0.36 · „Ebene 19: Samantha Carters Quanten-Kaffeemaschine läuft.“',
+      '0.36 · „Wackelpudding in der Kantine ist heute blau!“',
+      '0.36 · „Schließe die Iris, Walter!“',
+      '0.36 · „Trotz Contentrot – Toraktivierung bestätigt!“',
+      '0.36 · „P90 entsichert, 50 Schuss im Magazin!“',
+      '0.36 · „Roland TR-808 trifft Stargate-Fanfare!“'
     ];
 
     function cycleSplash() {

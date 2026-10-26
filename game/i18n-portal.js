@@ -13,8 +13,8 @@
   if (typeof I18N === 'undefined') throw new Error('i18n-portal.js benötigt i18n.js');
   /* ---------- A: Kopfzeile, Branding, Navigation, Sprach-Toggle ---------- */
   I18N.add('de', {
-    'portal.title': 'SGC Command – Stargate Command v0.35 ("Die 808 drückt jetzt")',
-    'portal.brand.sub': 'Stargate Command · v0.35 · "Die 808 drückt jetzt"',
+    'portal.title': 'SGC Command – Stargate Command 0.36 ("Die 808 drückt jetzt")',
+    'portal.brand.sub': 'Stargate Command · 0.36 · "Die 808 drückt jetzt"',
     'portal.nav.game': 'Spiel',
     'portal.nav.wiki': 'Datenbank & Lore',
     'portal.nav.logs': "Captain's Log",
@@ -23,8 +23,8 @@
     'portal.lang.title': 'Sprache wechseln (Switch to English)'
   });
   I18N.add('en', {
-    'portal.title': 'SGC Command – Stargate Command v0.35 ("The 808 Hits Hard Now")',
-    'portal.brand.sub': 'Stargate Command · v0.35 · "The 808 Hits Hard Now"',
+    'portal.title': 'SGC Command – Stargate Command 0.36 ("The 808 Hits Hard Now")',
+    'portal.brand.sub': 'Stargate Command · 0.36 · "The 808 Hits Hard Now"',
     'portal.nav.game': 'Game',
     'portal.nav.wiki': 'Database & Lore',
     'portal.nav.logs': "Captain's Log",
@@ -35,7 +35,7 @@
 
   /* ---------- B: Spiel-Tab (Iframe-Karte) ---------- */
   I18N.add('de', {
-    'portal.game.title': '🎮 SGC Command v0.35 Live-Instanz',
+    'portal.game.title': '🎮 SGC Command 0.36 Live-Instanz',
     'portal.game.sub': 'Dual-Engine: Isometrisch Voxel (Pixel-Art) ⇄ 3D-ASCII (CP437, Taste [V]) · SGC-AMP v2.80',
     'portal.game.openTab': '↗ In neuem Tab öffnen',
     'portal.game.fullscreen': '⛶ Vollbild',
@@ -43,7 +43,7 @@
     'portal.game.controls': 'Steuerung: <b>WASD/Pfeile</b> = Kamera · <b>Q/E</b> = 90° Drehung · <b>V</b> = Pixel/ASCII (8-Bit) · <b>TAB</b> = Nächstes Mitglied · <b>ESC</b> = Menü'
   });
   I18N.add('en', {
-    'portal.game.title': '🎮 SGC Command v0.35 Live Instance',
+    'portal.game.title': '🎮 SGC Command 0.36 Live Instance',
     'portal.game.sub': 'Dual Engine: Isometric Voxel (Pixel-Art) ⇄ 3D-ASCII (CP437, Key [V]) · SGC-AMP v2.80',
     'portal.game.openTab': '↗ Open in new tab',
     'portal.game.fullscreen': '⛶ Fullscreen',
@@ -461,7 +461,7 @@
   I18N.add('de', {
     'portal.dl.h2': '📦 Offline-Paket & Download',
     'portal.dl.p': 'Lade das schlanke, bereinigte Release-Paket herunter. Vollständig offline lauffähig ohne Installation oder Node-Server.',
-    'portal.dl.meta': 'Schlankes Release v0.35 · TR-808 Live-Coding · SGC-Labor & Krankenstation · Dual-Gfx & Doku',
+    'portal.dl.meta': 'Schlankes Release 0.36 · TR-808 Live-Coding · SGC-Labor & Torraum 4x2 · Dual-Gfx & Doku',
     'portal.dl.btn': '⬇ Release ZIP Herunterladen',
     'portal.dl.h3': 'Installation & Schnellstart',
     'portal.dl.li1': 'ZIP-Archiv in ein beliebiges Verzeichnis entpacken.',
@@ -471,7 +471,7 @@
   I18N.add('en', {
     'portal.dl.h2': '📦 Offline Package & Download',
     'portal.dl.p': 'Download the lean, cleaned-up release package. Fully runnable offline without installation or a Node server.',
-    'portal.dl.meta': 'Lean release v0.35 · TR-808 live coding · SGC lab & medbay · dual gfx & docs',
+    'portal.dl.meta': 'Lean release 0.36 · TR-808 live coding · SGC lab & 4x2 Gateroom · dual gfx & docs',
     'portal.dl.btn': '⬇ Download Release ZIP',
     'portal.dl.h3': 'Installation & Quick Start',
     'portal.dl.li1': 'Extract the ZIP archive into any directory.',
@@ -517,12 +517,12 @@
 
   /* ---------- R: Footer ---------- */
   I18N.add('de', {
-    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND v0.35 · "Die 808 drückt jetzt"',
-    'portal.footer.2': 'Entwickelt im autonomen Multi-Agenten-Pair-Programming (Gemini 4 Argon · Claude 5.5 · Gemini 3.8 Flash · Claude Opus 5.5) · Lizenziert unter AGPL-3.0-or-later'
+    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.36 · "Die 808 drückt jetzt"',
+    'portal.footer.2': 'Entwickelt im autonomen Multi-Agenten-Pair-Programming (Gemini 4 Argon · Claude 5.5 / 3.5 Sonnet · Gemini 3.8 Flash · Claude Opus 5.5 · Qwen 3.8 / 3.5) · Lizenziert unter AGPL-3.0-or-later'
   });
   I18N.add('en', {
-    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND v0.35 · "The 808 Hits Hard Now"',
-    'portal.footer.2': 'Developed via autonomous multi-agent pair programming (Gemini 4 Argon · Claude 5.5 · Gemini 3.8 Flash · Claude Opus 5.5) · Licensed under AGPL-3.0-or-later'
+    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.36 · "The 808 Hits Hard Now"',
+    'portal.footer.2': 'Developed via autonomous multi-agent pair programming (Gemini 4 Argon · Claude 5.5 / 3.5 Sonnet · Gemini 3.8 Flash · Claude Opus 5.5 · Qwen 3.8 / 3.5) · Licensed under AGPL-3.0-or-later'
   });
 
 })();

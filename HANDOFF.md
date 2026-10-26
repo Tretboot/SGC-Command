@@ -1,4 +1,4 @@
-# 📦 HANDOFF – SGC COMMAND (v0.35 – "Die 808 drückt jetzt")
+# 📦 HANDOFF – SGC COMMAND (0.36 – "Die 808 drückt jetzt")
 
 **Projekt:** SGC Command (`g:\AgentHome\SGC-Command`)  
 **Forschungsrahmen:** Universität Osnabrück (Kognitionswissenschaft / Informatik) – KI-Pair-Programming-Studie  
@@ -7,29 +7,26 @@
 1. **Gemini 4 Argon:** 2:1 isometrische Voxel-Projektion, Obelisk-Mathematik, Diamond-Picking, initialer CP437/ASCII-Renderer, Lizenz-Audit.  
 2. **Claude 5.5 / 3.5 Sonnet:** Obelisk/Voxel-Stabilisierung, prozedurale WebAudio-Sample-Synthese, Inventar & Werkbank-Crafting (`INVENTAR-SPEC.md`), Hammonds Klemmbrett.  
 3. **Gemini 3.8 Flash:** Standard-MIDI-Bridge, Krumhansl-Schmuckler-Tonarterkennung, Stargate Theme × Switch Angel Hybrid-Remix-Synthesizer, prozedurale Seed-Song-Generierung (`SONGGEN`), persistenter planetarer Koloniebau, **SGC-AMP v2.80**, Strudel Live-Code Interface, ReBirth-338 Rack, 8-Bit Chiptune-Modus, C&C- und Lo-Fi-Remixes sowie das vereinheitlichte Web-Portal.
-4. **Claude Opus 5.5 (v0.25 – v0.28, v0.34):** 
-   - Krankenstation (Ebene 21 / Dr. Janet Fraiser & Carolyn Lam – v0.28) mit 5 Behandlungspfaden und EKG-Monitor.
+4. **Qwen 3.8 27b / Qwen 3.5 122b A10B-FP8 / Commander Qwen:** Projekt-Direktiven, Walk-Animationen, Dokumentations-Audits, Repo-Hygiene, i18n-Fundament via virtUOS Kiwi.
+5. **Claude Opus 5.5 (v0.25 – v0.28, v0.34):** 
+   - Krankenstation (Ebene 21 / Dr. Janet Fraiser & Carolyn Lam) mit 5 Behandlungspfaden und EKG-Monitor.
    - Taktische Downed-Evakuierung (`extract()`) & Not-Rückzug (`[🚨 Not-Rückzug]`).
    - SGC Vorfall- & Krisen-System bei „Tag Beenden“ (`SGC_INCIDENTS`).
    - SGC Tactical Level Editor (`tools/leveleditor.html`).
    - Umfassendes i18n-Fundament (DE/EN) und String-Extraktion.
-5. **Gemini 3.8 Flash High (Abgeschlossene Schicht – v0.35, "Die 808 drückt jetzt"):**
-   - **SGC-AMP & TR-808 Feinschliff:** Startbreite verkleinert, `resize: both` mit `localStorage`-Persistenz für Fenstergröße und Position.
-   - **Ebene 19 Forschungs-Labor & Tech-Tree Modal:** Eigenes Wissenschafts-Fenster (`🔬`) mit 4 Tech-Zweigen (Tor-Technik, Waffen, Schilde, Antiker/Alien-Wissen) und Missions-Forschungspunkte (+12..40 RP).
-   - **Roster Spoiler-Schutz:** Unrekrutierte Charaktere werden ausgeblendet, bis sie in Missionen/Storylines als NPCs erscheinen.
-   - **Multi-Slot Savegame System (`SGC_SAVES`):** 3 persistente Speicherslots (`slot1`, `slot2`, `slot3`) mit Metadaten-Inspektion.
-   - **Cookie-Clicker-Style Base64 Import/Export:** Textueller 1-Klick-Export/Import im Cookie-Clicker-Format sowie JSON Datei-Download/Upload.
-   - **Entwickler- & Test-Presets:** 4 Sofort-Zustände (`fresh`, `research_lab`, `medbay_crisis`, `endgame`) für schnelles Debuggen ohne Grinding.
-   - **Portal Splash-Sprüche (Minecraft-Style):** Zufällige, animierte Slogans im Portal-Header (`#portal-splash`) bei jedem Seitenaufruf und Klick.
-   - **Captain's Log Viewer & Forschungs-Disclaimer:** Vollständiger Markdown-Reader für alle 35 Logs mit akademischer Multi-Agenten-Einordnung.
-   - **Wiki-Synchronisation:** Aktualisierung von `wiki/basis.html`, `wiki/kampf.html` und `wiki/tech-tree.html` auf den neuesten Stand (Hex-Raster, 3 Renderstile, Labor, Krankenstation).
-   - **Essay zu Hexfeldern & Quadraten:** Ausführliche geometrische & architektonische Abhandlung in `blog/essay-hexfelder-und-quadrate.md`.
-   - **Kamera-Zoom & Mausrad-Support:** `onwheel`-Event auf `combat-cv` reaktiviert für stufenlose Voxel- und ASCII-Schärfung.
-   - **Taktisches Reaktionsfeuer (Overwatch):** `playerOverwatch(unit)` reserviert verbleibende AP (`Taste O`), markiert die Einheit mit `🎯`-Badge in 2D, Pixel-Voxel und 3D-ASCII. Im feindlichen Zug feuert `checkReactionFire(target)` sofort als Unterbrechungsangriff bei Bewegung oder Angriffsversuch in Waffenreichweite und Sichtlinie.
-   - **Zero-Dependency Headless Test-Suite:** 244+ automatisierte Tests laufen mit 0 Fehlern durch (`node test-browser.js`).
-   - **Floppy-Disk-Budget:** Gesamtrelease `release/SGC-Command-v035.zip` bleibt strikt unter 1,44 MB (aktuell: 811 KB).
+6. **Gemini 3.8 Flash High (Abgeschlossene Schichten 0.35 & 0.36, "Die 808 drückt jetzt"):**
+   - **Gateroom-Expansion 4×2:** Kanonisches zweistöckiges Silo auf Ebene 28 & 27 (Spalten 0..3, $260 \times 72$ px) mit 9 Chevrons, animiertem blauen Wassereffekt-Ereignishorizont (`Math.sin(now / 280)`), Stahlrampe und SF-Wachposten. Klick öffnet die Sternenkarte (`setTab('map')`).
+   - **Kontrollraum & Walter Harriman (Ebene 28, Spalten 4–5):** Aussichtsfenster in den Torraum, Anwahl-Computer mit 3 CRT-Monitoren, Chief Master Sergeant Walter Harriman. Klick löst Funk-Zitat aus (*„Chevron 7 verriegelt! Wurmloch etabliert.“*).
+   - **Besprechungsraum (Ebene 27, Spalten 4–5):** 8-sitziger Konferenztisch mit Blick auf das Tor und taktischem Wanddisplay.
+   - **MALP & Ausrüstung (Ebene 28, Spalten 6–7):** Tiefensonde und Naquadah-Frachtkisten.
+   - **Wache & Reaktionsfeuer (Guard Stance):** Verbleibende AP können per Taste `[O]` oder Button als Wachstellung deklariert werden; verleiht **+15 % Ausweich-/Deckungsbonus** (`target.overwatch` in `doAttack`).
+   - **In-Combat Auto-Battler:** Autonomer KI-Zug per Umschalt-Button `[ 🤖 Auto-Kampf ]` im Action-Panel (`runAutoBattleTurn()`).
+   - **Auto-Resolve (Schnellkampf mit Prognose):** 1-Klick-Kampf im Missionsbriefing mit Siegwahrscheinlichkeits-Prognose (z. B. `78%`) und Verletzungsrisiko; -25% Beute-/XP-Malus; Boss-/Storymissionen gesperrt.
+   - **Versionskonvention & Qwen-Credits:** Führendes 'v' entfernt, Qwen in allen Footern und Portalen gewürdigt.
+   - **Zero-Dependency Headless Test-Suite:** 250+ automatisierte Tests laufen mit 0 Fehlern durch (`node test-browser.js`).
+   - **Floppy-Disk-Budget:** Gesamtrelease bleibt strikt unter 1,44 MB.
 
-**Stand:** 26. Oktober 2026 · 244+ Prüfungen bestanden (0 Fehler) · AGPL-3.0-or-later.
+**Stand:** 26. Oktober 2026 · 250+ Prüfungen bestanden (0 Fehler) · AGPL-3.0-or-later.
 
 ---
 

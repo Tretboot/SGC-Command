@@ -1,9 +1,9 @@
-<!-- v0.35 "Die 808 drückt jetzt": siehe blog/captains-log-035.md und HANDOFF.md -->
+<!-- 0.36 "Die 808 drückt jetzt": siehe blog/captains-log-036.md und HANDOFF.md -->
 > **Legal notice:** This is a strictly non-commercial fan project. Stargate is a registered trademark of MGM Studios / Amazon. No copyright infringement intended. This project is unofficial and is not affiliated with, endorsed by, or sponsored by MGM Studios, Amazon, or any Stargate rights holder.
 >
 > **License scope:** The AGPL-3.0-or-later license in this repository applies to the program code identified in [LICENSE](LICENSE). It does not grant any rights to Stargate, its universe, names, characters, settings, story elements, dialogue, trademarks, or any artwork, audio, screenshots, or other non-code material. Rights to third-party materials remain with their respective owners.
 
-### SGC Command v0.35 ("Die 808 drückt jetzt")
+### SGC Command 0.36 ("Die 808 drückt jetzt")
 
 An experimental, non-commercial fan-made tactical strategy game prototype. Manage the 28 subterranean levels of the Cheyenne Mountain Complex, lead SG teams through the Stargate, establish offworld colonies, research alien technology, and fight turn-based tactical battles — powered by a high-octane algorithmic Strudel live-coding audio engine and Roland TR-808 drum synthesizers.
 
@@ -98,6 +98,17 @@ The opening cinematic starts upon first launch and can be replayed anytime via t
   * `medbay_crisis`: Dr. Janet Fraiser triage scenario with wounded soldiers and stocked medicines.
   * `endgame`: General Landry with 9 advanced technologies and colonies on Abydos and Planet Alpha.
 
+### 9. 4×2 Gateroom & Cheyenne Mountain Cutaway (`game/base.js`, `game/engine.js`)
+* **Two-Story Gateroom Silo:** Expands to an imposing 4×2 chamber across Level 28 & 27 with concrete blast walls, Naquadah ring, 9 glowing orange chevrons, animated cerulean water event horizon shimmer, and armed SF guards. Clicking opens the Star Map directly.
+* **Level 28 Kontrollraum:** Dialing computer with 3 CRT status monitors and Chief Master Sergeant Walter Harriman. Clicking triggers the canonical radio quote (*"Chevron 7 locked!"*).
+* **Level 27 Briefing Room:** 8-seat conference table overlooking the gate silo with tactical map projection.
+* **Level 28 MALP Staging:** Treaded MALP exploration probes and supply crates.
+
+### 10. Tactical Guard Stance, Auto-Battler & Auto-Resolve (`game/combat.js`, `game/ui.js`)
+* **Wache & Reaktionsfeuer (Guard Stance):** SG units can spend remaining AP to assume guard stance (`Key O`), reserving reaction fire for moving enemies and gaining a **+15% defensive evasion bonus** when attacked.
+* **In-Combat Auto-Battler:** Toggle `[ 🤖 Auto-Kampf ]` to watch squad members heal with medkits, prioritize enemy targets, flank through cover, or establish overwatch positions autonomously.
+* **Mission Auto-Resolve (Schnellkampf mit Prognose):** One-click simulated resolution with squad-vs-enemy win chance forecast (e.g. `78%`) and injury risk display. Includes a -25% loot/XP penalty to reward manual play, with story and boss missions locked out.
+
 ---
 
 ## Academic AI Study (Universität Osnabrück)
@@ -108,8 +119,9 @@ The codebase was iteratively developed, architected, and debugged across multipl
 1. **Phase 1 (Gemini 4 Argon):** Mathematical foundations of 2:1 isometric projection, ray-to-diamond tile picking, CP437 ASCII rasterization, and core loop.
 2. **Phase 2 (Claude 3.5 / 5.5 Sonnet):** Engine stabilization, procedural WebAudio sample bank synthesis, inventory and crafting systems, and Hammond's clipboard personal management.
 3. **Phase 3 (Gemini 3.8 Flash):** Standard MIDI parser, Krumhansl-Schmuckler key detector, live-coding remix bridges, procedural mission song generator (`SONGGEN`), persistent colonies, controller rumble, and web hub.
-4. **Phase 4 (Claude Opus 5.5):** Infirmary (Ebene 21), medical treatment loop, tactical downed-evacuation, SGC incidents, leveleditor, and complete i18n architecture refactoring.
-5. **Phase 5 (Gemini 3.8 Flash High - Current):** Window manager refinements, resizable Winamp chassis, research tech tree overhaul with dedicated laboratory modal, mission RP integration, and spoiler-free roster management.
+4. **Phase 4 (Qwen 3.8 27b / Qwen 3.5 122b A10B-FP8 / Commander Qwen):** Early project directives, walk animations, documentation audits, repository hygiene, and foundational i18n architectures via virtUOS Kiwi.
+5. **Phase 5 (Claude Opus 5.5):** Infirmary (Ebene 21), medical treatment loop, tactical downed-evacuation, SGC incidents, leveleditor, and complete i18n architecture refactoring.
+6. **Phase 6 (Gemini 3.8 Flash High - Current):** Window manager refinements, resizable Winamp chassis, research tech tree overhaul with dedicated laboratory modal, 4×2 Gateroom cutaway, Walter Harriman control room, guard stance (+15% evasion), in-combat autobattler, and mission auto-resolve.
 
 For full research notes and documentation, see [`blog/uni-osnabrueck-ai-study.md`](blog/uni-osnabrueck-ai-study.md) and the comprehensive [Captain's Log Series](blog/).
 
@@ -123,7 +135,7 @@ For full research notes and documentation, see [`blog/uni-osnabrueck-ai-study.md
 | [`game/`](game/) | Playable game engine (`index.html`, `engine.js`, `combat.js`, `base.js`, `iso.js`, `sound.js`, `midi.js`, `ui.js`, `window-manager.js`) |
 | [`game/i18n.js`](game/i18n.js) & [`game/i18n-game.js`](game/i18n-game.js) | Dual-language internationalization system and string tables (DE / EN) |
 | [`game/vendor/strudel-web.js`](game/vendor/strudel-web.js) | Local, standalone `@strudel/web@1.3.0` live-coding audio bundle |
-| [`blog/`](blog/) | Complete Captain's Log development archives (001–035) and university study documentation |
+| [`blog/`](blog/) | Complete Captain's Log development archives (001–036) and university study documentation |
 | [`tools/leveleditor.html`](tools/leveleditor.html) | Standalone tactical isometric mission and level editor |
 | [`wiki/`](wiki/) | SGC lore database, planet telemetry, weapons, and colony specs |
 | [`test-browser.js`](test-browser.js) | Comprehensive automated headless browser test suite |
@@ -138,7 +150,7 @@ Run the full automated test suite using Node.js:
 node test-browser.js
 ```
 
-All 230+ automated tests run in a headless mock DOM environment without any third-party dependencies, verifying math projections, audio synthesis, MIDI analysis, combat state transitions, hospital recovery, research tree mechanics, and bilingual string parity.
+All 250+ automated tests run in a headless mock DOM environment without any third-party dependencies, verifying math projections, audio synthesis, MIDI analysis, combat state transitions, hospital recovery, research tree mechanics, autobattler AI, auto-resolve simulations, and bilingual string parity.
 
 ---
 

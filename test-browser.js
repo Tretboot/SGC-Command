@@ -1061,10 +1061,13 @@ for(const fn of loadFns){
 
   // Verify Reaction Fire triggers when enemy takes an action/step
   const origHp = e1.hp;
+  const origRnd = Math.random;
+  Math.random = () => 0.1; // Ensure 100% hit roll
   const triggered = checkReactionFire(e1);
   assert(triggered === true, 'checkReactionFire() triggers against enemy in range & LOS');
   assert(p1.overwatch === false, 'player overwatch consumed upon firing');
   assert(e1.hp < origHp || e1.dead, 'reaction fire damages or kills target');
+  Math.random = origRnd;
 
   // Verify renderCombatUI reflects overwatch badge
   C.selected = p1;
@@ -1075,6 +1078,73 @@ for(const fn of loadFns){
   
   // Reset combat state
   C.active = false;
+}
+
+// 36. Test 0.36 Milestone: Gateroom 4x2 Silo, Walter's Control Room, Autobattler & Auto-Resolve
+{
+  // A: Gateroom 4x2 layout on Level 28 & 27
+  assert(ROOMS.gate.w === 4 && ROOMS.gate.h === 2, 'ROOMS.gate is a 4x2 silo spanning Level 28 & 27');
+  const gateRoom = S.base.rooms[1];
+  assert(gateRoom && gateRoom.type === 'gate' && gateRoom.x === 0 && gateRoom.y === 0, 'Gateroom placed at bottom-left corner (0,0)');
+  assert(S.base.grid[0] === 1 && S.base.grid[3] === 1 && S.base.grid[8] === 1, 'Gateroom occupies grid cells across columns 0..3 and rows 0..1');
+
+  // B: Base click interactions
+  UI.tab = 'base';
+  els['base-cv'].getBoundingClientRect = () => ({ left: 0, top: 0, width: 720, height: 1134 });
+  els['base-cv'].width = 720;
+  els['base-cv'].height = 1134;
+
+  // Click on Gateroom (Level 28, col 1: screen X ~ 150, Y ~ 1080)
+  baseClick(150, 1080);
+  assert(UI.tab === 'map', 'Clicking Gateroom switches tab to Star Map');
+
+  // Click on Walter Harriman in Control Room (Level 28, col 4: screen X ~ 380, Y ~ 1080)
+  UI.tab = 'base';
+  let lastNote = '';
+  const origNote = note;
+  note = (msg) => { lastNote = msg; if(origNote) origNote(msg); };
+  baseClick(380, 1080);
+  assert(lastNote.includes('Walter Harriman') && lastNote.includes('Chevron 7'), 'Clicking Kontrollraum triggers Walter Harriman radio quote');
+  note = origNote;
+
+  // C: In-Combat Auto-Battler
+  const mDef = (typeof curMissions === 'function' && curMissions()[0]) || { id: '1-2', name: 'Chulak', planet: 'chulak', enemies: { jaffa: 2 } };
+  startCombat(mDef, [0, 1]);
+  assert(C.autoBattle === false, 'C.autoBattle is false by default upon combat start');
+  toggleAutoBattle();
+  assert(C.autoBattle === true, 'toggleAutoBattle() activates autoBattle');
+
+  const pUnit = Object.values(C.units).find(u => u.side === 'player' && !u.dead);
+  const nearest = nearestEnemyFor(pUnit);
+  assert(nearest && nearest.side === 'enemy', 'nearestEnemyFor finds the closest enemy target');
+
+  // Verify runAutoBattleTurn executes without errors
+  pUnit.ap = 2;
+  runAutoBattleTurn();
+  assert(pUnit.ap < 2 || pUnit.overwatch === true, 'runAutoBattleTurn() autonomously performs an action (move, attack, or overwatch)');
+  C.autoBattle = false;
+  C.active = false;
+
+  // D: Auto-Resolve (Schnellkampf mit Prognose)
+  const testMission = { id: 'test_mission_ar', name: 'Auto-Resolve Probe', planet: 'chulak', reward: { ore: 100, tech: 40 }, enemies: { jaffa: 2 } };
+  const forecast = getAutoResolveForecast(testMission, [0, 1, 2, 3]);
+  assert(forecast && forecast.eligible === true, 'getAutoResolveForecast() returns valid forecast for regular mission');
+  assert(forecast.winChance >= 10 && forecast.winChance <= 95, 'winChance is clamped between 10% and 95% (got ' + forecast.winChance + '%)');
+  assert(['niedrig', 'mittel', 'hoch'].includes(forecast.injuryRisk), 'injuryRisk is classified (niedrig/mittel/hoch)');
+
+  // Verify boss mission is ineligible for auto-resolve
+  const bossMission = { id: 'boss_test', name: 'Apophis Vorstoß', planet: 'chulak', type: 'boss', enemies: { goauld: 1 } };
+  const bossForecast = getAutoResolveForecast(bossMission, [0, 1]);
+  assert(bossForecast && bossForecast.eligible === false, 'getAutoResolveForecast() locks out boss missions from auto-resolve');
+
+  // Execute Auto-Resolve (deterministically test victory branch)
+  const initialOre = S.res.ore || 0;
+  const origRandom = Math.random;
+  Math.random = () => 0.1; // Force victory roll
+  autoResolveMission(testMission, [0, 1, 2, 3]);
+  assert(S.done.includes(testMission.id), 'autoResolveMission successfully marks mission as completed upon victory');
+  assert((S.res.ore || 0) > initialOre, 'autoResolveMission awards loot with penalty applied');
+  Math.random = origRandom;
 }
 
 for(let i=0;i<5;i++){
