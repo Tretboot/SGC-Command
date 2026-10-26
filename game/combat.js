@@ -825,6 +825,10 @@ function runAutoBattleTurn(){
   }
   const u=readyUnits[0];
   C.selected=u;
+  // Center camera on acting unit in auto-battle watch mode
+  if(typeof panCombatCamera==='function'&&typeof VIEW_W!=='undefined'&&typeof VIEW_H!=='undefined'){
+    panCombatCamera(Math.round(u.x-VIEW_W/2),Math.round(u.y-VIEW_H/2));
+  }
   // 1. Can we heal an injured teammate or self if holding medkit and HP < 65%?
   if(u.special==='medkit'&&!u.specialUsed&&u.hp<u.maxHp*0.65&&u.ap>=1){
     useSpecial(u);
@@ -886,6 +890,9 @@ function endPlayerPhase(){
   if(!C.result)endRound();
 }
 function enemyAct(u){
+  if(C.autoBattle&&typeof panCombatCamera==='function'&&typeof VIEW_W!=='undefined'&&typeof VIEW_H!=='undefined'){
+    panCombatCamera(Math.round(u.x-VIEW_W/2),Math.round(u.y-VIEW_H/2));
+  }
   let ap=2;
   while(ap>0&&!C.result&&!u.dead){
     const target=nearestPlayer(u);

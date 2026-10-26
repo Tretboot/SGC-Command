@@ -55,6 +55,10 @@
 <!-- Combat-Overlay (Canvas oben flex:1, Jagged-Alliance UI unten angedockt) -->
 <div id="combat-overlay" onclick="if(typeof C!=='undefined'&&C.result)combatEnd()" style="display:none;position:fixed;inset:0;background:#000;z-index:20;flex-direction:column;align-items:stretch;justify-content:stretch;overflow:hidden">
  <div class="combat-viewport-wrap" style="flex:1;position:relative;overflow:hidden;width:100%;min-height:0">
+   <div id="combat-audio-bar" style="position:absolute;top:12px;right:14px;z-index:15;display:flex;gap:6px;align-items:center;background:rgba(9,15,24,0.85);border:1px solid #334155;border-radius:6px;padding:4px 8px;backdrop-filter:blur(4px)">
+    <button id="combat-mute-btn" onclick="toggleCombatAudio()" class="btn small" style="padding:4px 8px;cursor:pointer" title="Audio stumm/aktiv">🔊</button>
+    <button onclick="showStrudelModal()" class="btn small" style="padding:4px 8px;border-color:#f59e0b;color:#fde68a;cursor:pointer" title="SGC-AMP Musik-Player öffnen">📻 SGC-AMP</button>
+   </div>
   <canvas id="combat-cv" width="960" height="720" aria-label="Taktische Einsatzkarte" data-i18n-aria="game.combat.aria.map" style="touch-action:none;cursor:grab;width:100%;height:100%;display:block"></canvas>
   <canvas id="combat-minimap" width="256" height="192" aria-label="Minimap: anklicken, um die Kartenansicht zu verschieben" data-i18n-aria="game.combat.aria.minimap"></canvas>
   <button id="combat-end" onclick="combatEnd()" style="display:none;padding:12px 32px;font-size:16px;cursor:pointer" data-i18n="game.combat.continue">Weiter</button>

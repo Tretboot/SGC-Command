@@ -1,3 +1,15 @@
+
+function toggleCombatAudio(){
+  if(typeof SFX!=='undefined'){
+    if(typeof SFX.toggle==='function') SFX.toggle();
+    else if(typeof SFX.toggleMute==='function') SFX.toggleMute();
+    else SFX.muted = !SFX.muted;
+    if(typeof renderCombatUI==='function')renderCombatUI(true);
+    const cbBtn = document.getElementById('combat-mute-btn');
+    if(cbBtn) cbBtn.textContent = SFX.muted ? '🔇' : '🔊';
+  }
+}
+window.toggleCombatAudio = toggleCombatAudio;
 'use strict';
 // ===================== SGC COMMAND v2 – UI =====================
 // Jagged-Alliance-Style: Bottom-Panel mit Unit-Info, Aktionen, Gate-Timer, Log.
@@ -1046,7 +1058,7 @@ function showStrudelModal(){
 
     <!-- Playlist Tabs -->
     <div class="winamp-tabs">
-      <button class="winamp-tab ${WINAMP.tab==='theme'?'on':''}" onclick="WINAMP.tab='theme';showStrudelModal()">🎺 Stargate Themes (15)</button>
+      <button class="winamp-tab ${WINAMP.tab==='theme'?'on':''}" onclick="WINAMP.tab='theme';showStrudelModal()">🎺 Stargate Themes (18)</button>
       <button class="winamp-tab ${WINAMP.tab==='core'?'on':''}" onclick="WINAMP.tab='core';showStrudelModal()">${I18N.T('game.dyn.str.tab_core')}</button>
       <button class="winamp-tab ${WINAMP.tab==='sa'?'on':''}" onclick="WINAMP.tab='sa';showStrudelModal()" title="${I18N.T('game.dyn.str.tab_sa_title')}">📦 Codevault Tracks (20)</button>
       <button class="winamp-tab ${WINAMP.tab==='seed'?'on':''}" onclick="WINAMP.tab='seed';showStrudelModal()">${I18N.T('game.dyn.str.tab_seed')}</button>
@@ -1326,19 +1338,17 @@ function renderBaseSide(){
     ${r.type==='lab'?`<button class="small" style="background:#0e7490;border-color:#38bdf8;color:#cffafe;margin-top:6px;width:100%" onclick="event.stopPropagation();showResearchModal()">${I18N.T('game.dyn.btn.lab_open')}</button>`:''}</div>`;
  }).join('');
  const qTech = S.research && S.research.queue ? getTech(S.research.queue) : null;
-  h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
-   <h3 style="margin:0">${I18N.T('game.dyn.research')}</h3>
-   <button class="small" style="background:#0e7490;border-color:#38bdf8;color:#cffafe" onclick="showResearchModal()">${I18N.T('game.dyn.btn.lab_open')}</button>
-  </div>
-  <p>${qTech?`${I18N.T('game.dyn.research.current',[qTech.name])} ${bar(S.research.rp/qTech.cost*100,'#38bdf8')} ${Math.floor(S.research.rp)}/${qTech.cost} RP`:I18N.T('game.dyn.research.none')}</p>
-  <div class="tree">`;
-  [['g',I18N.T('game.dyn.branch.g')||'Gate-Netz'],['w',I18N.T('game.dyn.branch.w')||'Waffentechnik'],['s',I18N.T('game.dyn.branch.s')||'Schilde'],['a',I18N.T('game.dyn.branch.a')||'Antiker-Wissen']].forEach(([br,nm])=>{
-   h+=`<div><h4>${nm}</h4>`+TECH.map(t=>getTech(t)).filter(t=>t&&t.branch===br).map(t=>{
-    const done=S.research&&S.research.done&&S.research.done.includes(t.id),av=techAvailable(t);
-    return `<button class="tech ${done?'done':''} ${S.research.queue===t.id?'on':''}" ${(!av&&!done)?'disabled':''} onclick="act(setResearch('${S.research.queue===t.id?'':t.id}'))"><b>${t.id} ${t.name}</b><br><small>${t.desc} · ${t.cost} RP</small></button>`;
-   }).join('')+'</div>';
-  });
-  h+='</div>';
+  const doneCount = (S.research && S.research.done && S.research.done.length) || 0;
+  h+=`<div class="item" style="border-color:#0891b2;margin-top:12px;background:linear-gradient(145deg,#0c1a29,#09121c);padding:10px">
+   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+    <h3 style="margin:0;font-size:13px;color:#38bdf8">🔬 ${I18N.T('game.dyn.research')}</h3>
+    <span class="tag" style="background:#0e7490;color:#cffafe">${doneCount}/${TECH.length} Erforscht</span>
+   </div>
+   <div style="font-size:12px;margin-bottom:6px">
+    ${qTech?`<b>${qTech.name}</b><br><small style="color:#94a3b8">${qTech.desc}</small><div style="margin-top:4px">${bar(S.research.rp/qTech.cost*100,'#38bdf8')} <span style="font-size:11px;color:#cbd5e1">${Math.floor(S.research.rp)}/${qTech.cost} RP</span></div>`:`<span style="color:#94a3b8">${I18N.T('game.dyn.research.none')}</span>`}
+   </div>
+   <button class="small" style="width:100%;background:#0e7490;border-color:#38bdf8;color:#cffafe;font-weight:bold;padding:5px" onclick="showResearchModal()">${I18N.T('game.dyn.btn.lab_open')} (Forschungsbaum)</button>
+  </div>`;
   if(S.memorial.length){
   h+=`<h3>${I18N.T('game.dyn.memorial')}</h3><div class="gbox" style="border-color:#ef4444">${S.memorial.map(n=>`<div>🕯 ${n}</div>`).join('')}<button class="btn small" style="margin-top:6px;width:100%;background:#3b1e2a;border-color:#f43f5e;color:#fecdd3" onclick="if(typeof SFX!=='undefined'&&SFX.playTrack)SFX.playTrack('theme_funeral');toast(I18N.T('game.dyn.toast.funeral'))">${I18N.T('game.dyn.btn.funeral_play')}</button></div>`;
  }
@@ -1517,6 +1527,7 @@ function renderMapSide(){
   const forecast=getAutoResolveForecast(ms[0],defIds);
   h+=`<div style="display:flex;gap:6px;margin-top:8px">`;
   h+=`<button id="launch" style="flex:1;background:#1f6f3a;border-color:#34c76a">${I18N.T('game.dyn.btn.launch')}</button>`;
+  h+=`<button id="launch-auto" style="flex:1;background:#065f46;border-color:#10b981;color:#a7f3d0;font-size:11px" title="Startet die Mission auf der Taktikkarte mit aktivem Autobattler zum Zuschauen">🤖 Auto-Mission</button>`;
   if(forecast&&forecast.eligible){
    h+=`<button id="auto-resolve" style="flex:1;background:#1e3a5f;border-color:#38bdf8;color:#e0f2fe;font-size:11px" title="${I18N.T('game.dyn.autoresolve.hint')}">⚡ ${I18N.T('game.dyn.btn.autoresolve')} (${forecast.winChance}%)</button>`;
   }
@@ -1541,15 +1552,15 @@ function renderMapSide(){
 }
 
 // ===================== Mission-Flow =====================
-function launchMission(mission,teamIds){
+function launchMission(mission,teamIds,startWithAuto){
  const briefing=MISSION_BRIEFINGS&&MISSION_BRIEFINGS[mission.id];
  if(briefing){
-  showStorySequence(briefing.lines,I18N.T('game.dyn.story.briefing_kicker',[mission.name]),I18N.T('game.dyn.story.btn_dial'),()=>activateMission(mission,teamIds),'briefing',briefing.objective);
+  showStorySequence(briefing.lines,I18N.T('game.dyn.story.briefing_kicker',[mission.name]),I18N.T('game.dyn.story.btn_dial'),()=>activateMission(mission,teamIds,startWithAuto),'briefing',briefing.objective);
   return;
  }
  activateMission(mission,teamIds);
 }
-function activateMission(mission,teamIds){
+function activateMission(mission,teamIds,startWithAuto){
  GATE_STATE={teams:[{members:teamIds,mission:0}],roster:S.roster};
  $('gate-overlay').style.display='flex';
  sfx('gate');
@@ -1558,6 +1569,7 @@ function activateMission(mission,teamIds){
   try{
    $('gate-overlay').style.display='none';
    startCombat(mission,teamIds);
+    if(startWithAuto){ C.autoBattle=true; setTimeout(runAutoBattleTurn, 500); }
    document.body.style.overflow='hidden';
    $('combat-overlay').style.display='flex';
    $('combat-end').style.display='none';
@@ -1807,6 +1819,9 @@ function renderCombatUI(force=false){
  h+=`<button class="cui-btn" style="padding:6px 10px" onclick="if(typeof rotateIsoCamera==='function')rotateIsoCamera(1)" title="${I18N.T('game.dyn.cui.rotate_r')}">↷ E</button>`;
  h+=`<button class="cui-btn" style="padding:6px 10px;border-color:#4ade80;color:#4ade80" onclick="cycleGfxMode()" title="${I18N.T('game.dyn.cui.gfx')}">${gm==='ascii'?'⌨ ASCII':'🖥 PIXEL'}</button>`;
  h+=`<button class="cui-btn" style="padding:6px 10px" onclick="showHelp()">❓</button>`;
+  const isMuted = (typeof SFX!=='undefined' && SFX.muted);
+  h+=`<button class="cui-btn" style="padding:6px 10px;border-color:${isMuted?'#ef4444':'#22c55e'};color:${isMuted?'#fca5a5':'#86efac'}" onclick="toggleCombatAudio()" title="${isMuted?'Ton einschalten':'Ton stumm'}">${isMuted?'🔇':'🔊'}</button>`;
+  h+=`<button class="cui-btn" style="padding:6px 10px;border-color:#f59e0b;color:#fde68a" onclick="showStrudelModal()" title="SGC-AMP / Musik-Workstation öffnen">📻 SGC-AMP</button>`;
  h+=`</div>`;
  const g=gateReady();
  const gReady=g.at===g.total&&g.total>0;

@@ -15,9 +15,16 @@ canvas{width:100%;height:auto;background:#000;border:2px solid #243248;border-ra
 #combat-end{position:absolute;left:50%;bottom:24px;z-index:100;transform:translateX(-50%);background:#166534;border:2px solid #4ade80;color:#f0fdf4;font-weight:bold;font-size:16px;padding:12px 32px;border-radius:6px;cursor:pointer;box-shadow:0 0 20px rgba(74,222,128,.4);animation:pulse-green 1.5s infinite alternate;pointer-events:auto}
 @keyframes pulse-green{0%{box-shadow:0 0 16px rgba(74,222,128,.3)}100%{box-shadow:0 0 28px rgba(74,222,128,.7)}}
 #combat-end:hover{background:#15803d;border-color:#86efac}
-.base-canvas-scroll{min-width:0;overflow-x:auto}
+.base-canvas-scroll{min-width:0;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#334155 #0b1118}
+.base-canvas-scroll::-webkit-scrollbar{height:6px}
+.base-canvas-scroll::-webkit-scrollbar-track{background:#0b1118}
+.base-canvas-scroll::-webkit-scrollbar-thumb{background:#334155;border-radius:3px}
 aside,#team-list,#roster-grid,#base-body,#log-body{background:#0f1622;border:1px solid #243248;border-radius:6px;padding:10px}
-aside{max-height:600px;overflow:auto}h3{margin:6px 0;color:#e8b040;font-size:15px;letter-spacing:1px}h3 small{color:#7f90a6;font-weight:normal}h4{margin:4px 0;color:#4fc3f7}
+aside,#base-side{max-height:calc(100vh - 70px);overflow-y:auto;position:sticky;top:10px;scrollbar-width:thin;scrollbar-color:#334155 #0b1118}
+aside::-webkit-scrollbar,#base-side::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-track,#base-side::-webkit-scrollbar-track{background:#0b1118;border-radius:3px}
+aside::-webkit-scrollbar-thumb,#base-side::-webkit-scrollbar-thumb{background:#334155;border-radius:3px}
+aside::-webkit-scrollbar-thumb:hover,#base-side::-webkit-scrollbar-thumb:hover{background:#475569}h3{margin:6px 0;color:#e8b040;font-size:15px;letter-spacing:1px}h3 small{color:#7f90a6;font-weight:normal}h4{margin:4px 0;color:#4fc3f7}
 .base-news{position:relative;overflow:hidden;margin:0 0 14px;padding:12px;background:linear-gradient(145deg,#15283a,#0b121d 72%);border:1px solid #35516b;border-left:3px solid #4fc3f7;border-radius:6px;box-shadow:inset 0 0 22px rgba(79,195,247,.06)}
 .base-news-head,.base-news-footer{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .base-news-head{font:bold 11px monospace;letter-spacing:1.2px;color:#6bd5ff}
