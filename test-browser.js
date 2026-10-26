@@ -100,6 +100,7 @@ const files=[
   'switch-angel.js',
   'midi-data.js',
   'sound.js',
+  'hit-tracks.js',
   'midi.js',
   'midi-controller.js',
   'art.js',
@@ -1405,6 +1406,29 @@ for(const fn of loadFns){
     setGfxMode('pixel');
     C.active = false;
   }
+}
+
+// 38. Test 80s/90s Hit Jukebox (hit-tracks.js) & "Stand Orders"-Aussortierung
+{
+  const hitKeys = Object.keys(STRUDEL_TRACKS).filter(k => k.startsWith('hit_'));
+  assert(hitKeys.length === 7, '80s/90s Hit Jukebox: 7 hit_ tracks registered (' + hitKeys.join(', ') + ')');
+  assert(STRUDEL_TRACKS.hit_blue_monday && STRUDEL_TRACKS.hit_blue_monday.code.includes('$KICK') && STRUDEL_TRACKS.hit_blue_monday.code.includes('$BASS'), 'Blue Monday (New Order 1983) Strudel-Track mit $KICK/$BASS registered');
+  assert(STRUDEL_TRACKS.hit_blue_monday && STRUDEL_TRACKS.hit_blue_monday.code.includes('setCpm(130/4)'), 'Blue Monday läuft mit 130 BPM');
+  assert(STRUDEL_TRACKS.hit_confusion_pump && STRUDEL_TRACKS.hit_confusion_pump.name.includes('Pump Action Panel'), 'Confusion "Pump Action Panel" Version registered');
+  for (const k of hitKeys) {
+    const v = STRUDEL.compile(STRUDEL_TRACKS[k].code);
+    assert(v && v.length > 0, 'Hit track ' + k + ' kompiliert sauber (' + (v ? v.length : 0) + ' Stimmen)');
+  }
+  const pm = MUSIC_PROGRESS.planetMap();
+  assert(Object.keys(pm).every(t => t.startsWith('sa_') || t.startsWith('hit_')), 'Codevault-Planetenmappe enthält nur sa_/hit_-Tracks');
+  assert(Object.keys(pm).filter(t => t.startsWith('hit_')).length === 7, 'Alle 7 Hit-Tracks sind per Planetenfreischaltung unlockbar');
+  assert(!isTrackUnlocked('hit_blue_monday'), 'Hit-Tracks sind im frischen Spielstand gesperrt (Codevault)');
+  const soGen = SONGGEN.fromCombat({ mission: { name: 'Stand Orders', planet: 'p2x416', enemies: { jaffa: 12 } }, units: {} }, S);
+  assert(soGen === null, 'SONGGEN: Mission "Stand Orders" erzeugt KEINEN Kampfsong (Song gestrichen)');
+  const otherGen = SONGGEN.fromCombat({ mission: { name: 'Test Defense', planet: 'abydos', enemies: { jaffa: 3 } }, units: {} }, S);
+  assert(otherGen && otherGen.code.includes('$KICK'), 'SONGGEN: andere Missionen erzeugen weiterhin Kampfsongs');
+  assert(!Object.values(STRUDEL_TRACKS).some(t => /^stand orders$/i.test(t.name || '')), 'Kein "Stand Orders"-Song im Track-Katalog');
+  assert(!fs.existsSync('switch-angel'), 'switch-angel Quell-Ordner aus dem Repo entfernt (Credit bleibt in game/switch-angel.js)');
 }
 
 for(let i=0;i<5;i++){
