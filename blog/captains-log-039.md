@@ -88,5 +88,5 @@ Getrennte Feature-Commits (Conventional Commits) auf `main`, danach **Push inklu
 * **Interpretation „Pump Action Panel":** kein lokales File/Song mit diesem Namen gefunden (Downloads, G:\AgentHome, FL-Studio-Verzeichnisse durchsucht); es existiert die pump-ge-uppte Confusion-Variante. Falls eine eigene „Pump Action Panel"-Komposition gemeint war: einfach die MIDI/Strudel-Quelle liefern – `scratch/build-hit-tracks.js` macht den Rest in 30 Sekunden.
 * `showLogEntry()` Dead Code in `hub.html` (seit Log 038 bekannt).
 * Ältere `v022`–`v036`-ZIPs im Repo-Root (historisch, Log 038).
-* **Release 0.39 gebaut**: `release/SGC-Command-039.zip` + `.sha256`, annotiertes Tag `v0.39`, Portal/Footers/i18n in alle 9 Sprachen auf 0.39 „Blue Monday“ angehoben (ZIP = 037-final-Layout + `game/hit-tracks.js` + Log 039).
+* **Release 0.39 gebaut**: `release/SGC-Command-039.zip` + `.sha256` (Build-Skript: `scratch/build-release-039.ps1`), annotiertes Tag `v0.39`, Portal/Footers/i18n in alle 9 Sprachen auf 0.39 „Blue Monday“ angehoben (ZIP = 037-final-Layout + `game/hit-tracks.js` + Log 039).
 
