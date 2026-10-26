@@ -242,7 +242,7 @@ function startCombat(mission,teamIds){
   // Anzahl skalieren mit D * chapterScale; Spieler-Schaden mit D.
   // KEIN Gate-Timer mehr: Runden laufen, bis Sieg oder Rückkehr zum Gate.
   const D=diff(),chapterScale=1+S.chapter*0.05;
-  C.result=null;C.log=[];C.selected=null;C.moveRange=[];C.atkRange=[];C.coverRange=[];C.nextId=1;C.units={};C.hover=null;C.fx=[];C.shake=0;C.cameraX=0;C.cameraY=0;C.mapVersion++;C.contactComplete=false;C.buildType=null;
+  C.result=null;C.log=[];C.selected=null;C.moveRange=[];C.atkRange=[];C.coverRange=[];C.nextId=1;C.units={};C.hover=null;C.fx=[];C.shake=0;C.cameraX=0;C.cameraY=0;C.mapVersion++;C.contactComplete=false;C.buildType=null;C.autoBattle=false;
   C.tutorial=mission.tutorial?{step:0}:null;
   C.dialogueActive=false;C.sceneFlags={};
   C.firstHint=!mission.tutorial&&!mission.peaceful;
@@ -456,6 +456,7 @@ function doAttack(attacker,target){
   if(cover&&coverAngle>=0.5)hit-=cover===2?40:20;
   else if(cover&&coverAngle<=-0.5)hit+=15;
   if(target.smokeTurns>0)hit-=25;
+  if(target.overwatch)hit-=15; // Wache & Reaktionsfeuer: defensive Wachhaltung (+15% Evasion)
   if(w.ignoreCover)hit+=25;
   const attackerCover=coverRating(attacker);
   if(attackerCover)hit+=attackerCover===2?12:7;
@@ -789,6 +790,92 @@ function nextUnit(){
   const units=Object.values(C.units).filter(u=>u.side==='player'&&!u.dead&&!u.downed&&u.ap>0);
   if(units.length===0){endPlayerPhase();return;}
   C.selected=units[0];focusCombatUnit(C.selected);C.moveRange=moveRange(C.selected);C.atkRange=tutorialAllowsAttack(C.selected)?attackTargets(C.selected):[];C.coverRange=tutorialAllowsAttack(C.selected)?coverTargets(C.selected):[];
+  if(C.autoBattle&&C.phase==='player'&&!C.result){
+    setTimeout(runAutoBattleTurn,160);
+  }
+}
+function toggleAutoBattle(){
+  C.autoBattle=!C.autoBattle;
+  if(C.autoBattle){
+    clog(I18N.T('game.dyn.cui.autobattle_on')||'🤖 Auto-Kampf aktiviert: SG-Einheiten agieren taktisch.');
+    if(C.phase==='player'&&!C.result)runAutoBattleTurn();
+  }else{
+    clog(I18N.T('game.dyn.cui.autobattle_off')||'🤖 Auto-Kampf pausiert.');
+  }
+  if(typeof renderCombatUI==='function')renderCombatUI();
+}
+function nearestEnemyFor(u){
+  let best=null,bd=999;
+  for(const e of Object.values(C.units)){
+    if(e.side!=='enemy'||e.dead||e.downed)continue;
+    const d=C.distance(u.x,u.y,e.x,e.y);
+    if(d<bd){bd=d;best=e;}
+  }
+  return best;
+}
+function runAutoBattleTurn(){
+  if(!C.active||C.result||!C.autoBattle||C.phase!=='player')return;
+  const readyUnits=Object.values(C.units).filter(u=>u.side==='player'&&!u.dead&&!u.downed&&u.ap>0);
+  if(readyUnits.length===0){
+    endPlayerPhase();
+    if(C.active&&!C.result&&C.autoBattle&&C.phase==='player'){
+      setTimeout(runAutoBattleTurn,250);
+    }
+    return;
+  }
+  const u=readyUnits[0];
+  C.selected=u;
+  // 1. Can we heal an injured teammate or self if holding medkit and HP < 65%?
+  if(u.special==='medkit'&&!u.specialUsed&&u.hp<u.maxHp*0.65&&u.ap>=1){
+    useSpecial(u);
+    if(typeof renderCombatUI==='function')renderCombatUI();
+    setTimeout(runAutoBattleTurn,180);
+    return;
+  }
+  // 2. Can we attack any enemy in range & LOS?
+  const targets=attackTargets(u);
+  if(targets.length>0&&u.ap>=1){
+    targets.sort((a,b)=>a.hp-b.hp);
+    playerAttack(u,targets[0]);
+    if(typeof renderCombatUI==='function')renderCombatUI();
+    setTimeout(runAutoBattleTurn,220);
+    return;
+  }
+  // 3. Move closer to nearest enemy or into cover
+  const enemy=nearestEnemyFor(u);
+  if(enemy&&u.ap>=1){
+    const range=moveRange(u);
+    if(range.length>0){
+      const w=WEAPONS[u.weapon]||WEAPONS.rifle;
+      range.sort((a,b)=>{
+        const da=C.distance(a.x,a.y,enemy.x,enemy.y);
+        const db=C.distance(b.x,b.y,enemy.x,enemy.y);
+        const ca=coverRating({x:a.x,y:a.y});
+        const cb=coverRating({x:b.x,y:b.y});
+        if(da<=w.range&&db<=w.range&&ca!==cb)return cb-ca;
+        return da-db;
+      });
+      const best=range[0];
+      const curDist=C.distance(u.x,u.y,enemy.x,enemy.y);
+      if(best&&(C.distance(best.x,best.y,enemy.x,enemy.y)<curDist||coverRating(best)>coverRating(u))){
+        playerMove(u,best.x,best.y);
+        if(typeof renderCombatUI==='function')renderCombatUI();
+        setTimeout(runAutoBattleTurn,200);
+        return;
+      }
+    }
+  }
+  // 4. If no good move or already well positioned, stand guard / overwatch!
+  if(u.ap>=1&&!u.overwatch){
+    playerOverwatch(u);
+    if(typeof renderCombatUI==='function')renderCombatUI();
+    setTimeout(runAutoBattleTurn,180);
+    return;
+  }
+  // 5. Otherwise wait
+  playerWait(u);
+  if(typeof renderCombatUI==='function')renderCombatUI();
+  setTimeout(runAutoBattleTurn,150);
 }
 // ---------- Gegner-Phase (AI) ----------
 function endPlayerPhase(){

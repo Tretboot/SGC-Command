@@ -1395,6 +1395,95 @@ function selectTeamPreset(teamId){
   }
  });
 }
+function getAutoResolveForecast(mission, teamIds){
+ if(!mission)return null;
+ if(mission.tutorial||mission.peaceful||mission.type==='boss'||(mission.enemies&&mission.enemies.goauld)){
+  return {eligible:false,reason:I18N.T('game.dyn.autoresolve.boss_locked')};
+ }
+ const squad=(teamIds||[]).map(id=>S.roster[id]).filter(m=>m&&!m.dead);
+ if(!squad.length)return {eligible:false,reason:I18N.T('game.dyn.autoresolve.no_team')};
+ let squadPower=0;
+ squad.forEach(m=>{
+  const w=WEAPONS[m.weapon]||WEAPONS.rifle;
+  const avgDmg=((w.min||10)+(w.max||15))/2;
+  const hpRatio=Math.max(0.2,m.hp/(m.maxHp||1));
+  const lvlBonus=1+((m.lvl||1)-1)*0.1;
+  squadPower+=(avgDmg*2.5+m.hp*0.5)*lvlBonus*hpRatio;
+ });
+ let enemyPower=0;
+ if(mission.enemies){
+  Object.entries(mission.enemies).forEach(([type,count])=>{
+   const edef=ENEMIES[type]||{hp:20,weapon:'staff'};
+   const ew=WEAPONS[edef.weapon]||WEAPONS.staff;
+   const eAvg=((ew.min||10)+(ew.max||15))/2;
+   enemyPower+=count*(eAvg*2.2+(edef.hp||20)*0.5);
+  });
+ }
+ if(enemyPower<10)enemyPower=10;
+ const ratio=squadPower/enemyPower;
+ let winChance=Math.round((ratio/(ratio+1))*100);
+ winChance=Math.max(10,Math.min(95,winChance));
+ let injuryRisk='niedrig';
+ if(winChance<55)injuryRisk='hoch';
+ else if(winChance<75)injuryRisk='mittel';
+ return {
+  eligible:true,
+  winChance,
+  injuryRisk,
+  squadPower:Math.round(squadPower),
+  enemyPower:Math.round(enemyPower)
+ };
+}
+
+function autoResolveMission(mission, teamIds){
+ const forecast=getAutoResolveForecast(mission, teamIds);
+ if(!forecast||!forecast.eligible){
+  toast(forecast?forecast.reason:I18N.T('game.dyn.autoresolve.no_team'));
+  return;
+ }
+ const roll=Math.random()*100;
+ const victory=roll<forecast.winChance;
+ const squad=(teamIds||[]).map(id=>S.roster[id]).filter(m=>m&&!m.dead);
+ if(victory){
+  if(typeof sfx==='function')sfx('victory');
+  const lootEarned={};
+  if(mission.reward){
+   Object.entries(mission.reward).forEach(([k,v])=>{
+    const amt=Math.max(1,Math.round(v*0.75));
+    S.res[k]=(S.res[k]||0)+amt;
+    lootEarned[k]=amt;
+   });
+  }
+  if(S.research){
+   const rpGain=Math.round(15*0.75);
+   S.research.rp=(S.research.rp||0)+rpGain;
+  }
+  squad.forEach(m=>{
+   m.xp=(m.xp||0)+Math.max(1,Math.round(15*0.75));
+   const wound=rnd(4,16);
+   m.hp=Math.max(1,m.hp-wound);
+  });
+  if(squad.length>0&&Math.random()<0.45){
+   const victim=squad[Math.floor(Math.random()*squad.length)];
+   victim.injuries=(victim.injuries||0)+1;
+  }
+  if(!S.done.includes(mission.id))S.done.push(mission.id);
+  const lootStr=Object.entries(lootEarned).map(([k,v])=>`${RES_ICON[k]||''}+${v}`).join(' ');
+  toast(`${I18N.T('game.dyn.autoresolve.win')} (${lootStr||'Keine Beute'})`);
+  if(typeof note==='function')note(`[SCHNELLKAMPF] ${mission.name}: Sieg (${forecast.winChance}% Chance). Belohnungen verbucht (-25% Malus).`);
+ }else{
+  if(typeof sfx==='function')sfx('defeat');
+  squad.forEach(m=>{
+   m.hp=Math.max(1,Math.round(m.hp*0.4));
+   if(Math.random()<0.6)m.injuries=(m.injuries||0)+1;
+  });
+  toast(I18N.T('game.dyn.autoresolve.defeat'));
+  if(typeof note==='function')note(`[SCHNELLKAMPF] ${mission.name}: Niederlage. Team evakuiert mit schweren Wunden.`);
+ }
+ if(typeof save==='function')save();
+ renderAll();
+}
+
 function renderMapSide(){
  if(!MAP.sel){
   $('map-side').innerHTML=`<h3>${I18N.T('game.dyn.map.title')}</h3><p class="dim">${I18N.T('game.dyn.map.hint')}</p>
@@ -1424,7 +1513,17 @@ function renderMapSide(){
     const ti=SG_TEAMS&&SG_TEAMS[mt];
     return `<label class="gl"><input type="checkbox" class="tpick" value="${m.id}" ${(ms[0].tutorial||mt==='sg1')?'checked':''} ${ms[0].tutorial?'disabled':''}> ${pic(m)} <span>${m.name.split(' ')[0]}</span> <small style="color:${ti?ti.color:'#8a9ab0'}">${ti?ti.name:''} · 🔫${WEAPONS[m.weapon]?WEAPONS[m.weapon].name:m.weapon}</small></label>`;
    }).join('')+`</div>`;
-  h+=`<button id="launch" style="width:100%;margin-top:8px;background:#1f6f3a;border-color:#34c76a">${I18N.T('game.dyn.btn.launch')}</button>`;
+  const defIds=avail.filter(m=>(ms[0].tutorial||(m.team||(m.sg1?'sg1':'sg2'))==='sg1')).map(m=>m.id);
+  const forecast=getAutoResolveForecast(ms[0],defIds);
+  h+=`<div style="display:flex;gap:6px;margin-top:8px">`;
+  h+=`<button id="launch" style="flex:1;background:#1f6f3a;border-color:#34c76a">${I18N.T('game.dyn.btn.launch')}</button>`;
+  if(forecast&&forecast.eligible){
+   h+=`<button id="auto-resolve" style="flex:1;background:#1e3a5f;border-color:#38bdf8;color:#e0f2fe;font-size:11px" title="${I18N.T('game.dyn.autoresolve.hint')}">⚡ ${I18N.T('game.dyn.btn.autoresolve')} (${forecast.winChance}%)</button>`;
+  }
+  h+=`</div>`;
+  if(forecast&&forecast.eligible){
+   h+=`<div style="font-size:10.5px;color:#94a3b8;margin-top:4px;text-align:center">${I18N.T('game.dyn.autoresolve.forecast',[forecast.winChance,forecast.injuryRisk])}</div>`;
+  }
  } else {h+=`<p class="dim">${I18N.T('game.dyn.map.no_missions')}</p>`;}
  $('map-side').innerHTML=h;
  const btn=$('launch');
@@ -1432,6 +1531,12 @@ function renderMapSide(){
   const ids=[...document.querySelectorAll('.tpick:checked')].map(c=>parseInt(c.value)).slice(0,6);
   if(!ids.length){toast(I18N.T('game.dyn.map.toast.select'));return;}
   launchMission(ms[0],ids);
+ };
+ const btnRes=$('auto-resolve');
+ if(btnRes)btnRes.onclick=()=>{
+  const ids=[...document.querySelectorAll('.tpick:checked')].map(c=>parseInt(c.value)).slice(0,6);
+  if(!ids.length){toast(I18N.T('game.dyn.map.toast.select'));return;}
+  autoResolveMission(ms[0],ids);
  };
 }
 
@@ -1644,7 +1749,7 @@ function renderCombatUI(force=false){
   return;
  }
  const sel=C.selected;
- const key=`${sel?sel.charId:'none'}_${sel?sel.ap:0}_${sel?sel.hp:0}_${sel?sel.specialUsed:0}_${sel?sel.overwatch:false}_${C.round}_${C.phase}_${C.log.length}_${C.buildType}_${typeof getGfxMode==='function'?getGfxMode():'pixel'}`;
+ const key=`${sel?sel.charId:'none'}_${sel?sel.ap:0}_${sel?sel.hp:0}_${sel?sel.specialUsed:0}_${sel?sel.overwatch:false}_${C.autoBattle}_${C.round}_${C.phase}_${C.log.length}_${C.buildType}_${typeof getGfxMode==='function'?getGfxMode():'pixel'}`;
  if(!force && key===_lastCombatUIKey && panel.style.display==='flex') return;
  _lastCombatUIKey=key;
  panel.style.display='flex';
@@ -1674,6 +1779,8 @@ function renderCombatUI(force=false){
  if(C.phase==='player'&&!C.result){
   h+=`<button class="cui-btn end-turn-btn" style="border-color:#f59e0b;color:#fde68a;font-weight:bold;background:rgba(245,158,11,0.22)" onclick="endPlayerPhase()" title="${I18N.T('game.dyn.cui.end_turn.title')}">${I18N.T('game.dyn.cui.end_turn')}</button>`;
  }
+ const autoOn=!!C.autoBattle;
+ h+=`<button class="cui-btn" style="border-color:${autoOn?'#22c55e':'#64748b'};color:${autoOn?'#86efac':'#cbd5e1'};background:${autoOn?'rgba(34,197,94,0.22)':'transparent'};font-weight:bold" onclick="toggleAutoBattle()" title="${I18N.T('game.dyn.cui.autobattle.title')}">${autoOn?'🤖 [Auto: AN]':I18N.T('game.dyn.cui.autobattle')}</button>`;
  h+=`<button class="cui-btn" style="border-color:#4fc3f7;color:#4fc3f7;font-weight:bold" onclick="cycleSGMember(1)" title="${I18N.T('game.dyn.cui.next.title')}">${I18N.T('game.dyn.cui.next')}</button>`;
  if(sel&&sel.ap>0&&!C.result){
   h+=`<button class="cui-btn" onclick="if(C.selected)playerWait(C.selected)" title="${I18N.T('game.dyn.cui.wait.title')}">${I18N.T('game.dyn.cui.wait')}</button>`;
