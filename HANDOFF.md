@@ -25,10 +25,11 @@
    - **Wiki-Synchronisation:** Aktualisierung von `wiki/basis.html`, `wiki/kampf.html` und `wiki/tech-tree.html` auf den neuesten Stand (Hex-Raster, 3 Renderstile, Labor, Krankenstation).
    - **Essay zu Hexfeldern & Quadraten:** Ausführliche geometrische & architektonische Abhandlung in `blog/essay-hexfelder-und-quadrate.md`.
    - **Kamera-Zoom & Mausrad-Support:** `onwheel`-Event auf `combat-cv` reaktiviert für stufenlose Voxel- und ASCII-Schärfung.
-   - **Zero-Dependency Headless Test-Suite:** 238+ automatisierte Tests laufen mit 0 Fehlern durch (`node test-browser.js`).
-   - **Floppy-Disk-Budget:** Gesamtrelease `release/SGC-Command-v035.zip` bleibt strikt unter 1,44 MB (aktuell: 803 KB).
+   - **Taktisches Reaktionsfeuer (Overwatch):** `playerOverwatch(unit)` reserviert verbleibende AP (`Taste O`), markiert die Einheit mit `🎯`-Badge in 2D, Pixel-Voxel und 3D-ASCII. Im feindlichen Zug feuert `checkReactionFire(target)` sofort als Unterbrechungsangriff bei Bewegung oder Angriffsversuch in Waffenreichweite und Sichtlinie.
+   - **Zero-Dependency Headless Test-Suite:** 244+ automatisierte Tests laufen mit 0 Fehlern durch (`node test-browser.js`).
+   - **Floppy-Disk-Budget:** Gesamtrelease `release/SGC-Command-v035.zip` bleibt strikt unter 1,44 MB (aktuell: 811 KB).
 
-**Stand:** 26. Oktober 2026 · 238+ Prüfungen bestanden (0 Fehler) · AGPL-3.0-or-later.
+**Stand:** 26. Oktober 2026 · 244+ Prüfungen bestanden (0 Fehler) · AGPL-3.0-or-later.
 
 ---
 

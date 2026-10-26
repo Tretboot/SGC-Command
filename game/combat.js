@@ -228,6 +228,8 @@ function cycleSGMember(dir=1){
 if(typeof window!=='undefined'){
   window.cycleSGMember=cycleSGMember;
   window.centerCombatCameraOn=centerCombatCameraOn;
+  window.playerOverwatch=playerOverwatch;
+  window.checkReactionFire=checkReactionFire;
 }
 
 function startCombat(mission,teamIds){
@@ -744,6 +746,44 @@ function playerWait(unit){
   unit.ap=0;C.firstHint=false;C.selected=null;C.moveRange=[];C.atkRange=[];C.coverRange=[];
   nextUnit();
 }
+function playerOverwatch(unit){
+  if(!unit||unit.side!=='player'||unit.dead||unit.downed||unit.ap<1)return false;
+  unit.overwatch=true;
+  unit.ap=0;
+  C.firstHint=false;
+  C.selected=null;
+  C.moveRange=[];
+  C.atkRange=[];
+  C.coverRange=[];
+  spawnFlash(unit.x,unit.y,'#f59e0b');
+  if(typeof sfx==='function')sfx('lock');
+  clog(I18N.T('game.dyn.combat.overwatch_set',[unit.name]));
+  if(typeof renderCombatUI==='function')renderCombatUI();
+  nextUnit();
+  return true;
+}
+function checkReactionFire(target){
+  if(!target||target.dead||!C.active||C.result)return false;
+  const oppSide=target.side==='player'?'enemy':'player';
+  const candidates=Object.values(C.units).filter(p=>
+    p.side===oppSide&&!p.dead&&!p.downed&&p.overwatch
+  );
+  let fired=false;
+  for(const p of candidates){
+    if(target.dead||C.result)break;
+    const d=C.distance(p.x,p.y,target.x,target.y);
+    const w=WEAPONS[p.weapon]||WEAPONS.rifle;
+    if(d<=w.range&&los(p.x,p.y,target.x,target.y)){
+      p.overwatch=false;
+      p.facing=facingToward(p,target);
+      clog(I18N.T('game.dyn.combat.reaction_fire_triggered',[p.name,target.name]));
+      doAttack(p,target);
+      fired=true;
+      checkEnd();
+    }
+  }
+  return fired;
+}
 function nextUnit(){
   if(C.result)return;
   const units=Object.values(C.units).filter(u=>u.side==='player'&&!u.dead&&!u.downed&&u.ap>0);
@@ -755,22 +795,46 @@ function endPlayerPhase(){
   if(C.result)return;
   C.phase='enemy';
   const enemies=Object.values(C.units).filter(u=>u.side==='enemy'&&!u.dead&&!u.downed);
-  enemies.forEach(e=>{if(!C.result)enemyAct(e);});
+  enemies.forEach(e=>{if(!C.result&&!e.dead)enemyAct(e);});
   if(!C.result)endRound();
 }
 function enemyAct(u){
   let ap=2;
-  while(ap>0&&!C.result){
+  while(ap>0&&!C.result&&!u.dead){
     const target=nearestPlayer(u);
     if(!target)break;
     const d=C.distance(u.x,u.y,target.x,target.y);
     const w=WEAPONS[u.weapon];
     const inRange=d<=w.range&&los(u.x,u.y,target.x,target.y);
-    if(inRange){u.facing=facingToward(u,target);doAttack(u,target);ap--;}
-    else if(d<=1&&u.melee){u.facing=facingToward(u,target);doMelee(u,target);ap--;}
+    if(inRange){
+      if(checkReactionFire(u)){
+        if(u.dead||C.result)break;
+      }
+      u.facing=facingToward(u,target);
+      doAttack(u,target);
+      ap--;
+    }
+    else if(d<=1&&u.melee){
+      if(checkReactionFire(u)){
+        if(u.dead||C.result)break;
+      }
+      u.facing=facingToward(u,target);
+      doMelee(u,target);
+      ap--;
+    }
     else{
       const step=bestStep(u,target);
-      if(step){u.facing=facingToward(u,step);u._animFrom={x:u.x,y:u.y};u._animT0=performance.now();u.x=step.x;u.y=step.y;ap--;}
+      if(step){
+        u.facing=facingToward(u,step);
+        u._animFrom={x:u.x,y:u.y};
+        u._animT0=performance.now();
+        u.x=step.x;
+        u.y=step.y;
+        ap--;
+        if(checkReactionFire(u)){
+          if(u.dead||C.result)break;
+        }
+      }
       else break;
     }
   }
@@ -824,6 +888,7 @@ function endRound(){
   Object.values(C.units).forEach(u=>{
     if(!u.dead&&!u.downed){
       u.ap=2;
+      u.overwatch=false;
       if(u.shieldTurns>0)u.shieldTurns--;
       if(u.smokeTurns>0)u.smokeTurns--;
     }
@@ -959,12 +1024,12 @@ function drawEnemyBody(c,x,y,sc,type,alpha){
   if(type==='jaffa'||type==='veteran'||type==='elite'){c.fillStyle=col.accent;c.fillRect(x-1*sc,y-29*sc,2*sc,2*sc);}
   c.restore();
 }
-function drawUnitLabel(c,name,x,y,color){
-  const label=name.split(' ')[0].slice(0,5);
+function drawUnitLabel(c,name,x,y,color,ow){
+  const label=(ow?'🎯 ':'')+name.split(' ')[0].slice(0,5);
   c.font='bold 7px monospace';c.textAlign='center';
-  const width=Math.min(TILE-4,c.measureText(label).width+4);
+  const width=Math.min(TILE+6,c.measureText(label).width+4);
   c.fillStyle='rgba(5,10,16,0.9)';c.fillRect(x-width/2,y-8,width,10);
-  c.fillStyle=color;c.fillText(label,x,y,width-3);
+  c.fillStyle=color;c.fillText(label,x,y,width-2);
 }
 function drawCivilian(c,x,y){
  c.fillStyle='rgba(0,0,0,.3)';c.beginPath();c.ellipse(x,y,8,3,0,0,7);c.fill();
@@ -1068,7 +1133,7 @@ function renderCombat(cv){
         c.fillStyle='#1a1a1a';c.fillRect(px+4,py+3,TILE-8,3);
         c.fillStyle=u.hp>u.maxHp*0.3?'#4ade80':'#ef4444';
         c.fillRect(px+4,py+3,(TILE-8)*u.hp/u.maxHp,3);
-        drawUnitLabel(c,u.name,cx,py+TILE-2,'#d6e0ec');
+        drawUnitLabel(c,u.name,cx,py+TILE-2,'#d6e0ec',u.overwatch);
         if(u.downed){c.fillStyle='rgba(239,68,68,0.4)';c.fillRect(px,py,TILE,TILE);
           c.fillStyle='#fff';c.font='bold 14px sans-serif';c.textAlign='center';c.fillText('✚',cx,py+TILE/2+5);}
       }

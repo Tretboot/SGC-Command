@@ -1174,7 +1174,8 @@ function showKeybindModal(){
   endTurn:I18N.T('game.dyn.kb.act.endTurn'),
   pause:I18N.T('game.dyn.kb.act.pause'),
   zoomIn:I18N.T('game.dyn.kb.act.zoomIn'),
-  zoomOut:I18N.T('game.dyn.kb.act.zoomOut')
+  zoomOut:I18N.T('game.dyn.kb.act.zoomOut'),
+  overwatch:I18N.T('game.dyn.kb.act.overwatch')
  };
  m.style.display='flex';
  m.innerHTML=`<div class="mbox" style="max-width:540px">
@@ -1643,7 +1644,7 @@ function renderCombatUI(force=false){
   return;
  }
  const sel=C.selected;
- const key=`${sel?sel.charId:'none'}_${sel?sel.ap:0}_${sel?sel.hp:0}_${sel?sel.specialUsed:0}_${C.round}_${C.phase}_${C.log.length}_${C.buildType}_${typeof getGfxMode==='function'?getGfxMode():'pixel'}`;
+ const key=`${sel?sel.charId:'none'}_${sel?sel.ap:0}_${sel?sel.hp:0}_${sel?sel.specialUsed:0}_${sel?sel.overwatch:false}_${C.round}_${C.phase}_${C.log.length}_${C.buildType}_${typeof getGfxMode==='function'?getGfxMode():'pixel'}`;
  if(!force && key===_lastCombatUIKey && panel.style.display==='flex') return;
  _lastCombatUIKey=key;
  panel.style.display='flex';
@@ -1656,7 +1657,7 @@ function renderCombatUI(force=false){
   h+=`<div class="cui-left">
    <div class="cui-portrait">${m?pic(m,'pt big'):''}</div>
    <div class="cui-info">
-    <div class="cui-name">${sel.name} ${sel.shieldTurns>0?`<span class="tag" style="background:#0284c7;color:#fff">${I18N.T('game.dyn.cui.shield')}</span>`:''}</div>
+    <div class="cui-name">${sel.name} ${sel.shieldTurns>0?`<span class="tag" style="background:#0284c7;color:#fff">${I18N.T('game.dyn.cui.shield')}</span>`:''} ${sel.overwatch?`<span class="tag" style="background:#dc2626;color:#fff">${I18N.T('game.dyn.cui.overwatch_badge')}</span>`:''}</div>
     <div class="cui-class">${CLASS_DE[sel.cls]} · Lv ${m?m.lvl:'?'} · 🛡 ${ar?ar.name:I18N.T('game.dyn.cui.light')}</div>
     <div class="cui-bars">
      <div>HP ${bar(sel.hp/sel.maxHp*100,sel.hp>sel.maxHp*0.3?'#4ade80':'#ef4444')} ${sel.hp}/${sel.maxHp}</div>
@@ -1676,6 +1677,7 @@ function renderCombatUI(force=false){
  h+=`<button class="cui-btn" style="border-color:#4fc3f7;color:#4fc3f7;font-weight:bold" onclick="cycleSGMember(1)" title="${I18N.T('game.dyn.cui.next.title')}">${I18N.T('game.dyn.cui.next')}</button>`;
  if(sel&&sel.ap>0&&!C.result){
   h+=`<button class="cui-btn" onclick="if(C.selected)playerWait(C.selected)" title="${I18N.T('game.dyn.cui.wait.title')}">${I18N.T('game.dyn.cui.wait')}</button>`;
+  h+=`<button class="cui-btn" style="border-color:#f59e0b;color:#fde68a;font-weight:bold;background:rgba(245,158,11,0.18)" onclick="if(C.selected&&typeof playerOverwatch==='function')playerOverwatch(C.selected)" title="${I18N.T('game.dyn.cui.overwatch.title')}">${I18N.T('game.dyn.cui.overwatch')}</button>`;
   h+=`<button class="cui-btn" onclick="if(C.selected)playerSelect(C.selected)">${I18N.T('game.dyn.cui.reselect')}</button>`;
   if(sel.special&&!sel.specialUsed&&SPECIALS[sel.special]){
    const sp=SPECIALS[sel.special];
@@ -2602,6 +2604,11 @@ function init(){
    if(matchesKey('nextUnit',e)||e.key==='Tab'||e.key==='n'||e.key==='N'){e.preventDefault();if(typeof cycleSGMember==='function')cycleSGMember(1);return;}
    if(matchesKey('zoomIn',e)||e.key==='+'){e.preventDefault();if(typeof zoomIsoCamera==='function')zoomIsoCamera(0.1);return;}
    if(matchesKey('zoomOut',e)||e.key==='-'){e.preventDefault();if(typeof zoomIsoCamera==='function')zoomIsoCamera(-0.1);return;}
+   if(matchesKey('overwatch',e)||e.key==='o'||e.key==='O'){
+    if(C.selected&&C.selected.ap>0&&!C.result&&typeof playerOverwatch==='function'){
+     e.preventDefault();playerOverwatch(C.selected);return;
+    }
+   }
 
    const pans={ArrowLeft:[-2,0],a:[-2,0],A:[-2,0],ArrowRight:[2,0],d:[2,0],D:[2,0],
     ArrowUp:[0,-2],w:[0,-2],W:[0,-2],ArrowDown:[0,2],s:[0,2],S:[0,2]};

@@ -390,7 +390,8 @@ function defaultKeybinds(){
     moveUp:'KeyW',moveDown:'KeyS',moveLeft:'KeyA',moveRight:'KeyD',
     rotateLeft:'KeyQ',rotateRight:'KeyE',cycleGfx:'KeyV',
     nextUnit:'Tab',endTurn:'Space',pause:'Escape',
-    zoomIn:'Equal',zoomOut:'Minus'
+    zoomIn:'Equal',zoomOut:'Minus',
+    overwatch:'KeyO'
   };
 }
 

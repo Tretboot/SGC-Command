@@ -1031,6 +1031,52 @@ for(const fn of loadFns){
   assert(saveHtml.includes('Test-Presets'), 'showSaveModal renders test presets');
 }
 
+// =====================================================================
+// 35. Test Reaktionsfeuer / Overwatch Mechanik
+// =====================================================================
+{
+  const mission = CHAPTERS[0].missions[0];
+  startCombat(mission, [0, 1]);
+  const players = Object.values(C.units).filter(u => u.side === 'player' && !u.dead);
+  const enemies = Object.values(C.units).filter(u => u.side === 'enemy' && !u.dead);
+  const p1 = players[0];
+  const p2 = players[1];
+  const e1 = enemies[0];
+
+  p1.ap = 2;
+  p2.ap = 2; // Keeps player phase active when p1 finishes AP
+  p1.overwatch = false;
+  
+  // Activating Overwatch
+  const res = playerOverwatch(p1);
+  assert(res === true, 'playerOverwatch() successfully activates');
+  assert(p1.overwatch === true, 'player unit has overwatch === true');
+  assert(p1.ap === 0, 'player unit AP spent/reserved (ap === 0)');
+
+  // Position enemy in front of p1 with clear line of sight
+  e1.x = p1.x + 2;
+  e1.y = p1.y;
+  e1.dead = false;
+  e1.hp = 30;
+
+  // Verify Reaction Fire triggers when enemy takes an action/step
+  const origHp = e1.hp;
+  const triggered = checkReactionFire(e1);
+  assert(triggered === true, 'checkReactionFire() triggers against enemy in range & LOS');
+  assert(p1.overwatch === false, 'player overwatch consumed upon firing');
+  assert(e1.hp < origHp || e1.dead, 'reaction fire damages or kills target');
+
+  // Verify renderCombatUI reflects overwatch badge
+  C.selected = p1;
+  p1.overwatch = true;
+  renderCombatUI(true);
+  const cuiHtml = $('combat-ui').innerHTML;
+  assert(cuiHtml.includes('REAKTIONSFEUER') || cuiHtml.includes('OVERWATCH'), 'combat UI renders overwatch badge');
+  
+  // Reset combat state
+  C.active = false;
+}
+
 for(let i=0;i<5;i++){
   now+=16;
   const cb=rafCb; rafCb=null;

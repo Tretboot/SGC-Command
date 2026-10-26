@@ -548,12 +548,18 @@ function renderCombatIsoPixel(cv){
             c.strokeStyle='rgba(79,195,247,0.75)';c.lineWidth=2;
             c.beginPath();c.ellipse(usx,usy-16*sc,14*sc,20*sc,0,0,Math.PI*2);c.stroke();
           }
+          if(u.overwatch){
+            c.strokeStyle='rgba(245,158,11,0.9)';c.lineWidth=1.5;
+            c.beginPath();c.arc(usx,usy-16*sc,16*sc,0,Math.PI*2);c.stroke();
+            c.fillStyle='#f59e0b';c.font=`bold ${Math.max(8,Math.round(10*ISO.zoom))}px monospace`;c.textAlign='center';
+            c.fillText('🎯',usx+14*sc,usy-24*sc);
+          }
           // HP-Balken + Label über dem Kopf
           const bw=32*ISO.zoom,bh=4;
           c.fillStyle='rgba(5,10,16,0.85)';c.fillRect(usx-bw/2-1,usy-38*sc-1,bw+2,bh+2);
           c.fillStyle=u.hp>u.maxHp*0.3?'#4ade80':'#ef4444';
           c.fillRect(usx-bw/2,usy-38*sc,bw*(u.hp/u.maxHp),bh);
-          drawUnitLabel(c,u.name,usx,usy+10,'#7be1e8');
+          drawUnitLabel(c,u.name,usx,usy+10,'#7be1e8',u.overwatch);
         }
       }else if(u.side==='neutral'){
         drawCivilian(c,usx,usy);
@@ -802,6 +808,10 @@ function renderCombatIsoAscii(cv){
       }
       c.fillStyle=col;
       c.fillText(headGlyph,usx,usy-fontPx*1.45);
+      if(u.overwatch){
+        c.fillStyle='#f59e0b';
+        c.fillText('🎯',usx+18*ISO.zoom,usy-fontPx*1.45);
+      }
       c.fillStyle=u.side==='player'?'#e2e8f0':col;
       c.fillText(bodyGlyph,usx,usy-fontPx*0.45);
       // Name + HP-Balken in CP437
