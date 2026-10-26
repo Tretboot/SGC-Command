@@ -35,6 +35,10 @@ node_modules/
 package-lock.json
 npm-debug.log*
 
+# Agent skills and local agent configs
+.agents/
+
+
 # Browser test profiles & cache dumps
 chrome-user-data/
 edge-user-data/
