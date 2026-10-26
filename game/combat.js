@@ -151,19 +151,38 @@ function drawCombatMinimap(){
  const cv=document.getElementById('combat-minimap');
  if(!cv||!C.active||!C.map.length)return;
  const c=cv.getContext('2d'),w=cv.width,h=cv.height,tw=w/GW,th=h/GH;
- c.clearRect(0,0,w,h);c.fillStyle='#101822';c.fillRect(0,0,w,h);
- const colors={0:'#536b3c',1:'#315831',2:'#193820',3:'#7c6951',4:'#236a91',5:'#4fc3f7',6:'#9b7350',7:'#276e92',8:'#b89661',9:'#c8b078',10:'#9a8457',11:'#4fc3f7',12:'#e8b040',13:'#7be1e8',14:'#a78bfa'};
- for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){
-  const type=C.map[idx(x,y)].t;
-  c.fillStyle=colors[type]||'#536b3c';c.fillRect(x*tw,y*th,Math.ceil(tw),Math.ceil(th));
+ const cacheKey=`${C.mapVersion}_${w}_${h}_${GW}_${GH}`;
+ if(!C._minimapCache||C._minimapCacheKey!==cacheKey){
+  let mc=null,mctx=null;
+  try{
+   mc=typeof document!=='undefined'&&document.createElement?document.createElement('canvas'):null;
+   if(mc){mc.width=w;mc.height=h;mctx=mc.getContext('2d');}
+  }catch(e){}
+  const tc=mctx||c;
+  tc.clearRect(0,0,w,h);tc.fillStyle='#101822';tc.fillRect(0,0,w,h);
+  const colors={0:'#536b3c',1:'#315831',2:'#193820',3:'#7c6951',4:'#236a91',5:'#4fc3f7',6:'#9b7350',7:'#276e92',8:'#b89661',9:'#c8b078',10:'#9a8457',11:'#4fc3f7',12:'#e8b040',13:'#7be1e8',14:'#a78bfa'};
+  for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){
+   const type=C.map[idx(x,y)].t;
+   tc.fillStyle=colors[type]||'#536b3c';tc.fillRect(x*tw,y*th,Math.ceil(tw),Math.ceil(th));
+  }
+  if(mc&&mctx){C._minimapCache=mc;C._minimapCacheKey=cacheKey;}
+ }
+ if(C._minimapCache){
+  c.clearRect(0,0,w,h);c.drawImage(C._minimapCache,0,0);
  }
  for(const u of Object.values(C.units)){
   if(u.dead||u.downed)continue;
   c.fillStyle=u.side==='player'?'#51cfff':u.side==='enemy'?'#f05c57':'#ffe493';
   c.fillRect(u.x*tw,u.y*th,Math.max(2,tw*1.5),Math.max(2,th*1.5));
  }
+ const zoom=(typeof ISO!=='undefined'&&ISO.zoom)?ISO.zoom:1.0;
+ const baseVW=Math.min(VIEW_W,GW),baseVH=Math.min(VIEW_H,GH);
+ const vw=clamp(baseVW/zoom,4,GW),vh=clamp(baseVH/zoom,3,GH);
+ const cx=C.cameraX+baseVW/2,cy=C.cameraY+baseVH/2;
+ const vx=clamp(cx-vw/2,0,Math.max(0,GW-vw)),vy=clamp(cy-vh/2,0,Math.max(0,GH-vh));
+ C.minimapViewRect={x:vx,y:vy,w:vw,h:vh,zoom};
  c.strokeStyle='#effaff';c.lineWidth=2;
- c.strokeRect(C.cameraX*tw,C.cameraY*th,Math.min(VIEW_W,GW)*tw,Math.min(VIEW_H,GH)*th);
+ c.strokeRect(vx*tw,vy*th,vw*tw,vh*th);
 }
 function panCombatToMinimap(e){
  if(!C.active)return;
@@ -205,7 +224,7 @@ function spawnFlash(x,y,color){addFx({type:'flash',x,y,color:color||'#fff'});}
 function spawnMuzzle(x,y){addFx({type:'muzzle',x,y});}
 function spawnTrace(x0,y0,x1,y1){addFx({type:'trace',x0,y0,x1,y1});}
 function spawnDeath(x,y){addFx({type:'death',x,y});triggerHapticFeedback(0.7,240);}
-function updateFx(){const now=performance.now();C.fx=C.fx.filter(f=>now-f.t0<700);C.shake=Math.max(0,C.shake*0.82-0.15);}
+function updateFx(){if(C.fx.length){const now=performance.now();C.fx=C.fx.filter(f=>now-f.t0<700);}if(C.shake>0)C.shake=Math.max(0,C.shake*0.82-0.15);}
 
 function centerCombatCameraOn(tx,ty){
   C.cameraX=Math.max(0,Math.min(GW-VIEW_W,Math.round(tx-VIEW_W/2)));
@@ -243,6 +262,7 @@ function startCombat(mission,teamIds){
   // KEIN Gate-Timer mehr: Runden laufen, bis Sieg oder Rückkehr zum Gate.
   const D=diff(),chapterScale=1+S.chapter*0.05;
   C.result=null;C.log=[];C.selected=null;C.moveRange=[];C.atkRange=[];C.coverRange=[];C.nextId=1;C.units={};C.hover=null;C.fx=[];C.shake=0;C.cameraX=0;C.cameraY=0;C.mapVersion++;C.contactComplete=false;C.buildType=null;C.autoBattle=false;
+  C.gateIntroStart=performance.now();
   C.tutorial=mission.tutorial?{step:0}:null;
   C.dialogueActive=false;C.sceneFlags={};
   C.firstHint=!mission.tutorial&&!mission.peaceful;
@@ -1056,8 +1076,12 @@ function applyCombatResult(){
       const full=result==='victory';
       let lootPct=full?1:(0.5+(has('G1')?0.1:0));
       if(m.peaceful&&S.commander==='weir')lootPct*=1.15;
-      S.done.push(m.id);
+      if(!m.repeatable&&!S.done.includes(m.id))S.done.push(m.id);
       advanceQuests(m.id);
+      if(typeof checkChapterAdvance==='function')checkChapterAdvance();
+      if(typeof MUSIC_PROGRESS!=='undefined'&&typeof MUSIC_PROGRESS.unlockForPlanet==='function'&&m&&m.planet){
+        MUSIC_PROGRESS.unlockForPlanet(m.planet);
+      }
       for(const k in m.reward)S.res[k]=(S.res[k]||0)+Math.round(m.reward[k]*lootPct);
       const rpReward = Math.round((12 + S.chapter * 6) * lootPct);
       if(!S.research) S.research = { rp: 0, queue: null, done: [] };
@@ -1139,15 +1163,24 @@ function renderCombat(cv){
   const gfxMode=typeof getGfxMode==='function'?getGfxMode():'pixel';
   if(gfxMode==='ascii'&&typeof renderCombatIsoAscii==='function'){
     renderCombatIsoAscii(cv);
+  }else if(gfxMode==='webgl3d'&&typeof GL3D!=='undefined'&&typeof GL3D.renderCombat==='function'){
+    GL3D.renderCombat(cv);
   }else if(gfxMode==='pixel'&&typeof renderCombatIsoPixel==='function'){
     renderCombatIsoPixel(cv);
   }else{
   c.clearRect(0,0,W,H);
   updateFx();
+  const z2d=(typeof ISO!=='undefined'&&ISO.zoom)?ISO.zoom:1.0;
   c.save();
   if(C.shake>0.3)c.translate((Math.random()-0.5)*C.shake,(Math.random()-0.5)*C.shake);
+  c.translate(W*0.5,H*0.5);
+  c.scale(z2d,z2d);
+  c.translate(-W*0.5,-H*0.5);
   c.translate(-C.cameraX*TILE,-C.cameraY*TILE);
-  const startX=C.cameraX,startY=C.cameraY,endX=Math.min(GW,startX+Math.ceil(W/TILE)),endY=Math.min(GH,startY+Math.ceil(H/TILE));
+  const startX=Math.max(0,Math.floor(((0-W*0.5)/z2d+W*0.5)/TILE)+C.cameraX-1);
+  const startY=Math.max(0,Math.floor(((0-H*0.5)/z2d+H*0.5)/TILE)+C.cameraY-1);
+  const endX=Math.min(GW,Math.ceil(((W-W*0.5)/z2d+W*0.5)/TILE)+C.cameraX+1);
+  const endY=Math.min(GH,Math.ceil(((H-H*0.5)/z2d+H*0.5)/TILE)+C.cameraY+1);
   const backdrop=c.createLinearGradient(0,0,0,H);
   if(C.theme==='hatak'){backdrop.addColorStop(0,'#141b26');backdrop.addColorStop(1,'#060b12');}
   else if(C.theme==='asgard'){backdrop.addColorStop(0,'#8ba2a6');backdrop.addColorStop(1,'#37444d');}
@@ -1196,20 +1229,45 @@ function renderCombat(cv){
     }
   }
 
-  // Gate-Marker: pulsierender Portal-Ring + Label. Das Team kommt hierher,
-  // um zu extrahieren (One-Way: Gate neu wählen). performance.now() inline,
-  // da die gemeinsame `now`-Variable erst weiter unten deklariert wird.
+  // Gate-Marker: Detailliertes 2D-Stargate mit Stufenpodest, Rampe, DHD & 9 Chevrons
   {
     const pn=performance.now(),gx=C.gatePos.x*TILE+TILE/2,gy=C.gatePos.y*TILE+TILE/2;
     const pulse=0.5+0.5*Math.sin(pn/300);
     c.save();
-    c.strokeStyle=`rgba(79,195,247,${0.5+0.4*pulse})`;c.lineWidth=3;
-    c.beginPath();c.arc(gx,gy,18+3*pulse,0,7);c.stroke();
+    // Stufenpodest + Rampe
+    c.fillStyle='rgba(30,41,59,0.85)';
+    c.fillRect(gx-22,gy-20,44,40);
+    c.strokeStyle='rgba(125,211,252,0.35)';c.lineWidth=1;
+    c.strokeRect(gx-22,gy-20,44,40);
+    c.fillStyle='#475569';
+    c.fillRect(gx-10,gy+14,20,10);
+    // DHD-Konsole links neben der Rampe
+    c.fillStyle='#334155';
+    c.beginPath();c.arc(gx-17,gy+15,5,0,Math.PI*2);c.fill();
+    c.fillStyle='#ff8a1f';
+    c.beginPath();c.arc(gx-17,gy+15,2.2,0,Math.PI*2);c.fill();
+    // Ereignishorizont (Kawoosh-Gradient)
+    const eg=c.createRadialGradient(gx,gy,2,gx,gy,18);
+    eg.addColorStop(0,'#ffffff');
+    eg.addColorStop(0.35,'#7dd3fc');
+    eg.addColorStop(0.75,'#0284c7');
+    eg.addColorStop(1,'#0c4a6e');
+    c.fillStyle=eg;
+    c.globalAlpha=0.82+0.15*pulse;
+    c.beginPath();c.arc(gx,gy,16,0,Math.PI*2);c.fill();
+    c.globalAlpha=1;
+    // Naquadah-Ring + 9 Chevrons
+    c.strokeStyle='#64748b';c.lineWidth=4;
+    c.beginPath();c.arc(gx,gy,18,0,Math.PI*2);c.stroke();
+    for(let i=0;i<9;i++){
+      const a=-Math.PI/2+i*Math.PI*2/9;
+      c.fillStyle='#ff8a1f';
+      c.fillRect(gx+Math.cos(a)*18-2,gy+Math.sin(a)*18-2,4,4);
+    }
     c.strokeStyle=`rgba(138,216,255,${0.3+0.3*pulse})`;c.lineWidth=1.5;
-    c.beginPath();c.arc(gx,gy,24+4*pulse,0,7);c.stroke();
-    c.fillStyle=`rgba(79,195,247,${0.15+0.15*pulse})`;c.beginPath();c.arc(gx,gy,16,0,7);c.fill();
+    c.beginPath();c.arc(gx,gy,23+3*pulse,0,Math.PI*2);c.stroke();
     c.fillStyle='#8ad8ff';c.font='bold 10px monospace';c.textAlign='center';
-    c.fillText('GATE',gx,gy-26);
+    c.fillText('◎ GATE',gx,gy-25);
     c.restore();
   }
   // Units
@@ -1304,11 +1362,12 @@ function renderCombat(cv){
         }
       }
     }
-    c.fillStyle='rgba(4,10,17,.82)';c.fillRect(8,H-27,440,20);
-    c.strokeStyle='rgba(122,157,179,.45)';c.strokeRect(8,H-27,440,20);
+    c.fillStyle='rgba(4,10,17,.82)';c.fillRect(8,H-27,480,20);
+    c.strokeStyle='rgba(122,157,179,.45)';c.strokeRect(8,H-27,480,20);
     c.fillStyle='#b9d0de';c.font='10px monospace';c.textAlign='left';
-    c.fillText(`MAP ${C.cameraX+1}-${Math.min(GW,C.cameraX+VIEW_W)}/${GW} × ${C.cameraY+1}-${Math.min(GH,C.cameraY+VIEW_H)}/${GH} · WASD / ARROWS`,15,H-13);
+    c.fillText(`MAP ${C.cameraX+1}-${Math.min(GW,C.cameraX+VIEW_W)}/${GW} × ${C.cameraY+1}-${Math.min(GH,C.cameraY+VIEW_H)}/${GH} · 🔍 ${Math.round(z2d*100)}% · WASD / V`,15,H-13);
   }
+  if(typeof drawIsoHudOverlay==='function')drawIsoHudOverlay(c,W,H,'2D TOP-DOWN');
   } // end 2D topdown fallback
   // HUD (oben)
   c.fillStyle='rgba(6,10,16,0.9)';c.fillRect(0,0,W,32);
