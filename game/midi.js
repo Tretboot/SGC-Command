@@ -417,6 +417,11 @@ const SONGGEN={
   // Song aus aktueller Mission (C) ableiten
   fromCombat(C_,S_){
     if(!C_||!C_.mission)return null;
+    // "Stand Orders" (Mission 1-3): kein generierter Song mehr – der
+    // deterministische SONGGEN-Track "Stand Orders (Switch Angel Style)"
+    // wurde gestrichen (Nutzer-Wunsch, captains-log-039). Fallback =
+    // Standard-Kampfmusik (SFX.music('combat')) im Missions-Flow.
+    if(/^stand orders$/i.test(String(C_.mission.name||'')))return null;
     const units=Object.values(C_.units||{});
     const team=units.filter(u=>u.side==='player').map(u=>u.name);
     const weapons=units.filter(u=>u.side==='player').map(u=>u.weapon).concat(units.filter(u=>u.side==='player'&&u.melee).map(u=>u.melee));

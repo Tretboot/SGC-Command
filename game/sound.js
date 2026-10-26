@@ -6,7 +6,9 @@
 //    (acidenv, rlpf, rhpf, dly, trancegate, fill, grab, mpan, vstruct, fmtime, pk, acid,
 //    stxt, sf, swap, setScale, sc, ifit, comb, noisehat, zap, roller, roller2, spinor,
 //    up, oneshot, filtval, glide, glitch, sq, strum, humanize, bend, track, ar, blockArrange).
-// 2. 20 originale Switch Angel Songs (aus Switch-Angel/*.txt) + 6 SGC Core Tracks.
+// 2. 20 originale Switch Angel Songs (eingebettet in switch-angel.js; die
+//    Quell-Ordner Switch-Angel/ wurden aus dem Repo entfernt, 0.39) + 6 SGC Core
+//    Tracks + 7 80s/90s Hits (hit-tracks.js).
 // 3. Voller Strudel-REPL & Mondo-Transpiler ($KICK:, _$RISER:, HAT$:, slider(), mondo`...`).
 // 4. Prozedurale Offline-Sample-Synthese (WAV Data-URIs für bd, sd, hh, oh, cp, rim, cb, lt,
 //    cr, brk Amen-Break, piano, swpad, ctvox + tr909/mc303 Banks), damit jeder Switch-Angel-Song
@@ -1422,25 +1424,27 @@ const SFX={
     if(STRUDEL.useSwitchAngelAuto&&typeof SWITCH_ANGEL_TRACKS!=='undefined'){
       const roleMap={
         base:['theme_remix_0'], // Basis: Anthem (Patreon Codevault Blend 1)
-        map:['theme_remix_2'],  // Sternenkarte: Goa'uld Assault (Patreon Codevault Blend 3)
-        planet:['theme_atlantis','planet','theme_remix_atlantis_dnb','sa_canyonhopper','sa_openup','sa_mutek4am','sa_sentimental_dnb'],
-        gate:['theme_fanfare','gate','theme_midi','sa_in_the_beginning'],
-        combat:['theme_remix_cnc','combat','theme_remix_foothold','theme_remix_1','theme_remix_3','sa_autotomatone','sa_extra_slippy','sa_909workout','sa_hotroller','sa_generative_jungle','sa_amen_infinity'],
+        map:['theme_remix_2','hit_sweet_dreams','hit_confusion_v3'],  // Sternenkarte: Goa'uld Assault (Patreon Codevault Blend 3)
+        planet:['theme_atlantis','planet','theme_remix_atlantis_dnb','sa_canyonhopper','sa_openup','sa_mutek4am','sa_sentimental_dnb','hit_billie_jean'],
+        gate:['theme_fanfare','gate','theme_midi','sa_in_the_beginning','hit_blue_monday'],
+        combat:['theme_remix_cnc','combat','theme_remix_foothold','theme_remix_1','theme_remix_3','sa_autotomatone','sa_extra_slippy','sa_909workout','sa_hotroller','sa_generative_jungle','sa_amen_infinity','hit_confusion','hit_take_on_me'],
         peaceful:['theme_asgard','peaceful','theme_funeral','theme_remix_lofi','theme_remix_melancholy','sa_curiosity_piano'],
-        boss:['theme_remix_cnc','boss','theme_remix_apophis','sa_did_i_make_this','sa_whoneedsa303','sa_dubstepacid'],
+        boss:['theme_remix_cnc','boss','theme_remix_apophis','sa_did_i_make_this','sa_whoneedsa303','sa_dubstepacid','hit_confusion_pump'],
         victory:['theme_outro','theme_promotion']
       };
       const rawPool=roleMap[contextKey]||[];
-      const pool=rawPool.filter(k=>!String(k).startsWith('sa_')||(typeof isTrackUnlocked==='function'&&isTrackUnlocked(k)));
-      const effectivePool=pool.length?pool:rawPool.filter(k=>!String(k).startsWith('sa_'));
+      const isVault=k=>String(k).startsWith('sa_')||String(k).startsWith('hit_');
+      const pool=rawPool.filter(k=>!isVault(k)||(typeof isTrackUnlocked==='function'&&isTrackUnlocked(k)));
+      const effectivePool=pool.length?pool:rawPool.filter(k=>!isVault(k));
       if(effectivePool.length){
         const daySeed=(typeof S!=='undefined'&&S&&S.day)||1;
         target=effectivePool[(daySeed-1)%effectivePool.length];
       }
     }
     if(typeof unlockTrack==='function'){
-      if(STRUDEL_TRACKS[contextKey]&&!String(contextKey).startsWith('sa_'))unlockTrack(contextKey);
-      if(STRUDEL_TRACKS[target]&&!String(target).startsWith('sa_'))unlockTrack(target);
+      const isVault2=k=>String(k).startsWith('sa_')||String(k).startsWith('hit_');
+      if(STRUDEL_TRACKS[contextKey]&&!isVault2(contextKey))unlockTrack(contextKey);
+      if(STRUDEL_TRACKS[target]&&!isVault2(target))unlockTrack(target);
     }
     if(STRUDEL.currentTrack!==target||!STRUDEL.playing){
       this.playTrack(target);

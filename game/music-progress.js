@@ -12,10 +12,10 @@
   var STARTER = [];
   var MP = {
     starter: STARTER,
-    /* Liefert {trackKey: planetId} für alle Codevault-Songs */
+    /* Liefert {trackKey: planetId} für alle Codevault-Songs (sa_ + hit_) */
     planetMap: function () {
       var map = {}, tracks = Object.keys(typeof STRUDEL_TRACKS !== 'undefined' ? STRUDEL_TRACKS : {})
-        .filter(function (k) { return k.indexOf('sa_') === 0; });
+        .filter(function (k) { return k.indexOf('sa_') === 0 || k.indexOf('hit_') === 0; });
       var planets = Object.keys(typeof PLANETS !== 'undefined' ? PLANETS : {}).filter(function (id) { return !PLANETS[id].sgc; });
       tracks.forEach(function (t, i) { if (planets.length) map[t] = planets[i % planets.length]; });
       return map;

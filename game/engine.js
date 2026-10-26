@@ -982,7 +982,7 @@ function isTrackUnlocked(trackKey){
   if(trackKey==='generated_seed'||trackKey==='custom'||String(trackKey).startsWith('custom_'))return true;
   if(typeof S!=='undefined'&&S&&Array.isArray(S.unlockedTracks)&&S.unlockedTracks.includes(trackKey))return true;
   if(DEFAULT_UNLOCKED_TRACKS.includes(trackKey))return true;
-  if(typeof MUSIC_PROGRESS!=='undefined'&&typeof MUSIC_PROGRESS.isUnlocked==='function'&&String(trackKey).startsWith('sa_')){
+  if(typeof MUSIC_PROGRESS!=='undefined'&&typeof MUSIC_PROGRESS.isUnlocked==='function'&&(String(trackKey).startsWith('sa_')||String(trackKey).startsWith('hit_'))){
     return MUSIC_PROGRESS.isUnlocked(trackKey);
   }
   return false;

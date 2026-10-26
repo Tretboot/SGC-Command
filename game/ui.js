@@ -846,6 +846,9 @@ function getWinampTracksForTab(tab, search='', onlyUnlocked=false){
   if(tab==='sa'){
     list=Object.keys(STRUDEL_TRACKS).filter(k=>k.startsWith('sa_'));
     if(typeof MUSIC_PROGRESS!=='undefined')list=MUSIC_PROGRESS.filter(list);
+  }else if(tab==='hit'){
+    // 80s/90s Hits: gesamtliste (Freischaltung über Planeten, vgl. Codevault)
+    list=Object.keys(STRUDEL_TRACKS).filter(k=>k.startsWith('hit_'));
   }else if(tab==='theme'){
     list=[
       'theme_fanfare',
@@ -1357,6 +1360,7 @@ function showStrudelModal(){
       <button class="winamp-tab ${WINAMP.tab==='theme'?'on':''}" onclick="WINAMP.tab='theme';showStrudelModal()">🎺 Stargate Themes (${getWinampTracksForTab('theme','',true).length}/${getWinampTracksForTab('theme','',false).length})</button>
       <button class="winamp-tab ${WINAMP.tab==='core'?'on':''}" onclick="WINAMP.tab='core';showStrudelModal()">🛰 SGC Core (${getWinampTracksForTab('core','',true).length}/${getWinampTracksForTab('core','',false).length})</button>
       <button class="winamp-tab ${WINAMP.tab==='sa'?'on':''}" onclick="WINAMP.tab='sa';showStrudelModal()" title="${I18N.T('game.dyn.str.tab_sa_title')}">📦 Codevault (${getWinampTracksForTab('sa','',true).length}/${getWinampTracksForTab('sa','',false).length})</button>
+      <button class="winamp-tab ${WINAMP.tab==='hit'?'on':''}" onclick="WINAMP.tab='hit';showStrudelModal()" title="80s/90s Hits – per Planetenfreischaltung (Codevault)">🎧 80s/90s Hits (${getWinampTracksForTab('hit','',true).length}/${getWinampTracksForTab('hit','',false).length})</button>
       <button class="winamp-tab ${WINAMP.tab==='seed'?'on':''}" onclick="WINAMP.tab='seed';showStrudelModal()">${I18N.T('game.dyn.str.tab_seed')}</button>
       <button class="winamp-tab ${WINAMP.tab==='midi'?'on':''}" onclick="WINAMP.tab='midi';showStrudelModal()">🎛 MIDI Controller</button>
       <button class="winamp-tab ${WINAMP.tab==='settings'?'on':''}" onclick="WINAMP.tab='settings';showStrudelModal()">${I18N.T('game.dyn.str.tab_settings')}</button>
@@ -1914,6 +1918,11 @@ function activateMission(mission,teamIds,startWithAuto){
    document.body.style.overflow='hidden';
    $('combat-overlay').style.display='flex';
    $('combat-end').style.display='none';
+   // "Stand Orders"-Song: evtl. altes generated_mission-Eintrag aus Playlist entfernen (0.39)
+   if(typeof STRUDEL_TRACKS!=='undefined'&&STRUDEL_TRACKS.generated_mission&&/^stand orders$/i.test(STRUDEL_TRACKS.generated_mission.name||'')){
+     delete STRUDEL_TRACKS.generated_mission;
+     if(typeof STRUDEL!=='undefined'&&STRUDEL.patterns)delete STRUDEL.patterns.generated_mission;
+   }
    if(typeof SFX!=='undefined'){
     if(mission.peaceful) SFX.music('peaceful');
     else if(mission.type==='boss'||(mission.enemies&&mission.enemies.goauld)) SFX.music('boss');
