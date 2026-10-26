@@ -1,7 +1,7 @@
-<!-- 0.36 "Die 808 drückt jetzt": siehe blog/captains-log-036.md, HANDOFF.md -->
-# 🗺 ROADMAP – SGC COMMAND 0.36 ("Die 808 drückt jetzt")
+<!-- 0.37 "Chevron 8: Die dritte Dimension": siehe blog/captains-log-037.md, HANDOFF.md -->
+# 🗺 ROADMAP – SGC COMMAND 0.37 ("Chevron 8: Die dritte Dimension")
 
-**Stand:** 0.36 · "Die 808 drückt jetzt" · Torraum 4×2 Silo · Kontrollraum mit Walter Harriman · Wache & Reaktionsfeuer (+15% Ausweichen) · In-Combat Autobattler · Auto-Resolve Schnellkampf mit Prognose · 250+ Prüfungen grün
+**Stand:** 0.37 final · "Chevron 8: Die dritte Dimension" · Zero-Dependency 3D-WebGL Engine (`PIXEL ⇄ ASCII ⇄ 3D-GL ⇄ 2D`) · Cheyenne Mountain Doppeltunnel & 2×2 Torraum · 9 Sprachen (DE, EN, ES, FR, ZH, JA, RU, PT, AR) · Jukebox-Progression · 55 Planeten / 51 Missionen · 357 Prüfungen grün
 **Zweck:** Klare Prioritäten und technischer Fahrplan für die Weiterentwicklung von SGC Command.
 
 ---
@@ -202,24 +202,6 @@
 
 ---
 
-## Version Release Plan
-
-| Version | Fokus | Status |
-|---------|-------|--------|
-| v0.29 | Studien-Revision (EN), Lizenz-Audit | 25. Okt 2026 ✅ |
-| v0.30 | i18n Fundament DE/EN, Tag-Loop Fix | 25. Okt 2026 ✅ |
-| v0.31 | Hex-Grid Taktik & Roland TR-808 Engine | 25. Okt 2026 ✅ |
-| v0.32 | SGC Krisen-System & Level Editor | 25. Okt 2026 ✅ |
-| v0.33 | Krankenstation Ebene 21 & Fraiser Recovery | 25. Okt 2026 ✅ |
-| v0.34 | Ebene 19 Forschungs-Labor & Tech-Tree Modal | 25. Okt 2026 ✅ |
-| v0.35 | Multi-Slot Saves, Cookie-Clicker I/O, Splash Slogans | 26. Okt 2026 ✅ |
-| 0.36 | 4×2 Torraum, Walter, Guard Stance, Autobattler & Auto-Resolve | 26. Okt 2026 ✅ |
-| 0.37 | Spanisch (es) i18n & Jukebox-Progression | Geplant (Backlog) 🔴 |
-| 0.38 | Vollständige Planetenkarte & alle SG-1 Welten | Geplant (Backlog) 🟡 |
-
----
-
-**Regel:** Nach jedem Durchgang → `Captain's Log` + `HANDOFF.md` + `node test-browser.js` grün.
 - [x] **Neuer Track: 🌌 Melancholic Ambient Phaser Remix**: 74 BPM D-Dorisch mit nativem `.phaser()` DSP-Filter, Supersaw-Pads, Cello-Subbass und einsamer Glocke.
 
 ### 5.5 Outro-Fanfare, Web MIDI, Boot-Screen & Wurmloch-Transit (v0.24 – ERLEDIGT ✅)
@@ -233,10 +215,10 @@
 
 ## Phase 6: Künftige Ausbaustufen (GEPLANT / BACKLOG)
 
-### 6.1 Mission- & Quest-basierte Song-Freischaltung (Jukebox-Progression) 🔴 (NÄCHSTER FOKUS)
-- Songs im SGC-AMP v2.80 / Winamp-Player werden erst freigeschaltet und in die Playlist aufgenommen, wenn das SG-Team sie zum ersten Mal bei einer Mission, einem Tor-Event oder Abschluss einer Quest entdeckt hat.
-- Erschafft ein motivierendes Entdecker- und Sammelgefühl ("🎵 Neuer Soundtrack entdeckt!").
-- Zustand wird persistent in `S.unlockedTracks` gespeichert.
+### 6.1 Mission- & Quest-basierte Song-Freischaltung (Jukebox-Progression) (0.37 – ERLEDIGT ✅)
+- [x] Songs im SGC-AMP v2.80 / Winamp-Player werden erst freigeschaltet und in die Playlist aufgenommen, wenn das SG-Team sie zum ersten Mal bei einer Mission, einem Tor-Event oder Abschluss einer Quest entdeckt hat (`S.unlockedTracks`, `MUSIC_PROGRESS.unlockForPlanet`).
+- [x] Sammlungs-Banner ("🎵 JUKEBOX-SAMMLUNG: X / Y FREIGESCHALTET") und Entdeckungs-Toast ("🎵 Neuer Soundtrack entdeckt!").
+- [x] Codevault (20 Switch-Angel-Tracks `sa_*`) startet gesperrt (0/20) und wird dynamisch über Planeten-Erkundung und Missionssiege freigeschaltet.
 
 ### 6.2 Detaillierte Raum-Screens & Raum-spezifisches Klang-Ambiente (Hybrid Pixel ⇄ 3D-ASCII) 🔴
 - Jeder der 28 Räume im Cheyenne Mountain Complex (Torraum, Daniel Jacksons Archiv, Hammond-Büro, Labor, Krankenstation etc.) erhält einen vollwertigen Großbildschirm-Screen.
@@ -257,4 +239,23 @@
 ### 6.5 REXPaint (`.xp`) / CP437 Sprite-Importer & Mehrteilige Boss-Kämpfe 🟢
 - Direktes Laden von `.xp`-ASCII-Dateien für noch detailliertere mehrfarbige Goa'uld-Mutterschiffe (Ha'tak) und Death Glider.
 - Spezielle Voxel-Karten für Ha'tak-Brücken, Replikatoren-Mutterschiffe und MALP-/UAV-Drohnensteuerung im Feldeinsatz.
+
+---
+
+## Version Release Plan
+
+| Version | Fokus | Status |
+|---------|-------|--------|
+| v0.29 | Studien-Revision (EN), Lizenz-Audit | 25. Okt 2026 ✅ |
+| v0.30 | i18n Fundament DE/EN, Tag-Loop Fix | 25. Okt 2026 ✅ |
+| v0.31 | Hex-Grid Taktik & Roland TR-808 Engine | 25. Okt 2026 ✅ |
+| v0.32 | SGC Krisen-System & Level Editor | 25. Okt 2026 ✅ |
+| v0.33 | Krankenstation Ebene 21 & Fraiser Recovery | 25. Okt 2026 ✅ |
+| v0.34 | Ebene 19 Forschungs-Labor & Tech-Tree Modal | 25. Okt 2026 ✅ |
+| v0.35 | Multi-Slot Saves, Cookie-Clicker I/O, Splash Slogans | 26. Okt 2026 ✅ |
+| 0.36 | 4×2 Torraum, Walter, Guard Stance, Autobattler & Auto-Resolve | 26. Okt 2026 ✅ |
+| 0.37 | „Chevron 8": 3D-WebGL-Engine, 9 Sprachen, 55 Planeten/51 Missionen, Jukebox & Torraum 2×2 | 26. Okt 2026 ✅ (final) |
+| 0.38 | Vollständige Planetenkarte & alle SG-1 Welten | Geplant (Backlog) 🟡 |
+
+**Regel:** Nach jedem Durchgang → `Captain's Log` + `HANDOFF.md` + `node test-browser.js` grün.
 ---

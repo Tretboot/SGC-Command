@@ -1,4 +1,4 @@
-# 📖 SGC COMMAND – Anleitung (v0.23 Combat UI & Intro-Audio Edition)
+# 📖 SGC COMMAND – Anleitung (v0.37 „Chevron 8: Die dritte Dimension")
 
 ## Starten
 
@@ -8,7 +8,7 @@
 
 Ein taktisches Sci-Fi-Strategiespiel im Stargate-Universum. Du leitest das SGC unter Cheyenne Mountain, baust deine Basis aus, fertigst Ausrüstung in der Waffenkammer, koordinierst **SG-1 bis SG-5** auf **Hammonds Klemmbrett** und führst deine Agenten durch das Stargate auf isometrische Voxel-Missionen (im Stil von *Syndicate*, *X-COM*, *Jagged Alliance*, *Command & Conquer* und *SimCity*).
 
-> **Highlight (Dual-Engine):** Du kannst jederzeit live im Menü (`ESC`), über den Header-Button **🖥 PIXEL / ⌨ ASCII** oder mit der Taste **`V`** zwischen **Isometrischer Pixel-Voxel-Grafik** und **3D-ASCII-Grafik** (`asciiid` / `asciicker` Style) umschalten – **beide Modi sind zu 100 % spielbar!**
+> **Highlight (Tri-Engine):** Du kannst jederzeit live im Menü (`ESC`), über den Header-Button **🖥 PIXEL / ⌨ ASCII** oder mit der Taste **`V`** zwischen **Isometrischer Pixel-Voxel-Grafik**, **3D-ASCII-Grafik** (`asciiid` / `asciicker` Style) und der neuen **3D-WebGL-Perspektive** (`3D-GL`, inkl. freier 360°-Kamera) umschalten – **alle drei Modi sind zu 100 % spielbar!**
 
 ---
 
@@ -16,7 +16,7 @@ Ein taktisches Sci-Fi-Strategiespiel im Stargate-Universum. Du leitest das SGC u
 
 | Input | Aktion |
 |---|---|
-| **`V`** oder **🖥 PIXEL / ⌨ ASCII** | Live zwischen **Isometrisch Voxel (Pixel-Art)** und **3D-ASCII (`asciiid`)** umschalten |
+| **`V`** oder **🖥 PIXEL / ⌨ ASCII** | Live zwischen **Isometrisch Voxel (Pixel-Art)**, **3D-ASCII (`asciiid`)** und **3D-WebGL (`3D-GL`)** umschalten |
 | **`Q` / `E`** oder **↶ Q / ↷ E** | Isometrische Kamera im Kampf um 90° drehen (4 Blickwinkel) |
 | **Klick auf eigene Einheit** | Auswählen (blaue Bewegungs-Rauten + rote Angriffsziele) |
 | **Klick auf blaues Feld** | Bewegen (1 AP, mit Laufanimation) |

@@ -1,9 +1,9 @@
-<!-- 0.37 "Die 808 drückt jetzt": siehe blog/captains-log-037.md und HANDOFF.md -->
+<!-- 0.37 "Chevron 8: Die dritte Dimension": siehe blog/captains-log-037.md und HANDOFF.md -->
 > **Legal notice:** This is a strictly non-commercial fan project. Stargate is a registered trademark of MGM Studios / Amazon. No copyright infringement intended. This project is unofficial and is not affiliated with, endorsed by, or sponsored by MGM Studios, Amazon, or any Stargate rights holder.
 >
 > **License scope:** The AGPL-3.0-or-later license in this repository applies to the program code identified in [LICENSE](LICENSE). It does not grant any rights to Stargate, its universe, names, characters, settings, story elements, dialogue, trademarks, or any artwork, audio, screenshots, or other non-code material. Rights to third-party materials remain with their respective owners.
 
-### SGC Command 0.37 ("Die 808 drückt jetzt")
+### SGC Command 0.37 ("Chevron 8: Die dritte Dimension")
 
 An experimental, non-commercial fan-made tactical strategy game prototype. Manage the 28 subterranean levels of the Cheyenne Mountain Complex, lead SG teams through the Stargate, establish offworld colonies, research alien technology, and fight turn-based tactical battles — powered by a high-octane algorithmic Strudel live-coding audio engine and Roland TR-808 drum synthesizers.
 
@@ -121,7 +121,9 @@ The codebase was iteratively developed, architected, and debugged across multipl
 3. **Phase 3 (Gemini 3.8 Flash):** Standard MIDI parser, Krumhansl-Schmuckler key detector, live-coding remix bridges, procedural mission song generator (`SONGGEN`), persistent colonies, controller rumble, and web hub.
 4. **Phase 4 (Qwen 3.8 27b / Qwen 3.5 122b A10B-FP8 / Commander Qwen):** Early project directives, walk animations, documentation audits, repository hygiene, and foundational i18n architectures via virtUOS Kiwi.
 5. **Phase 5 (Claude Opus 5.5):** Infirmary (Ebene 21), medical treatment loop, tactical downed-evacuation, SGC incidents, leveleditor, and complete i18n architecture refactoring.
-6. **Phase 6 (Gemini 3.8 Flash High - Current):** Canonical 2×2 Gateroom layout in far-left corner (Level 28 & 27), Walter Harriman control room, briefing room, General's office, Level 28 tactical defense map (`MAPS.sgc`) & Foothold mission, in-combat audio/SGC-AMP access, autobattler watch mode with dynamic camera tracking, canonical expansion to 47 planets & 32 missions, 3 new Strudel remixes, and sticky sidebar polish.
+6. **Phase 6 (Gemini 3.8 Flash High):** Canonical 2×2 Gateroom layout in far-left corner (Level 28 & 27), Walter Harriman control room, briefing room, General's office, Level 28 tactical defense map (`MAPS.sgc`) & Foothold mission, in-combat audio/SGC-AMP access, autobattler watch mode with dynamic camera tracking, canonical expansion to 47 planets & 32 missions, 3 new Strudel remixes, and sticky sidebar polish.
+7. **Phase 7 (Gemini 4 Argon · Claude Opus 5.5):** Release 0.37 "Chevron 8: Die dritte Dimension" — zero-dependency 3D-WebGL engine (`game/gl3d.js`, `PIXEL ⇄ ASCII ⇄ 3D-GL ⇄ 2D`), 9-language i18n with 100% key coverage, 55 planets & 51 missions with guaranteed playability, jukebox/codevault progression, armory/workshop/storage quartermaster window, canonical Cheyenne Mountain tunnel entrance, 3D hex tactics with full zoom, free 360° orbit camera and gate-emergence intro.
+8. **Phase 8 (Qwen 3.8 / 3.5 – current):** 0.37 finalization pass — release audit, repository hygiene (`.gitattributes`, folder naming), documentation sync and release packaging (captain's log 038 postmortem).
 
 For full research notes and documentation, see [`blog/uni-osnabrueck-ai-study.md`](blog/uni-osnabrueck-ai-study.md) and the comprehensive [Captain's Log Series](blog/).
 
@@ -150,7 +152,7 @@ Run the full automated test suite using Node.js:
 node test-browser.js
 ```
 
-All 265+ automated tests run in a headless mock DOM environment without any third-party dependencies, verifying math projections, audio synthesis, MIDI analysis, combat state transitions, hospital recovery, research tree mechanics, autobattler AI with camera tracking, auto-resolve simulations, Level 28 tactical map, and bilingual string parity.
+All 357 automated tests run in a headless mock DOM environment without any third-party dependencies, verifying math projections, 3D-WebGL rendering (base, colonies, orbit camera, gate intro), 3D hex zoom & picking, audio synthesis, MIDI analysis, combat state transitions, hospital recovery, research tree mechanics, autobattler AI with camera tracking, auto-resolve simulations, Level 28 tactical map, jukebox/codevault progression and 9-language string parity.
 
 ---
 
