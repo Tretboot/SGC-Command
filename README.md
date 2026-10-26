@@ -1,9 +1,9 @@
-<!-- 0.37 "Chevron 8: Die dritte Dimension": siehe blog/captains-log-037.md und HANDOFF.md -->
+<!-- 0.39 "Blue Monday: Die 80s/90s Hit Jukebox": siehe blog/captains-log-039.md und HANDOFF.md -->
 > **Legal notice:** This is a strictly non-commercial fan project. Stargate is a registered trademark of MGM Studios / Amazon. No copyright infringement intended. This project is unofficial and is not affiliated with, endorsed by, or sponsored by MGM Studios, Amazon, or any Stargate rights holder.
 >
 > **License scope:** The AGPL-3.0-or-later license in this repository applies to the program code identified in [LICENSE](LICENSE). It does not grant any rights to Stargate, its universe, names, characters, settings, story elements, dialogue, trademarks, or any artwork, audio, screenshots, or other non-code material. Rights to third-party materials remain with their respective owners.
 
-### SGC Command 0.37 ("Chevron 8: Die dritte Dimension")
+### SGC Command 0.39 ("Blue Monday: Die 80s/90s Hit Jukebox")
 
 An experimental, non-commercial fan-made tactical strategy game prototype. Manage the 28 subterranean levels of the Cheyenne Mountain Complex, lead SG teams through the Stargate, establish offworld colonies, research alien technology, and fight turn-based tactical battles — powered by a high-octane algorithmic Strudel live-coding audio engine and Roland TR-808 drum synthesizers.
 
@@ -123,7 +123,8 @@ The codebase was iteratively developed, architected, and debugged across multipl
 5. **Phase 5 (Claude Opus 5.5):** Infirmary (Ebene 21), medical treatment loop, tactical downed-evacuation, SGC incidents, leveleditor, and complete i18n architecture refactoring.
 6. **Phase 6 (Gemini 3.8 Flash High):** Canonical 2×2 Gateroom layout in far-left corner (Level 28 & 27), Walter Harriman control room, briefing room, General's office, Level 28 tactical defense map (`MAPS.sgc`) & Foothold mission, in-combat audio/SGC-AMP access, autobattler watch mode with dynamic camera tracking, canonical expansion to 47 planets & 32 missions, 3 new Strudel remixes, and sticky sidebar polish.
 7. **Phase 7 (Gemini 4 Argon · Claude Opus 5.5):** Release 0.37 "Chevron 8: Die dritte Dimension" — zero-dependency 3D-WebGL engine (`game/gl3d.js`, `PIXEL ⇄ ASCII ⇄ 3D-GL ⇄ 2D`), 9-language i18n with 100% key coverage, 55 planets & 51 missions with guaranteed playability, jukebox/codevault progression, armory/workshop/storage quartermaster window, canonical Cheyenne Mountain tunnel entrance, 3D hex tactics with full zoom, free 360° orbit camera and gate-emergence intro.
-8. **Phase 8 (Qwen 3.8 / 3.5 – current):** 0.37 finalization pass — release audit, repository hygiene (`.gitattributes`, folder naming), documentation sync and release packaging (captain's log 038 postmortem).
+8. **Phase 8 (Qwen 3.8 / 3.5):** 0.37 finalization pass — release audit, repository hygiene (`.gitattributes`, folder naming), documentation sync and release packaging (captain's log 038 postmortem).
+9. **Phase 9 (current):** Release 0.39 „Blue Monday" — 80s/90s hit jukebox with 7 unlockable vault tracks (Blue Monday + Confusion ×3 from MIDI transcriptions, 3 style homages), „Stand Orders" generated song struck, `switch-angel/` source folder removed, 377/377 tests (captain's log 039).
 
 For full research notes and documentation, see [`blog/uni-osnabrueck-ai-study.md`](blog/uni-osnabrueck-ai-study.md) and the comprehensive [Captain's Log Series](blog/).
 
@@ -137,7 +138,7 @@ For full research notes and documentation, see [`blog/uni-osnabrueck-ai-study.md
 | [`game/`](game/) | Playable game engine (`index.html`, `engine.js`, `combat.js`, `base.js`, `iso.js`, `sound.js`, `midi.js`, `ui.js`, `window-manager.js`) |
 | [`game/i18n.js`](game/i18n.js) & [`game/i18n-game.js`](game/i18n-game.js) | Dual-language internationalization system and string tables (DE / EN) |
 | [`game/vendor/strudel-web.js`](game/vendor/strudel-web.js) | Local, standalone `@strudel/web@1.3.0` live-coding audio bundle |
-| [`blog/`](blog/) | Complete Captain's Log development archives (001–037) and university study documentation |
+| [`blog/`](blog/) | Complete Captain's Log development archives (001–039) and university study documentation |
 | [`tools/leveleditor.html`](tools/leveleditor.html) | Standalone tactical isometric mission and level editor |
 | [`wiki/`](wiki/) | SGC lore database, planet telemetry, weapons, and colony specs |
 | [`test-browser.js`](test-browser.js) | Comprehensive automated headless browser test suite |

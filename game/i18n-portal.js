@@ -13,8 +13,8 @@
   if (typeof I18N === 'undefined') throw new Error('i18n-portal.js benötigt i18n.js');
   /* ---------- A: Kopfzeile, Branding, Navigation, Sprach-Toggle ---------- */
   I18N.add('de', {
-    'portal.title': 'SGC Command – Stargate Command 0.37 ("Chevron 8: Die dritte Dimension")',
-    'portal.brand.sub': 'Stargate Command · 0.37 · "Chevron 8: Die dritte Dimension"',
+    'portal.title': 'SGC Command – Stargate Command 0.39 ("Blue Monday: Die 80s/90s Hit Jukebox")',
+    'portal.brand.sub': 'Stargate Command · 0.39 · "Blue Monday: Die 80s/90s Hit Jukebox"',
     'portal.nav.game': 'Spiel',
     'portal.nav.wiki': 'Datenbank & Lore',
     'portal.nav.about': 'Über & Labor',
@@ -22,8 +22,8 @@
     'portal.lang.title': 'Sprache wechseln (Switch to English)'
   });
   I18N.add('en', {
-    'portal.title': 'SGC Command – Stargate Command 0.37 ("Chevron 8: The Third Dimension")',
-    'portal.brand.sub': 'Stargate Command · 0.37 · "Chevron 8: The Third Dimension"',
+    'portal.title': 'SGC Command – Stargate Command 0.39 ("Blue Monday: The 80s/90s Hit Jukebox")',
+    'portal.brand.sub': 'Stargate Command · 0.39 · "Blue Monday: The 80s/90s Hit Jukebox"',
     'portal.nav.game': 'Game',
     'portal.nav.wiki': 'Database & Lore',
     'portal.nav.about': 'About & Lab',
@@ -33,7 +33,7 @@
 
   /* ---------- B: Spiel-Tab (Iframe-Karte) ---------- */
   I18N.add('de', {
-    'portal.game.title': '🎮 SGC Command 0.37 Live-Instanz',
+    'portal.game.title': '🎮 SGC Command 0.39 Live-Instanz',
     'portal.game.sub': 'Dual-Engine: Isometrisch Voxel (Pixel-Art) ⇄ 3D-ASCII (CP437, Taste [V]) · SGC-AMP v2.80',
     'portal.game.openTab': '↗ In neuem Tab öffnen',
     'portal.game.fullscreen': '⛶ Vollbild',
@@ -41,7 +41,7 @@
     'portal.game.controls': 'Steuerung: <b>WASD/Pfeile</b> = Kamera · <b>Q/E</b> = 90° Drehung · <b>V</b> = Pixel/ASCII (8-Bit) · <b>TAB</b> = Nächstes Mitglied · <b>ESC</b> = Menü'
   });
   I18N.add('en', {
-    'portal.game.title': '🎮 SGC Command 0.37 Live Instance',
+    'portal.game.title': '🎮 SGC Command 0.39 Live Instance',
     'portal.game.sub': 'Dual Engine: Isometric Voxel (Pixel-Art) ⇄ 3D-ASCII (CP437, Key [V]) · SGC-AMP v2.80',
     'portal.game.openTab': '↗ Open in new tab',
     'portal.game.fullscreen': '⛶ Fullscreen',
@@ -459,7 +459,7 @@
   I18N.add('de', {
     'portal.dl.h2': '📦 Offline-Paket & Download',
     'portal.dl.p': 'Lade das schlanke, bereinigte Release-Paket herunter. Vollständig offline lauffähig ohne Installation oder Node-Server.',
-    'portal.dl.meta': 'Schlankes Release 0.37 final · TR-808 Live-Coding · 3D-WebGL & 9 Sprachen · Torraum 2×2 & Doku',
+    'portal.dl.meta': 'Schlankes Release 0.39 · 80s/90s Hit Jukebox (7 Vault-Tracks) · 3D-WebGL & 9 Sprachen · Doku',
     'portal.dl.btn': '⬇ Release ZIP Herunterladen',
     'portal.dl.h3': 'Installation & Schnellstart',
     'portal.dl.li1': 'ZIP-Archiv in ein beliebiges Verzeichnis entpacken.',
@@ -469,7 +469,7 @@
   I18N.add('en', {
     'portal.dl.h2': '📦 Offline Package & Download',
     'portal.dl.p': 'Download the lean, cleaned-up release package. Fully runnable offline without installation or a Node server.',
-    'portal.dl.meta': 'Lean release 0.37 final · TR-808 live coding · 3D-WebGL & 9 languages · 2x2 Gateroom & docs',
+    'portal.dl.meta': 'Lean release 0.39 · 80s/90s hit jukebox (7 vault tracks) · 3D-WebGL & 9 languages · docs',
     'portal.dl.btn': '⬇ Download Release ZIP',
     'portal.dl.h3': 'Installation & Quick Start',
     'portal.dl.li1': 'Extract the ZIP archive into any directory.',
@@ -515,11 +515,11 @@
 
   /* ---------- R: Footer ---------- */
   I18N.add('de', {
-    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.37 · "Chevron 8: Die dritte Dimension"',
+    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.39 · "Blue Monday: Die 80s/90s Hit Jukebox"',
     'portal.footer.2': 'Entwickelt im autonomen Multi-Agenten-Pair-Programming (Gemini 4 Argon · Claude Opus 5.5 · Gemini 3.8 Flash · Qwen 3.8 / 3.5) · Lizenziert unter AGPL-3.0-or-later'
   });
   I18N.add('en', {
-    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.37 · "Chevron 8: The Third Dimension"',
+    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.39 · "Blue Monday: The 80s/90s Hit Jukebox"',
     'portal.footer.2': 'Developed via autonomous multi-agent pair programming (Gemini 4 Argon · Claude Opus 5.5 · Gemini 3.8 Flash · Qwen 3.8 / 3.5) · Licensed under AGPL-3.0-or-later'
   });
 

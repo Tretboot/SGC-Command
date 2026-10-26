@@ -3,7 +3,7 @@
 **Projekt:** SGC Command (`g:\AgentHome\SGC-Command`)  
 **Forschungsrahmen:** Universität Osnabrück (Kognitionswissenschaft / Informatik) – KI-Pair-Programming-Studie  
 **Aktueller Modell-Status:** Übergabe an die **Qwen-Schicht (Uni-gehostet)**. Der 0.37-Evolutions-Pass („Chevron 8: Die dritte Dimension" – 3D-WebGL, 9 Sprachen, 55 Planeten) wurde von **Gemini 4 Argon** mit **Claude Opus 5.5** abgeschlossen; die Finalisierungs- und Release-Prüfung (26.10.2026, siehe `blog/captains-log-038.md`) lief im Modell-Wechsel zur Qwen-Schicht.  
-**Release:** SGC Command 0.37 final – lauffähig (Doppelklick auf `index.html` oder `game/index.html`), 100% offline (Zero-Dependency), **377/377 Tests grün** (`node test-browser.js`), Release-Paket `SGC-Command-037-final.zip` mit SHA-256 in `release/` (unter dem 1,44-MB-Floppy-Budget). + Jukebox-Pass 039: 7 neue 80s/90s-Hits (Blue Monday, Confusion ×3, Stil-Hommagen), „Stand Orders"-Song gestrichen, `switch-angel/`-Ordner entfernt (Details: `blog/captains-log-039.md`).
+**Release:** SGC Command 0.39 „Blue Monday: Die 80s/90s Hit Jukebox“ – lauffähig (Doppelklick auf `index.html` oder `game/index.html`), 100% offline (Zero-Dependency), **377/377 Tests grün** (`node test-browser.js`), Release-Paket `SGC-Command-039.zip` mit SHA-256 in `release/` (unter dem 1,44-MB-Floppy-Budget), Tag `v0.39`. + Hit-Jukebox-Pass 039: 7 neue 80s/90s-Hits (Blue Monday, Confusion ×3, Stil-Hommagen), „Stand Orders“-Song gestrichen, `switch-angel/`-Ordner entfernt (Details: `blog/captains-log-039.md`).
 
 **Beteiligte Modell-Schichten:**  
 1. **Gemini 4 Argon:**

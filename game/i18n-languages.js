@@ -1,5 +1,5 @@
 /* =====================================================================
-   SGC Command · i18n-languages.js (0.37 "Chevron 8: Die dritte Dimension")
+   SGC Command · i18n-languages.js (0.39 "Blue Monday: Die 80s/90s Hit Jukebox")
    Vollständige Mehrsprachigkeits-Engine & Sprachpakete (9 Weltsprachen):
    DE, EN, ES (Español), ZH (中文), JA (日本語), RU (Русский),
    FR (Français), PT (Português), AR (العربية).
@@ -109,14 +109,14 @@ function getLanguagesByPriority() {
 if (typeof I18N !== 'undefined' && typeof I18N.add === 'function') {
   // 1. ESPAÑOL (es)
   I18N.add('es', {
-    'portal.title': 'SGC Command – Comando Stargate 0.37 ("Chevron 8: La Tercera Dimensión")',
-    'portal.brand.sub': 'Comando Stargate · 0.37 · "Chevron 8: La Tercera Dimensión"',
+    'portal.title': 'SGC Command – Comando Stargate 0.39 ("Blue Monday: La Jukebox de Hits 80s/90s")',
+    'portal.brand.sub': 'Comando Stargate · 0.39 · "Blue Monday: La Jukebox de Hits 80s/90s"',
     'portal.nav.game': 'Juego',
     'portal.nav.wiki': 'Base de Datos y Lore',
     'portal.nav.about': 'Acerca de y Laboratorio',
     'portal.lang.btn': 'ES',
     'portal.lang.title': 'Cambiar idioma (Español)',
-    'portal.game.title': '🎮 SGC Command 0.37 Instancia en Vivo',
+    'portal.game.title': '🎮 SGC Command 0.39 Instancia en Vivo',
     'portal.game.sub': 'Motor Cuádruple: Voxel Isométrico ⇄ ASCII-3D ⇄ 3D-WebGL ⇄ 2D (Tecla [V]) · SGC-AMP v2.80',
     'portal.game.openTab': '↗ Abrir en nueva pestaña',
     'portal.game.fullscreen': '⛶ Pantalla completa',
@@ -128,7 +128,7 @@ if (typeof I18N !== 'undefined' && typeof I18N.add === 'function') {
     'portal.wiki.gear.h3': '🛡 Equipo Táctico',
     'portal.wiki.gear.1': '<b>Fusil de asalto FN P90:</b> Alta cadencia de fuego, alcance 5.',
     'portal.wiki.colony.h3': '🏗 Gestión de Colonias',
-    'portal.footer.1': '◎ COMANDO STARGATE · SGC COMMAND 0.37 · "Chevron 8: La Tercera Dimensión"',
+    'portal.footer.1': '◎ COMANDO STARGATE · SGC COMMAND 0.39 · "Blue Monday: La Jukebox de Hits 80s/90s"',
     'game.clipboard.title': 'Portapapeles y Oficina de Hammond (Personal)',
     'game.research.header_title': 'Laboratorio e Investigación SGC (Nivel 19)',
     'game.save.title': 'Partidas Guardadas e Importar/Exportar',
@@ -184,14 +184,14 @@ if (typeof I18N !== 'undefined' && typeof I18N.add === 'function') {
 
   // 2. FRANÇAIS (fr)
   I18N.add('fr', {
-    'portal.title': 'SGC Command – Stargate Command 0.37 ("Chevron 8 : La Troisième Dimension")',
-    'portal.brand.sub': 'Stargate Command · 0.37 · "Chevron 8 : La Troisième Dimension"',
+    'portal.title': 'SGC Command – Stargate Command 0.39 ("Blue Monday : La Jukebox Hits Années 80/90")',
+    'portal.brand.sub': 'Stargate Command · 0.39 · "Blue Monday : La Jukebox Hits Années 80/90"',
     'portal.nav.game': 'Jeu',
     'portal.nav.wiki': 'Base de Données & Lore',
     'portal.nav.about': 'À propos & Labo',
     'portal.lang.btn': 'FR',
     'portal.lang.title': 'Changer de langue (Français)',
-    'portal.game.title': '🎮 SGC Command 0.37 Instance Active',
+    'portal.game.title': '🎮 SGC Command 0.39 Instance Active',
     'portal.game.sub': 'Moteur Quadruple : Voxel Isométrique ⇄ ASCII-3D ⇄ 3D-WebGL ⇄ 2D (Touche [V]) · SGC-AMP v2.80',
     'portal.game.openTab': '↗ Ouvrir dans un nouvel onglet',
     'portal.game.fullscreen': '⛶ Plein écran',
@@ -203,7 +203,7 @@ if (typeof I18N !== 'undefined' && typeof I18N.add === 'function') {
     'portal.wiki.gear.h3': '🛡 Équipement Tactique',
     'portal.wiki.gear.1': '<b>Fusil d’assaut FN P90 :</b> Cadence élevée, portée 5.',
     'portal.wiki.colony.h3': '🏗 Gestion des Colonies',
-    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.37 · "Chevron 8 : La Troisième Dimension"',
+    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.39 · "Blue Monday : La Jukebox Hits Années 80/90"',
     'game.clipboard.title': 'Presse-papiers & Bureau de Hammond (Personnel)',
     'game.research.header_title': 'Laboratoire & Recherche SGC (Niveau 19)',
     'game.save.title': 'Sauvegardes & Import/Export',
@@ -256,14 +256,14 @@ if (typeof I18N !== 'undefined' && typeof I18N.add === 'function') {
 
   // 3. 中文 (zh)
   I18N.add('zh', {
-    'portal.title': 'SGC Command – 星际之门指挥部 0.37 ("第八锁：第三维度")',
-    'portal.brand.sub': '星际之门指挥部 · 0.37 · "第八锁：第三维度"',
+    'portal.title': 'SGC Command – 星际之门指挥部 0.39 ("蓝星期一：80/90年代金曲点唱机")',
+    'portal.brand.sub': '星际之门指挥部 · 0.39 · "蓝星期一：80/90年代金曲点唱机"',
     'portal.nav.game': '游戏',
     'portal.nav.wiki': '数据库与设定',
     'portal.nav.about': '关于与实验室',
     'portal.lang.btn': 'ZH',
     'portal.lang.title': '切换语言 (中文)',
-    'portal.game.title': '🎮 SGC Command 0.37 实时终端',
+    'portal.game.title': '🎮 SGC Command 0.39 实时终端',
     'portal.game.sub': '四重引擎：等距体素 ⇄ ASCII-3D ⇄ 3D-WebGL ⇄ 2D (按键 [V]) · SGC-AMP v2.80',
     'portal.game.openTab': '↗ 在新标签页打开',
     'portal.game.fullscreen': '⛶ 全屏模式',
@@ -272,7 +272,7 @@ if (typeof I18N !== 'undefined' && typeof I18N.add === 'function') {
     'portal.wiki.gear.h3': '🛡 战术装备',
     'portal.wiki.gear.1': '<b>FN P90 冲锋枪：</b> 高射速，射程 5。',
     'portal.wiki.colony.h3': '🏗 殖民地管理',
-    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.37 · "第八锁：第三维度"',
+    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.39 · "蓝星期一：80/90年代金曲点唱机"',
     'game.go': '▶ 结束当天',
     'game.lang.btn': 'ZH',
     'game.lang.title': '切换语言 (中文)',
@@ -306,14 +306,14 @@ if (typeof I18N !== 'undefined' && typeof I18N.add === 'function') {
 
   // 4. 日本語 (ja)
   I18N.add('ja', {
-    'portal.title': 'SGC Command – スターゲイト・コマンド 0.37 ("シェブロン8：第3の次元")',
-    'portal.brand.sub': 'スターゲイト・コマンド · 0.37 · "シェブロン8：第3の次元"',
+    'portal.title': 'SGC Command – スターゲイト・コマンド 0.39 ("ブルー・マンデー：80/90sヒット・ジュークボックス")',
+    'portal.brand.sub': 'スターゲイト・コマンド · 0.39 · "ブルー・マンデー：80/90sヒット・ジュークボックス"',
     'portal.nav.game': 'ゲーム',
     'portal.nav.wiki': 'データベース＆ロア',
     'portal.nav.about': '概要＆ラボ',
     'portal.lang.btn': 'JA',
     'portal.lang.title': '言語を切り替え (日本語)',
-    'portal.game.title': '🎮 SGC Command 0.37 ライブインスタンス',
+    'portal.game.title': '🎮 SGC Command 0.39 ライブインスタンス',
     'portal.game.sub': '4重エンジン：ボクセル ⇄ ASCII-3D ⇄ 3D-WebGL ⇄ 2D ([V]キー) · SGC-AMP v2.80',
     'portal.game.openTab': '↗ 新しいタブで開く',
     'portal.game.fullscreen': '⛶ フルスクリーン',
@@ -322,7 +322,7 @@ if (typeof I18N !== 'undefined' && typeof I18N.add === 'function') {
     'portal.wiki.gear.h3': '🛡 戦術装備',
     'portal.wiki.gear.1': '<b>FN P90 アサルトライフル：</b> 高連射速度、射程 5。',
     'portal.wiki.colony.h3': '🏗 コロニー管理',
-    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.37 · "シェブロン8：第3の次元"',
+    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.39 · "ブルー・マンデー：80/90sヒット・ジュークボックス"',
     'game.go': '▶ 1日を終える',
     'game.lang.btn': 'JA',
     'game.lang.title': '言語を切り替え (日本語)',
@@ -356,14 +356,14 @@ if (typeof I18N !== 'undefined' && typeof I18N.add === 'function') {
 
   // 5. РУССКИЙ (ru)
   I18N.add('ru', {
-    'portal.title': 'SGC Command – Командование Звёздных Врат 0.37 ("Шеврон 8: Третье Измерение")',
-    'portal.brand.sub': 'Stargate Command · 0.37 · "Шеврон 8: Третье Измерение"',
+    'portal.title': 'SGC Command – Командование Звёздных Врат 0.39 ("Blue Monday: Хит-джукбокс 80-х/90-х")',
+    'portal.brand.sub': 'Stargate Command · 0.39 · "Blue Monday: Хит-джукбокс 80-х/90-х"',
     'portal.nav.game': 'Игра',
     'portal.nav.wiki': 'База данных и Лор',
     'portal.nav.about': 'О проекте и Лаборатория',
     'portal.lang.btn': 'RU',
     'portal.lang.title': 'Сменить язык (Русский)',
-    'portal.game.title': '🎮 SGC Command 0.37 Игровой Терминал',
+    'portal.game.title': '🎮 SGC Command 0.39 Игровой Терминал',
     'portal.game.openTab': '↗ Открыть в новой вкладке',
     'portal.game.fullscreen': '⛶ Полный экран',
     'portal.wiki.h2': '📚 База данных и руководство SGC',
@@ -371,7 +371,7 @@ if (typeof I18N !== 'undefined' && typeof I18N.add === 'function') {
     'portal.wiki.gear.h3': '🛡 Тактическое снаряжение',
     'portal.wiki.gear.1': '<b>Штурмовая винтовка FN P90:</b> Высокая скорострельность, дальность 5.',
     'portal.wiki.colony.h3': '🏗 Управление колониями',
-    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.37 · "Шеврон 8: Третье Измерение"',
+    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.39 · "Blue Monday: Хит-джукбокс 80-х/90-х"',
     'game.go': '▶ Завершить день',
     'game.lang.btn': 'RU',
     'game.lang.title': 'Сменить язык (Русский)',
@@ -405,14 +405,14 @@ if (typeof I18N !== 'undefined' && typeof I18N.add === 'function') {
 
   // 6. PORTUGUÊS (pt)
   I18N.add('pt', {
-    'portal.title': 'SGC Command – Comando Stargate 0.37 ("Chevron 8: A Terceira Dimensão")',
-    'portal.brand.sub': 'Comando Stargate · 0.37 · "Chevron 8: A Terceira Dimensão"',
+    'portal.title': 'SGC Command – Comando Stargate 0.39 ("Blue Monday: A Jukebox de Hits 80s/90s")',
+    'portal.brand.sub': 'Comando Stargate · 0.39 · "Blue Monday: A Jukebox de Hits 80s/90s"',
     'portal.nav.game': 'Jogo',
     'portal.nav.wiki': 'Banco de Dados & Lore',
     'portal.nav.about': 'Sobre & Laboratório',
     'portal.lang.btn': 'PT',
     'portal.lang.title': 'Mudar idioma (Português)',
-    'portal.game.title': '🎮 SGC Command 0.37 Instância ao Vivo',
+    'portal.game.title': '🎮 SGC Command 0.39 Instância ao Vivo',
     'portal.game.openTab': '↗ Abrir em nova aba',
     'portal.game.fullscreen': '⛶ Tela cheia',
     'portal.wiki.h2': '📚 Banco de Dados & Manual do SGC',
@@ -420,7 +420,7 @@ if (typeof I18N !== 'undefined' && typeof I18N.add === 'function') {
     'portal.wiki.gear.h3': '🛡 Equipamento Tático',
     'portal.wiki.gear.1': '<b>Rifle de Assalto FN P90:</b> Alta cadência de tiro, alcance 5.',
     'portal.wiki.colony.h3': '🏗 Gestão de Colônias',
-    'portal.footer.1': '◎ COMANDO STARGATE · SGC COMMAND 0.37 · "Chevron 8: A Terceira Dimensão"',
+    'portal.footer.1': '◎ COMANDO STARGATE · SGC COMMAND 0.39 · "Blue Monday: A Jukebox de Hits 80s/90s"',
     'game.go': '▶ Encerrar Dia',
     'game.lang.btn': 'PT',
     'game.lang.title': 'Mudar idioma (Português)',
@@ -448,14 +448,14 @@ if (typeof I18N !== 'undefined' && typeof I18N.add === 'function') {
 
   // 7. العربية (ar)
   I18N.add('ar', {
-    'portal.title': 'SGC Command – قيادة ستارغيت 0.37 ("شيفرون 8: البعد الثالث")',
-    'portal.brand.sub': 'قيادة ستارغيت · 0.37 · "شيفرون 8: البعد الثالث"',
+    'portal.title': 'SGC Command – قيادة ستارغيت 0.39 ("Blue Monday: جوكبوكس هيتس الثمانينات والتسعينات")',
+    'portal.brand.sub': 'قيادة ستارغيت · 0.39 · "Blue Monday: جوكبوكس هيتس الثمانينات والتسعينات"',
     'portal.nav.game': 'اللعبة',
     'portal.nav.wiki': 'قاعدة البيانات والأرشيف',
     'portal.nav.about': 'حول والمختبر',
     'portal.lang.btn': 'AR',
     'portal.lang.title': 'تغيير اللغة (العربية)',
-    'portal.game.title': '🎮 SGC Command 0.37 المحطة الحية',
+    'portal.game.title': '🎮 SGC Command 0.39 المحطة الحية',
     'portal.game.openTab': '↗ فتح في علامة تبويب جديدة',
     'portal.game.fullscreen': '⛶ ملء الشاشة',
     'portal.wiki.h2': '📚 قاعدة بيانات ودليل SGC',
@@ -463,7 +463,7 @@ if (typeof I18N !== 'undefined' && typeof I18N.add === 'function') {
     'portal.wiki.gear.h3': '🛡 المعدات التكتيكية',
     'portal.wiki.gear.1': '<b>بندقية الهجوم FN P90:</b> معدل إطلاق نار مرتفع، المدى 5.',
     'portal.wiki.colony.h3': '🏗 إدارة المستعمرات',
-    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.37 · "شيفرون 8: البعد الثالث"',
+    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.39 · "Blue Monday: جوكبوكس هيتس الثمانينات والتسعينات"',
     'game.go': '▶ إنهاء اليوم',
     'game.lang.btn': 'AR',
     'game.lang.title': 'تغيير اللغة (العربية)',

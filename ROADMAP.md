@@ -1,7 +1,7 @@
-<!-- 0.37 "Chevron 8: Die dritte Dimension": siehe blog/captains-log-037.md, HANDOFF.md -->
-# 🗺 ROADMAP – SGC COMMAND 0.37 ("Chevron 8: Die dritte Dimension")
+<!-- 0.39 "Blue Monday: Die 80s/90s Hit Jukebox": siehe blog/captains-log-039.md, HANDOFF.md -->
+# 🗺 ROADMAP – SGC COMMAND 0.39 ("Blue Monday: Die 80s/90s Hit Jukebox")
 
-**Stand:** 0.37 final · "Chevron 8: Die dritte Dimension" · Zero-Dependency 3D-WebGL Engine (`PIXEL ⇄ ASCII ⇄ 3D-GL ⇄ 2D`) · Cheyenne Mountain Doppeltunnel & 2×2 Torraum · 9 Sprachen (DE, EN, ES, FR, ZH, JA, RU, PT, AR) · Jukebox-Progression · 55 Planeten / 51 Missionen · 377 Prüfungen grün
+**Stand:** 0.39 „Blue Monday" · 80s/90s Hit Jukebox (7 Vault-Tracks) · Zero-Dependency 3D-WebGL Engine (`PIXEL ⇄ ASCII ⇄ 3D-GL ⇄ 2D`) · Cheyenne Mountain Doppeltunnel & 2×2 Torraum · 9 Sprachen (DE, EN, ES, FR, ZH, JA, RU, PT, AR) · Jukebox-Progression · 55 Planeten / 51 Missionen · 377 Prüfungen grün
 **Zweck:** Klare Prioritäten und technischer Fahrplan für die Weiterentwicklung von SGC Command.
 
 ---
@@ -255,6 +255,7 @@
 | v0.35 | Multi-Slot Saves, Cookie-Clicker I/O, Splash Slogans | 26. Okt 2026 ✅ |
 | 0.36 | 4×2 Torraum, Walter, Guard Stance, Autobattler & Auto-Resolve | 26. Okt 2026 ✅ |
 | 0.37 | „Chevron 8": 3D-WebGL-Engine, 9 Sprachen, 55 Planeten/51 Missionen, Jukebox & Torraum 2×2 | 26. Okt 2026 ✅ (final) |
+| 0.39 | „Blue Monday": 80s/90s Hit Jukebox (7 Vault-Tracks), Stand Orders-Song gestrichen, switch-angel/ entfernt, 377 Tests | 26. Okt 2026 ✅ |
 | 0.38 | Vollständige Planetenkarte & alle SG-1 Welten | Geplant (Backlog) 🟡 |
 
 **Regel:** Nach jedem Durchgang → `Captain's Log` + `HANDOFF.md` + `node test-browser.js` grün.

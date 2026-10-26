@@ -75,18 +75,18 @@ Dazu **drei Stil-Hommagen mit eigenen Noten** (Regel aus `captains-log-032`: kei
 | `node test-browser.js` | **377/377 Prüfungen, 0 Fehler** (357 + 20 neue: LOAD hit-tracks.js, 7× Compilation, Vault-Map, Lock-Status, 2× SONGGEN „Stand Orders"-Exklusion, Katalog-Check, Ordner-Check) |
 | `node --check` alle geänderten `game/*.js` + `test-browser.js` | 7/7 syntax-clean |
 | `git status --porcelain` | sauber nach Commit |
-| Floppy-Budget | +32 KB (hit-tracks.js) – weit unter 1,44 MB; kein Release-ZIP-Rebuild nötig (Post-Release-Pass) |
+| Floppy-Budget | Release 0.39: `SGC-Command-039.zip` ≈ 0.8 MB – unter dem 1,44-MB-Floppy-Budget |
 
 ---
 
 ## 4. Git
 
-Getrennte Feature-Commits (Conventional Commits) auf `main`, danach **Push inklusive der noch nicht gepushten Tags `v0.37`/`v0.37-final`** und des neuen Stands.
+Getrennte Feature-Commits (Conventional Commits) auf `main`, danach **Push inklusive der noch nicht gepushten Tags `v0.37`/`v0.37-final`** und des neuen Stands. Als Abschluss des Passes wurde **Release 0.39 „Blue Monday“** geschnitten: Portal/Footers/i18n auf 0.39 angehoben, `release/SGC-Command-039.zip` + `.sha256` gebaut, annotiertes Tag `v0.39`.
 
 ## 5. Bekannte Restpunkte (bekannt & gewollt)
 
 * **Interpretation „Pump Action Panel":** kein lokales File/Song mit diesem Namen gefunden (Downloads, G:\AgentHome, FL-Studio-Verzeichnisse durchsucht); es existiert die pump-ge-uppte Confusion-Variante. Falls eine eigene „Pump Action Panel"-Komposition gemeint war: einfach die MIDI/Strudel-Quelle liefern – `scratch/build-hit-tracks.js` macht den Rest in 30 Sekunden.
 * `showLogEntry()` Dead Code in `hub.html` (seit Log 038 bekannt).
 * Ältere `v022`–`v036`-ZIPs im Repo-Root (historisch, Log 038).
-* **Kein neues Release-ZIP**: der Pass ist eine Content-Erweiterung nach dem `v0.37-final`-Tag; ein 0.38/0.39-ZIP folgt mit dem nächsten Feature-Pass.
+* **Release 0.39 gebaut**: `release/SGC-Command-039.zip` + `.sha256`, annotiertes Tag `v0.39`, Portal/Footers/i18n in alle 9 Sprachen auf 0.39 „Blue Monday“ angehoben (ZIP = 037-final-Layout + `game/hit-tracks.js` + Log 039).
 
