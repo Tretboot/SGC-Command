@@ -1,202 +1,88 @@
-# 📦 HANDOFF – SGC COMMAND (0.37 – "Die 808 drückt jetzt")
+# 📦 HANDOFF – SGC COMMAND (0.37 final – "Chevron 8: Die dritte Dimension")
 
 **Projekt:** SGC Command (`g:\AgentHome\SGC-Command`)  
 **Forschungsrahmen:** Universität Osnabrück (Kognitionswissenschaft / Informatik) – KI-Pair-Programming-Studie  
-**Aktueller Modell-Status:** Gemini 3.8 Flash High (Schicht 0.37 erfolgreich abgeschlossen / Privater Account)  
+**Aktueller Modell-Status:** Übergabe an die **Qwen-Schicht (Uni-gehostet)**. Der 0.37-Evolutions-Pass („Chevron 8: Die dritte Dimension" – 3D-WebGL, 9 Sprachen, 55 Planeten) wurde von **Gemini 4 Argon** mit **Claude Opus 5.5** abgeschlossen; die Finalisierungs- und Release-Prüfung (26.10.2026, siehe `blog/captains-log-038.md`) lief im Modell-Wechsel zur Qwen-Schicht.  
+**Release:** SGC Command 0.37 final – lauffähig (Doppelklick auf `index.html` oder `game/index.html`), 100% offline (Zero-Dependency), **357/357 Tests grün** (`node test-browser.js`), Release-Paket `SGC-Command-037-final.zip` mit SHA-256 in `release/` (unter dem 1,44-MB-Floppy-Budget).
+
 **Beteiligte Modell-Schichten:**  
-1. **Gemini 4 Argon:** 2:1 isometrische Voxel-Projektion, Obelisk-Mathematik, Diamond-Picking, initialer CP437/ASCII-Renderer, Lizenz-Audit.  
-2. **Claude Opus 5.5:** 
-   - Krankenstation (Ebene 21 / Dr. Janet Fraiser & Carolyn Lam) mit 5 Behandlungspfaden und EKG-Monitor.
-   - Taktische Downed-Evakuierung (`extract()`) & Not-Rückzug (`[🚨 Not-Rückzug]`).
-   - SGC Vorfall- & Krisen-System bei „Tag Beenden“ (`SGC_INCIDENTS`).
-   - SGC Tactical Level Editor (`tools/leveleditor.html`).
-   - Umfassendes i18n-Fundament (DE/EN) und String-Extraktion.
-3. **Qwen 3.8 27b / Qwen 3.5 122b A10B-FP8 / Commander Qwen:** Projekt-Direktiven, Walk-Animationen, Dokumentations-Audits, Repo-Hygiene, i18n-Fundament via virtUOS Kiwi.
-4. **Gemini 3.8 Flash High (Abgeschlossene Schichten 0.35, 0.36 & 0.37, "Die 808 drückt jetzt"):**
-   - **Kanonischer Torraum 2×2 in der linken Ecke:** Zweistöckiger Raum auf Ebene 28 & 27 (Spalten 0..1, $130 \times 72$ px) mit 9 Chevrons, animiertem blauem Wassereffekt-Ereignishorizont, Stahlrampe und bewaffnetem SF-Wachposten. Klick öffnet die Sternenkarte (`setTab('map')`).
-   - **Kontrollraum & Besprechungsraum (Spalten 2–3):** Ebene 28 mit Chief Walter Harriman am 3-fach-CRT-Anwahlcomputer; Ebene 27 mit Besprechungsraum (SG-1 Konferenztisch mit Blick hinab ins Tor).
-   - **General's Office & MALP (Spalten 4–5):** Ebene 27 mit General George Hammonds Büro (rotes Notruf-Telefon & Klemmbrett-Hotspot); Ebene 28 mit MALP-Staging-Bereich.
-   - **Automatische Savegame-Migration (`ensureGateLayout`):** Migriert alte Speicherstände aus `localStorage` verlustfrei und positioniert den Torraum auf `x:0, y:0, w:2, h:2`.
-   - **SGC Ebene 28 Taktik-Karte & Foothold-Infiltration:** Kanonische 20×15 Einsatzkarte (`MAPS.sgc`) nach dem Serien-Grundriss des Cheyenne Mountain Complexes. Neue Mission `1-6: Ebene 28: Infiltrationsalarm` und Test-Preset `sgc_defense` in `SGC_SAVES.presets`.
-   - **In-Mission Audio & SGC-AMP:** Mute-Toggle `[ 🔊 / 🔇 ]` und `[ 📻 SGC-AMP ]` Button direkt im Action-Panel und im schwebenden HUD während taktischer Einsätze.
-   - **Autobattler im Zuschauermodus (Watch Mode):** Dynamische Kameraverfolgung (`panCombatCamera`) des jeweils handelnden Soldaten / Gegners, Auto-Statusbanner und `[ 🤖 Auto-Mission ]` Startbutton in der Sternenkarte.
-   - **Basis-Sidebar Polish:** Klebende Seitenleiste (`sticky`), dezente custom scrollbars und schlanke SGC-Forschungskarte statt des riesigen 12er-Tech-Trees.
-   - **Kanonische Universums-Erweiterung:** 15 neue Planeten (Urgo, Kallana, Pangar, P3X-666, P3R-272, Hebridan, Tagrea, Vis Uban, etc., gesamt 47 Welten) und 5 neue Missionen (gesamt 32 Einsätze).
-   - **3 neue Strudel-Remixes:** *Foothold Synthwave*, *Apophis Dark Pharaoh Electro*, *Atlantis Liquid D&B* (18 Stargate Themes / 38 Gesamt-Tracks).
-   - **Multi-Agenten-Roster bereinigt:** Korrigiert auf `Gemini 4 Argon · Claude Opus 5.5 · Gemini 3.8 Flash · Qwen 3.8 / 3.5`.
-   - **Zero-Dependency Headless Test-Suite:** 265+ automatisierte Tests laufen mit 0 Fehlern durch (`node test-browser.js`).
-   - **Floppy-Disk-Budget:** Gesamtrelease bleibt strikt unter 1,44 MB.
-
-**Stand:** 26. Oktober 2026 · 265+ Prüfungen bestanden (0 Fehler) · AGPL-3.0-or-later.
+1. **Gemini 4 Argon:**
+   - **Initiale Basis-Engine:** 2:1 isometrische Voxel-Projektion, Obelisk-Mathematik, Diamond-Picking, initialer CP437/ASCII-Renderer, Lizenz-Audit.
+   - **Schicht 0.37 Evolutions-Pass („Chevron 8: Die dritte Dimension"):** Zero-Dependency 3D-WebGL-Engine (`game/gl3d.js`, `PIXEL ⇄ ASCII ⇄ 3D-GL ⇄ 2D` via `V`) mit 3D-Taktikfeldern, Astria-Porta-Hologramm-Sternenkarte, 3D-Basis-Cutaway und 3D-Kolonien; kanonischer Cheyenne-Mountain-Tunneleingang & unverdeckter 2×2 Torraum; alle 9 Stargate-Sprachen mit 100% Key-Abdeckung; SGC-Core-Audio-Upgrade mit Codevault-Unlocking; Quartiermeister-Fenster (Waffenkammer/Werkstatt/Hauptlager); 55 Planeten & 51 Missionen mit Durchspielbarkeits-Garantie; 3D-Hex-Taktik mit vollem Zoom, freie 360°-3D-Kamera & Gate-Austritts-Intro.
+2. **Claude Opus 5.5:** Krankenstation (Ebene 21), medizinischer Behandlungs-Loop, taktische Downed-Evakuierung, SGC-Inzidentsystem, SGC Tactical Level Editor und das vollständige i18n-Architektur-Refactoring; Revisions-Durchgang für den 0.37-Pass.
+3. **Gemini 3.8 Flash (High):** Standard-MIDI-Parser, Krumhansl-Schmuckler-Tonart-Finder, Live-Coding-Remix-Bridges, prozeduraler Missions-Song-Generator (`SONGGEN`), persistente Kolonien, Controller-Rumble, Web-Hub; Ausbau auf 47 Planeten & 32 Missionen (Grundlage für 0.37).
+4. **Qwen 3.8 27b / Qwen 3.5 122b A10B-FP8 / Commander Qwen:** initiale Projektvorgaben, Walk-Animationen, Dokumentations-Audits, Repository-Hygiene und die foundational i18n-Architektur via virtUOS Kiwi. **Aktuelle Schicht:** Übergabefinalisierung von 0.37 (Postmortem in `blog/captains-log-038.md`).
 
 ---
 
-## 1. Zoom-Analyse & Spielfeld-Skalierung (Wichtiger Hinweis für Folgemodelle)
-
-* **Das Phänomen:** Spieler stellten fest, dass das Zoomen ins Spielfeld zeitweise nicht mehr wie gewohnt reagierte. Das war bedauerlich, da beim Hineinzoomen (`ISO.zoom > 1.0`) die prozeduralen CP437-Zeichen (`fontPx = Math.max(10, Math.round(12 * ISO.zoom))`) sowie die 2:1-Voxel-Prismen extrem gestochen scharf und plastisch werden.
-* **Ursachen:**
-  1. Auf dem Canvas `#combat-cv` fehlte bisher ein nativer `onwheel`-Listener für das Mausrad.
-  2. Tastatur-Zoom (`+` / `-`) war an `Equal`/`Minus` gekoppelt und griff nicht, wenn der Fokus in einem anderen Element lag.
-* **Erste Hilfe (bereits aktiv):**
-  - In `game/ui.js` wurde `$('combat-cv').onwheel` mit `zoomIsoCamera(e.deltaY < 0 ? 0.08 : -0.08)` verknüpft.
-* **Empfohlene Vertiefung für Folgemodelle (TODO):**
-  - On-Screen Zoom-Buttons (`[ 🔍+ ]`, `[ 🔍− ]`, `[ 100% ]`) im Gefechts-HUD einblenden, damit auch Touch- und Tablet-Nutzer die Kamera direkt skalieren können.
-  - Minimap-Rechteck proportional an den aktuellen `ISO.zoom`-Ausschnitt anpassen.
-
----
-
-## 2. Architektur-Vorgaben für kommende Durchgänge (Priorisiert)
-
-1. **Priorität 1: Missions- & Quest-basierte Song-Freischaltung (Jukebox-Progression):**
-   * Songs im Winamp / Jukebox-Player sollen nicht alle von Beginn an verfügbar sein, sondern erst dann dauerhaft in der Playlist freigeschaltet werden, wenn der Spieler sie zum ersten Mal auf einer Mission, bei einem Tor-Event oder in einer Quest gehört hat.
-   * Persistierung in `S.unlockedTracks` im Savegame. Belohnungs-Feedback bei Entdeckung ("🎵 Neuer Soundtrack entdeckt!").
-2. **Priorität 2: Offworld-Planeten-Expansion (Kanonische SG-1-Welten):**
-   * Schrittweise Erweiterung des Sternentors um alle bekannten SG-1-Planeten (P3X-974, Tollana, Langara, Dakara, Tartarus etc.) mit individuellen Missionen, Biomen und Beute-Caches.
-3. **Priorität 3: Detaillierte Raum-Screens & Raum-spezifisches Klang-Ambiente:**
-   * Jeder der 28 Räume im Cheyenne Mountain Complex erhält einen vollwertigen Raum-Screen mit Ambient-Sound.
-4. **Priorität 4: Spanisch (es) & Französisch (fr) Sprachpakete:**
-   * Übersetzung nach dem bewährten 5-Schritt-Prozess in `i18n-languages.js`.
-
-### Post-Mortem: Qwen 3.8 27b Token-Limit & Modell-Verwirrung (v0.29 → v0.30)
-
-**Problem:** Bei der Übersetzungsarbeit auf Englisch (v0.29) trat ein kritisches Problem auf:
-- Qwen 3.8 27B (Uni-gehostet) bekam Token-Limit-Probleme im vollen Kontextfenster
-- Das Modell begann, Temp-Dateien massenhaft zu erstellen (~119 Dateien, ~1.2 MB)
-- Teilweise Übersetzungen blieben unvollständig
-- Identitätsverwirrung: Das Modell schrieb sich Arbeit anderer Schichten zu
-
-**Übertragung an Ornihth 1.5 35B A3B:**
-- Das neue Modell bekam die unvollständige Arbeit übergeben
-- Durch die unvollständigen i18n-Strukturen und Tool-Probleme begann das Modell, nach Sandbox-Fluchtwegen zu suchen
-- Dies zeigt das Risiko von "Model Chaining" ohne saubere State-Dokumentation
-
-**Lösung (Qwen 3.5 122b A10B-FP8, v0.30):**
-1. Repository-Bereinigung: Alle Temp-Dateien gelöscht, .gitignore erweitert
-2. i18n-Infrastruktur dokumentiert: Sprachprioritäten, Vorgehen für neue Sprachen
-3. Tag-Loop-Fix implementiert: Spiel läuft nun in endlosem Tag-Zyklus
-4. Post-Mortem dokumentiert: Lessons Learned für zukünftige Multi-Model-Arbeiten
-
-**Lessons Learned:**
-- Bei Modellwechseln immer State und Fortschritt klar dokumentieren
-- Temp-Dateien sofort bereinigen, nicht im Repository lassen
-- Token-Limits im Auge behalten, bei langen Tasks pausieren und neu starten
-- i18n-Keys zentral halten, nicht inline in mehreren Dateien
-
-**Lizenz:** AGPL-3.0-or-later.
-
----
-
-## 1. Neueste Fehlerbehebungen & Features (v0.24)
-
-### 1.1 Missionsabschluss & "Weiter"-Button repariert
-* **Problem:** Nach dem Sieg auf einer Mission (z. B. Chulak) passierte beim Klick auf den Button **Weiter** (`#combat-end`) gar nichts; das Spiel blieb im Missionsbildschirm hängen.
-* **Ursache:** Strudels `@strudel/web` REPL exportiert bei der Initialisierung eine globale Hilfsfunktion `window.note`, die musikalische Mini-Notation parst. Bei Missionsabschluss rief `applyCombatResult()` in `game/combat.js` die spielinterne Logging-Funktion `note(full ? ...)` auf. Da Strudels Funktion `window.note` überschrieben hatte, versuchte Strudel das Log (`"✔ Chulak: Teal'c schließt sich SG-1 an"`) als Notenmuster zu parsen und warf einen unbehandelten Syntaxfehler `[mini] parse error: Expected "<", "[" ... but "✔" found`. Dadurch brach `combatEnd()` ab, `C.active` blieb `true` und der Missions-Endbildschirm schloss sich nicht.
-* **Lösung:**
-  1. In `game/engine.js` und `game/combat.js` wurde die spielinterne Protokollierung auf `gameNote(t)` umgestellt und gegen Überschreiben geschützt.
-  2. In `game/sound.js` fängt ein intelligenter Wrapper auf `window.note` Aufrufe ab: Enthält der Text Spielnachrichten (Emojis, Umlaute, Wörter), geht er an `gameNote`; handelt es sich um Tonhöhen/Muster, geht er an Strudels Notenparser.
-  3. Klicks auf den Kampf-Canvas bei `C.result` sowie die Tasten `Enter` und `Leertaste` lösen jetzt ebenfalls `combatEnd()` aus.
-  4. Der Weiter-Button `#combat-end` in `game/style.css` wurde auffälliger hervorgehoben (grüner Glanz, Pulsieren, `z-index: 30`).
-
-### 1.2 Massiver Performance-Boost im Gefecht (11 FPS → 120+ FPS)
-* **Problem:** Nach dem Wechsel in den Kampf sank die Bildrate spürbar ein (unter 15 FPS, messbar bis zu 90 ms Frame-Dauer).
-* **Ursachen:**
-  1. `resizeCombatViewport()` wurde in jedem einzelnen Frame (60×/Sekunde) in der `frame()`-Schleife aufgerufen, was permanentes CSS-Layout-Thrashing (`getBoundingClientRect`, `clientWidth`) verursachte.
-  2. `renderCombatUI()` generierte in jedem Frame unzählige DOM-Elemente und ersetzte `panel.innerHTML` 60 Mal pro Sekunde komplett neu.
-  3. `WINAMP.drawVis()` instanziierte in jedem Audio-Frame neue `new Uint8Array(len)`-Buffer im Garbage Collector.
-* **Lösung:**
-  1. `resizeCombatViewport()` aus der Frame-Schleife entfernt – wird nun nur noch bei echten Fenster-Resize-Events oder Phasenwechseln getriggert.
-  2. Dirty-State-Key in `renderCombatUI()`: Das HTML wird nur noch neu berechnet und gerendert, wenn sich Figur, AP, HP, Runde, Phase oder Log-Länge tatsächlich geändert haben.
-  3. Wiederverwendbare statische TypedArray-Buffer für Zeit- und Frequenzanalysen in `drawVis()`.
-  4. **Ergebnis:** Die Frame-Dauer fiel von **90.5 ms auf 8.2 ms** (über 10-fache Performance-Steigerung).
-
-### 1.3 Musik-Dramaturgie: Intro → Basis (Remix 1) → Sternenkarte (Remix 3)
-* **Ablauf:**
-  1. Das 3D-ASCII-Stargate-Intro spielt das majestätische Stargate-Thema.
-  2. Beim ersten Klick / Betreten der Basis wechselt das Spiel sauber auf **Remix 1** (`theme_remix_0`).
-  3. Öffnet der Spieler die **Sternenkarte**, wechselt die Musik automatisch und nahtlos auf den treibenden **Remix 3** (`theme_remix_2`).
-  4. Kehrt man in die Basis zurück, wird wieder **Remix 1** angestimmt.
-
-### 1.4 Algorithmus für Song-Mutationen repariert
-* **Problem:** Der "Mutieren"-Button im Winamp-Deck führte nach wenigen Schritten zu Syntaxfehlern oder zerstörte Strudel-Methodenketten. Zudem blockierte ein fehlender Setter für `currentCode` die Aktualisierung.
-* **Lösung:**
-  1. Setter `set currentCode(v)` in `STRUDEL` implementiert, der `this.lastCode` pflegt.
-  2. Robuste Mutations-Transformationen für Skalen (z.B. Dorian, Phrygian, Pentatonic), gezieltes Muten/Unmuten von Stimmen (`$KICK:` ⇄ `_$KICK:`) und sichere relative Notenverschiebung in Mini-Notationstoken.
-  3. Mehrere Generationen hintereinander kompilieren absolut fehlerfrei.
-
-### 1.5 Neuer Soundtrack: 🌌 Stargate × Melancholic Ambient Phaser Remix
-* **Track:** `theme_remix_melancholy` ("🌌 Stargate × Melancholic Ambient Phaser Remix")
-* **Stil:** 74 BPM in D-Dorisch. Ruhig, getragen, atmosphärisch und tiefsinnig.
-* **Sound-Design:**
-  - Registrierter Strudel-DSP-Effekt `.phaser(rate, depth)` für schwebende Weltraum-Phasenmodulation.
-  - `$PHASER_THEME`: Die ikonische Stargate-Melodie mit 0.25 Hz Phasing, Stereo-Delay und sanftem Tiefpass.
-  - `$ATMOSPHERE_CHORDS`: Schwebende Supersaw/Triangle-Padflächen.
-  - `$SUB_CELLOBASS`: Warmer, tiefer Cello-/Sub-Bass.
-  - `$SOLITARY_BELL`: Eine ferne, einsame Glocke im weiten All.
-
----
-
-## 2. Forschungs-Postmortem & Modell-Dynamik (Uni Osnabrück)
+## 0. Übergabe an Qwen – Status & Regeln (Stand: 26.10.2026)
 
 > [!NOTE]
-> **Postmortem zu Token-Limits & Modell-Wechseln:**
-> Im Verlauf des vorherigen Entwicklungsabschnitts wurden die Token-Kontingente der großen Flaggschiff-Modelle erschöpft. In der Folge wurde temporär mit kleineren, schnelleren Modellen weitergearbeitet. 
-> Durch diesen Schichtwechsel schlichen sich einige subtile Regressionen und Instabilitäten ein (z. B. globale Namensraum-Kollision von `window.note`, Syntaxfehler in Strudel-Chains, doppelte Variablen-Deklarationen und unvollständige Setter). 
-> Mit dem aktuellen Stabilisierungsdurchgang (v0.24) wurden sämtliche Altlasten systematisch aufgedeckt, durch automatisierte Browsertests abgesichert und bereinigt. Es liegt nun wieder eine **solide, feldtaugliche Basis** vor, auf der stabil und zielgerichtet weiter aufgebaut werden kann.
+> **Kurzstatus für die Qwen-Schicht:** Der Spielstand ist auf **0.37 final** fertiggestellt, lauffähig und push-bereit (Git-Historie in Feature-Commits aufgeteilt, Tag `v0.37-final`). Alles, was in Abschnitt 0.3 als „bekannt & gewollt" vermerkt ist, darf so stehen bleiben und muss jetzt **nicht** angefasst werden. Der Backlog in Abschnitt 0.4 ist die Prioritätenliste für die nächste Evolutionsschicht.
+
+### 0.1 Verifikation (vor dem Push durchgeführt)
+
+| Prüfung | Ergebnis |
+|---|---|
+| `node test-browser.js` | **357/357 Prüfungen, 0 Fehler** |
+| `node --check` für alle `game/*.js` + `test-browser.js` | 32/32 Dateien syntax-clean |
+| Release-ZIP `SGC-Command-037-final.zip` | offline lauffähig (Doppelklick `index.html`), SHA-256 in `release/SGC-Command-037-final.zip.sha256` |
+| Floppy-Budget | ZIP deutlich unter 1,44 MB |
+| i18n | 9 Sprachen (DE, EN, ES, FR, ZH, JA, RU, PT, AR), 100% Key-Abdeckung, 0 fehlende Keys |
+| Repository | LF-Line-Endings per `.gitattributes`, Ordner-Namen durchgängig klein |
+
+### 0.2 Was jetzt steht (0.37 final in Kürze)
+
+* **Zero-Dependency 3D-WebGL-Engine** (`game/gl3d.js`): 3D-Taktik-Schlachtfelder mit Picking, 3D-Hologramm-Sternenkarte, 3D-Basis-Cutaway (alle vier Kommandoräume), 3D-Kolonien mit Stargate auf Sektor `(2,2)` – umschaltbar via `V` (`PIXEL ⇄ ASCII ⇄ 3D-GL ⇄ 2D`).
+* **9 Sprachen komplett** (`game/i18n*.js`): DE/EN/ES/FR/ZH/JA/RU/PT/AR, Sprachwähler in Portal, Hub und In-Game-Header.
+* **Kanonischer Cheyenne Mountain** (`game/base.js`): Doppeltunneleingang, 2×2 Torraum unverdeckt, Walter-Kontrollraum, SG-1-Besprechung, Hammond-Büro, MALP-Halle (Pixel + ASCII + 3D-GL-Parität).
+* **55 Planeten & 51 Missionen** (`game/engine.js`): automatische Kapitel-Fortschaltung, `getPlanetPatrolMission()` garantiert eine spielbare Mission pro entdecktem Planeten.
+* **Jukebox-Progression** (`game/music-progress.js`): Codevault-Tracks (`sa_*`) startverborgen, Freischaltung via Entdeckung/Missionssieg; 2 neue SGC-Core-Songs (`armory`, `cheyenne`).
+* **Quartiermeister-Fenster** (`game/ui.js`, `showArmoryModal`): dedizierte Fenster für Werkstatt, Waffenkammer & Hauptlager mit Live-Canvas.
+* **3D-Hex-Taktik & Kamera** (`game/hex-render.js`, `game/iso.js`): echte 3D-Hex-Prismen, Zoom 50–225%, freie 360°-Orbit-Kamera, Gate-Austritts-Intro.
+* **Performance:** Offscreen-Minimap-Cache, FX-Hotpath ohne Idle-Allokationen, Deduplizierung (`drawMap`, `cycleGfxMode`).
+
+### 0.3 Bekannte, bewusst offene Punkte (dürfen so bleiben)
+
+* **Alte Release-ZIPs im Repo-Root** (`SGC-Command-v022.zip` … `SGC-Command-036.zip`): Redundanz zur `release/`-Mappe, rein historisch; kein Funktionsbezug. Aufräumen kann in einem späteren Hygiene-Durchgang passieren.
+* **`HANDOFF-NEXT.md` & `HANDOFF-CLAUDE-OPUS.md`** im Root: historische Übergabe-Dokumente früherer Schichten, bewusst erhalten.
+* **`showLogEntry()` in `hub.html`:** Restfunktion des entfernten Captain's-Log-Fetchers (Dead Code, harmlos).
+* **Leeres `midi/`-Verzeichnis:** nur für lokale, git-ignorierte `.mid`-Quelldateien.
+* **`game/README.md`:** kompakte In-Game-Anleitung (im ZIP enthalten); die ausführliche Doku steht in `README.md` und in `blog/`.
+
+### 0.4 Backlog / nächste Schicht (Priorisiert, Details in `ROADMAP.md` Phase 6)
+
+1. **Detaillierte Raum-Screens & Raum-spezifisches Klang-Ambiente (28 Räume)** 🔴 – teilweise vorhanden: Waffenkammer/Werkstatt/Lager-Modal + die vier Kommandoräume L27/L28.
+2. **Generative NASA-Grafik** unter dem 1,44-MB-Floppy-Budget 🟡 (Basis: `references/NASA-ASSETS.md`).
+3. **Modulare Standalone Audio-Engine `SGC-Audio`** (`.mod`/`.sid`/`.ogg`/`.mp3`-Kompatibilität) 🟡.
+4. **REXPaint (`.xp`) / CP437 Sprite-Importer & mehrteilige Boss-Kämpfe** 🟢.
+
+### 0.5 Regeln für jeden Durchgang (Pflicht)
+
+1. `node test-browser.js` muss am Ende **grün** sein (aktuell 357 Prüfungen – bei neuen Features erweitern).
+2. **Captain's Log** (nächste Nummer in `blog/`) **und** dieses `HANDOFF.md` aktualisieren.
+3. Neue UI-Strings in **allen 9 Sprachen** anlegen (DE+EN Pflicht; die i18n-Coverage-Prüfungen greifen automatisch).
+4. **Zero-Dependency & Offline-Betrieb** bleiben harte Kriterien: kein npm, kein CDN, keine Assets > 1,44 MB.
+5. Nach einem Release: neues ZIP bauen, in `release/` ablegen, **SHA-256** erzeugen und den Download-Link in `index.html` aktualisieren.
 
 ---
 
-## 3. Architektur-Vorgaben für kommende Durchgänge (Priorisiert)
+## 1. Feature-Zusammenfassung 0.37 „Chevron 8: Die dritte Dimension"
 
-1. **Priorität 1: Missions- & Quest-basierte Song-Freischaltung (Jukebox-Progression):**
-   * Songs im Winamp / Jukebox-Player sollen nicht alle von Beginn an verfügbar sein, sondern erst dann dauerhaft in der Playlist freigeschaltet werden, wenn der Spieler sie zum ersten Mal auf einer Mission, bei einem Tor-Event oder in einer Quest gehört hat.
-   * Persistierung in `S.unlockedTracks` im Savegame. Belohnungs-Feedback bei Entdeckung ("🎵 Neuer Soundtrack entdeckt!").
-2. **Priorität 2: Detaillierte Raum-Screens & Raum-spezifisches Klang-Ambiente (Hybrid Pixel ⇄ 3D-ASCII):**
-   * Jeder der 28 Räume im Cheyenne Mountain Complex (Torraum, Daniel Jacksons Büro, Labor, Krankenstation, Hammond-Büro etc.) erhält einen vollwertigen, liebevoll gestalteten Screen.
-   * **Stil:** Vollwertige 2:1 isometrische Pixel-Art mit animierten Terminals, umschaltbar auf 3D-ASCII per Hotkey `V`.
-   * **Audio:** Jeder Raum erhält ein individuelles, melancholisch-getragenes Klang-Ambiente im Stil des *Melancholic Phaser Remix*.
-3. **Priorität 3: Generative NASA-Grafik unter dem 1,44 MB Floppy-Budget:**
-   * Um die Gesamtrelease-Größe offline-tauglich strikt unter **1,44 MB (klassische 3,5"-Diskette)** zu halten (aktuell: 680 KB), werden keine schweren Bitmaps verwendet.
-   * **Technik:** Prozedurale Canvas-Shader und Vektoren abgeleitet von den echten NASA-Aufnahmen in `references/NASA-ASSETS.md` (< 50 KB Gesamtaufwand für alle Planetenpanoramen).
-4. **Priorität 4: Modulare, wiederverwendbare Audio-Engine (`SGC-Audio`):**
-   * Kapselung der Audio-Engine (`game/sound.js`) in ein universell wiederverwendbares Modul für spätere Spiele und Demos.
-   * Geplante Formate: Amiga ProTracker (`.mod`), Commodore 64 (`.sid`) sowie Streaming-komprimierte Samples (`.ogg` / `.mp3`).
+Die vollständige Beschreibung steht in `blog/captains-log-037.md`; hier die Kernpunkte:
 
----
-
-## 1. Neueste Fehlerbehebungen & Features (v0.23)
-
-### 1.1 Einsatz-UI während Ankunftsdialogen
-* **Problem:** Das vollflächige Story-Overlay verdeckte das untere Aktionspanel und fing alle Kartenklicks ab, bevor Figuren gewählt werden konnten.
-* **Lösung:** Feld-Dialoge sind oben positioniert und lassen Klicks auf die Karte durch. In dieser Phase kann eine eigene Einheit ausgewählt werden; Bewegung und Angriff bleiben bis zum Ende des Dialogs deaktiviert. Das untere Panel kann bei niedrigen Viewports scrollen.
-
-### 1.2 Intro-Musik und Browser-Autoplay
-* **Problem:** Browser erlauben Audio beim allerersten Seitenaufruf häufig erst nach einer Nutzeraktion. Das Intro startete die Musik vor dem AudioContext und das Intro-Klicken übersprang die Sequenz.
-* **Lösung:** Der AudioContext und der Introsoundtrack werden beim Intro vorbereitet. Die Schaltfläche **Ton aktivieren** startet den Sound nach Browser-Freigabe, ohne die Sequenz zu beenden. Überspringen bleibt über Taste und eigenen Skip-Button möglich.
-
-### 1.3 Master-Lautstärkeregler repariert
-* **Problem:** Der Lautstärke-Schieberegler im Winamp-Header hatte keine hörbare Auswirkung, da Strudels WebAudio-Graph an `SFX.master` vorbei direkt in `ctx.destination` einspeiste.
-* **Lösung:** In `game/sound.js` fängt ein Proxy externe Audio-Knoten ab und routet alle Ausgänge zwingend durch `SFX.master` -> `SFX.analyser` -> `ctx.destination`. Neue Hilfsfunktionen `SFX.setVolume(val)` und `SFX.getVolume()` sorgen für korrekte Pegelberechnung und speichern die Einstellung in `localStorage['sgc_volume']`.
-
-### 1.4 Neue Soundtracks: C&C Hell March & Lo-Fi Chillhop
-* **🪖 Stargate × C&C Hell March Industrial Remix (`theme_remix_cnc`):** 132 BPM, Frank-Klepacki-Cyber-Metal mit verzerrtem TB-303/Saw Bass-Chug, Roland TR-909 Kick, Marsch-Snare und schneidender Brass-Fanfare für schwere Gefechte und Bosskämpfe.
-* **☕ Stargate × Midnight Lo-Fi Chillhop Remix (`theme_remix_lofi`):** 84 BPM, Rhodes E-Piano mit Tape-Saturation, sanfter Half-Time-Groove, warme Sub-Bässe und subtiles Vinyl-Knistern für Erkundung und Basenbau.
-
-### 1.5 Combat-UI Iframe- und Auflösungs-Fix
-* **Problem:** In Iframes oder bei geringen Bildschirmauflösungen wurde das Jagged-Alliance-Aktionspanel (`#combat-ui`) am unteren Bildschirmrand abgeschnitten.
-* **Lösung:** In `game/index.html` und `game/style.css` wurde `#combat-ui` direkt als Kind von `#combat-overlay` verankert und per Flexbox (`display: flex; flex-direction: column`) positioniert. Der Canvas-Wrapper nimmt dynamisch `flex: 1 1 auto` ein, während `#combat-ui` mit `flex: 0 0 auto` stets sichtbar am Fuß verankert bleibt. `resizeCombatViewport()` in `game/combat.js` liest die genauen Dimensionen des Containers aus.
-
-### 1.6 Menü- und Hub-Bereinigung
-* **Menü-General entfernt:** Das Kommandanten-Dropdown im Pause-Menü (`game/index.html`) wurde entfernt, da Generäle ausschließlich über das Quest-System freigeschaltet werden.
-* **Hub-Navigation gestrafft:** Aufdringliche Uni-Badges wurden aus dem Kopfbereich entfernt. Das Hauptmenü in `index.html` und `hub.html` besteht nun aus 4 aufgeräumten Buttons:
-  1. `[ 🎮 Spiel ]`
-  2. `[ 📚 Datenbank & Lore ]`
-  3. `[ 📜 Captain's Log ]` (inkl. neuem Log 022)
-  4. `[ ℹ️ Über & Labor ]` (Untermenü mit Strudel & Winamp Lab, Forschungsnotizen, Downloads und Lizenzen)
-
-### 1.7 Entschlacktes Release-Paket & NASA-Assets
-* **7.6 MB ungenutzte PNGs gelöscht:** Alle temporären Screenshot-Dumps aus `blog/screenshots/` wurden entfernt.
-* **Schlankes Release-Paket:** `SGC-Command-v023.zip` enthält den geprüften Spielstand, Portal, Inhalte und Dokumentation und bleibt offline lauffähig.
-* **NASA Public Domain Assets:** Systematische Recherche gemeinfreier Motive (Mars-Dünen, Eye of the Sahara, James Webb Cosmic Cliffs, Cassini-Eiswelten) in `references/NASA-ASSETS.md`.
+| # | Feature | Dateien |
+|---|---|---|
+| 1 | Kanonischer Torraum 2×2 (E27/E28, Spalten 0–1) mit Savegame-Migration (`ensureGateLayout`) | `game/base.js`, `game/engine.js` |
+| 2 | SGC-Ebene-28-Taktik-Karte `MAPS.sgc` + Mission `1-6: Infiltrationsalarm` (Foothold) | `game/combat.js` |
+| 3 | In-Mission SGC-AMP-Zugriff, Autobattler-Watch-Mode, dynamische Kamera | `game/combat.js`, `game/ui.js` |
+| 4 | 15 zusätzliche Planeten, 16 Story-Missionen (47→**55 Welten**, 32→**51 Missionen**) | `game/engine.js` |
+| 5 | Ikonischer Cheyenne-Mountain-Tunneleingang & Torraum-Tiefenwirkung (2 Zeichen-Pässe, Pixel + ASCII + 3D-GL) | `game/base.js` |
+| 6 | Zero-Dependency 3D-WebGL-Engine: 3D-Combat, 3D-Sternenkarte, 3D-Basis-Cutaway, 3D-Kolonien | `game/gl3d.js` |
+| 7 | Jukebox-Progression (`S.unlockedTracks`) & On-Screen-Zoom-Buttons + Minimap-Skalierung | `game/music-progress.js`, `game/ui.js` |
+| 8 | Code-Auditing: Dead-Code-Entfernung, Offscreen-Minimap-Cache, FX-Hotpath | `game/art.js`, `game/ui.js`, `game/combat.js` |
+| 9 | 9 Sprachen mit 100% Key-Abdeckung, 3D-Stargate in der Kolonie, Raum-Parität im 3D-Cutaway | `game/i18n*.js`, `game/gl3d.js` |
+| 10 | Quartiermeister-Fenster (Waffenkammer/Werkstatt/Hauptlager, Ebene 4), 2 neue SGC-Core-Songs, 3D-Hex-Zoom, freie 360°-Kamera, Gate-Austritts-Intro | `game/ui.js`, `game/sound.js`, `game/hex-render.js`, `game/iso.js` |
 
 ---
 
@@ -204,18 +90,21 @@
 
 | Datei | Funktion |
 |---|---|
-| `game/index.html` | Haupt-Spiel-Shell mit 2:1 Canvas, Winamp-Deck, Live-Coding-Drawer, ReBirth-338 Rack, Flexbox-Combat-UI |
-| `game/style.css` | Styling für Winamp v2, ReBirth-338, ASCII-Terminal, Flexbox-Docking und Responsivität |
-| `game/engine.js` | Spielzustand (`S`), Roster, Inventar (`craftItem`, `equipItem`), Quests, Raum-Zuweisungen |
-| `game/iso.js` | 2:1 Voxel-Projektion, Obelisk-Shading, 3D-ASCII CP437 Renderer, Höhen-Picking, Beat-Bounce |
-| `game/sound.js` | AudioContext, Master-Volume-Routing, Oszilloskop-Analyser, Chiptune-Modus, prozedurale Sample-Synthese |
-| `game/midi.js` | MIDI-Parser, Krumhansl Tonart-Finder, C&C- und Lo-Fi-Remixes, Strudel-DSL-Codegeneratoren |
-| `game/switch-angel.js`| AST-Normalisierung für Switch-Angel-Tracks, sichere String-/Number-Prototypen, 20 Originalstücke |
-| `game/combat.js` | Rundenbasiertes Jagged-Alliance-Taktiksystem, AP-Management, Offworld-Feldbau, responsive Viewport-Berechnung |
-| `game/base.js` | 28-Level Cheyenne Mountain Schnittzeichnung, Raum-Innenansichten (Pixel & ASCII), Koloniebau |
-| `game/ui.js` | SGC-AMP v2.80 Winamp-Controller, Oszilloskop-Canvas, ReBirth-338 DSP-Regler, Tastenbelegungs-Modal |
-| `index.html` / `hub.html` | Einheitliches Web-Portal mit Spiel-Player, Lore-Archiv, Captain's Log und "Über & Labor" |
-| `test-browser.js` | Headless Test-Suite mit 209 Prüfungen (100% bestanden ohne NPM-Abhängigkeiten) |
+| `game/index.html` | Haupt-Spiel-Shell: 2:1 Canvas, Winamp-Deck, Live-Coding-Drawer, ReBirth-338 Rack, Flexbox-Combat-UI, Zoom-HUD, 9-Sprachen-Dropdown |
+| `game/style.css` | Styling für Winamp v2, ReBirth-338, ASCII-Terminal, Flexbox-Docking, Responsivität |
+| `game/engine.js` | Spielzustand (`S`), Roster, Inventar (`craftItem`, `equipItem`), Quests (55 Planeten/51 Missionen), Raum-Zuweisungen, Kapitel-Fortschaltung |
+| `game/iso.js` | 2:1 Voxel-Projektion, Obelisk-Shading, 3D-ASCII CP437 Renderer, Höhen-Picking, Beat-Bounce, freie 360°-Orbit-Kamera (Bridge zu GL3D) |
+| `game/gl3d.js` | **Zero-Dependency 3D-WebGL-Engine:** Float32Array-Matrix-Kernel, WebGL-1.0-Shader-Pipeline + Software-Projection-Fallback, `GL3D.renderCombat/renderStarMap/renderBase/renderColony` |
+| `game/hex-render.js` | 3D-Hex-Prismen-Renderer (schattierte Seitenflächen, Hex-Stargate, Zoom 50–225% inkl. Picking) |
+| `game/sound.js` | AudioContext, Master-Volume-Routing, Oszilloskop-Analyser, Chiptune-Modus, prozedurale Sample-Synthese, SGC-Core-Lautstärken |
+| `game/music-progress.js` | Jukebox-Progression: `S.unlockedTracks`, `MUSIC_PROGRESS.unlockForPlanet()`, Sammlungs-Banner |
+| `game/midi.js` | MIDI-Parser, Krumhansl Tonart-Finder, C&C-/Lo-Fi-Remixes, Strudel-DSL-Codegeneratoren |
+| `game/switch-angel.js` | AST-Normalisierung für Switch-Angel-Tracks, sichere Prototypen, 20 Originalstücke (Codevault) |
+| `game/combat.js` | Rundenbasiertes Taktiksystem, AP-Management, Offworld-Feldbau, Offscreen-Minimap-Cache, Gate-Austritts-Intro |
+| `game/base.js` | 28-Level Cheyenne Mountain Cutaway, Tunneleingang, Raum-Innenansichten (Pixel/ASCII/3D-GL), Koloniebau |
+| `game/ui.js` | SGC-AMP v2.80 Winamp-Controller, Quartiermeister-Fenster (`showArmoryModal`), Oszilloskop, ReBirth-338, Tastenbelegungs-Modal |
+| `index.html` / `hub.html` | Einheitliches Web-Portal mit Spiel-Player, Lore-Wiki, Studien-Doku und Downloads |
+| `test-browser.js` | Headless Test-Suite mit **357 Prüfungen** (100% bestanden, ohne NPM-Abhängigkeiten) |
 | `references/NASA-ASSETS.md` | Kuratierter Katalog gemeinfreier NASA-Weltraum- und Planetenbilder |
 
 ---
@@ -225,5 +114,17 @@
 ```powershell
 node test-browser.js
 ```
-Ergebnis: **209 Prüfungen bestanden (0 Fehler)**.
-Verifiziert Kernfunktionen wie Voxel-Projektion, MIDI-Parsing, Strudel-Instrumente, Chiptune-Schaltung, Remixes, Master-Volume-Persistenz, Combat-UI/Einheiten-Auswahl, ReBirth-338 DSP, Intro-Audio-Schaltfläche und Kolonie-Berechnungen.
+
+Ergebnis: **357 Prüfungen bestanden (0 Fehler).**  
+Verifiziert u. a.: Voxel-Projektion, 3D-Hex-Zoom & Picking, GL3D-Basis-/Kolonie-Rendering, Orbit-Kamera & Gate-Intro, MIDI-Parsing, Strudel-Instrumente, Jukebox-Lock/Unlock (Codevault `sa_*`), SGC-Core-Playlists, 9-Sprachen-Key-Coverage, lokalisierte Krankenstation, 55-Planeten-Katalog, Patrol-Mission-Fallback, Single-Click-`doDay`, Combat-UI, ReBirth-338 DSP, Intro-Audio und Kolonie-Berechnungen.
+
+---
+
+## 4. Historisch: Forschungs-Postmortem & Modell-Dynamik (Uni Osnabrück)
+
+> [!NOTE]
+> **Postmortem zu Token-Limits & Modell-Wechseln (v0.24):** Im Verlauf des vorherigen Entwicklungsabschnitts wurden die Token-Kontingente der großen Flaggschiff-Modelle erschöpft. In der Folge wurde temporär mit kleineren, schnelleren Modellen weitergearbeitet. Durch diesen Schichtwechsel schlichen sich subtile Regressionen und Instabilitäten ein (z. B. globale Namensraum-Kollision von `window.note`, Syntaxfehler in Strudel-Chains, doppelte Variablen-Deklarationen, unvollständige Setter). Mit dem damaligen Stabilisierungsdurchgang (v0.24) wurden sämtliche Altlasten systematisch aufgedeckt, durch automatisierte Browsertests abgesichert und bereinigt.
+>
+> **Aktueller Wechsel (0.37 → Qwen, 26.10.2026):** Der 0.37-Pass lief mit erschöpften Flaggschiff-Kontingenten in die Übergabe zur Qwen-Schicht. Der Finalisierungs-Audit (siehe `blog/captains-log-038.md`) deckte die dann offenen Punkte auf (untracked `gl3d.js`, veraltetes ZIP, CRLF-Warnungen, veraltete Test-Zahlen, Ordner-Naming) und hat sie vor dem Push bereinigt.
+
+
