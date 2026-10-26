@@ -346,7 +346,7 @@ const BASE_ROOM_LEVEL={
 
 // Raum-Typen (Shelter-Basis)
 const ROOMS={
- gate:{name:'Gate-Room',nameEn:'Gate Room',w:2,h:1,power:-10,staff:0,cost:{},icon:'◎',desc:'Missions-Launch (fest)',descEn:'Mission launch (fixed)'},
+ gate:{name:'Torraum & Gate',nameEn:'Gateroom & Gate',w:4,h:2,power:-10,staff:0,cost:{},icon:'◎',desc:'Torraum & Stargate (Level 28/27)',descEn:'Gateroom & Stargate (Level 28/27)'},
  generator:{name:'Generator',nameEn:'Generator',w:1,h:1,power:10,staff:1,cost:{ore:220},icon:'⚡',desc:'+10 Power',descEn:'+10 power'},
  lab:{name:'Labor',nameEn:'Lab',w:1,h:1,power:-2,staff:2,cost:{ore:350,tech:30},icon:'🔬',desc:'+10 RP/Staff',descEn:'+10 RP/staff'},
  workshop:{name:'Werkstatt',nameEn:'Workshop',w:1,h:1,power:-3,staff:2,cost:{ore:300,tech:30},icon:'🛠',desc:'+Erz/Staff',descEn:'+Ore/staff'},
@@ -510,7 +510,7 @@ function newGame(){
     recruited:START.includes(i)
   }));
   const base={grid:Array(BASE_COLS*BASE_LEVELS).fill(null),rooms:{},nextId:1};
-  addRoom(base,'gate',3,0);
+  addRoom(base,'gate',0,0);
   addRoom(base,'generator',0,BASE_LEVELS-9);
   addRoom(base,'generator',1,BASE_LEVELS-9);
   addRoom(base,'lab',2,BASE_LEVELS-19);

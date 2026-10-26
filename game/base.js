@@ -144,10 +144,45 @@ function drawBuiltRoom(c,room){
  c.strokeStyle=B.selRoom===room.id?'#7be1e8':'#8295a0';c.lineWidth=B.selRoom===room.id?2:1;c.strokeRect(x+4,top+5,w-8,h-11);
  c.fillStyle='#9ab0bd';c.fillRect(x+w/2-7,top+h-8,14,3);
  if(room.type==='gate'){
-  const gx=x+w/2,gy=top+h/2-2;
-  c.fillStyle='#091723';c.beginPath();c.ellipse(gx,gy,11,7,0,0,Math.PI*2);c.fill();
-  c.strokeStyle='#71d7ec';c.lineWidth=2;c.beginPath();c.ellipse(gx,gy,11,7,0,0,Math.PI*2);c.stroke();
-  c.fillStyle='#b8d5df';c.font='7px monospace';c.textAlign='center';c.fillText('GATERAUM',gx,top+h-10);
+  const now=performance.now();
+  // Silo background & blast bunker architecture
+  c.fillStyle='#0b131d';c.fillRect(x+8,top+9,w-16,h-20);
+  // Reinforced concrete pillars
+  c.fillStyle='#1e293b';c.fillRect(x+10,top+10,12,h-22);c.fillRect(x+w-22,top+10,12,h-22);
+  c.strokeStyle='#334155';c.lineWidth=1;c.strokeRect(x+10,top+10,12,h-22);c.strokeRect(x+w-22,top+10,12,h-22);
+  // Stargate center (slightly left of center for ramp perspective)
+  const gx=x+w/2-10,gy=top+h/2-4;
+  // Steel embarkation ramp leading to the gate
+  c.fillStyle='#334155';c.beginPath();c.moveTo(gx-24,gy+16);c.lineTo(gx+24,gy+16);c.lineTo(gx+34,top+h-14);c.lineTo(gx-34,top+h-14);c.closePath();c.fill();
+  c.strokeStyle='#64748b';c.lineWidth=1.5;c.beginPath();c.moveTo(gx-24,gy+16);c.lineTo(gx-34,top+h-14);c.moveTo(gx+24,gy+16);c.lineTo(gx+34,top+h-14);c.stroke();
+  // Yellow safety hazard strips on ramp base
+  c.fillStyle='#eab308';c.fillRect(gx-32,top+h-14,64,2);
+  // Outer Naquadah ring
+  c.fillStyle='#1e293b';c.beginPath();c.arc(gx,gy,26,0,Math.PI*2);c.fill();
+  c.strokeStyle='#475569';c.lineWidth=4;c.beginPath();c.arc(gx,gy,24,0,Math.PI*2);c.stroke();
+  c.strokeStyle='#0f172a';c.lineWidth=1.5;c.beginPath();c.arc(gx,gy,21,0,Math.PI*2);c.stroke();
+  // 9 Chevron locks glowing orange
+  for(let i=0;i<9;i++){
+   const ang=i*(Math.PI*2/9)-Math.PI/2;
+   const cx=gx+Math.cos(ang)*24,cy=gy+Math.sin(ang)*24;
+   c.fillStyle='#ea580c';c.fillRect(cx-2,cy-2,4,4);
+   c.fillStyle='#fde047';c.fillRect(cx-1,cy-1,2,2);
+  }
+  // Event Horizon / Kawoosh ripple (blue water shimmer)
+  const ripple=Math.sin(now/280)*1.5;
+  const ehGrad=c.createRadialGradient(gx,gy,2,gx,gy,19);
+  ehGrad.addColorStop(0,'#e0f2fe');ehGrad.addColorStop(0.35,'#38bdf8');ehGrad.addColorStop(0.85,'#0284c7');ehGrad.addColorStop(1,'#0f172a');
+  c.fillStyle=ehGrad;c.beginPath();c.arc(gx,gy,19+ripple*0.4,0,Math.PI*2);c.fill();
+  c.strokeStyle='rgba(255,255,255,0.45)';c.lineWidth=1;c.beginPath();c.arc(gx,gy,11+ripple,0,Math.PI*2);c.stroke();
+  // Armed SF guards standing at base of ramp
+  c.fillStyle='#1e3a8a';c.fillRect(gx-42,top+h-24,6,12);c.fillRect(gx+36,top+h-24,6,12);
+  c.fillStyle='#fde047';c.beginPath();c.arc(gx-39,top+h-26,2.5,0,Math.PI*2);c.arc(gx+39,top+h-26,2.5,0,Math.PI*2);c.fill();
+  c.fillStyle='#0f172a';c.fillRect(gx-39,top+h-20,9,3);c.fillRect(gx+30,top+h-20,9,3);
+  // Header plaque & prompt
+  c.fillStyle='#7dd3fc';c.font='bold 7px monospace';c.textAlign='center';
+  c.fillText('◎ LEVEL 28/27 · SGC TORRAUM (STARGATE)',x+w/2,top+14);
+  c.fillStyle='#94a3b8';c.font='6px monospace';
+  c.fillText('WURMLOCH AKTIV · [KLICK = STERNENKARTE]',x+w/2,top+h-6);
  }else{
   if(typeof drawRoomIcon==='function')drawRoomIcon(c,room.type,x+w/2-8,top+7,0.5);
   c.fillStyle='#c2d2dc';c.font='6px monospace';c.textAlign='center';
@@ -193,6 +228,59 @@ function renderBase(cv){
    const room=S.base.rooms[id];
    if(isOrigin(x,y,id))drawBuiltRoom(c,room);
   }
+ }
+ // Level 28 Kontrollraum (cols 4..5) · Dialing Computer & Walter Harriman
+ {
+  const ky=GRID_Y+27*CH,kx=GRID_X+4*CW,kw=2*CW;
+  c.fillStyle='rgba(15,23,42,0.92)';c.fillRect(kx+3,ky+4,kw-6,CH-9);
+  c.strokeStyle='#38bdf8';c.lineWidth=1.2;c.strokeRect(kx+3,ky+4,kw-6,CH-9);
+  // Observation blast-window looking into Gateroom
+  c.fillStyle='rgba(56,189,248,0.2)';c.fillRect(kx+5,ky+6,18,CH-13);
+  c.strokeStyle='#0284c7';c.lineWidth=1;c.strokeRect(kx+5,ky+6,18,CH-13);
+  // Dialing computer & monitors
+  c.fillStyle='#1e293b';c.fillRect(kx+28,ky+15,48,12); // Desk
+  c.fillStyle='#22c55e';c.fillRect(kx+32,ky+8,8,6);   // CRT 1
+  c.fillStyle='#f59e0b';c.fillRect(kx+44,ky+8,8,6);   // CRT 2
+  c.fillStyle='#38bdf8';c.fillRect(kx+56,ky+8,12,6);  // CRT 3 (Chevron status)
+  // Chief Walter Harriman seated at console
+  c.fillStyle='#1d4ed8';c.fillRect(kx+82,ky+12,7,12); // AF Uniform
+  c.fillStyle='#fde047';c.beginPath();c.arc(kx+85.5,ky+9,3.5,0,Math.PI*2);c.fill(); // Head
+  c.fillStyle='#38bdf8';c.font='bold 6px monospace';c.textAlign='center';
+  c.fillText('💻 KONTROLLRAUM (WALTER)',kx+kw/2,ky+CH-7);
+ }
+ // Level 27 Besprechungsraum (cols 4..5) · Conference Table overlooking Gate
+ {
+  const by=GRID_Y+26*CH,bx=GRID_X+4*CW,bw=2*CW;
+  c.fillStyle='rgba(30,41,59,0.9)';c.fillRect(bx+3,by+4,bw-6,CH-9);
+  c.strokeStyle='#94a3b8';c.lineWidth=1.2;c.strokeRect(bx+3,by+4,bw-6,CH-9);
+  // Window overlooking Gateroom silo
+  c.fillStyle='rgba(56,189,248,0.18)';c.fillRect(bx+5,by+6,16,CH-13);
+  c.strokeStyle='#0284c7';c.strokeRect(bx+5,by+6,16,CH-13);
+  // Conference table
+  c.fillStyle='#5c3a1e';c.fillRect(bx+26,by+14,64,8); // Table
+  // Chairs
+  c.fillStyle='#475569';
+  c.fillRect(bx+30,by+8,8,4);c.fillRect(bx+44,by+8,8,4);c.fillRect(bx+58,by+8,8,4);c.fillRect(bx+72,by+8,8,4);
+  c.fillRect(bx+30,by+24,8,4);c.fillRect(bx+44,by+24,8,4);c.fillRect(bx+58,by+24,8,4);c.fillRect(bx+72,by+24,8,4);
+  // Tactical screen
+  c.fillStyle='#0f172a';c.fillRect(bx+96,by+8,22,14);
+  c.fillStyle='#38bdf8';c.font='5px monospace';c.textAlign='center';c.fillText('MAP',bx+107,by+17);
+  c.fillStyle='#e2e8f0';c.font='bold 6px monospace';
+  c.fillText('🗺 BESPRECHUNG (SG-1)',bx+bw/2,by+CH-7);
+ }
+ // Level 28 Equipment & MALP Staging (cols 6..7)
+ {
+  const sy=GRID_Y+27*CH,sx=GRID_X+6*CW,sw=2*CW;
+  c.fillStyle='rgba(24,32,42,0.88)';c.fillRect(sx+3,sy+4,sw-6,CH-9);
+  c.strokeStyle='#64748b';c.lineWidth=1;c.strokeRect(sx+3,sy+4,sw-6,CH-9);
+  // MALP probe body & treads
+  c.fillStyle='#334155';c.fillRect(sx+24,sy+16,28,10);
+  c.fillStyle='#1e293b';c.fillRect(sx+22,sy+23,32,4); // Treads
+  c.fillStyle='#38bdf8';c.fillRect(sx+42,sy+12,4,4); // Sensor/Cam
+  // Crates
+  c.fillStyle='#78350f';c.fillRect(sx+65,sy+14,14,12);c.fillRect(sx+82,sy+16,16,10);
+  c.fillStyle='#cbd5e1';c.font='bold 6px monospace';c.textAlign='center';
+  c.fillText('🚜 MALP & AUSRÜSTUNG',sx+sw/2,sy+CH-7);
  }
  // Level 27 Commander's Office (Hammond / Weir / Landry) + Clipboard Hotspot
  {
@@ -314,6 +402,24 @@ function baseClick(clientX,clientY){
   const res=buildRoom(B.buildType,x,y);
   if(res.ok&&typeof SFX!=='undefined')SFX.build();
   B.buildMode=false;B.buildType=null;act(res);return;
+ }
+ // Level 28 & 27 cols 0..3: Gateroom click -> opens Star Map
+ if(gx>=0&&gx<=3&&(gy===26||gy===27)){
+  if(typeof setTab==='function')setTab('map');
+  if(typeof note==='function')note(I18N.T('game.dyn.base.gate_click')||'Torraum: Sternenkarte für Wurmloch-Anwahl geöffnet.');
+  return;
+ }
+ // Level 28 cols 4..5: Kontrollraum click -> Walter Harriman
+ if(gx>=4&&gx<=5&&gy===27){
+  if(typeof sfx==='function')sfx('gate');
+  if(typeof note==='function')note(I18N.T('game.dyn.base.walter_quote')||'Chief Walter Harriman: „Chevron 7 verriegelt! Wurmloch etabliert, Iris bleibt offen.“');
+  return;
+ }
+ // Level 27 cols 4..5: Besprechungsraum click -> Briefing
+ if(gx>=4&&gx<=5&&gy===26){
+  if(typeof setTab==='function')setTab('map');
+  if(typeof note==='function')note(I18N.T('game.dyn.base.briefing_click')||'Besprechungsraum: Einsatzbesprechung für SG-1 aktiv.');
+  return;
  }
  // Level 27 (gy===26) cols 6-7 is Hammond's Office / Clipboard hotspot
  if(gy===26&&gx>=6&&!S.base.grid[y*COLS+x]&&typeof showClipboardModal==='function'){
