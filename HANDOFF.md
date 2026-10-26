@@ -1,32 +1,33 @@
-# 📦 HANDOFF – SGC COMMAND (0.36 – "Die 808 drückt jetzt")
+# 📦 HANDOFF – SGC COMMAND (0.37 – "Die 808 drückt jetzt")
 
 **Projekt:** SGC Command (`g:\AgentHome\SGC-Command`)  
 **Forschungsrahmen:** Universität Osnabrück (Kognitionswissenschaft / Informatik) – KI-Pair-Programming-Studie  
-**Aktueller Modell-Status:** Gemini 3.8 Flash High (Schicht erfolgreich abgeschlossen / Privater Account)  
+**Aktueller Modell-Status:** Gemini 3.8 Flash High (Schicht 0.37 erfolgreich abgeschlossen / Privater Account)  
 **Beteiligte Modell-Schichten:**  
 1. **Gemini 4 Argon:** 2:1 isometrische Voxel-Projektion, Obelisk-Mathematik, Diamond-Picking, initialer CP437/ASCII-Renderer, Lizenz-Audit.  
-2. **Claude 5.5 / 3.5 Sonnet:** Obelisk/Voxel-Stabilisierung, prozedurale WebAudio-Sample-Synthese, Inventar & Werkbank-Crafting (`INVENTAR-SPEC.md`), Hammonds Klemmbrett.  
-3. **Gemini 3.8 Flash:** Standard-MIDI-Bridge, Krumhansl-Schmuckler-Tonarterkennung, Stargate Theme × Switch Angel Hybrid-Remix-Synthesizer, prozedurale Seed-Song-Generierung (`SONGGEN`), persistenter planetarer Koloniebau, **SGC-AMP v2.80**, Strudel Live-Code Interface, ReBirth-338 Rack, 8-Bit Chiptune-Modus, C&C- und Lo-Fi-Remixes sowie das vereinheitlichte Web-Portal.
-4. **Qwen 3.8 27b / Qwen 3.5 122b A10B-FP8 / Commander Qwen:** Projekt-Direktiven, Walk-Animationen, Dokumentations-Audits, Repo-Hygiene, i18n-Fundament via virtUOS Kiwi.
-5. **Claude Opus 5.5 (v0.25 – v0.28, v0.34):** 
+2. **Claude Opus 5.5:** 
    - Krankenstation (Ebene 21 / Dr. Janet Fraiser & Carolyn Lam) mit 5 Behandlungspfaden und EKG-Monitor.
    - Taktische Downed-Evakuierung (`extract()`) & Not-Rückzug (`[🚨 Not-Rückzug]`).
    - SGC Vorfall- & Krisen-System bei „Tag Beenden“ (`SGC_INCIDENTS`).
    - SGC Tactical Level Editor (`tools/leveleditor.html`).
    - Umfassendes i18n-Fundament (DE/EN) und String-Extraktion.
-6. **Gemini 3.8 Flash High (Abgeschlossene Schichten 0.35 & 0.36, "Die 808 drückt jetzt"):**
-   - **Gateroom-Expansion 4×2:** Kanonisches zweistöckiges Silo auf Ebene 28 & 27 (Spalten 0..3, $260 \times 72$ px) mit 9 Chevrons, animiertem blauen Wassereffekt-Ereignishorizont (`Math.sin(now / 280)`), Stahlrampe und SF-Wachposten. Klick öffnet die Sternenkarte (`setTab('map')`).
-   - **Kontrollraum & Walter Harriman (Ebene 28, Spalten 4–5):** Aussichtsfenster in den Torraum, Anwahl-Computer mit 3 CRT-Monitoren, Chief Master Sergeant Walter Harriman. Klick löst Funk-Zitat aus (*„Chevron 7 verriegelt! Wurmloch etabliert.“*).
-   - **Besprechungsraum (Ebene 27, Spalten 4–5):** 8-sitziger Konferenztisch mit Blick auf das Tor und taktischem Wanddisplay.
-   - **MALP & Ausrüstung (Ebene 28, Spalten 6–7):** Tiefensonde und Naquadah-Frachtkisten.
-   - **Wache & Reaktionsfeuer (Guard Stance):** Verbleibende AP können per Taste `[O]` oder Button als Wachstellung deklariert werden; verleiht **+15 % Ausweich-/Deckungsbonus** (`target.overwatch` in `doAttack`).
-   - **In-Combat Auto-Battler:** Autonomer KI-Zug per Umschalt-Button `[ 🤖 Auto-Kampf ]` im Action-Panel (`runAutoBattleTurn()`).
-   - **Auto-Resolve (Schnellkampf mit Prognose):** 1-Klick-Kampf im Missionsbriefing mit Siegwahrscheinlichkeits-Prognose (z. B. `78%`) und Verletzungsrisiko; -25% Beute-/XP-Malus; Boss-/Storymissionen gesperrt.
-   - **Versionskonvention & Qwen-Credits:** Führendes 'v' entfernt, Qwen in allen Footern und Portalen gewürdigt.
-   - **Zero-Dependency Headless Test-Suite:** 250+ automatisierte Tests laufen mit 0 Fehlern durch (`node test-browser.js`).
+3. **Qwen 3.8 27b / Qwen 3.5 122b A10B-FP8 / Commander Qwen:** Projekt-Direktiven, Walk-Animationen, Dokumentations-Audits, Repo-Hygiene, i18n-Fundament via virtUOS Kiwi.
+4. **Gemini 3.8 Flash High (Abgeschlossene Schichten 0.35, 0.36 & 0.37, "Die 808 drückt jetzt"):**
+   - **Kanonischer Torraum 2×2 in der linken Ecke:** Zweistöckiger Raum auf Ebene 28 & 27 (Spalten 0..1, $130 \times 72$ px) mit 9 Chevrons, animiertem blauem Wassereffekt-Ereignishorizont, Stahlrampe und bewaffnetem SF-Wachposten. Klick öffnet die Sternenkarte (`setTab('map')`).
+   - **Kontrollraum & Besprechungsraum (Spalten 2–3):** Ebene 28 mit Chief Walter Harriman am 3-fach-CRT-Anwahlcomputer; Ebene 27 mit Besprechungsraum (SG-1 Konferenztisch mit Blick hinab ins Tor).
+   - **General's Office & MALP (Spalten 4–5):** Ebene 27 mit General George Hammonds Büro (rotes Notruf-Telefon & Klemmbrett-Hotspot); Ebene 28 mit MALP-Staging-Bereich.
+   - **Automatische Savegame-Migration (`ensureGateLayout`):** Migriert alte Speicherstände aus `localStorage` verlustfrei und positioniert den Torraum auf `x:0, y:0, w:2, h:2`.
+   - **SGC Ebene 28 Taktik-Karte & Foothold-Infiltration:** Kanonische 20×15 Einsatzkarte (`MAPS.sgc`) nach dem Serien-Grundriss des Cheyenne Mountain Complexes. Neue Mission `1-6: Ebene 28: Infiltrationsalarm` und Test-Preset `sgc_defense` in `SGC_SAVES.presets`.
+   - **In-Mission Audio & SGC-AMP:** Mute-Toggle `[ 🔊 / 🔇 ]` und `[ 📻 SGC-AMP ]` Button direkt im Action-Panel und im schwebenden HUD während taktischer Einsätze.
+   - **Autobattler im Zuschauermodus (Watch Mode):** Dynamische Kameraverfolgung (`panCombatCamera`) des jeweils handelnden Soldaten / Gegners, Auto-Statusbanner und `[ 🤖 Auto-Mission ]` Startbutton in der Sternenkarte.
+   - **Basis-Sidebar Polish:** Klebende Seitenleiste (`sticky`), dezente custom scrollbars und schlanke SGC-Forschungskarte statt des riesigen 12er-Tech-Trees.
+   - **Kanonische Universums-Erweiterung:** 15 neue Planeten (Urgo, Kallana, Pangar, P3X-666, P3R-272, Hebridan, Tagrea, Vis Uban, etc., gesamt 47 Welten) und 5 neue Missionen (gesamt 32 Einsätze).
+   - **3 neue Strudel-Remixes:** *Foothold Synthwave*, *Apophis Dark Pharaoh Electro*, *Atlantis Liquid D&B* (18 Stargate Themes / 38 Gesamt-Tracks).
+   - **Multi-Agenten-Roster bereinigt:** Korrigiert auf `Gemini 4 Argon · Claude Opus 5.5 · Gemini 3.8 Flash · Qwen 3.8 / 3.5`.
+   - **Zero-Dependency Headless Test-Suite:** 265+ automatisierte Tests laufen mit 0 Fehlern durch (`node test-browser.js`).
    - **Floppy-Disk-Budget:** Gesamtrelease bleibt strikt unter 1,44 MB.
 
-**Stand:** 26. Oktober 2026 · 250+ Prüfungen bestanden (0 Fehler) · AGPL-3.0-or-later.
+**Stand:** 26. Oktober 2026 · 265+ Prüfungen bestanden (0 Fehler) · AGPL-3.0-or-later.
 
 ---
 

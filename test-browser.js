@@ -1083,10 +1083,10 @@ for(const fn of loadFns){
 // 36. Test 0.36 Milestone: Gateroom 4x2 Silo, Walter's Control Room, Autobattler & Auto-Resolve
 {
   // A: Gateroom 4x2 layout on Level 28 & 27
-  assert(ROOMS.gate.w === 4 && ROOMS.gate.h === 2, 'ROOMS.gate is a 4x2 silo spanning Level 28 & 27');
+  assert(ROOMS.gate.w === 2 && ROOMS.gate.h === 2, 'ROOMS.gate is a 2x2 room spanning Level 28 & 27 in far-left corner');
   const gateRoom = S.base.rooms[1];
   assert(gateRoom && gateRoom.type === 'gate' && gateRoom.x === 0 && gateRoom.y === 0, 'Gateroom placed at bottom-left corner (0,0)');
-  assert(S.base.grid[0] === 1 && S.base.grid[3] === 1 && S.base.grid[8] === 1, 'Gateroom occupies grid cells across columns 0..3 and rows 0..1');
+  assert(S.base.grid[0] === 1 && S.base.grid[1] === 1 && S.base.grid[8] === 1 && S.base.grid[9] === 1, 'Gateroom occupies grid cells across columns 0..1 and rows 0..1');
 
   // B: Base click interactions
   UI.tab = 'base';
@@ -1103,7 +1103,7 @@ for(const fn of loadFns){
   let lastNote = '';
   const origNote = note;
   note = (msg) => { lastNote = msg; if(origNote) origNote(msg); };
-  baseClick(380, 1080);
+  baseClick(260, 1080);
   assert(lastNote.includes('Walter Harriman') && lastNote.includes('Chevron 7'), 'Clicking Kontrollraum triggers Walter Harriman radio quote');
   note = origNote;
 
@@ -1145,6 +1145,48 @@ for(const fn of loadFns){
   assert(S.done.includes(testMission.id), 'autoResolveMission successfully marks mission as completed upon victory');
   assert((S.res.ore || 0) > initialOre, 'autoResolveMission awards loot with penalty applied');
   Math.random = origRandom;
+}
+
+
+// 37. Test 0.37 Milestone: SGC Level 28 Tactical Map, Foothold Mission, Combat Audio & Canonical Expansion
+{
+  // A: Gate save migration test
+  const dummyBase = {
+    grid: Array(8 * 28).fill(null),
+    rooms: {
+      1: { id: 1, type: 'gate', x: 3, y: 0, w: 4, h: 2, staff: [] }
+    }
+  };
+  ensureGateLayout(dummyBase);
+  assert(dummyBase.rooms[1].x === 0 && dummyBase.rooms[1].y === 0 && dummyBase.rooms[1].w === 2 && dummyBase.rooms[1].h === 2, 'ensureGateLayout migrates legacy gate to (0,0) with 2x2 size');
+  assert(dummyBase.grid[0] === 1 && dummyBase.grid[1] === 1 && dummyBase.grid[8] === 1 && dummyBase.grid[9] === 1, 'ensureGateLayout correctly repopulates grid cells (0,0)-(1,1)');
+
+  // B: SGC Defense Save Preset & SGC Level 28 Map
+  assert(typeof SGC_SAVES.presets.sgc_defense !== 'undefined', 'sgc_defense test preset is registered in SGC_SAVES');
+  const presetJson = SGC_SAVES.presets.sgc_defense.create();
+  assert(typeof presetJson === 'string' && presetJson.includes('"commander":"hammond"'), 'sgc_defense preset generates valid JSON with Gen. Hammond');
+  assert(Array.isArray(MAPS.sgc) && MAPS.sgc.length === 15, 'MAPS.sgc has 15 tactical rows matching Cheyenne Mountain Level 28');
+  assert(MAPS.sgc[1].includes('GG') && MAPS.sgc[4].includes('H'), 'MAPS.sgc contains Stargate ramp and blast door');
+
+  // C: Canonical Expansion Count
+  const planetCount = Object.keys(PLANETS).length;
+  assert(planetCount >= 45, 'Canonical planets expanded to at least 45 worlds (got ' + planetCount + ')');
+  const allMissions = [];
+  CHAPTERS.forEach(ch => allMissions.push(...ch.missions));
+  assert(allMissions.length >= 30, 'Canonical missions expanded to at least 30 operations (got ' + allMissions.length + ')');
+  assert(allMissions.some(m => m.id === '1-6' && m.planet === 'sgc'), 'Mission 1-6 Ebene 28: Infiltrationsalarm is active');
+
+  // D: New Strudel Remix Tracks
+  assert(typeof STRUDEL_TRACKS.theme_remix_foothold !== 'undefined', 'theme_remix_foothold is registered in STRUDEL_TRACKS');
+  assert(typeof STRUDEL_TRACKS.theme_remix_apophis !== 'undefined', 'theme_remix_apophis is registered in STRUDEL_TRACKS');
+  assert(typeof STRUDEL_TRACKS.theme_remix_atlantis_dnb !== 'undefined', 'theme_remix_atlantis_dnb is registered in STRUDEL_TRACKS');
+
+  // E: Combat Audio Controls
+  assert(typeof toggleCombatAudio === 'function', 'toggleCombatAudio is available');
+  const wasMuted = SFX.muted;
+  toggleCombatAudio();
+  assert(SFX.muted === !wasMuted, 'toggleCombatAudio toggles SFX.muted state');
+  toggleCombatAudio(); // restore
 }
 
 for(let i=0;i<5;i++){

@@ -82,3 +82,4 @@ Aus den Entwurfsspezifikationen wurden zwei zusammengehörige Komfort-Features u
 * **Test Section 36** in `test-browser.js` hinzugefügt.
 * 548 i18n-Schlüssel in Deutsch und Englisch mit 100 % Parität.
 * Alle **250+ automatisierten Prüfungen** (Gateroom-Maße, Klick-Trigger, Autobattler-Züge, Prognose-Berechnung, Ausweich-Bonus) laufen lokal in unter 1 Sekunde mit **0 Fehlern** durch.
+
