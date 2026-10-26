@@ -226,6 +226,86 @@ function showResearchModal(){
  m.innerHTML=h;
 }
 
+
+// ===================== SGC Speicherstand-Verwaltung & Export/Import =====================
+function showSaveModal(){
+ hideMenu();
+ const m=$('modal');if(!m)return;
+ const slots=['slot1','slot2','slot3'];
+ const active=(typeof SGC_SAVES!=='undefined'&&SGC_SAVES.activeSlot)||'slot1';
+
+ let h=`<div class="mbox" style="width:min(880px,96vw);max-height:90vh;border-color:#e8b040;background:radial-gradient(ellipse at top,#1e293b,#0b101b 75%)">
+  <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #e8b040;padding-bottom:8px">
+   <div>
+    <h3 style="margin:0;color:#e8b040">💾 SGC SPEICHERSTAND-VERWALTUNG (DATEN-CARTRIDGE)</h3>
+    <small style="color:#94a3b8">Cheyenne Mountain Sub-Ebene 28 Archiv · Aktiver Slot: <b style="color:#e8b040">${active.toUpperCase()}</b></small>
+   </div>
+   <button class="winamp-btn" style="padding:4px 10px;background:#78350f;border-color:#e8b040;color:#fff" onclick="$('modal').style.display='none'">✕ ${I18N.T('game.dyn.btn.close')||'Schließen'}</button>
+  </div>
+
+  <div class="mbody" style="overflow-y:auto;padding-right:4px">
+   <h4 style="margin:8px 0 6px;color:#fde047">📁 Speicher-Slots (Browser-Speicher)</h4>
+   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;margin-bottom:14px">
+    ${slots.map(sId=>{
+      const info=SGC_SAVES.getSlotInfo(sId);
+      const isCur=sId===active;
+      return `
+       <div style="background:#0f172a;border:1px solid ${isCur?'#e8b040':'#334155'};border-radius:6px;padding:10px;display:flex;flex-direction:column;justify-content:space-between">
+        <div>
+         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <b style="color:${isCur?'#e8b040':'#cbd5e1'};font-size:13px">💾 Slot ${sId.replace('slot','')} ${isCur?'<span class="tag" style="background:#78350f;color:#fef08a">Aktiv</span>':''}</b>
+         </div>
+         ${info?`
+          <div style="font-size:11px;color:#94a3b8;line-height:1.5;margin-bottom:8px">
+           <div>Tag <b>${info.day}</b> · Kapitel <b>${info.chapter}</b> · <b>${info.commander.toUpperCase()}</b></div>
+           <div>⛏ ${info.ore} · ⚙ ${info.tech} · 🔬 ${info.rp} RP · 👥 ${info.units} Soldaten</div>
+          </div>
+         `:`<div style="font-size:12px;color:#64748b;margin:12px 0;font-style:italic">Leer / Nicht belegt</div>`}
+        </div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
+         <button class="winamp-btn" style="flex:1;background:#1e3a5f;border-color:#38bdf8;color:#e0f2fe;padding:4px" onclick="SGC_SAVES.saveToSlot('${sId}');toast('In Slot ${sId} gespeichert!');showSaveModal()">💾 Speichern</button>
+         ${info?`
+          <button class="winamp-btn" style="flex:1;background:#064e3b;border-color:#10b981;color:#a7f3d0;padding:4px" onclick="if(confirm('Slot ${sId} laden? Ungespeicherter Fortschritt geht verloren.')){SGC_SAVES.loadFromSlot('${sId}');renderAll();toast('Slot ${sId} geladen!');showSaveModal();}">📂 Laden</button>
+          <button class="winamp-btn" style="background:#450a0a;border-color:#ef4444;color:#fca5a5;padding:4px" title="Löschen" onclick="if(confirm('Slot ${sId} wirklich löschen?')){SGC_SAVES.deleteSlot('${sId}');toast('Slot ${sId} gelöscht.');showSaveModal();}">✕</button>
+         `:''}
+        </div>
+       </div>
+      `;
+    }).join('')}
+   </div>
+
+   <h4 style="margin:12px 0 6px;color:#38bdf8">📋 Cookie-Clicker Import &amp; Export (Text-String)</h4>
+   <div style="background:#09101d;border:1px solid #1e293b;border-radius:6px;padding:10px;margin-bottom:14px">
+    <div style="font-size:12px;color:#94a3b8;margin-bottom:6px">Kopiere deinen Speicherstand als handlichen Textcode oder füge einen Code ein:</div>
+    <textarea id="sgc-save-text" style="width:100%;height:65px;background:#020617;border:1px solid #334155;color:#4ade80;font-family:monospace;font-size:11px;padding:6px;box-sizing:border-box;resize:vertical">${SGC_SAVES.exportString()}</textarea>
+    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+     <button class="winamp-btn" style="background:#0e4a7b;color:#fff;padding:4px 8px;font-size:11px" onclick="const t=$('sgc-save-text');t.select();navigator.clipboard.writeText(t.value);toast('Speicher-Code in Zwischenablage kopiert!')">📋 In Zwischenablage kopieren</button>
+     <button class="winamp-btn" style="background:#065f46;color:#fff;padding:4px 8px;font-size:11px" onclick="const res=SGC_SAVES.importString($('sgc-save-text').value);if(res.ok){renderAll();toast('Speicherstand erfolgreich importiert!');showSaveModal();}else{alert(res.err);}">📥 Aus Textfeld importieren</button>
+     <button class="winamp-btn" style="background:#374151;color:#e5e7eb;padding:4px 8px;font-size:11px" onclick="const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='sgc-save-day'+S.day+'.json';a.click();">💾 Als .json herunterladen</button>
+     <input type="file" id="sgc-save-file" accept=".json" style="display:none" onchange="const f=this.files[0];if(f){const r=new FileReader();r.onload=e=>{const res=SGC_SAVES.importString(e.target.result);if(res.ok){renderAll();toast('Datei importiert!');showSaveModal();}else{alert(res.err);}};r.readAsText(f);}">
+     <button class="winamp-btn" style="background:#374151;color:#e5e7eb;padding:4px 8px;font-size:11px" onclick="$('sgc-save-file').click()">📂 .json-Datei hochladen</button>
+    </div>
+   </div>
+
+   <h4 style="margin:12px 0 6px;color:#a855f7">🧪 Entwickler- &amp; Test-Presets (Sofort-Testing ohne Grind)</h4>
+   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:8px">
+    ${Object.entries(SGC_SAVES.presets).map(([k,p])=>`
+     <div style="background:#0e1222;border:1px solid #2e1065;border-radius:6px;padding:8px;display:flex;flex-direction:column;justify-content:space-between">
+      <div>
+       <b style="color:#d8b4fe;font-size:12px">${p.name}</b>
+       <p style="font-size:11px;color:#94a3b8;margin:4px 0 8px">${p.desc}</p>
+      </div>
+      <button class="winamp-btn" style="background:#581c87;border-color:#9333ea;color:#f3e8ff;padding:4px;font-size:11px" onclick="if(confirm('Test-Preset „${p.name}“ laden? Aktueller Fortschritt wird überschrieben.')){SGC_SAVES.loadPreset('${k}');renderAll();toast('Preset „${p.name}“ aktiv!');$('modal').style.display='none';}">⚡ Preset laden</button>
+     </div>
+    `).join('')}
+   </div>
+  </div>
+ </div>`;
+
+ m.style.display='flex';
+ m.innerHTML=h;
+}
+
 // ===================== SGC AMP v2.80 — Winamp Retro Audio Player =====================
 const WINAMP = {
   visMode: 'wave', // 'wave' | 'spectrum'
@@ -2480,6 +2560,7 @@ function init(){
  if($('gfx-btn'))$('gfx-btn').onclick=cycleGfxMode;
  if($('clipboard-btn'))$('clipboard-btn').onclick=showClipboardModal;
  if($('research-btn'))$('research-btn').onclick=showResearchModal;
+ if($('save-btn'))$('save-btn').onclick=showSaveModal;
  if($('strudel-btn'))$('strudel-btn').onclick=showStrudelModal;
 
  // Tastatursteuerung (inkl. Q/E für Iso-Rotation, V für Pixel/ASCII Toggle, TAB für nächstes Mitglied, freie Belegung)

@@ -96,5 +96,6 @@
   WM.openSliders = function () { WM.open('sliders', '🎚 Song-Slider · MIDI', function () { return (typeof SGC_SLIDERS !== 'undefined' ? SGC_SLIDERS.html() : '') + '<button class="small" onclick="SGC_SLIDERS.autoMap()">🎛 Auto-Map auf Knobs 1–8</button>'; }, { x: 40, y: 90, w: 380, h: 260 }); };
   WM.openDJ = function () { WM.open('dj', '🎚 DJ · Klangstil', function () { return SOUND_STYLES.html(); }, { x: 40, y: 370, w: 380, h: 210 }); };
   WM.openResearch = function () { if (typeof showResearchModal === 'function') showResearchModal(); };
+  WM.openSaves = function () { if (typeof showSaveModal === 'function') showSaveModal(); };
   globalThis.WM = WM; globalThis.PIANOROLL = PR;
 })();

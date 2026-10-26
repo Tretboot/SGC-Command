@@ -19,8 +19,20 @@
       <strong>X-COM (UFO):</strong> Grid-Kampf, AP-System, Deckung, Line of Sight, Flankenbonus. Der Spieler steuert <strong>jede Aktion</strong> – kein Auto-Kampf.
     </div>
 
-    <h2 id="grid">Das Grid <a class="anchor" href="#grid">#</a></h2>
-    <p>20 Spalten × 15 Zeilen = 300 Tiles. Jedes Tile ist 48px groß. Das Schlachtfeld wird auf einem <strong>Canvas 2D</strong> gerendert (960×720px).</p>
+    <h2 id="grid">Das Taktik-Grid (Hexagonal & Multi-Engine) <a class="anchor" href="#grid">#</a></h2>
+    <p>20 Spalten × 15 Zeilen im <strong>hexagonalen Koordinatensystem (Odd-R Offset, 6 Nachbarn)</strong>. Die hexagonale Geometrie verhindert unnatürliche diagonale Ecken-Glitches und ermöglicht echtes taktisches Flankieren.</p>
+    <p>Das Schlachtfeld bietet <strong>3 umschaltbare Render-Engines</strong> (Hotkey <code>V</code> oder Menü):</p>
+    <ul>
+      <li><strong>Isometrisch Pixel-Voxel (2:1):**</strong> Vertikale Höhenstufen, 3D-Kameradrehung (<code>Q</code>/<code>E</code>), animierte Stargates und detailreiche Stadtstrukturen.</li>
+      <li><strong>ASCII-3D (asciiid/asciicker):**</strong> Nostalgisches Terminal-Gefühl in reiner Textur mit automatischer Aktivierung der 8-Bit Chiptune-Klangsynthese.</li>
+      <li><strong>Klassisch 2D Top-Down:**</strong> Klare, kontrastreiche Draufsicht für schnellen taktischen Überblick.</li>
+    </ul>
+
+    <h2 id="loot">Schlachtfeld-Beute & Evakuierung <a class="anchor" href="#loot">#</a></h2>
+    <ul>
+      <li><strong>Taktische Beutekisten:</strong> Auf dem Schlachtfeld platzierte Goa'uld-Vorratskisten, Naquadah-Behälter und Datenkristalle belohnen bei Bergung mit Ressourcen, Spezials und kanonischen Felddialogen.</li>
+      <li><strong>Verwundeten-Bergung (Downed Evacuation):</strong> Bewusstlose Kameraden können von Teammitgliedern aufgenommen und durch das aktive Stargate (<code>extract()</code>) vor dem Dauertod gerettet werden.</li>
+    </ul>
 
     <h2 id="terrain">Terrain <a class="anchor" href="#terrain">#</a></h2>
     <table>

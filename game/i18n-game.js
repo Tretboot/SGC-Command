@@ -45,6 +45,7 @@
   I18N.add('de', {
     'game.clipboard.title': 'Hammonds Klemmbrett & Büro (Personalübersicht)',
     'game.research.header_title': 'SGC Labor & Forschung (Ebene 19)',
+    'game.save.title': 'Speicherstände & Import/Export (Cookie-Clicker Stil)',
     'game.gfx.title': 'Grafikmodus wechseln: Pixel-Voxel / ASCII-3D / 2D (Taste V)',
     'game.strudel.title': 'Strudel Core Sound-Engine & Live-Coding',
     'game.help.title': 'Anleitung',
@@ -81,6 +82,7 @@
     'game.menu.midi': '🎛 MIDI Controller (Akai Setup)',
     'game.menu.keybinds': '⌨ Tastatur & Tastenbelegung',
     'game.menu.clipboard': '📋 Hammonds Klemmbrett (Personal)',
+    'game.menu.saves': '💾 Speicherstände & Import/Export',
     'game.menu.help': '📖 Anleitung',
     'game.menu.replay': '🎬 Intro erneut ansehen',
     'game.menu.sound': '🔊 Sound an/aus',
@@ -91,6 +93,7 @@
   I18N.add('en', {
     'game.clipboard.title': 'Hammond\'s Clipboard & Office (Personnel Overview)',
     'game.research.header_title': 'SGC Lab & Research (Level 19)',
+    'game.save.title': 'Savegames & Import/Export (Cookie-Clicker Style)',
     'game.gfx.title': 'Switch graphics mode: Pixel-Voxel / ASCII-3D / 2D (Key V)',
     'game.strudel.title': 'Strudel Core Sound Engine & Live-Coding',
     'game.help.title': 'Help',
@@ -127,6 +130,7 @@
     'game.menu.midi': '🎛 MIDI Controller (Akai Setup)',
     'game.menu.keybinds': '⌨ Keyboard & Keybindings',
     'game.menu.clipboard': '📋 Hammond\'s Clipboard (Personnel)',
+    'game.menu.saves': '💾 Savegames & Import/Export',
     'game.menu.help': '📖 Help',
     'game.menu.replay': '🎬 Replay Intro',
     'game.menu.sound': '🔊 Sound on/off',

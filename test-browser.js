@@ -991,6 +991,46 @@ for(const fn of loadFns){
   assert(winampEl.includes('width:580px'), 'Saved winamp size restored on open');
 }
 
+// 34. Test Multi-Slot Savegame System, Cookie-Clicker Import/Export & Test Presets
+{
+  // Test slot saving & loading
+  S.day = 7;
+  S.res.ore = 999;
+  assert(SGC_SAVES.saveToSlot('slot2') === true, 'SGC_SAVES saves state to slot2');
+  const slot2Info = SGC_SAVES.getSlotInfo('slot2');
+  assert(slot2Info && slot2Info.day === 7 && slot2Info.ore === 999, 'getSlotInfo reads slot2 metadata accurately');
+
+  // Test slot isolation
+  S.day = 12;
+  SGC_SAVES.saveToSlot('slot1');
+  assert(SGC_SAVES.loadFromSlot('slot2') === true, 'loadFromSlot restores slot2');
+  assert(S.day === 7 && S.res.ore === 999, 'S state restored to slot2 values');
+
+  // Test Cookie-Clicker export string
+  const exportStr = SGC_SAVES.exportString();
+  assert(typeof exportStr === 'string' && exportStr.length > 50, 'exportString produces non-empty export payload');
+
+  // Test Cookie-Clicker import string
+  S.day = 99;
+  const importRes = SGC_SAVES.importString(exportStr);
+  assert(importRes.ok === true, 'importString succeeds on valid Base64 string');
+  assert(S.day === 7, 'Imported state restored correctly');
+
+  // Test Test State Presets
+  assert(SGC_SAVES.loadPreset('research_lab') === true, 'loadPreset("research_lab") loads successfully');
+  assert(S.research && S.research.rp === 180 && S.commander === 'carter', 'research_lab preset provides 180 RP & Carter');
+
+  assert(SGC_SAVES.loadPreset('medbay_crisis') === true, 'loadPreset("medbay_crisis") loads successfully');
+  assert(S.roster[0].injuries === 2 && S.roster[0].hp === 14, 'medbay_crisis preset sets up hospital triage state');
+
+  // Test showSaveModal renders
+  showSaveModal();
+  const saveHtml = $('modal').innerHTML;
+  assert(saveHtml.includes('SGC SPEICHERSTAND-VERWALTUNG'), 'showSaveModal renders cartridge header');
+  assert(saveHtml.includes('Cookie-Clicker Import'), 'showSaveModal renders Cookie Clicker panel');
+  assert(saveHtml.includes('Test-Presets'), 'showSaveModal renders test presets');
+}
+
 for(let i=0;i<5;i++){
   now+=16;
   const cb=rafCb; rafCb=null;

@@ -11,37 +11,49 @@
   <nav id="sidebar"></nav>
   <div id="main">
     <div id="crumbs"><a href="index.html">Start</a> <span>›</span> <a href="basis.html">Basis-Grid</a> <span>›</span> Forschung & Tech-Tree</div>
-    <h1>Forschung & Tech-Tree</h1>
-    <p class="subtitle">10 Nodes in drei Zweigen. Research-Points aus dem Lab, Fertigung in der Werkstatt.</p>
+    <h1>Forschung & Tech-Tree (Ebene 19 Labor)</h1>
+    <p class="subtitle">13 Technologien in 4 spezialisierten Zweigen unter Leitung von Maj. Samantha Carter & Dr. Daniel Jackson.</p>
 
-    <h2 id="forschung">Forschung <a class="anchor" href="#forschung">#</a></h2>
-    <p>Research-Points (RP) werden im <a class="wiki" href="basis.html">Lab <span class="tag">→</span></a> erzeugt: <strong>+10 RP pro Staff pro Tag</strong> (Scientist: +50%).</p>
-    <p>RP akkumulieren und werden für Tech-Tree-Node bezahlt. Research dauert Tage (z.B. "P90: 30 RP").</p>
+    <h2 id="forschung">Forschung & RP-Gewinnung <a class="anchor" href="#forschung">#</a></h2>
+    <p>Forschungspunkte (RP) werden durch zwei Quellen generiert:</p>
+    <ul>
+      <li><strong>Taktische Tor-Einsätze:</strong> Jeder siegreiche Einsatz belohnt das SGC mit <strong>+12 bis +40 RP</strong> basierend auf Kampagnen-Fortschritt und Beutegrad.</li>
+      <li><strong>Passiver Labor-Betrieb (Ebene 19):</strong> Wissenschaftler im Labor erzeugen tägliche RP zur automatischen Beschleunigung aktiver Forschungsprojekte.</li>
+    </ul>
 
-    <h2 id="tree">Der Tech-Tree (10 Nodes) <a class="anchor" href="#tree">#</a></h2>
+    <h2 id="tree">Der 4-Zweig-Forschungsbaum (13 Technologien) <a class="anchor" href="#tree">#</a></h2>
 
-    <h3>Zweig 1: Waffen</h3>
+    <h3>Zweig 1: Tor-Technologie & Logistik (g)</h3>
     <table>
-      <tr><th>Node</th><th class="num">RP</th><th>Effekt</th></tr>
-      <tr><td><strong>W1: Stunner</strong></td><td class="num">20</td><td>Non-lethal, +Morale, weniger Verletzungen</td></tr>
-      <tr><td><strong>W2: Zat'nik'tel</strong></td><td class="num">40</td><td>Vs. Replicator/Goa'uld (Type-Advantage)</td></tr>
-      <tr><td><strong>W3: Shielded Weapons</strong></td><td class="num">60</td><td>+combatBonus, −gear_loss</td></tr>
-      <tr><td><strong>W4: Orbital Strike</strong></td><td class="num">100</td><td>Mission-Bonus, hoher Schaden, hoher Preis</td></tr>
+      <tr><th>Node</th><th>Technologie</th><th class="num">RP</th><th>Voraussetzung</th><th>Effekt</th></tr>
+      <tr><td><strong>G1</strong></td><td>Gate-Stabilisierer</td><td class="num">20</td><td>—</td><td>Extraktion-Beute +10%</td></tr>
+      <tr><td><strong>G2</strong></td><td>Fast Dialing</td><td class="num">25</td><td>G1</td><td>+1 Dial-Kapazität</td></tr>
+      <tr><td><strong>G3</strong></td><td>Subraum-Puffer</td><td class="num">40</td><td>G2</td><td>Verringert Erkundungsrisiko um 15%</td></tr>
     </table>
 
-    <h3>Zweig 2: Rüstung & Überleben</h3>
+    <h3>Zweig 2: Waffen & Offensivtaktik (w)</h3>
     <table>
-      <tr><th>Node</th><th class="num">RP</th><th>Effekt</th></tr>
-      <tr><td><strong>S1: Personal Shields</strong></td><td class="num">30</td><td>Injury-Chance −20%</td></tr>
-      <tr><td><strong>S2: Team Shield</strong></td><td class="num">50</td><td>Team-HP +25% (Kampf-Start)</td></tr>
-      <tr><td><strong>S3: Base Shield</strong></td><td class="num">80</td><td>SGC-Defense gegen Loss-Bedingung</td></tr>
+      <tr><th>Node</th><th>Technologie</th><th class="num">RP</th><th>Voraussetzung</th><th>Effekt</th></tr>
+      <tr><td><strong>W1</strong></td><td>Stunner</td><td class="num">20</td><td>—</td><td>+5 Moral nach Sieg</td></tr>
+      <tr><td><strong>W2</strong></td><td>Zat'nik'tel</td><td class="num">30</td><td>W1</td><td>+20% Schaden vs. Goa'uld/Replikatoren</td></tr>
+      <tr><td><strong>W3</strong></td><td>Shielded Weapons</td><td class="num">45</td><td>W2</td><td>+10% Gesamtschaden</td></tr>
+      <tr><td><strong>W4</strong></td><td>Trinium-Munition</td><td class="num">55</td><td>W3</td><td>+15% Panzerdurchschlagskraft</td></tr>
     </table>
 
-    <h3>Zweig 3: Gate-Tech & Logistik</h3>
+    <h3>Zweig 3: Schilde & Verteidigung (s)</h3>
     <table>
-      <tr><th>Node</th><th class="num">RP</th><th>Effekt</th></tr>
-      <tr><td><strong>G1: Gate Stabilisierer</strong></td><td class="num">25</td><td>Gate-Timer +5 Züge</td></tr>
-      <tr><td><strong>G2: Fast Dialing</strong></td><td class="num">45</td><td>Deployment ohne Neglect-Tick</td></tr>
+      <tr><th>Node</th><th>Technologie</th><th class="num">RP</th><th>Voraussetzung</th><th>Effekt</th></tr>
+      <tr><td><strong>S1</strong></td><td>Personal Shields</td><td class="num">25</td><td>—</td><td>−20% erlittener Schaden</td></tr>
+      <tr><td><strong>S2</strong></td><td>Team Shield</td><td class="num">45</td><td>S1</td><td>+25% maximale HP</td></tr>
+      <tr><td><strong>S3</strong></td><td>Naquadah-Legierung</td><td class="num">50</td><td>S2</td><td>+15% Basis-Integrität & Abwehr</td></tr>
+    </table>
+
+    <h3>Zweig 4: Antiker & Alien-Wissen (a)</h3>
+    <table>
+      <tr><th>Node</th><th>Technologie</th><th class="num">RP</th><th>Voraussetzung</th><th>Effekt</th></tr>
+      <tr><td><strong>A1</strong></td><td>Kristall-Datenbank</td><td class="num">30</td><td>—</td><td>+30% schnellere Forschungspunkte (RP)</td></tr>
+      <tr><td><strong>A2</strong></td><td>Antike Heilmatrix</td><td class="num">45</td><td>A1</td><td>+50% Heilungsrate in der Krankenstation</td></tr>
+      <tr><td><strong>A3</strong></td><td>ZPM-Interface</td><td class="num">65</td><td>A2</td><td>Maximale Energie-Effizienz (+25 permanente Energie)</td></tr>
     </table>
 
     <h2 id="fertigung">Fertigung <a class="anchor" href="#fertigung">#</a></h2>

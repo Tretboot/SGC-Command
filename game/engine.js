@@ -552,7 +552,14 @@ function addRoom(base,type,x,y){
   return id;
 }
 
-function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));}catch(e){}}
+function save(){
+  try{
+    const data=JSON.stringify(S);
+    localStorage.setItem(SAVE_KEY,data);
+    const activeSlot=(typeof SGC_SAVES!=='undefined'&&SGC_SAVES.activeSlot)||'slot1';
+    localStorage.setItem('sgc_save_'+activeSlot,data);
+  }catch(e){}
+}
 function load(){
   try{
     const s=JSON.parse(localStorage.getItem(SAVE_KEY));
@@ -621,6 +628,189 @@ function load(){
   }
   return false;
 }
+
+// ===================== Multi-Slot Savegames & Cookie-Clicker Export/Import =====================
+const SGC_SAVES = {
+  activeSlot: (typeof localStorage !== 'undefined' && localStorage.getItem('sgc_active_slot')) || 'slot1',
+  slots: ['slot1', 'slot2', 'slot3'],
+
+  getSlotKey(id) { return `sgc_save_${id || this.activeSlot}`; },
+
+  saveToSlot(slotId) {
+    const id = slotId || this.activeSlot;
+    const key = this.getSlotKey(id);
+    const data = JSON.stringify(S);
+    try {
+      localStorage.setItem(key, data);
+      localStorage.setItem(SAVE_KEY, data);
+      localStorage.setItem('sgc_active_slot', id);
+      this.activeSlot = id;
+      return true;
+    } catch(e) { return false; }
+  },
+
+  loadFromSlot(slotId) {
+    const id = slotId || this.activeSlot;
+    const key = this.getSlotKey(id);
+    try {
+      let raw = localStorage.getItem(key);
+      if(!raw && id === 'slot1') raw = localStorage.getItem(SAVE_KEY);
+      if(!raw) return false;
+      const parsed = JSON.parse(raw);
+      if(parsed && parsed.v === 4) {
+        S = parsed;
+        localStorage.setItem(SAVE_KEY, raw);
+        localStorage.setItem('sgc_active_slot', id);
+        this.activeSlot = id;
+        load();
+        return true;
+      }
+    } catch(e) { return false; }
+    return false;
+  },
+
+  deleteSlot(slotId) {
+    try {
+      localStorage.removeItem(this.getSlotKey(slotId));
+      return true;
+    } catch(e) { return false; }
+  },
+
+  getSlotInfo(slotId) {
+    const key = this.getSlotKey(slotId);
+    try {
+      let raw = localStorage.getItem(key);
+      if(!raw && slotId === 'slot1') raw = localStorage.getItem(SAVE_KEY);
+      if(!raw) return null;
+      const parsed = JSON.parse(raw);
+      const aliveUnits = (parsed.roster || []).filter(u => u.recruited && !u.dead).length;
+      return {
+        id: slotId,
+        day: parsed.day || 1,
+        chapter: (parsed.chapter !== undefined ? parsed.chapter + 1 : 1),
+        commander: parsed.commander || 'hammond',
+        ore: (parsed.res && parsed.res.ore) || 0,
+        tech: (parsed.res && parsed.res.tech) || 0,
+        rp: (parsed.research && parsed.research.rp) || 0,
+        units: aliveUnits,
+        raw
+      };
+    } catch(e) { return null; }
+  },
+
+  exportString(slotId) {
+    const info = this.getSlotInfo(slotId || this.activeSlot);
+    const raw = (info && info.raw) || JSON.stringify(S);
+    try {
+      return btoa(unescape(encodeURIComponent(raw)));
+    } catch(e) {
+      return raw;
+    }
+  },
+
+  importString(inputStr) {
+    if(!inputStr || typeof inputStr !== 'string') return { ok: false, err: 'Ungültige Eingabe.' };
+    let jsonStr = inputStr.trim();
+    if(!jsonStr.startsWith('{')) {
+      try {
+        jsonStr = decodeURIComponent(escape(atob(jsonStr)));
+      } catch(e) {
+        try { jsonStr = atob(jsonStr); } catch(e2) { return { ok: false, err: 'Base64-Dekodierung fehlgeschlagen.' }; }
+      }
+    }
+    try {
+      const parsed = JSON.parse(jsonStr);
+      if(!parsed || parsed.v !== 4 || !parsed.res || !parsed.roster) {
+        return { ok: false, err: 'Ungültiges SGC-Savegame-Format (Version 4 erwartet).' };
+      }
+      S = parsed;
+      this.saveToSlot(this.activeSlot);
+      load();
+      return { ok: true };
+    } catch(err) {
+      return { ok: false, err: 'JSON-Parse-Fehler: ' + err.message };
+    }
+  },
+
+  presets: {
+    fresh: {
+      name: 'Frischer Start (Tag 1)',
+      desc: 'General Hammond, unberührtes Tornetzwerk, Standard-Ressourcen.',
+      create() {
+        newGame();
+        return JSON.stringify(S);
+      }
+    },
+    research_lab: {
+      name: 'Forschung & Ausbau (Ebene 19)',
+      desc: 'Samantha Carter, voll besetztes Labor auf Ebene 19, 180 RP, G1 erforscht, Reaktor aktiv.',
+      create() {
+        newGame();
+        S.commander = 'carter';
+        S.day = 5;
+        S.chapter = 1;
+        S.res = { ore: 1200, tech: 280, medicine: 80, food: 110 };
+        if(!S.research) S.research = { rp: 180, queue: 'W1', done: ['G1'] };
+        else { S.research.rp = 180; S.research.queue = 'W1'; S.research.done = ['G1']; }
+        addRoom(S.base, 'lab', 4, BASE_LEVELS - 19);
+        addRoom(S.base, 'generator', 2, BASE_LEVELS - 25);
+        return JSON.stringify(S);
+      }
+    },
+    medbay_crisis: {
+      name: 'Hospital-Notfall (Ebene 21)',
+      desc: 'Dr. Janet Fraiser, 2 schwer verwundete Soldaten mit Verletzungen, Vorräte an Medizin & Tretonin.',
+      create() {
+        newGame();
+        S.day = 8;
+        S.chapter = 1;
+        S.res = { ore: 600, tech: 90, medicine: 120, food: 70 };
+        if(S.roster[0]) { S.roster[0].hp = 14; S.roster[0].injuries = 2; S.roster[0].fatigue = 60; }
+        if(S.roster[1]) { S.roster[1].hp = 22; S.roster[1].injuries = 1; S.roster[1].fatigue = 45; }
+        if(!S.inventory) S.inventory = defaultInventory();
+        S.inventory.specials.tretonin = 3;
+        S.inventory.specials.medkit = 4;
+        return JSON.stringify(S);
+      }
+    },
+    endgame: {
+      name: 'Endgame & Antiker-Tech (Kapitel 3)',
+      desc: 'General Landry, Antiker-Kristalldatenbank & ZPM erforscht, Kolonien auf Abydos & Alpha, Zat-Gewehre.',
+      create() {
+        newGame();
+        S.commander = 'landry';
+        S.day = 24;
+        S.chapter = 2;
+        S.res = { ore: 2800, tech: 650, medicine: 240, food: 320 };
+        S.research = { rp: 340, queue: null, done: ['G1', 'G2', 'W1', 'W2', 'S1', 'S2', 'A1', 'A2', 'A3'] };
+        S.colonies = {
+          abydos: { name: 'Abydos Minenkolonie', power: 45, defense: 60, orePerDay: 18, techPerDay: 8, grid: {} },
+          alpha: { name: 'Alpha-Stützpunkt', power: 30, defense: 80, orePerDay: 12, techPerDay: 15, grid: {} }
+        };
+        (S.roster || []).forEach(u => {
+          if(u.recruited) {
+            u.lvl = 5;
+            u.maxHp = 70;
+            u.hp = 70;
+            u.weapon = 'zat';
+            u.armor = 'heavy';
+          }
+        });
+        return JSON.stringify(S);
+      }
+    }
+  },
+
+  loadPreset(presetKey) {
+    const p = this.presets[presetKey];
+    if(!p) return false;
+    const jsonStr = p.create();
+    return this.importString(jsonStr).ok;
+  }
+};
+if(typeof window !== 'undefined'){ window.SGC_SAVES = SGC_SAVES; }
+if(typeof globalThis !== 'undefined'){ globalThis.SGC_SAVES = SGC_SAVES; }
+
 function gameNote(t){
   if(typeof S==='undefined'||!S)return;
   const l=`[T${S.day}] ${t}`;
