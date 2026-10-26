@@ -22,8 +22,8 @@ const RES_ICON={ore:'⛏',tech:'⚙',medicine:'✚',food:'🍞'};
 const RES_DE={ore:'Erz',tech:'Tech',medicine:'Medizin',food:'Nahrung'};
 const TYPE_DE={hostile:'feindlich',neutral:'neutral',allied:'verbündet',empty:'unbewohnt',base:'Basis',space:'Orbit'};
 const ENEMY_DE={jaffa:'Jaffa',veteran:'Veteran',elite:'Elite',goauld:"Goa'uld",repl:'Replikant',drone:'Drone',queen:'Königin'};
-// i18n (v0.30 R3): Sprach-sensible Datenauswahl — DE = Originalfeld, EN = *En-Feld
-const isEn=()=>typeof I18N!=='undefined'&&I18N.lang==='en';
+// i18n (v0.30 R3): Sprach-sensible Datenauswahl — DE = Originalfeld, nicht-DE = *En-Feld
+const isEn=()=>typeof I18N!=='undefined'&&I18N.lang!=='de';
 const L_=(o,f)=>(!o)?'':(isEn()&&o[f+'En'])?o[f+'En']:o[f];
 const RES_EN={ore:'Ore',tech:'Tech',medicine:'Medicine',food:'Food'};
 const TYPE_EN={hostile:'hostile',neutral:'neutral',allied:'allied',empty:'uninhabited',base:'Base',space:'Orbit'};
@@ -60,12 +60,6 @@ function setTab(t){UI.tab=t;sfx('click');
   }
  }
  renderAll();}
-
-function cycleGfxMode(){
- const cur=typeof getGfxMode==='function'?getGfxMode():'pixel';
- const next=cur==='pixel'?'ascii':'pixel';
- act(setGfxMode(next));
-}
 
 // ===================== Pause-Menü (Escape) =====================
 function showMenu(){if(UI.menuOpen)return;UI.menuOpen=true;$('menu').style.display='flex';
@@ -148,37 +142,324 @@ function showClipboardModal(){
  m.innerHTML=h;
 }
 
+// ===================== SGC Waffenkammer, Werkstatt & Lager (Ebene 15/16 & 4) =====================
+let _armoryModalTab='workshop';
+let _armoryModalRaf=null;
+
+function drawArmoryModalCanvas(cv,roomType){
+ if(!cv)return;
+ const c=cv.getContext('2d'),W=cv.width,H=cv.height;
+ const now=performance.now();
+ const wallGrad=c.createLinearGradient(0,0,0,H);
+ wallGrad.addColorStop(0,'#0f1926');wallGrad.addColorStop(0.66,'#172434');wallGrad.addColorStop(0.67,'#1e293b');wallGrad.addColorStop(1,'#0b111a');
+ c.fillStyle=wallGrad;c.fillRect(0,0,W,H);
+ // Blast door ribs & floor perspective grid
+ c.strokeStyle='rgba(56,189,248,0.12)';c.lineWidth=1;
+ for(let gx=20;gx<W;gx+=45){
+  c.beginPath();c.moveTo(gx,18);c.lineTo(gx,H*0.66);c.lineTo(gx+(gx-W/2)*0.35,H);c.stroke();
+ }
+ c.fillStyle='#eab308';
+ for(let hx=0;hx<W;hx+=24){c.fillRect(hx,H*0.66-2,12,2);}
+
+ if(roomType==='workshop'){
+  // Left: Naquadah Plasma Forge & Anvil with live welding sparks
+  c.fillStyle='#1e293b';c.fillRect(28,28,150,66);c.strokeStyle='#f59e0b';c.lineWidth=1.5;c.strokeRect(28,28,150,66);
+  const pulse=0.5+0.5*Math.sin(now/110);
+  const fg=c.createRadialGradient(103,62,4,103,62,38);
+  fg.addColorStop(0,'#fff');fg.addColorStop(0.35,'#fde047');fg.addColorStop(0.75,'#ea580c');fg.addColorStop(1,'rgba(234,88,12,0)');
+  c.fillStyle=fg;c.fillRect(42,36,122,48);
+  c.fillStyle='#334155';c.fillRect(68,68,70,22); // Heavy Naquadah Anvil
+  for(let s=0;s<6;s++){
+   const ang=(now/90+s*1.05)%(Math.PI*2),dist=8+((now/18+s*11)%26);
+   c.fillStyle=s%2===0?'#fef08a':'#fb923c';
+   c.fillRect(103+Math.cos(ang)*dist,60-Math.abs(Math.sin(ang))*dist*0.7,2.5,2.5);
+  }
+  // Center: Precision Weapon & Armor CNC Workbench with Holographic Blueprint
+  c.fillStyle='#0f172a';c.fillRect(210,30,220,38);c.strokeStyle='#38bdf8';c.strokeRect(210,30,220,38);
+  c.fillStyle='rgba(56,189,248,0.18)';c.fillRect(214,34,212,30);
+  if(typeof drawWeapon==='function'){
+   drawWeapon(c,'rifle',245,42,1.3);
+   drawWeapon(c,'zat',320,42,1.3);
+   drawWeapon(c,'staff',380,42,1.3);
+  }
+  c.fillStyle='#334155';c.fillRect(202,70,236,26);c.strokeStyle='#64748b';c.strokeRect(202,70,236,26);
+  // Right: MALP Telemetry Chassis & Diagnostic Rack
+  c.fillStyle='#1e293b';c.fillRect(468,34,180,60);c.strokeStyle='#64748b';c.strokeRect(468,34,180,60);
+  c.fillStyle='#475569';c.fillRect(495,62,88,18);
+  [508,538,568].forEach(wx=>{c.fillStyle='#0f172a';c.beginPath();c.arc(wx,84,8,0,Math.PI*2);c.fill();c.strokeStyle='#94a3b8';c.stroke();});
+  c.strokeStyle='#38bdf8';c.beginPath();c.moveTo(555,62);c.lineTo(555,42);c.lineTo(575,46);c.stroke();
+ }else if(roomType==='armory'){
+  // Illuminated SGC Weapon Vaults (P90, M16, Shotgun, Zat'nik'tel, Jaffa Staff)
+  const vaults=[
+   {x:26,title:'NATO / P90 & M16',col:'#38bdf8',w1:'rifle',w2:'shotgun'},
+   {x:186,title:"ALIEN / ZAT & STAFF",col:'#a855f7',w1:'zat',w2:'staff'},
+   {x:346,title:'SPEZIAL & GRANATEN',col:'#22c55e',w1:'pistol',w2:'rifle'}
+  ];
+  vaults.forEach(v=>{
+   c.fillStyle='#09121e';c.fillRect(v.x,26,142,68);
+   c.strokeStyle=v.col;c.lineWidth=1.5;c.strokeRect(v.x,26,142,68);
+   c.fillStyle=v.col+'22';c.fillRect(v.x+3,29,136,14);
+   c.fillStyle=v.col;c.font='bold 8.5px monospace';c.textAlign='center';c.fillText(v.title,v.x+71,39);
+   if(typeof drawWeapon==='function'){
+    drawWeapon(c,v.w1,v.x+25,50,1.25);
+    drawWeapon(c,v.w2,v.x+82,50,1.25);
+   }
+   c.fillStyle='#eab308';c.fillRect(v.x+16,78,46,5);c.fillRect(v.x+78,78,46,5);
+  });
+  // Right: Composite & Heavy Naquadah Armor Stands
+  [516,574,628].forEach((ax,i)=>{
+   const col=i===0?'#60a5fa':i===1?'#38bdf8':'#f59e0b';
+   c.fillStyle='#1e293b';c.fillRect(ax-18,30,36,64);c.strokeStyle=col;c.strokeRect(ax-18,30,36,64);
+   c.fillStyle=col;c.fillRect(ax-10,42,20,24);
+   c.fillStyle='#0f172a';c.fillRect(ax-6,46,12,8);
+   c.fillStyle='#64748b';c.fillRect(ax-3,66,6,22);
+  });
+ }else{
+  // Storage (Hauptlager Ebene 4): High-Bay Shelving, Overhead Gantry Crane & Resource Pallets
+  c.strokeStyle='#eab308';c.lineWidth=2.5;c.beginPath();c.moveTo(16,24);c.lineTo(W-16,24);c.stroke();
+  const craneX=120+Math.sin(now/900)*90;
+  c.fillStyle='#eab308';c.fillRect(craneX-16,20,32,8);
+  c.strokeStyle='#94a3b8';c.lineWidth=1.5;c.beginPath();c.moveTo(craneX,28);c.lineTo(craneX,46);c.stroke();
+  c.fillStyle='#d97706';c.fillRect(craneX-12,46,24,14);c.strokeStyle='#fef08a';c.strokeRect(craneX-12,46,24,14);
+  const bays=[
+   {x:28,lbl:'SEKTOR A · NAQUADAH-ERZ',col:'#f59e0b',c1:'#b45309',c2:'#d97706'},
+   {x:246,lbl:'SEKTOR B · ANTIKER-TECH',col:'#38bdf8',c1:'#0369a1',c2:'#0284c7'},
+   {x:464,lbl:'SEKTOR C · MEDIZIN & RATIONEN',col:'#4ade80',c1:'#15803d',c2:'#dc2626'}
+  ];
+  bays.forEach(b=>{
+   c.fillStyle='#0f172a';c.fillRect(b.x,32,188,62);c.strokeStyle='#475569';c.lineWidth=1.5;c.strokeRect(b.x,32,188,62);
+   c.fillStyle='#334155';c.fillRect(b.x+2,62,184,3);
+   c.fillStyle=b.col;c.font='bold 8px monospace';c.textAlign='left';c.fillText(b.lbl,b.x+8,43);
+   for(let cx=b.x+10;cx<b.x+170;cx+=42){
+    c.fillStyle=b.c1;c.fillRect(cx,47,34,14);c.strokeStyle=b.col;c.lineWidth=0.8;c.strokeRect(cx,47,34,14);
+    c.fillStyle=b.c2;c.fillRect(cx,67,34,22);c.strokeStyle=b.col;c.strokeRect(cx,67,34,22);
+   }
+  });
+ }
+
+ // Draw SGC Quartermaster / Engineers walking in foreground
+ const crew=(S&&S.roster)?S.roster.filter(m=>m.recruited&&!m.dead).slice(0,4):[];
+ crew.forEach((m,idx)=>{
+  const px=95+idx*165+Math.sin(now/650+idx*1.7)*14;
+  const py=H-10;
+  if(typeof drawSoldier==='function')drawSoldier(c,px,py,0.62,m,now/140+idx,1);
+  c.fillStyle='rgba(5,10,18,0.85)';c.fillRect(px-34,py-2,68,11);
+  c.fillStyle='#7dd3fc';c.font='bold 8px monospace';c.textAlign='center';
+  c.fillText(m.name.split(' ').pop(),px,py+6);
+ });
+
+ c.fillStyle='rgba(5,10,18,0.88)';c.fillRect(0,0,W,18);
+ c.fillStyle='#e8b040';c.font='bold 10px monospace';c.textAlign='left';
+ const titles={
+  workshop:isEn()?'🛠 LEVEL 16 · NAQUADAH FORGE & ENGINEERING WORKSHOP':'🛠 EBENE 16 · NAQUADAH-SCHMIEDE & TECHNIK-WERKSTATT',
+  armory:isEn()?'🔫 LEVEL 15/16 · SGC ARMORY & QUARTERMASTER VAULT':'🔫 EBENE 15/16 · SGC WAFFENKAMMER & QUARTIERMEISTER-ARSENAL',
+  storage:isEn()?'📦 LEVEL 4 · SGC LOGISTICS & RESOURCE DEPOT':'📦 EBENE 4 · SGC HAUPTLAGER & RESSOURCEN-DEPOT'
+ };
+ c.fillText(titles[roomType]||titles.workshop,10,13);
+}
+
+function closeArmoryModal(){
+ if(_armoryModalRaf){cancelAnimationFrame(_armoryModalRaf);_armoryModalRaf=null;}
+ if($('modal'))$('modal').style.display='none';
+}
+
+function showArmoryModal(tab){
+ hideMenu();
+ if(tab&&['workshop','armory','storage'].includes(tab))_armoryModalTab=tab;
+ const m=$('modal');if(!m)return;
+ if(!S.inventory)S.inventory=defaultInventory();
+ if(!S.inventory.specials)S.inventory.specials=S.inventory.special;
+ const en=isEn();
+ const rec=S.roster.filter(p=>p.recruited&&!p.dead);
+ const rangedKeys=['pistol','mp5','p90','m16','sniper','mg','shotgun','zat','staff','rifle','hammer'].filter(k=>WEAPONS[k]);
+
+ const wStock=Object.entries(WEAPONS).filter(([k,v])=>v.cost).map(([k,v])=>{
+  const cnt=(S.inventory.weapons&&S.inventory.weapons[k])||0;
+  const unlim=['pistol','rifle'].includes(k);
+  return `<div style="background:#0b1320;border:1px solid #1e293b;border-radius:4px;padding:6px 8px;display:flex;justify-content:space-between;align-items:center">
+   <span>🔫 <b>${L_(v,'name')}</b> <small style="color:#64748b">(${v.min}–${v.max}, R.${v.range})</small></span>
+   <span class="tag" style="background:${cnt>0||unlim?'#064e3b':'#1e293b'};color:${cnt>0||unlim?'#4ade80':'#94a3b8'}">${unlim?(en?'Std + ':'Std + ')+cnt:cnt+'×'}</span>
+  </div>`;
+ }).join('');
+
+ const aStock=Object.entries(ARMORS).map(([k,v])=>{
+  const cnt=(S.inventory.armor&&S.inventory.armor[k])||0;
+  return `<div style="background:#0b1320;border:1px solid #1e293b;border-radius:4px;padding:6px 8px;display:flex;justify-content:space-between;align-items:center">
+   <span>🛡 <b>${L_(v,'name')}</b> <small style="color:#64748b">(${L_(v,'desc')})</small></span>
+   <span class="tag" style="background:${cnt>0||k==='light'?'#064e3b':'#1e293b'};color:${cnt>0||k==='light'?'#4ade80':'#94a3b8'}">${k==='light'?'Std + '+cnt:cnt+'×'}</span>
+  </div>`;
+ }).join('');
+
+ const sStock=Object.entries(SPECIALS).map(([k,v])=>{
+  const cnt=(S.inventory.specials&&S.inventory.specials[k])||0;
+  return `<div style="background:#0b1320;border:1px solid #1e293b;border-radius:4px;padding:6px 8px;display:flex;justify-content:space-between;align-items:center">
+   <span>${v.icon} <b>${L_(v,'name')}</b> <small style="color:#64748b">(${L_(v,'desc')})</small></span>
+   <span class="tag" style="background:${cnt>0?'#064e3b':'#1e293b'};color:${cnt>0?'#4ade80':'#94a3b8'}">${cnt}×</span>
+  </div>`;
+ }).join('');
+
+ const recipeCards=Object.entries(RECIPES).map(([k,rc])=>{
+  const costStr=Object.entries(rc.cost).map(([rk,rv])=>`${RES_ICON[rk]}${rv}`).join(' · ');
+  const count=(S.inventory[rc.cat]&&S.inventory[rc.cat][rc.item])||0;
+  const locked=rc.req&&!(S.research&&S.research.done&&S.research.done.includes(rc.req));
+  const canAfford=!locked&&Object.entries(rc.cost).every(([rk,rv])=>(S.res[rk]||0)>=rv);
+  const tbl=rc.cat==='weapons'?WEAPONS:rc.cat==='armor'?ARMORS:SPECIALS;
+  const spec=tbl&&tbl[rc.item];
+  const statDesc=spec?(rc.cat==='weapons'?`${en?'Damage':'Schaden'} ${spec.min}–${spec.max} · ${en?'Range':'Reichweite'} ${spec.range}`:L_(spec,'desc')):'';
+  return `<div style="background:#0b1320;border:1px solid ${locked?'#334155':canAfford?'#0284c7':'#1e293b'};border-radius:6px;padding:8px 10px;display:flex;flex-direction:column;justify-content:space-between;gap:6px">
+   <div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+     <b style="color:#f8fafc;font-size:12.5px">${L_(rc,'name')}</b>
+     <span class="tag" style="background:#162436;color:#4ade80">${en?'Stock':'Bestand'}: ${count}</span>
+    </div>
+    <div style="font-size:11px;color:#94a3b8;margin-top:3px">${statDesc}</div>
+   </div>
+   <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #1e293b;padding-top:6px">
+    <span style="font-size:11.5px;color:#fbbf24;font-weight:bold">${costStr}${locked?` · <span style="color:#f87171">🔒 ${en?'Tech':'Forschung'} ${rc.req}</span>`:''}</span>
+    <button class="winamp-btn" style="padding:4px 10px;background:${canAfford?'#166534':'#1e293b'};border-color:${canAfford?'#22c55e':'#475569'};color:#fff;font-size:11px" ${!canAfford?'disabled':''} onclick="act(craftItem('${k}'));showArmoryModal('${_armoryModalTab}')">🔨 ${en?'Craft':'Herstellen'}</button>
+   </div>
+  </div>`;
+ }).join('');
+
+ let h=`<div class="mbox" style="width:min(920px,96vw);max-height:90vh;border-color:#f59e0b;background:radial-gradient(ellipse at top,#172234,#090e17 80%)">
+  <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #f59e0b;padding-bottom:8px">
+   <div>
+    <h3 style="margin:0;color:#fbbf24;font-size:17px">🛠 ${en?'SGC ARMORY, WORKSHOP & STORAGE DEPOT':'SGC WAFFENKAMMER, WERKSTATT & HAUPTLAGER'}</h3>
+    <small style="color:#94a3b8">${en?'Master Sgt. Sylvester Siler · Level 15/16 & Level 4 Quartermaster Logistics':'Master Sgt. Sylvester Siler · Ebene 15/16 & Ebene 4 Quartiermeister-Logistik'}</small>
+   </div>
+   <div style="display:flex;gap:8px;align-items:center">
+    <div style="font-family:monospace;font-size:12px;background:#090d14;padding:5px 10px;border-radius:4px;border:1px solid #334155">
+     ⛏ <b style="color:#fbbf24">${Math.floor(S.res.ore||0)}</b> · ⚙ <b style="color:#38bdf8">${Math.floor(S.res.tech||0)}</b> · ✚ <b style="color:#4ade80">${Math.floor(S.res.medicine||0)}</b> · 🍞 <b style="color:#a78bfa">${Math.floor(S.res.food||0)}</b>
+    </div>
+    <button class="winamp-btn" style="padding:4px 10px;background:#78350f;border-color:#f59e0b;color:#fff" onclick="closeArmoryModal()">✕ ${I18N.T('game.dyn.btn.close')||(en?'Close':'Schließen')}</button>
+   </div>
+  </div>
+
+  <div class="mbody" style="overflow-y:auto;padding-right:4px">
+   <!-- Room Switcher Tabs -->
+   <div style="display:flex;gap:6px;margin:4px 0 8px">
+    <button class="winamp-btn ${_armoryModalTab==='workshop'?'active':''}" style="flex:1;padding:7px;font-size:12px" onclick="showArmoryModal('workshop')">🛠 ${en?'Workshop (Level 16)':'Werkstatt (Ebene 16)'}</button>
+    <button class="winamp-btn ${_armoryModalTab==='armory'?'active':''}" style="flex:1;padding:7px;font-size:12px" onclick="showArmoryModal('armory')">🔫 ${en?'Armory (Level 15/16)':'Waffenkammer (Ebene 15/16)'}</button>
+    <button class="winamp-btn ${_armoryModalTab==='storage'?'active':''}" style="flex:1;padding:7px;font-size:12px" onclick="showArmoryModal('storage')">📦 ${en?'Main Storage (Level 4)':'Hauptlager (Ebene 4)'}</button>
+   </div>
+
+   <!-- Live Animated Room Graphic -->
+   <div style="border:1px solid #334155;border-radius:6px;overflow:hidden;margin-bottom:10px;background:#070b12">
+    <canvas id="armory-modal-cv" width="680" height="142" style="width:100%;height:auto;display:block"></canvas>
+   </div>
+
+   <!-- Section 1: Workshop Crafting -->
+   <h4 style="margin:6px 0;color:#fbbf24;font-size:13px">🔨 ${en?'WORKSHOP FABRICATION &WEAPON FORGE (RECIPES)':'WERKSTATT-FERTIGUNG & WAFFENSCHMIEDE (BAUPLÄNE)'}</h4>
+   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:8px;margin-bottom:12px">
+    ${recipeCards}
+   </div>
+
+   <!-- Section 2: Storage & Stockpile -->
+   <h4 style="margin:8px 0 6px;color:#38bdf8;font-size:13px">📦 ${en?'STORAGE INVENTORY & DEPOT STOCKPILE':'LAGERBESTAND & ARSENAL-DEPOT'}</h4>
+   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:8px;margin-bottom:12px">
+    <div style="background:#08101c;border:1px solid #1e293b;border-radius:6px;padding:8px">
+     <div style="font-weight:bold;color:#7dd3fc;margin-bottom:6px;font-size:12px">🔫 ${en?'Weapons in Depot':'Waffen im Lager'}</div>
+     <div style="display:flex;flex-direction:column;gap:4px">${wStock}</div>
+    </div>
+    <div style="background:#08101c;border:1px solid #1e293b;border-radius:6px;padding:8px">
+     <div style="font-weight:bold;color:#7dd3fc;margin-bottom:6px;font-size:12px">🛡 ${en?'Armor in Depot':'Rüstungen im Lager'}</div>
+     <div style="display:flex;flex-direction:column;gap:4px">${aStock}</div>
+    </div>
+    <div style="background:#08101c;border:1px solid #1e293b;border-radius:6px;padding:8px">
+     <div style="font-weight:bold;color:#7dd3fc;margin-bottom:6px;font-size:12px">✚ ${en?'Tactical Specials in Depot':'Spezial-Ausrüstung im Lager'}</div>
+     <div style="display:flex;flex-direction:column;gap:4px">${sStock}</div>
+    </div>
+   </div>
+
+   <!-- Section 3: Quartermaster Squad Loadout -->
+   <h4 style="margin:8px 0 6px;color:#4ade80;font-size:13px">🎖 ${en?'QUARTERMASTER SQUAD LOADOUT (DIRECT EQUIP)':'QUARTIERMEISTER: TRUPPEN-AUSRÜSTUNG (DIREKTVERGABE)'}</h4>
+   <table class="clipboard-table" style="font-size:12px">
+    <thead>
+     <tr>
+      <th>${I18N.T('game.dyn.clip.th.name')}</th>
+      <th>${I18N.T('game.dyn.clip.th.team')}</th>
+      <th>🔫 ${I18N.T('game.dyn.roster.st.weapon')}</th>
+      <th>🛡 ${I18N.T('game.dyn.roster.st.armor')}</th>
+      <th>✚ ${I18N.T('game.dyn.roster.st.special')}</th>
+     </tr>
+    </thead>
+    <tbody>
+     ${rec.map(p=>{
+      const curTeam=p.team||(p.sg1?'sg1':'sg2');
+      return `<tr>
+       <td><b>${p.name}</b> <small style="color:#94a3b8">(${clsName(p.cls)} Lv.${p.lvl})</small></td>
+       <td><select onchange="act(assignTeam(${p.id},this.value));showArmoryModal('${_armoryModalTab}')">${Object.entries(SG_TEAMS).map(([tid,ti])=>`<option value="${tid}" ${curTeam===tid?'selected':''}>${ti.name}</option>`).join('')}</select></td>
+       <td><select onchange="act(equipItem(${p.id},'weapon',this.value));showArmoryModal('${_armoryModalTab}')">${rangedKeys.map(k=>{
+        const cnt=(S.inventory.weapons&&S.inventory.weapons[k])||0;
+        const unlim=['pistol','rifle'].includes(k);
+        return `<option value="${k}" ${p.weapon===k?'selected':''}>${L_(WEAPONS[k],'name')}${unlim?'':` (${cnt})`}</option>`;
+       }).join('')}</select></td>
+       <td><select onchange="act(equipItem(${p.id},'armor',this.value));showArmoryModal('${_armoryModalTab}')">${Object.entries(ARMORS).map(([ak,av])=>{
+        const cnt=(S.inventory.armor&&S.inventory.armor[ak])||0;
+        return `<option value="${ak}" ${(p.armor||'light')===ak?'selected':''}>${L_(av,'name')}${ak==='light'?'':` (${cnt})`}</option>`;
+       }).join('')}</select></td>
+       <td><select onchange="act(equipItem(${p.id},'special',this.value));showArmoryModal('${_armoryModalTab}')"><option value="" ${!p.special?'selected':''}>${I18N.T('game.dyn.roster.st.no_item')}</option>${Object.entries(SPECIALS).map(([sk,sv])=>{
+        const cnt=(S.inventory.specials&&S.inventory.specials[sk])||0;
+        return `<option value="${sk}" ${p.special===sk?'selected':''}>${sv.icon} ${L_(sv,'name')} (${cnt})</option>`;
+       }).join('')}</select></td>
+      </tr>`;
+     }).join('')}
+    </tbody>
+   </table>
+  </div>
+ </div>`;
+
+ m.style.display='flex';
+ m.innerHTML=h;
+ if(_armoryModalRaf){cancelAnimationFrame(_armoryModalRaf);_armoryModalRaf=null;}
+ const animLoop=()=>{
+  const cv=document.getElementById('armory-modal-cv');
+  if(!cv||!$('modal')||$('modal').style.display==='none'){_armoryModalRaf=null;return;}
+  drawArmoryModalCanvas(cv,_armoryModalTab);
+  _armoryModalRaf=requestAnimationFrame(animLoop);
+ };
+ drawArmoryModalCanvas(document.getElementById('armory-modal-cv'),_armoryModalTab);
+ if(typeof window!=='undefined'&&typeof requestAnimationFrame==='function'){
+  _armoryModalRaf=requestAnimationFrame(animLoop);
+ }
+}
+if(typeof window!=='undefined'){
+ window.showArmoryModal=showArmoryModal;
+ window.closeArmoryModal=closeArmoryModal;
+}
+
 // ===================== SGC Forschungslabor (Ebene 19) =====================
 function showResearchModal(){
  hideMenu();
  const m=$('modal');if(!m)return;
  const qTech=S.research&&S.research.queue?getTech(S.research.queue):null;
  const rp=Math.floor((S.research&&S.research.rp)||0);
+ const en=isEn();
 
  const branches=[
-  {id:'g',name:I18N.T('game.dyn.branch.g')||'Gate-Netz',icon:'🌀'},
-  {id:'w',name:I18N.T('game.dyn.branch.w')||'Waffentechnik',icon:'⚡'},
-  {id:'s',name:I18N.T('game.dyn.branch.s')||'Schilde',icon:'🛡'},
-  {id:'a',name:I18N.T('game.dyn.branch.a')||'Antiker-Wissen',icon:'🏛'}
+  {id:'g',name:I18N.T('game.dyn.branch.g')||(en?'Gate Network':'Gate-Netz'),icon:'🌀'},
+  {id:'w',name:I18N.T('game.dyn.branch.w')||(en?'Weapon Tech':'Waffentechnik'),icon:'⚡'},
+  {id:'s',name:I18N.T('game.dyn.branch.s')||(en?'Shields':'Schilde'),icon:'🛡'},
+  {id:'a',name:I18N.T('game.dyn.branch.a')||(en?'Ancient Knowledge':'Antiker-Wissen'),icon:'🏛'}
  ];
 
  let h=`<div class="mbox research-box">
   <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #38bdf8;padding-bottom:8px">
    <div>
-    <h3 style="margin:0;color:#38bdf8">🔬 SGC FORSCHUNGSLABOR &amp; ASTROPHYSIK (EBENE 19)</h3>
-    <small style="color:#94a3b8">Leitung: Maj. Samantha Carter &amp; Dr. Daniel Jackson · Verfügbare Forschungspunkte: <b style="color:#38bdf8">${rp} RP</b></small>
+    <h3 style="margin:0;color:#38bdf8">🔬 ${en?'SGC RESEARCH LAB & ASTROPHYSICS (LEVEL 19) / SGC FORSCHUNGSLABOR':'SGC FORSCHUNGSLABOR &amp; ASTROPHYSIK (EBENE 19)'}</h3>
+    <small style="color:#94a3b8">${en?'Lead: Maj. Samantha Carter & Dr. Daniel Jackson · Available Research Points:':'Leitung: Maj. Samantha Carter &amp; Dr. Daniel Jackson · Verfügbare Forschungspunkte:'} <b style="color:#38bdf8">${rp} RP</b></small>
    </div>
-   <button class="winamp-btn" style="padding:4px 10px;background:#0c4a6e;border-color:#38bdf8;color:#fff" onclick="$('modal').style.display='none'">✕ ${I18N.T('game.dyn.btn.close')||'Schließen'}</button>
+   <button class="winamp-btn" style="padding:4px 10px;background:#0c4a6e;border-color:#38bdf8;color:#fff" onclick="$('modal').style.display='none'">✕ ${I18N.T('game.dyn.btn.close')||(en?'Close':'Schließen')}</button>
   </div>
   <div class="mbody" style="overflow-y:auto;padding-right:4px">
    <div style="background:#0f172a;border-left:3px solid #38bdf8;padding:8px 12px;margin:6px 0;font-style:italic;color:#cbd5e1">
-    „Die Naquadah-Isotopenanalyse und Kristallmuster aus den letzten SG-Einsätzen liefern uns unschätzbare Daten. Mit jedem erfolgreichen Tor-Einsatz gewinnen wir neue Forschungspunkte (RP)!“
+    ${en?'"Naquadah isotope analysis and crystal patterns from recent offworld missions provide invaluable data. Every successful gate mission earns new Research Points (RP)!"':'„Die Naquadah-Isotopenanalyse und Kristallmuster aus den letzten SG-Einsätzen liefern uns unschätzbare Daten. Mit jedem erfolgreichen Tor-Einsatz gewinnen wir neue Forschungspunkte (RP)!“'}
    </div>
 
    <div style="background:#082f49;border:1px solid #0284c7;border-radius:6px;padding:10px;margin:8px 0">
     <div style="display:flex;justify-content:space-between;align-items:center">
      <b style="color:#e0f2fe">${I18N.T('game.dyn.research')}:</b>
-     ${qTech?`<button class="winamp-btn" style="background:#7f1d1d;border-color:#ef4444;color:#fecaca;padding:2px 8px;font-size:11px" onclick="act(setResearch(''));showResearchModal()">✕ Abbrechen</button>`:''}
+     ${qTech?`<button class="winamp-btn" style="background:#7f1d1d;border-color:#ef4444;color:#fecaca;padding:2px 8px;font-size:11px" onclick="act(setResearch(''));showResearchModal()">✕ ${I18N.T('game.dyn.btn.cancel')}</button>`:''}
     </div>
     ${qTech?`
      <div style="margin-top:6px">
@@ -191,7 +472,7 @@ function showResearchModal(){
       </div>
       <div style="font-size:12px;color:#cbd5e1;margin-top:4px">${qTech.desc}</div>
      </div>
-    `:`<div style="color:#94a3b8;font-size:13px;margin-top:4px">${I18N.T('game.dyn.research.none')} Wähle unten ein Projekt aus dem Forschungsbaum!</div>`}
+    `:`<div style="color:#94a3b8;font-size:13px;margin-top:4px">${I18N.T('game.dyn.research.none')} ${en?'Select a project from the tech tree below!':'Wähle unten ein Projekt aus dem Forschungsbaum!'}</div>`}
    </div>
 
    <div class="research-grid">
@@ -206,10 +487,10 @@ function showResearchModal(){
            const isQueue=S.research&&S.research.queue===t.id;
            const av=techAvailable(t);
            let statusBadge='';
-           if(done)statusBadge='<span style="color:#4ade80;font-weight:bold;font-size:11px">✔ Erforscht</span>';
-           else if(isQueue)statusBadge='<span style="color:#38bdf8;font-weight:bold;font-size:11px">⚙ Läuft...</span>';
+           if(done)statusBadge=`<span style="color:#4ade80;font-weight:bold;font-size:11px">✔ ${en?'Researched':'Erforscht'}</span>`;
+           else if(isQueue)statusBadge=`<span style="color:#38bdf8;font-weight:bold;font-size:11px">⚙ ${en?'Active...':'Läuft...'}</span>`;
            else if(av)statusBadge=`<span style="color:#facc15;font-size:11px">${t.cost} RP</span>`;
-           else statusBadge=`<span style="color:#64748b;font-size:11px">🔒 Benötigt: ${t.prereq}</span>`;
+           else statusBadge=`<span style="color:#64748b;font-size:11px">🔒 ${en?'Requires':'Benötigt'}: ${t.prereq}</span>`;
 
            return `
             <div class="tech-card ${done?'done':''} ${isQueue?'active':''} ${(!av&&!done)?'locked':''}">
@@ -220,7 +501,7 @@ function showResearchModal(){
              <p style="font-size:11px;color:#94a3b8;margin:4px 0 6px">${t.desc}</p>
              ${done?'':`
               <button class="winamp-btn" style="width:100%;padding:3px;font-size:11px;${isQueue?'background:#0369a1;color:#fff':av?'background:#0f2b46;color:#38bdf8;border-color:#0284c7':'background:#1e293b;color:#475569'}" ${(!av&&!isQueue)?'disabled':''} onclick="act(setResearch('${isQueue?'':t.id}'));showResearchModal()">
-               ${isQueue?'Abbrechen':av?`Erforschen (${t.cost} RP)`:'Gesperrt'}
+               ${isQueue?I18N.T('game.dyn.btn.cancel'):av?`${en?'Research':'Erforschen'} (${t.cost} RP)`:(en?'Locked':'Gesperrt')}
               </button>
              `}
             </div>
@@ -559,12 +840,11 @@ const WINAMP = {
   }
 };
 
-function getWinampTracksForTab(tab, search=''){
+function getWinampTracksForTab(tab, search='', onlyUnlocked=false){
   let list=[];
   const q=search.trim().toLowerCase();
   if(tab==='sa'){
     list=Object.keys(STRUDEL_TRACKS).filter(k=>k.startsWith('sa_'));
-    // v0.31: nur Starter + über Planeten freigeschaltete Songs zeigen
     if(typeof MUSIC_PROGRESS!=='undefined')list=MUSIC_PROGRESS.filter(list);
   }else if(tab==='theme'){
     list=[
@@ -582,13 +862,19 @@ function getWinampTracksForTab(tab, search=''){
       'theme_remix_0',
       'theme_remix_1',
       'theme_remix_2',
-      'theme_remix_3'
-    ];
+      'theme_remix_3',
+      'theme_remix_foothold',
+      'theme_remix_apophis',
+      'theme_remix_atlantis_dnb'
+    ].filter(k=>typeof STRUDEL_TRACKS==='undefined'||STRUDEL_TRACKS[k]);
   }else if(tab==='core'){
-    list=['base','map','planet','gate','combat','peaceful','boss'];
+    list=['base','map','planet','gate','combat','peaceful','boss','armory','cheyenne'].filter(k=>typeof STRUDEL_TRACKS==='undefined'||STRUDEL_TRACKS[k]);
   }else if(tab==='seed'){
     list=Object.keys(STRUDEL_TRACKS).filter(k=>k.startsWith('custom_')||k==='generated_seed');
     if(!list.length)list=['generated_seed'];
+  }
+  if(onlyUnlocked&&typeof isTrackUnlocked==='function'){
+    list=list.filter(isTrackUnlocked);
   }
   if(q){
     list=list.filter(k=>{
@@ -736,22 +1022,32 @@ function renderWinampPlaylistHTML(curTrack){
     </div>`;
   }
 
-  const trackKeys=getWinampTracksForTab(WINAMP.tab,WINAMP.searchQuery);
+  const allTabTracks=getWinampTracksForTab(WINAMP.tab,WINAMP.searchQuery,false);
+  const trackKeys=getWinampTracksForTab(WINAMP.tab,WINAMP.searchQuery,true);
   if(!trackKeys.length){
+    if(!WINAMP.searchQuery && allTabTracks.length > 0){
+      return `<div style="padding:22px 16px;text-align:center;color:#94a3b8;font-size:12px;background:#090f19;margin:8px;border:1px dashed #334155;border-radius:6px">
+        <div style="font-size:18px;color:#38bdf8;margin-bottom:6px">🔒 0 / ${allTabTracks.length} Tracks entdeckt</div>
+        <div>Erkunde neue Planeten durch das Stargate oder schließe Missionen ab, um versteckte Soundtracks für den SGC-AMP freizuschalten!</div>
+      </div>`;
+    }
     return `<div style="padding:20px;text-align:center;color:#64748b;font-size:12px">${I18N.T('game.dyn.str.no_tracks',[WINAMP.searchQuery])}</div>`;
   }
 
   return `<div class="winamp-playlist">
+    <div style="padding:4px 10px;background:#0b1320;border-bottom:1px solid #1e293b;display:flex;justify-content:space-between;align-items:center;font-size:10.5px;color:#7dd3fc">
+      <span>🎵 JUKEBOX-SAMMLUNG: <b>${trackKeys.length} / ${allTabTracks.length}</b> FREIGESCHALTET</span>
+      <span style="color:#64748b">${allTabTracks.length>trackKeys.length?`🔒 ${allTabTracks.length-trackKeys.length} weitere durch Missionen, Planeten & Quests entdeckbar`:'✔ Alle Tracks dieser Kategorie entdeckt!'}</span>
+    </div>
     ${trackKeys.map((k,idx)=>{
       const tr=STRUDEL_TRACKS[k]||{name:k,artist:'SGC',bpm:140,style:'Synth'};
       const isCur=(curTrack===k);
       const num=String(idx+1).padStart(2,'0');
-      const isUnlocked=(!S||!S.unlockedTracks||S.unlockedTracks.includes(k));
       return `<div class="winamp-item ${isCur?'current':''}" data-track="${k}" onclick="SFX.playTrack('${k}');if(typeof unlockTrack==='function')unlockTrack('${k}');">
         <div>
           <span style="color:#64748b;margin-right:6px">[${num}]</span>
           <b>${isCur?'▶ ':''}${tr.title||tr.name||k}</b>
-          ${isUnlocked?`<span style="color:#facc15;font-size:10px;margin-left:4px" title="${I18N.T('game.dyn.str.unlocked')}">⭐</span>`:''}
+          <span style="color:#facc15;font-size:10px;margin-left:4px" title="${I18N.T('game.dyn.str.unlocked')}">⭐</span>
           <span style="color:#94a3b8;font-size:11px;margin-left:6px">· ${tr.artist||'SGC'}</span>
         </div>
         <div style="font-size:11px;color:#64748b">
@@ -1058,9 +1354,9 @@ function showStrudelModal(){
 
     <!-- Playlist Tabs -->
     <div class="winamp-tabs">
-      <button class="winamp-tab ${WINAMP.tab==='theme'?'on':''}" onclick="WINAMP.tab='theme';showStrudelModal()">🎺 Stargate Themes (18)</button>
-      <button class="winamp-tab ${WINAMP.tab==='core'?'on':''}" onclick="WINAMP.tab='core';showStrudelModal()">${I18N.T('game.dyn.str.tab_core')}</button>
-      <button class="winamp-tab ${WINAMP.tab==='sa'?'on':''}" onclick="WINAMP.tab='sa';showStrudelModal()" title="${I18N.T('game.dyn.str.tab_sa_title')}">📦 Codevault Tracks (20)</button>
+      <button class="winamp-tab ${WINAMP.tab==='theme'?'on':''}" onclick="WINAMP.tab='theme';showStrudelModal()">🎺 Stargate Themes (${getWinampTracksForTab('theme','',true).length}/${getWinampTracksForTab('theme','',false).length})</button>
+      <button class="winamp-tab ${WINAMP.tab==='core'?'on':''}" onclick="WINAMP.tab='core';showStrudelModal()">🛰 SGC Core (${getWinampTracksForTab('core','',true).length}/${getWinampTracksForTab('core','',false).length})</button>
+      <button class="winamp-tab ${WINAMP.tab==='sa'?'on':''}" onclick="WINAMP.tab='sa';showStrudelModal()" title="${I18N.T('game.dyn.str.tab_sa_title')}">📦 Codevault (${getWinampTracksForTab('sa','',true).length}/${getWinampTracksForTab('sa','',false).length})</button>
       <button class="winamp-tab ${WINAMP.tab==='seed'?'on':''}" onclick="WINAMP.tab='seed';showStrudelModal()">${I18N.T('game.dyn.str.tab_seed')}</button>
       <button class="winamp-tab ${WINAMP.tab==='midi'?'on':''}" onclick="WINAMP.tab='midi';showStrudelModal()">🎛 MIDI Controller</button>
       <button class="winamp-tab ${WINAMP.tab==='settings'?'on':''}" onclick="WINAMP.tab='settings';showStrudelModal()">${I18N.T('game.dyn.str.tab_settings')}</button>
@@ -1257,26 +1553,30 @@ function showHelp(){
 
 // ===================== Header =====================
 function renderHeader(){
- const ch=CHAPTERS[S.chapter];
+ const ch=CHAPTERS[S.chapter]||CHAPTERS[0];
  $('res').innerHTML=Object.keys(S.res).map(k=>`<span class="res" title="${(isEn()?RES_EN:RES_DE)[k]}">${RES_ICON[k]} ${Math.floor(S.res[k])}</span>`).join('')+
   `<span class="res" title="${I18N.T('game.dyn.res.research')}">🔬 ${Math.floor(S.research.rp)}</span>`;
  const cmd=(typeof COMMANDERS!=='undefined'&&COMMANDERS[S.commander])||COMMANDERS.hammond;
- $('chap').innerHTML=`<b>${ch.title}</b><small>${ch.sub} · 🎖 ${cmd.name}</small>`;
+ $('chap').innerHTML=`<b>${L_(ch,'title')}</b><small>${L_(ch,'sub')} · 🎖 ${cmd.name}</small>`;
  const pw=powerGen(),pu=powerUse();
  const D=diff();
- $('round').innerHTML=`${I18N.T('game.dyn.day')} <b>${S.day}</b> · <span class="integ" title="${I18N.T('game.dyn.power.tooltip')}">⚡ ${pw>=pu?pw-pu:0}/${pw} ${bar(pw>=pu?100:pu/pw*100,pw>=pu?'#4ade80':'#ef4444')}</span> · <span class="diff" style="color:${D.color}" title="${I18N.T('game.dyn.diff.tooltip')}">⚔ ${D.name}</span>`;
+ $('round').innerHTML=`${I18N.T('game.dyn.day')} <b>${S.day}</b> · <span class="integ" title="${I18N.T('game.dyn.power.tooltip')}">⚡ ${pw>=pu?pw-pu:0}/${pw} ${bar(pw>=pu?100:pu/pw*100,pw>=pu?'#4ade80':'#ef4444')}</span> · <span class="diff" style="color:${D.color}" title="${I18N.T('game.dyn.diff.tooltip')}">⚔ ${L_(D,'name')}</span>`;
  const gb=$('gfx-btn');
  if(gb){
   const gm=typeof getGfxMode==='function'?getGfxMode():'pixel';
-  gb.textContent=gm==='ascii'?'⌨ ASCII':gm==='topdown'?'🗺 2D':'🖥 PIXEL';
+  gb.textContent=gm==='ascii'?'⌨ ASCII':gm==='webgl3d'?'🌐 3D-GL':gm==='topdown'?'🗺 2D':'🖥 PIXEL';
  }
- $('go').disabled=!!S.over||C.active||GR.phase!=='idle';
- $('go').title=S.over?I18N.T('game.dyn.go.over'):C.active?I18N.T('game.dyn.go.combat'):GR.phase!=='idle'?I18N.T('game.dyn.go.gate'):I18N.T('game.dyn.go.day');
+ if(GR.phase!=='idle'&&(!$('gate-overlay')||$('gate-overlay').style.display==='none'||$('gate-overlay').style.display==='')){
+  GR.phase='idle';
+ }
+ $('go').disabled=!!S.over||C.active;
+ $('go').title=S.over?I18N.T('game.dyn.go.over'):C.active?I18N.T('game.dyn.go.combat'):I18N.T('game.dyn.go.day');
 }
 
-// ===================== Basis (Shelter-Grid + Raum-Innenansicht + Crafting) =====================
+// ===================== Basis (Shelter-Grid + Raum-Innenansicht + Entschlackte Seitenleiste) =====================
 function renderBaseSide(){
  const pw=powerGen(),pu=powerUse(),ok=pw>=pu;
+ const en=isEn();
  const headlines=[
   I18N.T('game.dyn.headline.0'),
   I18N.T('game.dyn.headline.1'),
@@ -1294,7 +1594,6 @@ function renderBaseSide(){
  </section>`;
  // Wenn ein Raum ausgewählt ist: Begehbare Innenansicht anzeigen (ROADMAP §1.5.3)
  if(B.selRoom&&S.base.rooms[B.selRoom]){
-  const selR=S.base.rooms[B.selRoom];
   h+=`<div class="item" style="border-color:#4fc3f7;padding:6px">
    <canvas id="room-interior-cv" width="290" height="128" style="width:100%;height:auto;border:1px solid #33465f"></canvas>
   </div>`;
@@ -1304,25 +1603,32 @@ function renderBaseSide(){
   ${S.roster[12]&&S.roster[12].recruited?`<button ${S.sandUsed?'disabled':''} onclick="act(sandwich())" title="${I18N.T('game.dyn.sandwich.title')}">${I18N.T('game.dyn.btn.sandwich')}</button>`:''}
  </div>`;
  h+=`<h3>${I18N.T('game.dyn.power')}</h3><div class="gbox">${I18N.T('game.dyn.power.prod')} <b style="color:${ok?'#4ade80':'#ef4444'}">${pw}</b> · ${I18N.T('game.dyn.power.cons')} <b>${pu}</b> ${ok?'✔':I18N.T('game.dyn.power.offline')}</div>`;
+ // Entschlacktes Seitenmenü: Kompakte Karte für Waffenkammer, Werkstatt & Hauptlager (statt langer Inline-Crafting-Liste)
+ if(S.inventory){
+  const totalWeapons=Object.values(S.inventory.weapons||{}).reduce((a,b)=>a+(b||0),0);
+  const totalArmor=Object.values(S.inventory.armor||{}).reduce((a,b)=>a+(b||0),0);
+  const totalSpecial=Object.values(S.inventory.specials||S.inventory.special||{}).reduce((a,b)=>a+(b||0),0);
+  h+=`<div class="item" style="border-color:#f59e0b;margin:8px 0;background:linear-gradient(145deg,#1c160c,#0b111b);padding:10px">
+   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+    <h3 style="margin:0;font-size:13px;color:#fbbf24">🛠 ${I18N.T('game.dyn.arsenal')}</h3>
+    <span class="tag" style="background:#78350f;color:#fef08a">${en?'Level 15/16 & 4':'Ebene 15/16 & 4'}</span>
+   </div>
+   <div style="font-size:11.5px;color:#cbd5e1;margin-bottom:8px">
+    🔫 ${en?'Weapons':'Waffen'}: <b>${totalWeapons}</b> · 🛡 ${en?'Armor':'Rüstung'}: <b>${totalArmor}</b> · ✚ ${en?'Specials':'Spezial'}: <b>${totalSpecial}</b>
+   </div>
+   <div style="display:flex;gap:5px">
+    <button class="small" style="flex:1;background:#78350f;border-color:#f59e0b;color:#fef08a;font-weight:bold;padding:6px" onclick="showArmoryModal('workshop')">🛠 ${en?'Workshop & Crafting':'Werkstatt & Bau'}</button>
+    <button class="small" style="flex:1;background:#1e293b;border-color:#38bdf8;color:#bae6fd;font-weight:bold;padding:6px" onclick="showArmoryModal('storage')">📦 ${en?'Storage & Armory':'Lager & Arsenal'}</button>
+   </div>
+  </div>`;
+ }
  h+=`<h3>${I18N.T('game.dyn.build')}</h3>`;
  if(B.buildMode){
-  h+=`<div class="warnbox item">${I18N.T('game.dyn.build.mode',[ROOMS[B.buildType].name])} <button onclick="B.buildMode=false;renderAll()">${I18N.T('game.dyn.btn.cancel')}</button></div>`;
+  h+=`<div class="warnbox item">${I18N.T('game.dyn.build.mode',[L_(ROOMS[B.buildType],'name')])} <button onclick="B.buildMode=false;renderAll()">${I18N.T('game.dyn.btn.cancel')}</button></div>`;
  } else {
   h+=`<div class="bgrid">`+Object.keys(ROOMS).filter(t=>t!=='gate').map(t=>{
    const R=ROOMS[t],cost=Object.entries(R.cost).map(e=>RES_ICON[e[0]]+e[1]).join(' ')||'–';
-   return `<button class="item" style="text-align:left" onclick="B.buildMode=true;B.buildType='${t}';renderAll()"><b>${R.icon} ${R.name}</b><br><small>${R.desc} · ${cost} · ${R.power>0?'+':''}${R.power}P</small></button>`;
-  }).join('')+`</div>`;
- }
- // Waffenkammer & Werkbank (INVENTAR-SPEC.md)
- if(typeof RECIPES!=='undefined'&&S.inventory){
-  h+=`<h3>${I18N.T('game.dyn.arsenal')}</h3><div class="bgrid">`+Object.entries(RECIPES).map(([k,rec])=>{
-   const cost=Object.entries(rec.cost).map(e=>RES_ICON[e[0]]+e[1]).join(' ');
-   const count=(S.inventory[rec.cat]&&S.inventory[rec.cat][rec.item])||0;
-   const locked=rec.req&&!S.research.done.includes(rec.req);
-   return `<button class="item" style="text-align:left" ${locked?'disabled':''} onclick="act(craftItem('${k}'))">
-    <b>${rec.name}</b> <span class="tag" style="float:right;background:#1a2535;color:#4ade80">${I18N.T('game.dyn.stock',[count])}</span><br>
-    <small>${cost}${locked?` · 🔒 ${rec.req}`:''}</small>
-   </button>`;
+   return `<button class="item" style="text-align:left" onclick="B.buildMode=true;B.buildType='${t}';renderAll()"><b>${R.icon} ${L_(R,'name')}</b><br><small>${L_(R,'desc')} · ${cost} · ${R.power>0?'+':''}${R.power}P</small></button>`;
   }).join('')+`</div>`;
  }
  h+=`<h3>${I18N.T('game.dyn.rooms')} <small>${I18N.T('game.dyn.rooms.hint')}</small></h3>`;
@@ -1331,23 +1637,24 @@ function renderBaseSide(){
   const R=ROOMS[r.type],out=roomOutput(r);
   const staff=r.staff.map(id=>S.roster[id]).filter(m=>m&&m.recruited&&!m.dead);
   return `<div class="item ${B.selRoom===r.id?'warnbox':''}" style="cursor:pointer" onclick="B.selRoom=${r.id};renderAll()">
-   <b>${R.icon} ${R.name}</b> ${r.type!=='gate'?`<button class="small" style="float:right" onclick="event.stopPropagation();act(demolishRoom(${r.id}))">✕</button>`:''}
+   <b>${R.icon} ${L_(R,'name')}</b> ${r.type!=='gate'?`<button class="small" style="float:right" onclick="event.stopPropagation();act(demolishRoom(${r.id}))">✕</button>`:''}
    <br><small>${I18N.T('game.dyn.room.staff',[staff.length,R.staff])} ${out?`· Output ${out}`:''}
    ${staff.length?'<br>'+staff.map(m=>`<span class="tag" style="background:#1a2535;color:#4fc3f7">${m.name.split(' ')[0]}</span>`).join(' '):''}</small>
    ${r.type==='medbay'?`<button class="small" style="background:#134e4a;border-color:#2dd4bf;color:#ccfbf1;margin-top:6px;width:100%" onclick="event.stopPropagation();setTab('medbay')">${I18N.T('game.dyn.btn.medbay_open')}</button>`:''}
-    ${r.type==='lab'?`<button class="small" style="background:#0e7490;border-color:#38bdf8;color:#cffafe;margin-top:6px;width:100%" onclick="event.stopPropagation();showResearchModal()">${I18N.T('game.dyn.btn.lab_open')}</button>`:''}</div>`;
+   ${r.type==='lab'?`<button class="small" style="background:#0e7490;border-color:#38bdf8;color:#cffafe;margin-top:6px;width:100%" onclick="event.stopPropagation();showResearchModal()">${I18N.T('game.dyn.btn.lab_open')}</button>`:''}
+   ${(r.type==='armory'||r.type==='workshop'||r.type==='storage')?`<button class="small" style="background:#78350f;border-color:#f59e0b;color:#fef08a;margin-top:6px;width:100%" onclick="event.stopPropagation();showArmoryModal('${r.type}')">🛠 ${en?'Open '+L_(R,'name'):L_(R,'name')+' öffnen'}</button>`:''}</div>`;
  }).join('');
  const qTech = S.research && S.research.queue ? getTech(S.research.queue) : null;
   const doneCount = (S.research && S.research.done && S.research.done.length) || 0;
   h+=`<div class="item" style="border-color:#0891b2;margin-top:12px;background:linear-gradient(145deg,#0c1a29,#09121c);padding:10px">
    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
     <h3 style="margin:0;font-size:13px;color:#38bdf8">🔬 ${I18N.T('game.dyn.research')}</h3>
-    <span class="tag" style="background:#0e7490;color:#cffafe">${doneCount}/${TECH.length} Erforscht</span>
+    <span class="tag" style="background:#0e7490;color:#cffafe">${doneCount}/${TECH.length} ${en?'Researched':'Erforscht'}</span>
    </div>
    <div style="font-size:12px;margin-bottom:6px">
     ${qTech?`<b>${qTech.name}</b><br><small style="color:#94a3b8">${qTech.desc}</small><div style="margin-top:4px">${bar(S.research.rp/qTech.cost*100,'#38bdf8')} <span style="font-size:11px;color:#cbd5e1">${Math.floor(S.research.rp)}/${qTech.cost} RP</span></div>`:`<span style="color:#94a3b8">${I18N.T('game.dyn.research.none')}</span>`}
    </div>
-   <button class="small" style="width:100%;background:#0e7490;border-color:#38bdf8;color:#cffafe;font-weight:bold;padding:5px" onclick="showResearchModal()">${I18N.T('game.dyn.btn.lab_open')} (Forschungsbaum)</button>
+   <button class="small" style="width:100%;background:#0e7490;border-color:#38bdf8;color:#cffafe;font-weight:bold;padding:5px" onclick="showResearchModal()">${I18N.T('game.dyn.btn.lab_open')}</button>
   </div>`;
   if(S.memorial.length){
   h+=`<h3>${I18N.T('game.dyn.memorial')}</h3><div class="gbox" style="border-color:#ef4444">${S.memorial.map(n=>`<div>🕯 ${n}</div>`).join('')}<button class="btn small" style="margin-top:6px;width:100%;background:#3b1e2a;border-color:#f43f5e;color:#fecdd3" onclick="if(typeof SFX!=='undefined'&&SFX.playTrack)SFX.playTrack('theme_funeral');toast(I18N.T('game.dyn.toast.funeral'))">${I18N.T('game.dyn.btn.funeral_play')}</button></div>`;
@@ -1360,6 +1667,9 @@ function renderBaseSide(){
 
 // ===================== Sternenkarte =====================
 function drawMap(cv,now){
+ if(((typeof getGfxMode==='function'&&getGfxMode()==='webgl3d')||(typeof GL3D!=='undefined'&&GL3D.mapHoloMode))&&typeof GL3D!=='undefined'&&typeof GL3D.renderStarMap==='function'){
+  GL3D.renderStarMap(cv,now);return;
+ }
  const c=cv.getContext('2d'),W=cv.width,Ht=cv.height;
  let g=c.createRadialGradient(W/2,Ht/2,50,W/2,Ht/2,W*.7);g.addColorStop(0,'#101a2e');g.addColorStop(1,'#04060b');c.fillStyle=g;c.fillRect(0,0,W,Ht);
  [[220,140,'#3b1d6e'],[640,360,'#0e3a55'],[820,150,'#5a1a2a']].forEach(([x,y,col])=>{const n=c.createRadialGradient(x,y,0,x,y,220);n.addColorStop(0,col+'66');n.addColorStop(1,col+'00');c.fillStyle=n;c.fillRect(x-220,y-220,440,440);});
@@ -1369,14 +1679,15 @@ function drawMap(cv,now){
  for(let y=0;y<Ht;y+=60){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke();}
  MAP.nodes=[];const sgc=PLANETS.sgc;
  const vis=id=>PLANETS[id].ch<=S.chapter;
+ const openList=openMissions();
  for(const id in PLANETS){if(!vis(id))continue;const P=PLANETS[id];if(P.sgc)continue;
-  const disc=S.planets[id].disc;
+  const disc=S.planets[id]&&S.planets[id].disc;
   c.setLineDash(disc?[]:[3,7]);
   c.strokeStyle=disc?'rgba(79,195,247,.4)':'rgba(120,140,170,.25)';
   c.globalAlpha=disc?.5+.25*Math.sin(now/500):1;
   c.beginPath();c.moveTo(sgc.x,sgc.y);c.lineTo(P.x,P.y);c.stroke();
   c.globalAlpha=1;c.setLineDash([]);}
- for(const id in PLANETS){if(!vis(id))continue;const P=PLANETS[id],disc=S.planets[id].disc;
+ for(const id in PLANETS){if(!vis(id))continue;const P=PLANETS[id],disc=S.planets[id]&&S.planets[id].disc;
   const r=P.sgc?20:disc?14:11;MAP.nodes.push({id,x:P.x,y:P.y,r:r+8});
   if(MAP.sel===id){c.strokeStyle='#fff';c.lineWidth=2;c.setLineDash([4,3]);c.beginPath();c.arc(P.x,P.y,r+14,0,7);c.stroke();c.setLineDash([]);}
   const col=P.sgc?'#4fc3f7':disc?(P.type==='hostile'?'#ef4444':P.type==='empty'?'#4ade80':P.type==='space'?'#a78bfa':'#facc15'):'#5a6a80';
@@ -1388,8 +1699,8 @@ function drawMap(cv,now){
   else{const pg=c.createRadialGradient(P.x-4,P.y-4,2,P.x,P.y,r);
    const base=P.type==='hostile'?'#7a2a2a':P.type==='empty'?'#2a5a4a':P.type==='space'?'#241a40':'#4a5a3a';
    pg.addColorStop(0,shade(base,50));pg.addColorStop(1,base);c.fillStyle=pg;c.beginPath();c.arc(P.x,P.y,r,0,7);c.fill();c.strokeStyle=col;c.lineWidth=2;c.stroke();}
-  const hasM=openMissions().some(o=>o.planet===id);
-  if(disc&&hasM){c.fillStyle='#f2c230';c.font='bold 18px sans-serif';c.textAlign='center';c.fillText('!',P.x+r+6,P.y-r+4+Math.sin(now/250)*2);}
+  const hasM=openList.some(o=>o.planet===id);
+  if(hasM){c.fillStyle='#f2c230';c.font='bold 18px sans-serif';c.textAlign='center';c.fillText('!',P.x+r+6,P.y-r+4+Math.sin(now/250)*2);}
   c.fillStyle=disc?'#d6e4f0':'#6b7a90';c.font='12px sans-serif';c.textAlign='center';c.fillText(disc?P.name:I18N.T('game.dyn.map.unknown'),P.x,P.y+r+18);
  }
  c.textAlign='left';
@@ -1477,10 +1788,18 @@ function autoResolveMission(mission, teamIds){
    const victim=squad[Math.floor(Math.random()*squad.length)];
    victim.injuries=(victim.injuries||0)+1;
   }
-  if(!S.done.includes(mission.id))S.done.push(mission.id);
+  if(!mission.repeatable&&!S.done.includes(mission.id))S.done.push(mission.id);
+  if(mission.recruit!==undefined&&S.roster[mission.recruit]&&!S.roster[mission.recruit].recruited){
+   S.roster[mission.recruit].recruited=true;
+  }
+  if(typeof advanceQuests==='function')advanceQuests(mission.id);
+  if(typeof checkChapterAdvance==='function')checkChapterAdvance();
+  if(typeof MUSIC_PROGRESS!=='undefined'&&typeof MUSIC_PROGRESS.unlockForPlanet==='function'&&mission.planet){
+   MUSIC_PROGRESS.unlockForPlanet(mission.planet);
+  }
   const lootStr=Object.entries(lootEarned).map(([k,v])=>`${RES_ICON[k]||''}+${v}`).join(' ');
   toast(`${I18N.T('game.dyn.autoresolve.win')} (${lootStr||'Keine Beute'})`);
-  if(typeof note==='function')note(`[SCHNELLKAMPF] ${mission.name}: Sieg (${forecast.winChance}% Chance). Belohnungen verbucht (-25% Malus).`);
+  if(typeof note==='function')note(`[SCHNELLKAMPF] ${L_(mission,'name')}: Sieg (${forecast.winChance}% Chance). Belohnungen verbucht (-25% Malus).`);
  }else{
   if(typeof sfx==='function')sfx('defeat');
   squad.forEach(m=>{
@@ -1488,27 +1807,43 @@ function autoResolveMission(mission, teamIds){
    if(Math.random()<0.6)m.injuries=(m.injuries||0)+1;
   });
   toast(I18N.T('game.dyn.autoresolve.defeat'));
-  if(typeof note==='function')note(`[SCHNELLKAMPF] ${mission.name}: Niederlage. Team evakuiert mit schweren Wunden.`);
+  if(typeof note==='function')note(`[SCHNELLKAMPF] ${L_(mission,'name')}: Niederlage. Team evakuiert mit schweren Wunden.`);
  }
  if(typeof save==='function')save();
  renderAll();
 }
 
 function renderMapSide(){
+ const en=isEn();
+ const holoOn=typeof GL3D!=='undefined'&&((typeof getGfxMode==='function'&&getGfxMode()==='webgl3d')||GL3D.mapHoloMode);
+ const holoBar=`<div style="margin-bottom:8px"><button class="btn small" style="width:100%;border-color:${holoOn?'#38bdf8':'#475569'};color:${holoOn?'#7dd3fc':'#cbd5e1'};background:${holoOn?'rgba(14,165,233,0.18)':'#0f172a'}" onclick="if(typeof GL3D!=='undefined'){GL3D.mapHoloMode=!GL3D.mapHoloMode;renderAll();}">🌐 ${en?'3D Hologram Projection: '+(holoOn?'ACTIVE':'OFF'):'3D-Hologramm-Projektion: '+(holoOn?'AKTIV':'AUS')}</button></div>`;
+ const openList=openMissions();
  if(!MAP.sel){
-  $('map-side').innerHTML=`<h3>${I18N.T('game.dyn.map.title')}</h3><p class="dim">${I18N.T('game.dyn.map.hint')}</p>
-  <h3>${I18N.T('game.dyn.map.open')}</h3>`+openMissions().map(m=>
-   `<div class="item" onclick="MAP.sel='${m.planet}';renderAll()" style="cursor:pointer"><b>${m.name}</b> <small>${PLANETS[m.planet].name}</small></div>`).join('');
+  $('map-side').innerHTML=holoBar+`<h3>${I18N.T('game.dyn.map.title')}</h3><p class="dim">${I18N.T('game.dyn.map.hint')}</p>
+  <h3>${I18N.T('game.dyn.map.open')} (${openList.length})</h3>`+openList.map(m=>
+   `<div class="item" onclick="MAP.sel='${m.planet}';if(S.planets['${m.planet}'])S.planets['${m.planet}'].disc=true;renderAll()" style="cursor:pointer"><b>${L_(m,'name')}</b> <small style="color:#38bdf8">${PLANETS[m.planet]?PLANETS[m.planet].name:m.planet}</small><br><small style="color:#94a3b8">${L_(m,'goal')}</small></div>`).join('');
   return;
  }
- const P=PLANETS[MAP.sel],disc=S.planets[MAP.sel].disc;
- let h=`<h3>${disc?P.name:I18N.T('game.dyn.map.unk_signal')}</h3>`;
- if(!disc){h+=`<p class="dim">${I18N.T('game.dyn.map.unk_text')}</p><button onclick="discover('${MAP.sel}');act({ok:true})">${I18N.T('game.dyn.map.probe')}</button>`;$('map-side').innerHTML=h;return;}
- h+=`<p>${(isEn()?TYPE_EN:TYPE_DE)[P.type]}</p>`;
- const ms=openMissions().filter(m=>m.planet===MAP.sel);
+ const P=PLANETS[MAP.sel],disc=S.planets[MAP.sel]&&S.planets[MAP.sel].disc;
+ let h=holoBar+`<h3>${disc?P.name:I18N.T('game.dyn.map.unk_signal')}</h3>`;
+ if(!disc){
+  const hasStoryM=openList.some(m=>m.planet===MAP.sel);
+  h+=`<p class="dim">${I18N.T('game.dyn.map.unk_text')}</p>`;
+  if(hasStoryM)h+=`<div class="item" style="border-color:#facc15;color:#fef08a;margin-bottom:8px">📡 ${en?'Active mission signal detected on this world! Send a MALP probe to unlock launch coordinates.':'Aktives Missionssignal geortet! Sende eine MALP-Sonde für die Anwahl-Koordinaten.'}</div>`;
+  h+=`<button style="width:100%;background:#0284c7;border-color:#38bdf8;font-weight:bold" onclick="discover('${MAP.sel}');act({ok:true})">${I18N.T('game.dyn.map.probe')}</button>`;
+  $('map-side').innerHTML=h;return;
+ }
+ h+=`<p>${(en?TYPE_EN:TYPE_DE)[P.type]||P.type}${P.address?` · <code style="color:#38bdf8">⛩ ${P.address}</code>`:''}</p>`;
+ if(P.desc||P.descEn)h+=`<p class="dim" style="font-size:11.5px;margin-top:-4px">${L_(P,'desc')}</p>`;
+ let ms=openList.filter(m=>m.planet===MAP.sel);
+ if(!ms.length&&!P.sgc&&typeof getPlanetPatrolMission==='function'){
+  const patrol=getPlanetPatrolMission(MAP.sel);
+  if(patrol)ms=[patrol];
+ }
  if(ms.length){
-  ms.forEach(m=>{
-   h+=`<div class="item"><b>${m.name}</b><br><small>${m.goal}<br>${m.peaceful?I18N.T('game.dyn.map.contact_type'):`${I18N.T('game.dyn.map.enemy_count')}: ${Object.entries(m.enemies).map(e=>e[1]+'× '+ENEMY_DE[e[0]]).join(', ')||I18N.T('game.dyn.map.none')}`}<br>${m.peaceful?I18N.T('game.dyn.map.contact_do'):m.tutorial?I18N.T('game.dyn.map.tutorial'):I18N.T('game.dyn.map.extract')}<br>${I18N.T('game.dyn.map.loot')}: ${Object.entries(m.reward).map(e=>RES_ICON[e[0]]+e[1]).join(' ')||'–'}</small></div>`;
+  ms.forEach((m,idx)=>{
+   const enemyTbl=en?ENEMY_EN:ENEMY_DE;
+   h+=`<div class="item" style="${idx===0?'border-color:#4ade80':''}"><b>${m.repeatable?'🛰 ':'🎯 '}${L_(m,'name')}</b><br><small>${L_(m,'goal')}<br>${m.peaceful?I18N.T('game.dyn.map.contact_type'):`${I18N.T('game.dyn.map.enemy_count')}: ${Object.entries(m.enemies||{}).map(e=>e[1]+'× '+(enemyTbl[e[0]]||e[0])).join(', ')||I18N.T('game.dyn.map.none')}`}<br>${m.peaceful?I18N.T('game.dyn.map.contact_do'):m.tutorial?I18N.T('game.dyn.map.tutorial'):I18N.T('game.dyn.map.extract')}<br>${I18N.T('game.dyn.map.loot')}: ${Object.entries(m.reward||{}).map(e=>RES_ICON[e[0]]+e[1]).join(' ')||'–'}</small></div>`;
   });
   const avail=S.roster.filter(m=>m.recruited&&!m.dead);
   h+=`<h3>${I18N.T('game.dyn.map.team')} <small>${I18N.T('game.dyn.map.team_max')}</small></h3>`;
@@ -1521,7 +1856,7 @@ function renderMapSide(){
    avail.map(m=>{
     const mt=m.team||(m.sg1?'sg1':'sg2');
     const ti=SG_TEAMS&&SG_TEAMS[mt];
-    return `<label class="gl"><input type="checkbox" class="tpick" value="${m.id}" ${(ms[0].tutorial||mt==='sg1')?'checked':''} ${ms[0].tutorial?'disabled':''}> ${pic(m)} <span>${m.name.split(' ')[0]}</span> <small style="color:${ti?ti.color:'#8a9ab0'}">${ti?ti.name:''} · 🔫${WEAPONS[m.weapon]?WEAPONS[m.weapon].name:m.weapon}</small></label>`;
+    return `<label class="gl"><input type="checkbox" class="tpick" value="${m.id}" ${(ms[0].tutorial||mt==='sg1')?'checked':''} ${ms[0].tutorial?'disabled':''}> ${pic(m)} <span>${m.name.split(' ')[0]}</span> <small style="color:${ti?ti.color:'#8a9ab0'}">${ti?ti.name:''} · 🔫${WEAPONS[m.weapon]?L_(WEAPONS[m.weapon],'name'):m.weapon}</small></label>`;
    }).join('')+`</div>`;
   const defIds=avail.filter(m=>(ms[0].tutorial||(m.team||(m.sg1?'sg1':'sg2'))==='sg1')).map(m=>m.id);
   const forecast=getAutoResolveForecast(ms[0],defIds);
@@ -1541,7 +1876,13 @@ function renderMapSide(){
  if(btn)btn.onclick=()=>{
   const ids=[...document.querySelectorAll('.tpick:checked')].map(c=>parseInt(c.value)).slice(0,6);
   if(!ids.length){toast(I18N.T('game.dyn.map.toast.select'));return;}
-  launchMission(ms[0],ids);
+  launchMission(ms[0],ids,false);
+ };
+ const btnAuto=$('launch-auto');
+ if(btnAuto)btnAuto.onclick=()=>{
+  const ids=[...document.querySelectorAll('.tpick:checked')].map(c=>parseInt(c.value)).slice(0,6);
+  if(!ids.length){toast(I18N.T('game.dyn.map.toast.select'));return;}
+  launchMission(ms[0],ids,true);
  };
  const btnRes=$('auto-resolve');
  if(btnRes)btnRes.onclick=()=>{
@@ -1713,7 +2054,16 @@ function combatPan(dx,dy){
 }
 function combatPointerDown(e){
  if(!C.active||C.result)return;
- combatPanDrag={id:e.pointerId,x:e.clientX,y:e.clientY,cameraX:C.cameraX,cameraY:C.cameraY,moved:false};
+ const is3D=(typeof getGfxMode==='function'&&getGfxMode()==='webgl3d')&&typeof GL3D!=='undefined';
+ const orbitMode=is3D&&(!e.shiftKey||e.button===2||e.button===1);
+ combatPanDrag={
+  id:e.pointerId,x:e.clientX,y:e.clientY,
+  cameraX:C.cameraX,cameraY:C.cameraY,
+  orbit:orbitMode,
+  yaw0:is3D?(GL3D.yawOffset||0):0,
+  pitch0:is3D?(GL3D.pitchOffset||0):0,
+  moved:false
+ };
  if(e.target.setPointerCapture)e.target.setPointerCapture(e.pointerId);
 }
 function combatPointerMove(e){
@@ -1723,8 +2073,13 @@ function combatPointerMove(e){
  const dx=e.clientX-combatPanDrag.x,dy=e.clientY-combatPanDrag.y;
  if(Math.abs(dx)+Math.abs(dy)>6)combatPanDrag.moved=true;
  if(combatPanDrag.moved){
-  panCombatCamera(combatPanDrag.cameraX-Math.round(dx*cv.width/rect.width/TILE),
-   combatPanDrag.cameraY-Math.round(dy*cv.height/rect.height/TILE));
+  if(combatPanDrag.orbit&&typeof GL3D!=='undefined'){
+   GL3D.yawOffset=combatPanDrag.yaw0-dx*0.0085;
+   GL3D.pitchOffset=Math.max(-4.5,Math.min(7.5,combatPanDrag.pitch0+dy*0.035));
+  }else{
+   panCombatCamera(combatPanDrag.cameraX-Math.round(dx*cv.width/rect.width/TILE),
+    combatPanDrag.cameraY-Math.round(dy*cv.height/rect.height/TILE));
+  }
   e.preventDefault();
  }
 }
@@ -1761,7 +2116,8 @@ function renderCombatUI(force=false){
   return;
  }
  const sel=C.selected;
- const key=`${sel?sel.charId:'none'}_${sel?sel.ap:0}_${sel?sel.hp:0}_${sel?sel.specialUsed:0}_${sel?sel.overwatch:false}_${C.autoBattle}_${C.round}_${C.phase}_${C.log.length}_${C.buildType}_${typeof getGfxMode==='function'?getGfxMode():'pixel'}`;
+ const curZoom=(typeof ISO!=='undefined'&&ISO.zoom)?ISO.zoom:1.0;
+ const key=`${sel?sel.charId:'none'}_${sel?sel.ap:0}_${sel?sel.hp:0}_${sel?sel.specialUsed:0}_${sel?sel.overwatch:false}_${C.autoBattle}_${C.round}_${C.phase}_${C.log.length}_${C.buildType}_${typeof getGfxMode==='function'?getGfxMode():'pixel'}_${curZoom}`;
  if(!force && key===_lastCombatUIKey && panel.style.display==='flex') return;
  _lastCombatUIKey=key;
  panel.style.display='flex';
@@ -1813,11 +2169,15 @@ function renderCombatUI(force=false){
    h+=`<button class="cui-btn ${on?'on':''}" style="padding:6px 10px;font-size:12px" onclick="C.buildType=C.buildType==='${bk}'?null:'${bk}';renderCombatUI()" title="${bdef.desc} (${costStr})">${bdef.icon} ${bdef.name}</button>`;
   });
  }
- // Isometric Camera & Pixel/ASCII Controls
+ // Isometric / 3D Camera, Zoom & Graphics Controls
  const gm=typeof getGfxMode==='function'?getGfxMode():'pixel';
+ const zoomPct=Math.round(curZoom*100);
  h+=`<button class="cui-btn" style="padding:6px 10px" onclick="if(typeof rotateIsoCamera==='function')rotateIsoCamera(-1)" title="${I18N.T('game.dyn.cui.rotate_l')}">↶ Q</button>`;
  h+=`<button class="cui-btn" style="padding:6px 10px" onclick="if(typeof rotateIsoCamera==='function')rotateIsoCamera(1)" title="${I18N.T('game.dyn.cui.rotate_r')}">↷ E</button>`;
- h+=`<button class="cui-btn" style="padding:6px 10px;border-color:#4ade80;color:#4ade80" onclick="cycleGfxMode()" title="${I18N.T('game.dyn.cui.gfx')}">${gm==='ascii'?'⌨ ASCII':'🖥 PIXEL'}</button>`;
+ h+=`<button class="cui-btn" style="padding:6px 8px" onclick="if(typeof zoomIsoCamera==='function')zoomIsoCamera(-0.1)" title="Herauszoomen (-)">🔍−</button>`;
+ h+=`<button class="cui-btn" style="padding:6px 8px;font-family:monospace" onclick="if(typeof resetIsoZoom==='function')resetIsoZoom()" title="Zoom auf 100% zurücksetzen">${zoomPct}%</button>`;
+ h+=`<button class="cui-btn" style="padding:6px 8px" onclick="if(typeof zoomIsoCamera==='function')zoomIsoCamera(0.1)" title="Hineinzoomen (+)">🔍+</button>`;
+ h+=`<button class="cui-btn" style="padding:6px 10px;border-color:#4ade80;color:#4ade80" onclick="cycleGfxMode()" title="${I18N.T('game.dyn.cui.gfx')}">${gm==='ascii'?'⌨ ASCII':gm==='webgl3d'?'🌐 3D-GL':gm==='topdown'?'🗺 2D':'🖥 PIXEL'}</button>`;
  h+=`<button class="cui-btn" style="padding:6px 10px" onclick="showHelp()">❓</button>`;
   const isMuted = (typeof SFX!=='undefined' && SFX.muted);
   h+=`<button class="cui-btn" style="padding:6px 10px;border-color:${isMuted?'#ef4444':'#22c55e'};color:${isMuted?'#fca5a5':'#86efac'}" onclick="toggleCombatAudio()" title="${isMuted?'Ton einschalten':'Ton stumm'}">${isMuted?'🔇':'🔊'}</button>`;
@@ -1850,13 +2210,16 @@ function renderRoster(){
  }
  // Inventar-Übersicht & Schnell-Werkbank
  if(S.inventory){
-  const invW=Object.entries(S.inventory.weapons||{}).filter(([,v])=>v>0).map(([k,v])=>`🔫 ${WEAPONS[k]?WEAPONS[k].name:k}: <b>${v}</b>`).join(' · ')||I18N.T('game.dyn.roster.inv_unlim_w');
-  const invA=Object.entries(S.inventory.armor||{}).filter(([,v])=>v>0).map(([k,v])=>`🛡 ${ARMORS[k]?ARMORS[k].name:k}: <b>${v}</b>`).join(' · ')||I18N.T('game.dyn.roster.inv_unlim_a');
-  const invS=Object.entries(S.inventory.specials||{}).filter(([,v])=>v>0).map(([k,v])=>`${SPECIALS[k]?SPECIALS[k].icon:''} ${SPECIALS[k]?SPECIALS[k].name:k}: <b>${v}</b>`).join(' · ')||I18N.T('game.dyn.roster.inv_none_s');
+  const invW=Object.entries(S.inventory.weapons||{}).filter(([,v])=>v>0).map(([k,v])=>`🔫 ${WEAPONS[k]?L_(WEAPONS[k],'name'):k}: <b>${v}</b>`).join(' · ')||I18N.T('game.dyn.roster.inv_unlim_w');
+  const invA=Object.entries(S.inventory.armor||{}).filter(([,v])=>v>0).map(([k,v])=>`🛡 ${ARMORS[k]?L_(ARMORS[k],'name'):k}: <b>${v}</b>`).join(' · ')||I18N.T('game.dyn.roster.inv_unlim_a');
+  const invS=Object.entries(S.inventory.specials||{}).filter(([,v])=>v>0).map(([k,v])=>`${SPECIALS[k]?SPECIALS[k].icon:''} ${SPECIALS[k]?L_(SPECIALS[k],'name'):k}: <b>${v}</b>`).join(' · ')||I18N.T('game.dyn.roster.inv_none_s');
   topHtml+=`<div style="grid-column:1/-1;background:#0f1622;border:1px solid #33465f;border-radius:6px;padding:10px;margin-bottom:4px">
-   <div style="display:flex;justify-content:space-between;align-items:center">
+   <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap">
     <h3 style="margin:0">${I18N.T('game.dyn.roster.arsenal')}</h3>
-    <button class="small" onclick="showClipboardModal()">${I18N.T('game.dyn.btn.clipboard_open')}</button>
+    <div style="display:flex;gap:6px">
+     <button class="small" style="border-color:#f59e0b;color:#fde68a" onclick="showArmoryModal('workshop')">🛠 ${isEn()?'Armory & Workshop':'Werkstatt & Lager'}</button>
+     <button class="small" onclick="showClipboardModal()">${I18N.T('game.dyn.btn.clipboard_open')}</button>
+    </div>
    </div>
    <div style="font-size:12px;margin-top:6px;color:#cbd8e4">
     <div><b>${I18N.T('game.dyn.roster.inv.weapons')}</b> ${invW}</div>
@@ -1871,17 +2234,17 @@ function renderRoster(){
   const tInfo=SG_TEAMS&&SG_TEAMS[curTeam];
   const rangedKeys=['pistol','mp5','p90','m16','sniper','mg','shotgun','zat','staff','rifle','hammer'];
   const meleeKeys=['knife','blade','chakram'];
-  return `<div class="rc" title="${m.talent}">${pic(m,'pt big')}<div class="ri" style="flex:1">
+  return `<div class="rc" title="${L_(m,'talent')}"><div style="display:flex;flex-direction:column;align-items:center">${pic(m,'pt big')}</div><div class="ri" style="flex:1">
    <div style="display:flex;justify-content:space-between;align-items:center">
     <b>${m.name}</b>
     <span class="tag" style="background:#14202e;border:1px solid ${tInfo?tInfo.color:'#4fc3f7'};color:${tInfo?tInfo.color:'#4fc3f7'}">${tInfo?tInfo.name:'SG'}</span>
    </div>
-   <small>${CLASS_DE[m.cls]} · Lv ${m.lvl}${m.injuries?` · 🩹${m.injuries}`:''}</small>
+   <small>${clsName(m.cls)} · Lv ${m.lvl}${m.injuries?` · 🩹${m.injuries}`:''}</small>
    <div class="bars">❤${bar(m.hp/m.maxHp*100,'#4ade80')} 💤${bar(m.fatigue,'#facc15')} ☺${bar(m.morale,'#60a5fa')}</div>
-   <small class="tal">${m.talent}</small>
+   <small class="tal">${L_(m,'talent')}</small>
    <div class="loadout-grid">
     <select title="${I18N.T('game.dyn.roster.st.station')}" onchange="act(assignRoom(${m.id},parseInt(this.value)))"><option value="-1" ${m.room<0?'selected':''}>🏢 ${I18N.T('game.dyn.standby')}</option>
-     ${Object.values(S.base.rooms).map(r=>`<option value="${r.id}" ${m.room===r.id?'selected':''}>🏢 ${ROOMS[r.type].name}</option>`).join('')}</select>
+     ${Object.values(S.base.rooms).map(r=>`<option value="${r.id}" ${m.room===r.id?'selected':''}>🏢 ${L_(ROOMS[r.type],'name')}</option>`).join('')}</select>
     <select title="${I18N.T('game.dyn.roster.st.team')}" onchange="act(assignTeam(${m.id},this.value))">
      ${Object.entries(SG_TEAMS).map(([tid,ti])=>`<option value="${tid}" ${curTeam===tid?'selected':''}>🎖 ${ti.name}</option>`).join('')}
     </select>
@@ -1889,20 +2252,20 @@ function renderRoster(){
      ${rangedKeys.filter(k=>WEAPONS[k]).map(k=>{
       const cnt=(S.inventory&&S.inventory.weapons&&S.inventory.weapons[k])||0;
       const unlim=['pistol','mp5','m16','sniper','shotgun'].includes(k);
-      return `<option value="${k}" ${m.weapon===k?'selected':''}>🔫 ${WEAPONS[k].name}${unlim?'':` (${cnt})`}</option>`;
+      return `<option value="${k}" ${m.weapon===k?'selected':''}>🔫 ${L_(WEAPONS[k],'name')}${unlim?'':` (${cnt})`}</option>`;
      }).join('')}
     </select>
     <select title="${I18N.T('game.dyn.roster.st.armor')}" onchange="act(equipItem(${m.id},'armor',this.value))">
      ${Object.entries(ARMORS).map(([ak,av])=>{
       const cnt=(S.inventory&&S.inventory.armor&&S.inventory.armor[ak])||0;
-      return `<option value="${ak}" ${(m.armor||'light')===ak?'selected':''}>🛡 ${av.name}${ak==='light'?'':` (${cnt})`}</option>`;
+      return `<option value="${ak}" ${(m.armor||'light')===ak?'selected':''}>🛡 ${L_(av,'name')}${ak==='light'?'':` (${cnt})`}</option>`;
      }).join('')}
     </select>
     <select title="${I18N.T('game.dyn.roster.st.special')}" onchange="act(equipItem(${m.id},'special',this.value))">
      <option value="" ${!m.special?'selected':''}>${I18N.T('game.dyn.roster.st.no_item')}</option>
      ${Object.entries(SPECIALS).map(([sk,sv])=>{
       const cnt=(S.inventory&&S.inventory.specials&&S.inventory.specials[sk])||0;
-      return `<option value="${sk}" ${m.special===sk?'selected':''}>${sv.icon} ${sv.name} (${cnt})</option>`;
+      return `<option value="${sk}" ${m.special===sk?'selected':''}>${sv.icon} ${L_(sv,'name')} (${cnt})</option>`;
      }).join('')}
     </select>
     ${dos?`<button class="small" onclick="showDossier(${m.id})" title="${I18N.T('game.dyn.btn.dossier.title')}">${I18N.T('game.dyn.btn.dossier')}</button>`:`<span></span>`}
@@ -1917,9 +2280,9 @@ function renderRoster(){
 function renderMedbayView(){
   const body = $('medbay-body');
   if(!body) return;
+  const en = isEn();
 
   const medbayRoom = Object.values(S.base.rooms).find(r => r.type === 'medbay');
-  const hasMedbay = !!medbayRoom;
   const staff = (medbayRoom ? medbayRoom.staff.map(id => S.roster[id]).filter(m => m && m.recruited && !m.dead) : []);
   const medBoost = 1 + (staff.length * 0.5);
 
@@ -1930,11 +2293,17 @@ function renderMedbayView(){
 
   let fraiserQuote = '';
   if(critical.length > 0){
-    fraiserQuote = `„NOTFALL AUF EBENE 21! ${critical.map(m=>m.name.split(' ')[0]).join(', ')} schwebt in Lebensgefahr. Wir müssen sofort operieren oder das Antike Heilgerät einsetzen!“`;
+    fraiserQuote = en
+      ? `"EMERGENCY ON LEVEL 21! ${critical.map(m=>m.name.split(' ')[0]).join(', ')} is in critical condition. We must operate immediately or deploy the Goa'uld Healing Device!"`
+      : `„NOTFALL AUF EBENE 21! ${critical.map(m=>m.name.split(' ')[0]).join(', ')} schwebt in Lebensgefahr. Wir müssen sofort operieren oder das Antike Heilgerät einsetzen!“`;
   } else if(wounded.length > 0){
-    fraiserQuote = `„Willkommen auf Ebene 21, Commander. Wir haben ${wounded.length} verwundete Soldaten auf Station. Die Betten sind vorbereitet – eine Erstversorgung mit Medizin oder Bettruhe wird sie schnell wieder auf die Beine bringen.“`;
+    fraiserQuote = en
+      ? `"Welcome to Level 21, Commander. We have ${wounded.length} wounded personnel in the ward. Beds are prepped — first aid with medicine or inpatient bed rest will get them back on their feet."`
+      : `„Willkommen auf Ebene 21, Commander. Wir haben ${wounded.length} verwundete Soldaten auf Station. Die Betten sind vorbereitet – eine Erstversorgung mit Medizin oder Bettruhe wird sie schnell wieder auf die Beine bringen.“`;
   } else {
-    fraiserQuote = `„Gute Nachrichten, Commander: Alle SG-Teams sind vollkommen gesund und diensttauglich! Unsere Bestände an Verbandsmaterial und Tretonin sind aufgestockt.“`;
+    fraiserQuote = en
+      ? `"Good news, Commander: All SG teams are in peak physical condition and cleared for offworld duty! Our stocks of bandages and Tretonin are fully replenished."`
+      : `„Gute Nachrichten, Commander: Alle SG-Teams sind vollkommen gesund und diensttauglich! Unsere Bestände an Verbandsmaterial und Tretonin sind aufgestockt.“`;
   }
 
   let h = `
@@ -1943,14 +2312,14 @@ function renderMedbayView(){
       <div style="display:flex;align-items:center;gap:12px">
         <img src="${fraiserPortrait}" style="width:48px;height:48px;image-rendering:pixelated;border:2px solid #ef4444;border-radius:4px;background:#14202e">
         <div>
-          <div style="font-size:16px;font-weight:bold;color:#f8fafc;letter-spacing:1px">🏥 KRANKENSTATION · EBENE 21</div>
-          <div style="font-size:12px;color:#94a3b8">CHEFÄRZTIN DR. JANET FRAISER · CHEYENNE MOUNTAIN KOMPLEX</div>
+          <div style="font-size:16px;font-weight:bold;color:#f8fafc;letter-spacing:1px">${en?'🏥 SGC INFIRMARY / MEDBAY · LEVEL 21':'🏥 KRANKENSTATION · EBENE 21'}</div>
+          <div style="font-size:12px;color:#94a3b8">${en?'CHIEF MEDICAL OFFICER DR. JANET FRAISER · CHEYENNE MOUNTAIN COMPLEX':'CHEFÄRZTIN DR. JANET FRAISER · CHEYENNE MOUNTAIN KOMPLEX'}</div>
         </div>
       </div>
       <div style="display:flex;gap:12px;font-family:monospace;font-size:13px;background:#090d14;padding:8px 14px;border-radius:4px;border:1px solid #1e293b">
-        <span>✚ Medizin: <b style="color:#4ade80">${S.res.medicine||0}</b></span>
-        <span>⚙ Tech: <b style="color:#38bdf8">${S.res.tech||0}</b></span>
-        <span>⛏ Erz: <b style="color:#fbbf24">${S.res.ore||0}</b></span>
+        <span>✚ ${(en?RES_EN:RES_DE).medicine}: <b style="color:#4ade80">${S.res.medicine||0}</b></span>
+        <span>⚙ ${(en?RES_EN:RES_DE).tech}: <b style="color:#38bdf8">${S.res.tech||0}</b></span>
+        <span>⛏ ${(en?RES_EN:RES_DE).ore}: <b style="color:#fbbf24">${S.res.ore||0}</b></span>
       </div>
     </div>
 
@@ -1958,10 +2327,10 @@ function renderMedbayView(){
     <div style="display:flex;align-items:center;justify-content:space-between;background:#071018;border:1px solid #164e63;padding:8px 14px;border-radius:4px;margin-bottom:12px">
       <div style="display:flex;align-items:center;gap:10px">
         <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px #22c55e"></span>
-        <span style="font-family:monospace;font-size:12px;color:#38bdf8">BIO-TELEMETRIE: ♥ 72 BPM · NORMALER SINUSRHYTHMUS · SCHWINGUNG STABIL</span>
+        <span style="font-family:monospace;font-size:12px;color:#38bdf8">${en?'BIO-TELEMETRY: ♥ 72 BPM · NORMAL SINUS RHYTHM · VITALS STABLE':'BIO-TELEMETRIE: ♥ 72 BPM · NORMALER SINUSRHYTHMUS · SCHWINGUNG STABIL'}</span>
       </div>
       <div style="font-size:12px;color:#94a3b8">
-        Stations-Heilung: <b style="color:#4ade80">+${Math.round(35*medBoost)} HP/Tag</b> ${staff.length?`(Ärzte: ${staff.map(s=>s.name.split(' ')[0]).join(', ')})`:'(Kein Arzt zugewiesen)'}
+        ${en?'Ward Recovery':'Stations-Heilung'}: <b style="color:#4ade80">+${Math.round(35*medBoost)} HP/${I18N.T('game.dyn.day')}</b> ${staff.length?`(${en?'Doctors':'Ärzte'}: ${staff.map(s=>s.name.split(' ')[0]).join(', ')})`:(en?'(No medic assigned)':'(Kein Arzt zugewiesen)')}
       </div>
     </div>
 
@@ -1973,25 +2342,25 @@ function renderMedbayView(){
     <!-- Schnellauswahl-Aktionen -->
     <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px">
       <button class="btn" style="background:#166534;border-color:#4ade80;color:#fff" ${wounded.length===0||(S.res.medicine||0)<15?'disabled':''} onclick="act(healAllEmergency())">
-        💊 Alle Verwundeten erstversorgen (-15 ✚ pro Soldat)
+        💊 ${en?'Emergency First Aid for All Wounded (-15 ✚ per soldier)':'Alle Verwundeten erstversorgen (-15 ✚ pro Soldat)'}
       </button>
       <button class="btn" style="background:#1e293b;border-color:#38bdf8;color:#e0f2fe" onclick="showMedbayIncidentModal()">
-        ☣ Stargate-Medizinvorfall simulieren (Broca / Symbiont / Heilwürfel)
+        ☣ ${en?'Simulate Stargate Medical Crisis (Broca / Symbiote / Healing Cube)':'Stargate-Medizinvorfall simulieren (Broca / Symbiont / Heilwürfel)'}
       </button>
       <button class="btn" style="background:#0f172a;border-color:#64748b;color:#cbd5e1" onclick="setTab('base')">
-        🏢 Zur Basisansicht (Ebene 21 ausbauen)
+        🏢 ${en?'Return to Base View (Upgrade Level 21)':'Zur Basisansicht (Ebene 21 ausbauen)'}
       </button>
     </div>
   </div>`;
 
   // Patienten-Bereich
-  h += `<h3 style="margin-bottom:10px">🩺 Patientenakte &amp; Stationäre Belegung (${wounded.length} Verwundete)</h3>`;
+  h += `<h3 style="margin-bottom:10px">🩺 ${en?`Patient Files & Ward Occupancy (${wounded.length} Wounded)`:`Patientenakte &amp; Stationäre Belegung (${wounded.length} Verwundete)`}</h3>`;
 
   if(wounded.length === 0){
     h += `
     <div style="background:#0f1622;border:1px dashed #22c55e;border-radius:6px;padding:24px;text-align:center;color:#86efac;margin-bottom:16px">
-      <div style="font-size:24px;margin-bottom:8px">✔ Keine Patienten auf Station</div>
-      <div style="font-size:13px;color:#94a3b8">Alle Teammitglieder von SG-1 und den Unterstützungseinheiten sind voll einsatzfähig und haben 100% HP.</div>
+      <div style="font-size:24px;margin-bottom:8px">✔ ${en?'No Patients in Ward':'Keine Patienten auf Station'}</div>
+      <div style="font-size:13px;color:#94a3b8">${en?'All members of SG-1 and support teams are fully operational at 100% HP.':'Alle Teammitglieder von SG-1 und den Unterstützungseinheiten sind voll einsatzfähig und haben 100% HP.'}</div>
     </div>`;
   } else {
     h += `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:10px;margin-bottom:16px">`;
@@ -2007,22 +2376,22 @@ function renderMedbayView(){
           <div style="flex:1">
             <div style="display:flex;justify-content:space-between;align-items:center">
               <b>${m.name}</b>
-              <span class="tag" style="background:${inBed?'#0369a1':'#374151'};color:#fff">${inBed?'🛏 Im Krankenbett':'Ambulant'}</span>
+              <span class="tag" style="background:${inBed?'#0369a1':'#374151'};color:#fff">${inBed?(en?'🛏 Inpatient Bed':'🛏 Im Krankenbett'):(en?'Outpatient':'Ambulant')}</span>
             </div>
-            <small style="color:#94a3b8">${CLASS_DE[m.cls]||m.cls} · Lv ${m.lvl}</small>
+            <small style="color:#94a3b8">${clsName(m.cls)} · Lv ${m.lvl}</small>
           </div>
         </div>
 
         <div style="background:#090d14;padding:6px 10px;border-radius:4px;font-size:12px;font-family:monospace">
           <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-            <span>Gesundheit (HP):</span>
+            <span>${en?'Health (HP):':'Gesundheit (HP):'}</span>
             <b style="color:${m.hp<30?'#ef4444':'#4ade80'}">${m.hp} / ${m.maxHp}</b>
           </div>
           ${bar(m.hp/m.maxHp*100, m.hp<30?'#ef4444':'#4ade80')}
           <div style="display:flex;justify-content:space-between;margin-top:4px">
-            <span>Verletzungen: <b style="color:${m.injuries>0?'#ef4444':'#4ade80'}">${m.injuries||0}</b></span>
-            <span>Erschöpfung: <b>${m.fatigue||0}%</b></span>
-            <span>Moral: <b>${m.morale||0}%</b></span>
+            <span>${en?'Injuries':'Verletzungen'}: <b style="color:${m.injuries>0?'#ef4444':'#4ade80'}">${m.injuries||0}</b></span>
+            <span>${en?'Fatigue':'Erschöpfung'}: <b>${m.fatigue||0}%</b></span>
+            <span>${en?'Morale':'Moral'}: <b>${m.morale||0}%</b></span>
           </div>
         </div>
 
@@ -2030,28 +2399,28 @@ function renderMedbayView(){
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:2px">
           ${inBed ? `
             <button class="small" style="background:#334155;color:#e2e8f0;grid-column:span 2" onclick="act(assignRoom(${m.id},-1))">
-              🚶 Aus dem Krankenbett entlassen
+              🚶 ${en?'Discharge from Medbay Bed':'Aus dem Krankenbett entlassen'}
             </button>
           ` : `
             <button class="small" style="background:#0369a1;color:#fff;grid-column:span 2" onclick="act(healPatient(${m.id},'rest'))">
-              🛏 Stationär aufnehmen (+${Math.round(35*medBoost)} HP/Tag)
+              🛏 ${en?`Admit to Ward (+${Math.round(35*medBoost)} HP/day)`:`Stationär aufnehmen (+${Math.round(35*medBoost)} HP/Tag)`}
             </button>
           `}
           
-          <button class="small" style="background:#1e293b;border-color:#22c55e;color:#bbf7d0" ${(S.res.medicine||0)<15?'disabled':''} onclick="act(healPatient(${m.id},'medicine'))" title="15 ✚ Medizin: +35 HP, 1 Verletzung heilen">
-            💊 Erstversorgung (15 ✚)
+          <button class="small" style="background:#1e293b;border-color:#22c55e;color:#bbf7d0" ${(S.res.medicine||0)<15?'disabled':''} onclick="act(healPatient(${m.id},'medicine'))" title="${en?'15 ✚ Medicine: +35 HP, cure 1 injury':'15 ✚ Medizin: +35 HP, 1 Verletzung heilen'}">
+            💊 ${en?'First Aid (15 ✚)':'Erstversorgung (15 ✚)'}
           </button>
 
-          <button class="small" style="background:#1e293b;border-color:#38bdf8;color:#bae6fd" ${(S.res.tech||0)<20||(S.res.ore||0)<15?'disabled':''} onclick="act(healPatient(${m.id},'tech_goauld'))" title="20 ⚙ Tech, 15 ⛏ Erz: 100% HP & alle Verletzungen entfernen">
-            ✨ Heilgerät (20⚙, 15⛏)
+          <button class="small" style="background:#1e293b;border-color:#38bdf8;color:#bae6fd" ${(S.res.tech||0)<20||(S.res.ore||0)<15?'disabled':''} onclick="act(healPatient(${m.id},'tech_goauld'))" title="${en?'20 ⚙ Tech, 15 ⛏ Ore: 100% HP & cure all injuries':'20 ⚙ Tech, 15 ⛏ Erz: 100% HP & alle Verletzungen entfernen'}">
+            ✨ ${en?'Healing Device (20⚙, 15⛏)':'Heilgerät (20⚙, 15⛏)'}
           </button>
 
-          <button class="small" style="background:#1e293b;border-color:#a855f7;color:#e9d5ff" ${(S.res.medicine||0)<10||(S.res.tech||0)<10?'disabled':''} onclick="act(healPatient(${m.id},'tretonin'))" title="10 ✚, 10 ⚙: +50 HP, +5 MaxHP, +15 Moral">
+          <button class="small" style="background:#1e293b;border-color:#a855f7;color:#e9d5ff" ${(S.res.medicine||0)<10||(S.res.tech||0)<10?'disabled':''} onclick="act(healPatient(${m.id},'tretonin'))" title="${en?'10 ✚, 10 ⚙: +50 HP, +5 MaxHP, +15 Morale':'10 ✚, 10 ⚙: +50 HP, +5 MaxHP, +15 Moral'}">
             🧪 Tretonin (10✚, 10⚙)
           </button>
 
-          <button class="small" style="background:${isCritical?'#7f1d1d':'#374151'};border-color:#ef4444;color:#fecaca" ${(S.res.medicine||0)<25||(S.res.tech||0)<10?'disabled':''} onclick="act(healPatient(${m.id},'surgery'))" title="25 ✚, 10 ⚙: Not-Operation durch Dr. Fraiser (HP auf 85%, alle Wunden heilen)">
-            💉 Not-OP Fraiser (25✚)
+          <button class="small" style="background:${isCritical?'#7f1d1d':'#374151'};border-color:#ef4444;color:#fecaca" ${(S.res.medicine||0)<25||(S.res.tech||0)<10?'disabled':''} onclick="act(healPatient(${m.id},'surgery'))" title="${en?'25 ✚, 10 ⚙: Emergency surgery by Dr. Fraiser (HP to 85%, cure all wounds)':'25 ✚, 10 ⚙: Not-Operation durch Dr. Fraiser (HP auf 85%, alle Wunden heilen)'}">
+            💉 ${en?'Surgery Fraiser (25✚)':'Not-OP Fraiser (25✚)'}
           </button>
         </div>
       </div>`;
@@ -2061,7 +2430,7 @@ function renderMedbayView(){
 
   // Gesunder Kader
   const healthy = rec.filter(m => m.hp >= m.maxHp && (m.injuries||0) === 0);
-  h += `<h3 style="margin-top:16px;margin-bottom:8px">🎖 Diensttaugliches Personal (${healthy.length} Soldaten einsatzbereit)</h3>`;
+  h += `<h3 style="margin-top:16px;margin-bottom:8px">🎖 ${en?`Active Duty Personnel (${healthy.length} Soldiers Ready)`:`Diensttaugliches Personal (${healthy.length} Soldaten einsatzbereit)`}</h3>`;
   h += `<div style="display:flex;flex-wrap:wrap;gap:8px">`;
   healthy.forEach(m => {
     h += `
@@ -2069,7 +2438,7 @@ function renderMedbayView(){
       ${pic(m, 'pt')}
       <div>
         <div style="font-size:12px;font-weight:bold;color:#f1f5f9">${m.name}</div>
-        <div style="font-size:11px;color:#22c55e">✔ Voll einsatzbereit (${m.hp}/${m.maxHp} HP)</div>
+        <div style="font-size:11px;color:#22c55e">✔ ${en?`Fit for Duty (${m.hp}/${m.maxHp} HP)`:`Voll einsatzbereit (${m.hp}/${m.maxHp} HP)`}</div>
       </div>
     </div>`;
   });
@@ -2129,14 +2498,15 @@ function showDossier(id){
  const m=S.roster[id];if(!m)return;
  const dos=DOSSIERS[m.name];
  const mEl=$('modal');
- let h=`<h3>📋 Personalakte · ${m.name}</h3><div class="mbody">`;
- h+=`<div style="display:flex;gap:10px;align-items:center;margin-bottom:8px">${pic(m,'pt big')}<div><b>${dos.file}</b><br><small>${CLASS_DE[m.cls]} · ${m.sg1?'SG-1':'Rekrut'}</small></div></div>`;
- h+=`<div><b>Biografie:</b> ${dos.bio}</div>`;
- h+=`<div><b>Besonderheit:</b> ${dos.trait}</div>`;
+ const en=isEn();
+ let h=`<h3>📋 ${en?'Personnel File':'Personalakte'} · ${m.name}</h3><div class="mbody">`;
+ h+=`<div style="display:flex;gap:10px;align-items:center;margin-bottom:8px">${pic(m,'pt big')}<div><b>${dos.file}</b><br><small>${clsName(m.cls)} · ${m.sg1?'SG-1':(en?'Recruit':'Rekrut')}</small></div></div>`;
+ h+=`<div><b>${en?'Biography:':'Biografie:'}</b> ${L_(dos,'bio')}</div>`;
+ h+=`<div><b>${en?'Special Trait:':'Besonderheit:'}</b> ${L_(dos,'trait')}</div>`;
  if(dos.relatives&&dos.relatives.length){
-  h+=`<h4>Verwandte</h4>`+dos.relatives.map(r=>`<div>👤 <b>${r.name}</b> (${r.rel}) – ${r.trait}<br><small class="warn">Quest-Hook: ${r.quest}</small></div>`).join('');
+  h+=`<h4>${en?'Relatives & Contacts':'Verwandte'}</h4>`+dos.relatives.map(r=>`<div>👤 <b>${r.name}</b> (${r.rel}) – ${r.trait}<br><small class="warn">Quest-Hook: ${r.quest}</small></div>`).join('');
  }
- h+=`</div><button onclick="$('modal').style.display='none'">Schließen</button>`;
+ h+=`</div><button onclick="$('modal').style.display='none'">${I18N.T('game.dyn.btn.close')||(en?'Close':'Schließen')}</button>`;
  mEl.style.display='flex';
  mEl.innerHTML=`<div class="mbox help">${h}</div>`;
 }
@@ -2154,6 +2524,7 @@ const COLONY_UI={
 function renderColoniesView(){
   const cv=$('colony-cv'),side=$('colony-side');
   if(!cv||!side)return;
+  const en=isEn();
 
   if(typeof renderColonyCanvas==='function'){
     renderColonyCanvas(cv,COLONY_UI.planet);
@@ -2165,17 +2536,17 @@ function renderColoniesView(){
 
   let h=`<div style="padding:10px;background:#0d1520;border:1px solid #1e2e42;border-radius:6px;margin-bottom:10px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <h3 style="margin:0;color:#e8b040;font-size:14px">🪐 PLANETARE KOLONIE</h3>
+      <h3 style="margin:0;color:#e8b040;font-size:14px">🪐 ${en?'PLANETARY COLONY':'PLANETARE KOLONIE'}</h3>
       <select onchange="COLONY_UI.planet=this.value;renderColoniesView()" style="background:#141f2e;color:#fff;border:1px solid #38bdf8;padding:3px 6px;border-radius:4px;font-size:12px">
-        ${discPlanets.map(pk=>`<option value="${pk}" ${COLONY_UI.planet===pk?'selected':''}>${PLANETS[pk].name} (${TYPE_DE[PLANETS[pk].type]||PLANETS[pk].type})</option>`).join('')}
+        ${discPlanets.map(pk=>`<option value="${pk}" ${COLONY_UI.planet===pk?'selected':''}>${PLANETS[pk].name} (${(en?TYPE_EN:TYPE_DE)[PLANETS[pk].type]||PLANETS[pk].type})</option>`).join('')}
       </select>
     </div>`;
 
   if(!col){
     h+=`<div style="padding:14px;background:#090e16;border:1px dashed #334155;border-radius:4px;text-align:center">
-      <div style="font-size:13px;color:#94a3b8;margin-bottom:8px">Auf <b>${p.name}</b> ist noch kein Außenposten errichtet.</div>
-      <div style="font-size:12px;color:#cbd5e1;margin-bottom:10px">Gründungskosten: <b>⛏ 40 Erz · ⚙ 20 Tech</b></div>
-      <button style="background:#1f6f3a;border-color:#34c76a;padding:8px 14px;font-weight:bold" onclick="act(foundColony('${COLONY_UI.planet}'));renderColoniesView()">🪐 Außenposten gründen</button>
+      <div style="font-size:13px;color:#94a3b8;margin-bottom:8px">${en?`No outpost has been established on <b>${p.name}</b> yet.`:`Auf <b>${p.name}</b> ist noch kein Außenposten errichtet.`}</div>
+      <div style="font-size:12px;color:#cbd5e1;margin-bottom:10px">${en?'Founding Cost: <b>⛏ 40 Ore · ⚙ 20 Tech</b>':'Gründungskosten: <b>⛏ 40 Erz · ⚙ 20 Tech</b>'}</div>
+      <button style="background:#1f6f3a;border-color:#34c76a;padding:8px 14px;font-weight:bold" onclick="act(foundColony('${COLONY_UI.planet}'));renderColoniesView()">🪐 ${en?'Establish Outpost':'Außenposten gründen'}</button>
     </div></div>`;
     side.innerHTML=h;
     return;
@@ -2185,9 +2556,9 @@ function renderColoniesView(){
   const pwNet=stats.power-stats.powerUsed;
 
   h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;font-size:12px">
-    <div style="background:#141f2e;padding:6px;border-radius:4px">Energie: <b style="color:${pwNet>=0?'#4ade80':'#ef4444'}">${pwNet>=0?'+':''}${pwNet} PWR</b> <small>(${stats.power}/${stats.powerUsed})</small></div>
-    <div style="background:#141f2e;padding:6px;border-radius:4px">Abwehr: <b style="color:#ffd166">🛡 ${stats.defense} DEF</b></div>
-    <div style="background:#141f2e;padding:6px;border-radius:4px;grid-column:span 2">Tagesertrag: <b style="color:#4ade80">⛏+${stats.yield.ore} Erz · ⚙+${stats.yield.tech} Tech · ✚+${stats.yield.medicine} Med</b></div>
+    <div style="background:#141f2e;padding:6px;border-radius:4px">${en?'Power':'Energie'}: <b style="color:${pwNet>=0?'#4ade80':'#ef4444'}">${pwNet>=0?'+':''}${pwNet} PWR</b> <small>(${stats.power}/${stats.powerUsed})</small></div>
+    <div style="background:#141f2e;padding:6px;border-radius:4px">${en?'Defense':'Abwehr'}: <b style="color:#ffd166">🛡 ${stats.defense} DEF</b></div>
+    <div style="background:#141f2e;padding:6px;border-radius:4px;grid-column:span 2">${en?'Daily Yield':'Tagesertrag'}: <b style="color:#4ade80">⛏+${stats.yield.ore} · ⚙+${stats.yield.tech} · ✚+${stats.yield.medicine}</b></div>
   </div></div>`;
 
   const selSec=col.sectors?col.sectors.find(s=>s.x===COLONY_UI.selX&&s.y===COLONY_UI.selY):null;
@@ -2195,26 +2566,26 @@ function renderColoniesView(){
   const bDef=bType?COLONY_BUILDINGS[bType]:null;
 
   h+=`<div style="padding:10px;background:#0d1520;border:1px solid #1e2e42;border-radius:6px">
-    <div style="font-weight:bold;color:#ffd166;margin-bottom:6px">Sektor (${COLONY_UI.selX}, ${COLONY_UI.selY}) Inspektion</div>`;
+    <div style="font-weight:bold;color:#ffd166;margin-bottom:6px">${en?`Sector (${COLONY_UI.selX}, ${COLONY_UI.selY}) Inspection`:`Sektor (${COLONY_UI.selX}, ${COLONY_UI.selY}) Inspektion`}</div>`;
 
   if(bDef){
     h+=`<div style="margin-bottom:8px">
-      <div style="font-size:14px;color:#fff">${bDef.icon} <b>${bDef.name}</b> ${selSec.lvl>1?'<span style="color:#ffd166">'+('★'.repeat(selSec.lvl))+'</span>':''}</div>
-      <div style="font-size:11px;color:#94a3b8;margin-top:2px">${bDef.desc}</div>
-      <div style="font-size:11px;color:#cbd5e1;margin-top:4px">Stufe: <b>${selSec.lvl}/3</b> · Integrität: <b>${selSec.hp} HP</b></div>
+      <div style="font-size:14px;color:#fff">${bDef.icon} <b>${L_(bDef,'name')}</b> ${selSec.lvl>1?'<span style="color:#ffd166">'+('★'.repeat(selSec.lvl))+'</span>':''}</div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:2px">${L_(bDef,'desc')}</div>
+      <div style="font-size:11px;color:#cbd5e1;margin-top:4px">${en?'Level':'Stufe'}: <b>${selSec.lvl}/3</b> · ${en?'Integrity':'Integrität'}: <b>${selSec.hp} HP</b></div>
     </div>
     <div style="display:flex;gap:6px">
-      ${selSec.lvl<3?`<button class="small" style="background:#1f6f3a;border-color:#34c76a" onclick="act(upgradeColonySector('${COLONY_UI.planet}',${COLONY_UI.selX},${COLONY_UI.selY}));renderColoniesView()">⬆ Aufwerten (⛏${25*selSec.lvl} ⚙${15*selSec.lvl})</button>`:''}
-      ${bType!=='gate'?`<button class="small" style="border-color:#ef4444;color:#f87171" onclick="act(demolishColonySector('${COLONY_UI.planet}',${COLONY_UI.selX},${COLONY_UI.selY}));renderColoniesView()">🔨 Abreißen</button>`:''}
+      ${selSec.lvl<3?`<button class="small" style="background:#1f6f3a;border-color:#34c76a" onclick="act(upgradeColonySector('${COLONY_UI.planet}',${COLONY_UI.selX},${COLONY_UI.selY}));renderColoniesView()">⬆ ${en?'Upgrade':'Aufwerten'} (⛏${25*selSec.lvl} ⚙${15*selSec.lvl})</button>`:''}
+      ${bType!=='gate'?`<button class="small" style="border-color:#ef4444;color:#f87171" onclick="act(demolishColonySector('${COLONY_UI.planet}',${COLONY_UI.selX},${COLONY_UI.selY}));renderColoniesView()">🔨 ${en?'Demolish':'Abreißen'}</button>`:''}
     </div>`;
   }else{
-    h+=`<div style="font-size:12px;color:#94a3b8;margin-bottom:6px">Sektor ist frei. Gebäude errichten:</div>
+    h+=`<div style="font-size:12px;color:#94a3b8;margin-bottom:6px">${en?'Sector is free. Construct building:':'Sektor ist frei. Gebäude errichten:'}</div>
     <div style="display:grid;grid-template-columns:1fr;gap:4px;max-height:220px;overflow-y:auto">
       ${Object.entries(COLONY_BUILDINGS).filter(([k])=>k!=='gate').map(([bk,b])=>{
         const costStr=Object.entries(b.cost).map(([rk,rv])=>RES_ICON[rk]+rv).join(' ');
         const canAfford=Object.entries(b.cost).every(([rk,rv])=>(S.res[rk]||0)>=rv);
-        return `<button class="small" style="text-align:left;display:flex;justify-content:space-between;padding:5px 8px;${canAfford?'':'opacity:0.6'}" onclick="act(buildColonySector('${COLONY_UI.planet}',${COLONY_UI.selX},${COLONY_UI.selY},'${bk}'));renderColoniesView()" title="${b.desc}">
-          <span>${b.icon} ${b.name}</span>
+        return `<button class="small" style="text-align:left;display:flex;justify-content:space-between;padding:5px 8px;${canAfford?'':'opacity:0.6'}" onclick="act(buildColonySector('${COLONY_UI.planet}',${COLONY_UI.selX},${COLONY_UI.selY},'${bk}'));renderColoniesView()" title="${L_(b,'desc')}">
+          <span>${b.icon} ${L_(b,'name')}</span>
           <span style="color:#e8b040">${costStr}</span>
         </button>`;
       }).join('')}
@@ -2241,12 +2612,15 @@ function colonyCanvasClick(e){
 }
 
 // ===================== Report =====================
+let _reportModalOpen=false;
 function showReport(isDayEnd=false){
  const m=$('modal');
  if(!m)return;
+ _reportModalOpen=true;
  if(isDayEnd&&typeof SFX!=='undefined'&&SFX.playTrack){
   SFX.playTrack('theme_outro');
  }
+ const en=isEn();
  const ch=CHAPTERS[S.chapter]||CHAPTERS[0];
  const cmd=(typeof COMMANDERS!=='undefined'&&COMMANDERS[S.commander])||COMMANDERS.hammond;
  const discCount=Object.values(S.planets||{}).filter(p=>p.disc).length;
@@ -2254,7 +2628,19 @@ function showReport(isDayEnd=false){
  const activeRecruits=S.roster.filter(x=>x.recruited&&!x.dead).length;
  const coloniesCount=Object.keys(S.colonies||{}).length;
  
- const SGC_STORIES=[
+ const SGC_STORIES=en?[
+  `General Hammond orders fresh sandwiches flown in from Texas. Jack O'Neill and Teal'c debate the artistic merits of Earth westerns in the break room.`,
+  `Major Carter recalibrates the dialing computer buffers after a Naquadah resonance. Daniel Jackson discovers an Ancient scroll on Ascension in the archive.`,
+  `Teal'c samples different flavors of Jell-O in the mess hall for the first time. His verdict: "This is indeed... of surprising consistency, O'Neill."`,
+  `Sgt. Siler survives a high-voltage discharge on Level 19 while repairing the primary conduits ("Don't worry, Sir, I'm fine!").`,
+  `Dr. Janet Fraiser completes routine medical evaluations for SG-1. Jack complains loudly about oversized needles.`,
+  `Walter Harriman reports a buttery-smooth Chevron 7 lock without a single voltage spike in the Colorado Springs power grid.`,
+  `A strange smell on Level 22 turns out to be a 3,000-year-old Egyptian funerary offering that Daniel Jackson accidentally tried to microwave.`,
+  `The Tok'ra transmit an encrypted subspace message: Jacob Carter sends regards and warns of unusual fleet movements in the core sector.`,
+  `Bra'tac sends a traditional Jaffa greeting through the Stargate: "May your back be strong and your staff weapon never jam, O'Neill."`,
+  `Jonas Quinn and Daniel compare notes on the Naquadria vein on Langara and speculate about forgotten Ancient Stargates.`,
+  `Dr. Elizabeth Weir leads diplomatic negotiations with Free Jaffa representatives over Naquadah concentrate trade rights.`
+ ]:[
   `General Hammond lässt im SGC frische Sandwiches aus Texas anliefern. Jack O'Neill und Teal'c debattieren im Aufenthaltsraum über die Kunstfertigkeit irdischer Westernfilme.`,
   `Major Carter kalibriert die Puffer des Dial-Computers nach einer Naquadah-Resonanz neu. Daniel Jackson hat in der Bibliothek eine Schriftrolle über Aufgestiegene der Antiker entdeckt.`,
   `Teal'c probiert in der Offiziersmesse erstmals verschiedene Wackelpudding-Sorten aus. Sein Urteil: „Dies ist in der Tat... von überraschender Konsistenz, O'Neill.“`,
@@ -2269,40 +2655,40 @@ function showReport(isDayEnd=false){
  ];
  const storySeed=(S.day*17+S.chapter*31)%SGC_STORIES.length;
  const dailyStory=SGC_STORIES[storySeed];
- const logHtml=S.rlog.map(l=>`<div class="${/✔|🏆|★|＋|🔬|🎁|🤝/.test(l)?'ok':/⚡|💥|💀|⚠|🛑/.test(l)?'bad':/⏱|🪐|📎/.test(l)?'warn':''}">${l}</div>`).join('')||'<div class="dim">Ein ruhiger Tag im Cheyenne Mountain Komplex.</div>';
+ const logHtml=S.rlog.map(l=>`<div class="${/✔|🏆|★|＋|🔬|🎁|🤝/.test(l)?'ok':/⚡|💥|💀|⚠|🛑/.test(l)?'bad':/⏱|🪐|📎/.test(l)?'warn':''}">${l}</div>`).join('')||`<div class="dim">${en?'A quiet day in the Cheyenne Mountain Complex.':'Ein ruhiger Tag im Cheyenne Mountain Komplex.'}</div>`;
 
  m.style.display='flex';
  m.innerHTML=`<div class="mbox" style="max-width:760px;width:95vw;max-height:88vh;overflow-y:auto">
   <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #38bdf8;padding-bottom:10px;margin-bottom:14px">
    <div>
-    <h3 style="margin:0;font-size:20px;color:#f8fafc">SGC Tagesbericht · Tag ${S.day}</h3>
-    <small style="color:#38bdf8;font-weight:bold">${ch.title} · Leitung: ${cmd.name}</small>
+    <h3 style="margin:0;font-size:20px;color:#f8fafc">${en?`SGC Daily Report / SGC Tagesbericht · Day ${S.day}`:`SGC Tagesbericht · Tag ${S.day}`}</h3>
+    <small style="color:#38bdf8;font-weight:bold">${L_(ch,'title')} · ${en?'Command':'Leitung'}: ${cmd.name}</small>
    </div>
    <div style="text-align:right">
-    <span class="tag" style="background:#1e293b;border:1px solid #38bdf8;color:#e0f2fe;font-size:12px">TOR: BEREITSCHAFT</span>
+    <span class="tag" style="background:#1e293b;border:1px solid #38bdf8;color:#e0f2fe;font-size:12px">${en?'GATE: STANDBY':'TOR: BEREITSCHAFT'}</span>
    </div>
   </div>
 
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:14px;background:#0c1322;padding:12px;border-radius:6px;border:1px solid #1e293b">
-   <div style="text-align:center"><small style="color:#94a3b8">ERFOLGE</small><div style="font-size:17px;font-weight:bold;color:#4ade80">${S.done.length} Einsätze</div></div>
-   <div style="text-align:center"><small style="color:#94a3b8">FEINDE BESIEGT</small><div style="font-size:17px;font-weight:bold;color:#f87171">${S.jaffaKills||0} Jaffa</div></div>
-   <div style="text-align:center"><small style="color:#94a3b8">ERFORSCHT</small><div style="font-size:17px;font-weight:bold;color:#38bdf8">${discCount} / ${totalPlanets} Welten</div></div>
-   <div style="text-align:center"><small style="color:#94a3b8">PERSONAL</small><div style="font-size:17px;font-weight:bold;color:#fbbf24">${activeRecruits} Soldaten</div></div>
-   <div style="text-align:center"><small style="color:#94a3b8">AUSSENPOSTEN</small><div style="font-size:17px;font-weight:bold;color:#a78bfa">${coloniesCount} Kolonien</div></div>
+   <div style="text-align:center"><small style="color:#94a3b8">${en?'VICTORIES':'ERFOLGE'}</small><div style="font-size:17px;font-weight:bold;color:#4ade80">${S.done.length} ${en?'Missions':'Einsätze'}</div></div>
+   <div style="text-align:center"><small style="color:#94a3b8">${en?'HOSTILES DEFEATED':'FEINDE BESIEGT'}</small><div style="font-size:17px;font-weight:bold;color:#f87171">${S.jaffaKills||0} Jaffa</div></div>
+   <div style="text-align:center"><small style="color:#94a3b8">${en?'EXPLORED':'ERFORSCHT'}</small><div style="font-size:17px;font-weight:bold;color:#38bdf8">${discCount} / ${totalPlanets} ${en?'Worlds':'Welten'}</div></div>
+   <div style="text-align:center"><small style="color:#94a3b8">${en?'PERSONNEL':'PERSONAL'}</small><div style="font-size:17px;font-weight:bold;color:#fbbf24">${activeRecruits} ${en?'Soldiers':'Soldaten'}</div></div>
+   <div style="text-align:center"><small style="color:#94a3b8">${en?'OUTPOSTS':'AUSSENPOSTEN'}</small><div style="font-size:17px;font-weight:bold;color:#a78bfa">${coloniesCount} ${en?'Colonies':'Kolonien'}</div></div>
   </div>
 
   <div style="margin-bottom:12px">
-   <h4 style="color:#e2e8f0;font-size:13px;letter-spacing:1px;margin-bottom:6px">📋 TAGES-PROTOKOLL & ERTRÄGE</h4>
+   <h4 style="color:#e2e8f0;font-size:13px;letter-spacing:1px;margin-bottom:6px">📋 ${en?'DAILY LOG & YIELDS':'TAGES-PROTOKOLL & ERTRÄGE'}</h4>
    <div class="mbody" style="max-height:160px;overflow-y:auto;background:#060a12;padding:10px;border-radius:4px;border:1px solid #1e293b">${logHtml}</div>
   </div>
 
   <div style="margin-bottom:16px;background:linear-gradient(135deg,rgba(15,23,42,0.9),rgba(30,41,59,0.7));padding:12px 14px;border-left:4px solid #f59e0b;border-radius:4px">
-   <div style="color:#f59e0b;font-weight:bold;font-size:12px;margin-bottom:4px;letter-spacing:1px">☕ SGC LOGBUCH-NOTIZ & BEGEBENHEIT</div>
+   <div style="color:#f59e0b;font-weight:bold;font-size:12px;margin-bottom:4px;letter-spacing:1px">☕ ${en?'SGC LOGBOOK NOTE / SGC LOGBUCH-NOTIZ':'SGC LOGBUCH-NOTIZ & BEGEBENHEIT'}</div>
    <div style="color:#cbd5e1;font-size:13px;font-style:italic;line-height:1.5">„${dailyStory}“</div>
   </div>
 
   <div style="display:flex;justify-content:flex-end;gap:10px">
-   <button onclick="startNextDay()" style="background:#1f6f3a;border-color:#34c76a;color:#fff;padding:10px 24px;font-weight:bold;cursor:pointer">Tag abschließen & Nächster Tag ›</button>
+   <button onclick="startNextDay()" style="background:#1f6f3a;border-color:#34c76a;color:#fff;padding:10px 24px;font-weight:bold;cursor:pointer">${en?'Complete Day & Next Day ›':'Tag abschließen & Nächster Tag ›'}</button>
   </div>
  </div>`;
  renderAll();
@@ -2310,6 +2696,7 @@ function showReport(isDayEnd=false){
 
 // Startet den nächsten Tag (Tag-Loop für unendlichen Spielbetrieb)
 function startNextDay(){
+ _reportModalOpen=false;
  $('modal').style.display='none';
  if(typeof SFX!=='undefined')SFX.music(UI.tab==='map'?'map':'base');
  
@@ -2318,7 +2705,7 @@ function startNextDay(){
  if(eventRoll < 0.15){
   const events = [
    I18N.T('game.event.wormhole'),
-   '📡 Tok\'ra Alert: Geheime Nachricht durch das Sternentor übermittelt!',
+   isEn()?'📡 Tok\'ra Alert: Encrypted subspace message received through the Stargate!':'📡 Tok\'ra Alert: Geheime Nachricht durch das Sternentor übermittelt!',
    I18N.T('game.event.alarm'),
    I18N.T('game.event.pulse'),
    I18N.T('game.event.contact')
@@ -2331,6 +2718,7 @@ function startNextDay(){
 
 // ===================== Render-Orchestrator =====================
 function renderAll(){
+ if(typeof checkChapterAdvance==='function')checkChapterAdvance();
  renderHeader();
  if(UI.tab==='base'){renderBaseSide();}
  else if(UI.tab==='map'){renderMapSide();}
@@ -2341,7 +2729,7 @@ function renderAll(){
  renderCombatUI();
  resizeCombatViewport();
  const ov=$('over');
- if(S.over){ov.style.display='flex';ov.innerHTML=`<div><h2>${S.over==='win'?'🏆 Kampagne gewonnen':'💀 SGC verloren'}</h2><p>${S.over==='win'?'SG-1 verliert nie. Der Papierkram wird dennoch Jahre dauern.':'Die Integrität des SGC ist erschöpft.'}</p><button onclick="resetGame(true)">Neues Spiel</button></div>`;}
+ if(S.over){ov.style.display='flex';ov.innerHTML=`<div><h2>${S.over==='win'?I18N.T('game.dyn.over.win'):I18N.T('game.dyn.over.lose')}</h2><p>${S.over==='win'?I18N.T('game.dyn.over.win_text'):I18N.T('game.dyn.over.lose_text')}</p><button onclick="resetGame(true)">${I18N.T('game.dyn.over.new_game')}</button></div>`;}
  else ov.style.display='none';
 }
 
@@ -2569,12 +2957,12 @@ function resolveIncident(choiceIdx){
 
 function checkDailyIncident(forcedIdx = null){
   let incident = null;
-  if(forcedIdx !== null && SGC_INCIDENTS[forcedIdx]){
+  if(typeof forcedIdx === 'number' && SGC_INCIDENTS[forcedIdx]){
     incident = SGC_INCIDENTS[forcedIdx];
   } else {
-    // 55% Chance auf einen episodischen SGC-Vorfall
+    // 18% Chance auf einen episodischen SGC-Vorfall im laufenden Spielbetrieb
     const roll = Math.random();
-    if(roll < 0.55){
+    if(roll < 0.18 && S.day > 1){
       const idx = Math.floor(Math.random() * SGC_INCIDENTS.length);
       incident = SGC_INCIDENTS[idx];
     }
@@ -2602,18 +2990,43 @@ function triggerWinampEasterEgg(){
 }
 
 function doDay(forcedIdx=null){
+ if(forcedIdx&&typeof forcedIdx==='object')forcedIdx=null;
  if(S.over)return;
+ // Schließe evtl. offenes Intro oder Pilot-Briefing, damit der Klick niemals hängen bleibt
+ if(typeof introActive!=='undefined'&&introActive&&typeof finishOpeningCinematic==='function'){
+  finishOpeningCinematic();
+ }
+ const sd=$('story-dialogue');
+ if(sd&&sd.style.display==='flex'&&!C.active){
+  sd.style.display='none';sd.innerHTML='';sd.onclick=null;sd.className='';
+  S.pilotBriefingSeen=true;
+ }
  if(C.active){
   const ov=$('combat-overlay');
   if(!ov||ov.style.display==='none'||ov.style.display===''){
    C.active=false;
   } else {
-   toast('⚠ Ein Kampfeinsatz läuft noch!');
+   toast(isEn()?'⚠ A combat mission is still active!':'⚠ Ein Kampfeinsatz läuft noch!');
    return;
   }
  }
- if(GR.phase!=='idle')return;
+ if(GR.phase!=='idle'){
+  const gov=$('gate-overlay');
+  if(!gov||gov.style.display==='none'||gov.style.display===''){
+   GR.phase='idle';
+  } else if(typeof skipGate==='function'){
+   skipGate();
+  }
+ }
+ // Falls ein Vorfall oder Tagesbericht vom Vortag noch offen ist, beim erneuten Klick auf "Tag beenden" direkt auflösen
+ if(_activeIncident&&forcedIdx===null){
+  resolveIncident(0);
+ }
+ if(_reportModalOpen&&$('modal')&&$('modal').style.display==='flex'){
+  startNextDay();
+ }
  endDay();
+ if(typeof checkChapterAdvance==='function')checkChapterAdvance();
  checkDailyIncident(forcedIdx);
 }
 function resetGame(force){
@@ -2661,7 +3074,8 @@ function init(){
  resizeCombatViewport();
  window.addEventListener('resize',resizeCombatViewport);
  document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
- $('go').onclick=doDay;$('reset').onclick=()=>resetGame(false);
+ $('go').onclick=()=>doDay();$('reset').onclick=()=>resetGame(false);
+ if($('modal'))$('modal').onclick=e=>{if(e.target===$('modal')&&!_activeIncident){if(_reportModalOpen)startNextDay();else closeArmoryModal();}};
  $('gate-cv').onclick=()=>skipGate();
  if($('gate-overlay'))$('gate-overlay').onclick=()=>skipGate();
  if($('gate-skip'))$('gate-skip').onclick=e=>{e.stopPropagation();skipGate();};
