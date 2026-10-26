@@ -2551,6 +2551,7 @@ function init(){
  $('combat-cv').onpointermove=combatPointerMove;
  $('combat-cv').onpointerup=combatPointerUp;
  $('combat-cv').onpointercancel=combatPointerUp;
+ $('combat-cv').onwheel=e=>{e.preventDefault();if(typeof zoomIsoCamera==='function')zoomIsoCamera(e.deltaY<0?0.08:-0.08);};
  $('combat-minimap').onclick=panCombatToMinimap;
  $('combat-minimap').onpointerdown=panCombatToMinimap;
  $('combat-minimap').onpointermove=e=>{if(e.buttons)panCombatToMinimap(e);};

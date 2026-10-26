@@ -417,7 +417,7 @@
 
     <!-- TAB 2: WIKI & LORE -->
     <section id="tab-wiki" class="tab-section">
-      <div class="card">
+      <div class="card" data-i18n-skip="wiki">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:16px">
           <div>
             <h2 data-i18n="portal.wiki.h2">📚 SGC Datenbank &amp; Handbuch</h2>
@@ -473,6 +473,7 @@
             <label style="font-size:12px;color:var(--text-dim)">Log wählen:</label>
             <select id="log-selector" class="lang-select" onchange="loadLogEntry(this.value)" style="min-width:260px">
               <optgroup label="🌟 Neueste Meilensteine (v0.30 - v0.35)">
+                <option value="essay-hexfelder-und-quadrate.md">⬡ Essay: Hexfelder &amp; Quadrate (Geometrie &amp; Voxel)</option>
                 <option value="captains-log-035.md" selected>Log 035 (v0.35 – i18n, Labor &amp; 808)</option>
                 <option value="captains-log-034.md">Log 034 (v0.34 – Master FX &amp; Sliders)</option>
                 <option value="captains-log-033.md">Log 033 (v0.33 – 90s Theme &amp; MIDI Learn)</option>

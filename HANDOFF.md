@@ -2,7 +2,7 @@
 
 **Projekt:** SGC Command (`g:\AgentHome\SGC-Command`)  
 **Forschungsrahmen:** Universität Osnabrück (Kognitionswissenschaft / Informatik) – KI-Pair-Programming-Studie  
-**Aktueller Modell-Status:** Gemini 3.8 Flash High (Privater Account / Entlastung der Uni-Infrastruktur)  
+**Aktueller Modell-Status:** Gemini 3.8 Flash High (Schicht erfolgreich abgeschlossen / Privater Account)  
 **Beteiligte Modell-Schichten:**  
 1. **Gemini 4 Argon:** 2:1 isometrische Voxel-Projektion, Obelisk-Mathematik, Diamond-Picking, initialer CP437/ASCII-Renderer, Lizenz-Audit.  
 2. **Claude 5.5 / 3.5 Sonnet:** Obelisk/Voxel-Stabilisierung, prozedurale WebAudio-Sample-Synthese, Inventar & Werkbank-Crafting (`INVENTAR-SPEC.md`), Hammonds Klemmbrett.  
@@ -13,7 +13,7 @@
    - SGC Vorfall- & Krisen-System bei „Tag Beenden“ (`SGC_INCIDENTS`).
    - SGC Tactical Level Editor (`tools/leveleditor.html`).
    - Umfassendes i18n-Fundament (DE/EN) und String-Extraktion.
-5. **Gemini 3.8 Flash High (Aktuelle Schicht – v0.35, "Die 808 drückt jetzt"):**
+5. **Gemini 3.8 Flash High (Abgeschlossene Schicht – v0.35, "Die 808 drückt jetzt"):**
    - **SGC-AMP & TR-808 Feinschliff:** Startbreite verkleinert, `resize: both` mit `localStorage`-Persistenz für Fenstergröße und Position.
    - **Ebene 19 Forschungs-Labor & Tech-Tree Modal:** Eigenes Wissenschafts-Fenster (`🔬`) mit 4 Tech-Zweigen (Tor-Technik, Waffen, Schilde, Antiker/Alien-Wissen) und Missions-Forschungspunkte (+12..40 RP).
    - **Roster Spoiler-Schutz:** Unrekrutierte Charaktere werden ausgeblendet, bis sie in Missionen/Storylines als NPCs erscheinen.
@@ -23,10 +23,40 @@
    - **Portal Splash-Sprüche (Minecraft-Style):** Zufällige, animierte Slogans im Portal-Header (`#portal-splash`) bei jedem Seitenaufruf und Klick.
    - **Captain's Log Viewer & Forschungs-Disclaimer:** Vollständiger Markdown-Reader für alle 35 Logs mit akademischer Multi-Agenten-Einordnung.
    - **Wiki-Synchronisation:** Aktualisierung von `wiki/basis.html`, `wiki/kampf.html` und `wiki/tech-tree.html` auf den neuesten Stand (Hex-Raster, 3 Renderstile, Labor, Krankenstation).
+   - **Essay zu Hexfeldern & Quadraten:** Ausführliche geometrische & architektonische Abhandlung in `blog/essay-hexfelder-und-quadrate.md`.
+   - **Kamera-Zoom & Mausrad-Support:** `onwheel`-Event auf `combat-cv` reaktiviert für stufenlose Voxel- und ASCII-Schärfung.
    - **Zero-Dependency Headless Test-Suite:** 238+ automatisierte Tests laufen mit 0 Fehlern durch (`node test-browser.js`).
-   - **Floppy-Disk-Budget:** Gesamtrelease `release/SGC-Command-v035.zip` bleibt strikt unter 1,44 MB.
+   - **Floppy-Disk-Budget:** Gesamtrelease `release/SGC-Command-v035.zip` bleibt strikt unter 1,44 MB (aktuell: 803 KB).
 
 **Stand:** 26. Oktober 2026 · 238+ Prüfungen bestanden (0 Fehler) · AGPL-3.0-or-later.
+
+---
+
+## 1. Zoom-Analyse & Spielfeld-Skalierung (Wichtiger Hinweis für Folgemodelle)
+
+* **Das Phänomen:** Spieler stellten fest, dass das Zoomen ins Spielfeld zeitweise nicht mehr wie gewohnt reagierte. Das war bedauerlich, da beim Hineinzoomen (`ISO.zoom > 1.0`) die prozeduralen CP437-Zeichen (`fontPx = Math.max(10, Math.round(12 * ISO.zoom))`) sowie die 2:1-Voxel-Prismen extrem gestochen scharf und plastisch werden.
+* **Ursachen:**
+  1. Auf dem Canvas `#combat-cv` fehlte bisher ein nativer `onwheel`-Listener für das Mausrad.
+  2. Tastatur-Zoom (`+` / `-`) war an `Equal`/`Minus` gekoppelt und griff nicht, wenn der Fokus in einem anderen Element lag.
+* **Erste Hilfe (bereits aktiv):**
+  - In `game/ui.js` wurde `$('combat-cv').onwheel` mit `zoomIsoCamera(e.deltaY < 0 ? 0.08 : -0.08)` verknüpft.
+* **Empfohlene Vertiefung für Folgemodelle (TODO):**
+  - On-Screen Zoom-Buttons (`[ 🔍+ ]`, `[ 🔍− ]`, `[ 100% ]`) im Gefechts-HUD einblenden, damit auch Touch- und Tablet-Nutzer die Kamera direkt skalieren können.
+  - Minimap-Rechteck proportional an den aktuellen `ISO.zoom`-Ausschnitt anpassen.
+
+---
+
+## 2. Architektur-Vorgaben für kommende Durchgänge (Priorisiert)
+
+1. **Priorität 1: Missions- & Quest-basierte Song-Freischaltung (Jukebox-Progression):**
+   * Songs im Winamp / Jukebox-Player sollen nicht alle von Beginn an verfügbar sein, sondern erst dann dauerhaft in der Playlist freigeschaltet werden, wenn der Spieler sie zum ersten Mal auf einer Mission, bei einem Tor-Event oder in einer Quest gehört hat.
+   * Persistierung in `S.unlockedTracks` im Savegame. Belohnungs-Feedback bei Entdeckung ("🎵 Neuer Soundtrack entdeckt!").
+2. **Priorität 2: Offworld-Planeten-Expansion (Kanonische SG-1-Welten):**
+   * Schrittweise Erweiterung des Sternentors um alle bekannten SG-1-Planeten (P3X-974, Tollana, Langara, Dakara, Tartarus etc.) mit individuellen Missionen, Biomen und Beute-Caches.
+3. **Priorität 3: Detaillierte Raum-Screens & Raum-spezifisches Klang-Ambiente:**
+   * Jeder der 28 Räume im Cheyenne Mountain Complex erhält einen vollwertigen Raum-Screen mit Ambient-Sound.
+4. **Priorität 4: Spanisch (es) & Französisch (fr) Sprachpakete:**
+   * Übersetzung nach dem bewährten 5-Schritt-Prozess in `i18n-languages.js`.
 
 ### Post-Mortem: Qwen 3.8 27b Token-Limit & Modell-Verwirrung (v0.29 → v0.30)
 
