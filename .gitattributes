@@ -1,0 +1,21 @@
+# ============================================================
+# SGC Command - .gitattributes
+# Zero-Dependency / offline-first project:
+# all text files are stored as LF in the repo and checked out
+# as LF even on Windows (no CRLF churn in multi-model diffs).
+# ============================================================
+* text=auto eol=lf
+
+# Binary files - never re-encode
+*.zip binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.wav binary
+*.mp3 binary
+*.ogg binary
+*.mod binary
+*.sid binary
+*.mid binary
+*.bin binary
