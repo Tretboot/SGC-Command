@@ -161,6 +161,21 @@ const PLANETS={
  nexus:{name:'Orbit-Nexus',x:765,y:480,type:'space',ch:3,desc:'Knotenpunkt des replizierten Netzwerks.',descEn:'Hub of the replicated network.'},
  ori:{name:'Ori-Welt (Celestis)',x:905,y:255,type:'hostile',ch:4,desc:'Zentrum der Priore und der Ori-Armada.',descEn:'Center of the Preta and the Ori armada.'},
  flag:{name:"Apophis' Flaggschiff",x:910,y:440,type:'space',ch:4,desc:'Schweres Ha\'tak-Flaggschiff im Angriffsmodus.',descEn:'Heavy Ha\'tak flagship in attack mode.'},
+  urgo:{name:'P4X-884 (Urgo)',x:190,y:170,type:'neutral',ch:0,desc:'Heimatwelt des künstlichen KI-Wesens Urgo.',descEn:'Homeworld of the AI entity Urgo.'},
+  kallana:{name:'Kallana',x:780,y:410,type:'space',ch:3,address:'31-19-4-14-8-22',desc:'Kollabierte Welt und Standort des ersten Ori-Supergates.',descEn:'Collapsed world and site of the first Ori Supergate.'},
+  pangar:{name:'Pangar (P4X-523)',x:440,y:200,type:'neutral',ch:1,address:'14-22-8-3-12-19',desc:'Quelle von Tretonin aus der Tok\'ra-Königin Egeria.',descEn:'Source of Tretonin from Tok\'ra Queen Egeria.'},
+  p3x666:{name:'P3X-666',x:560,y:460,type:'hostile',ch:2,address:'9-14-28-3-18-22',desc:'Schauplatz heftiger Gefechte mit Jaffa-Angriffstruppen.',descEn:'Site of fierce skirmishes with Jaffa strike forces.'},
+  p3r272:{name:'P3R-272',x:360,y:115,type:'empty',ch:1,address:'29-3-14-22-7-18',desc:'Verlassener Antiker-Tempel mit dem Wissensspeicher.',descEn:'Abandoned Ancient temple housing the Knowledge Repository.'},
+  p3x984:{name:'Alpha-Standort (P3X-984)',x:610,y:190,type:'neutral',ch:1,address:'3-28-9-19-24-18',desc:'Geheimer Rückzugsort des SGC für Notfall-Evakuierungen.',descEn:'Secret SGC fallback site for emergency evacuations.'},
+  p3x584:{name:'P3X-584',x:720,y:330,type:'hostile',ch:2,desc:'Anubis\' genetisches Klonlabor (Prototyp Khalek).',descEn:'Anubis\' genetic cloning lab (Prototype Khalek).'},
+  hebridan:{name:'Hebridan',x:680,y:110,type:'neutral',ch:2,address:'12-8-21-14-19-3',desc:'Fortschrittliche Welt der Serrakin & Tech Con Group.',descEn:'Advanced world of the Serrakin & Tech Con Group.'},
+  tagrea:{name:'Tagrea (P4X-351)',x:520,y:130,type:'neutral',ch:1,address:'22-7-18-29-3-14',desc:'Vergrabene Tor-Adresse und Landeplatz der Prometheus.',descEn:'Buried gate address and landing site of the Prometheus.'},
+  vis_uban:{name:'Vis Uban (P4X-650)',x:640,y:250,type:'empty',ch:2,address:'18-22-7-14-29-3',desc:'Unvollendete Stadt der Antiker („Große Seuche“).',descEn:'Unfinished city of the Ancients ("Great Plague").'},
+  argos:{name:'Argos (P3X-8596)',x:230,y:340,type:'neutral',ch:0,desc:'Pelops\' Testgelände für beschleunigtes Altern.',descEn:'Pelops\' test ground for accelerated aging.'},
+  nox:{name:'Nox-Heimatwelt (P3X-774)',x:310,y:85,type:'empty',ch:0,address:'1-25-3-14-22-8',desc:'Schwebende Städte einer der vier großen Völker.',descEn:'Floating cities of one of the four Great Races.'},
+  p3w451:{name:'P3W-451',x:470,y:90,type:'space',ch:1,desc:'Planet im Gravitationsfeld eines Schwarzen Lochs (Zeitdilatation).',descEn:'Planet in the gravity well of a black hole (time dilation).'},
+  hanka:{name:'Hanka (P8X-987)',x:360,y:290,type:'neutral',ch:0,address:'14-3-22-8-19-29',desc:'Cassandras Heimatwelt, von Nirrti mit Naquadah-Sporen infiziert.',descEn:'Cassandra\'s home world, infected by Nirrti with naquadah spores.'},
+  madrona:{name:'Madrona (PX7-941)',x:420,y:360,type:'neutral',ch:1,address:'8-19-24-3-14-22',desc:'Welt des Wettersteins (von abtrünnigen NID-Agenten entwendet).',descEn:'World of the Touchstone (stolen by rogue NID operatives).'},
 };
 
 // Kompakte Startsektoren, die der Combat-Renderer um Landschaft und Wege erweitert.
@@ -233,21 +248,21 @@ const MAPS={
  '#......H....H......#',
  '####..l..GG..l..####'],
  sgc:[
- '....................',
- '..##....##....##....',
- '..#........#........',
- '..##..l.l.##..l.l...',
- '....................',
- '..l.l......l.l......',
- '....########........',
- '....#......#........',
- '....#..G..#.........',
- '....#......#........',
- '....########........',
- '..l.l......l.l......',
- '..##..l.l.##..l.l...',
- '..#........#........',
- '..##....##....##....'],
+ '######..############',
+ '#GG..#..#....l.l...#',
+ '#GG..#..#..........#',
+ '#....#..#...l...##.#',
+ '#..l.H..H...H...##.#',
+ '###.##..############',
+ '#......#...l........#',
+ '#..l...#...#...l....#',
+ '#......#...#.########',
+ '####.###...#.#......#',
+ '#......#...#.#..H...#',
+ '#..##..#...#.#......#',
+ '#..##..#...#...##...#',
+ '#......#...#...##...#',
+ '####################'],
 };
 
 // Kapitel & Missionen
@@ -257,7 +272,8 @@ const CHAPTERS=[
    {id:'1-2',name:'Das Dorf am Fluss',nameEn:'The Village by the River',planet:'abydos',goal:'Friedlichen Erstkontakt herstellen und Vertrauen gewinnen',goalEn:'Establish peaceful first contact and win trust',map:'village',theme:'jungle',type:'contact',peaceful:true,contact:{id:'village-elder',name:'Siedlungssprecher',nameEn:'Settlement Speaker',x:22,y:13},enemies:{},reward:{ore:60,medicine:15,food:20},text:'Ein neuer Verbündeter auf Abydos',textEn:'A new ally on Abydos'},
    {id:'1-3',name:'Stand Orders',nameEn:'Stand Orders',planet:'p2x416',goal:'Halte-Mission 10 Runden',goalEn:'Hold mission for 10 rounds',map:'desert',theme:'desert',type:'defense',enemies:{jaffa:12},timer:28,reward:{ore:75,tech:25},recruit:12,text:'Jaffa-Anatomie I',textEn:'Jaffa Anatomy I'},
    {id:'1-4',name:'Steuern beim Schatzamt',nameEn:'Taxes at the Treasury',planet:'abydos',goal:'Steuereintreiber fassen',goalEn:'Catch the tax collector',map:'city',theme:'city',type:'assault',enemies:{jaffa:8,elite:1},timer:28,reward:{ore:70,tech:30},recruit:9,text:'Trelak befreit',textEn:'Trelak freed'},
-   {id:'1-5',name:'38 Minuten',nameEn:'38 Minutes',planet:'orbit1',goal:'Thor reparieren, Raid abwehren',goalEn:'Repair Thor, repel the raid',map:'asgard',theme:'asgard',type:'defense',enemies:{jaffa:12,veteran:2,elite:1},timer:17,reward:{tech:40,ore:60},recruit:5,text:'Dock Thor, Asgard-Deckung',textEn:'Dock Thor, Asgard cover'},
+       {id:'1-6',name:'Ebene 28: Infiltrationsalarm',nameEn:'Level 28: Foothold Infiltration',planet:'sgc',goal:'Verteidige Ebene 28 gegen Infiltratoren',goalEn:'Defend Level 28 against alien infiltrators',map:'sgc',theme:'sgc',type:'defense',enemies:{jaffa:4,veteran:3},timer:26,reward:{ore:85,tech:40},text:'Ebene 28 gesichert',textEn:'Level 28 secured'},
+    {id:'1-5',name:'38 Minuten',nameEn:'38 Minutes',planet:'orbit1',goal:'Thor reparieren, Raid abwehren',goalEn:'Repair Thor, repel the raid',map:'asgard',theme:'asgard',type:'defense',enemies:{jaffa:12,veteran:2,elite:1},timer:17,reward:{tech:40,ore:60},recruit:5,text:'Dock Thor, Asgard-Deckung',textEn:'Dock Thor, Asgard cover'},
  ]},
  {title:'Kapitel 2 – Das Netz wächst',titleEn:'Chapter 2 – The Network Grows',sub:'Das Telefon hat jetzt mehrere Leitungen.',subEn:'The phone now has several lines.',missions:[
   {id:'2-1',name:'Netz',nameEn:'The Network',planet:'p2u744',goal:'Jaffa-Nachbasis sabotieren',goalEn:'Sabotage the Jaffa backup base',map:'jungle',theme:'jungle',type:'assault',enemies:{jaffa:8,veteran:4},timer:28,reward:{tech:15,ore:10},recruit:6,text:'Antiquitäten-Lizenz',textEn:'Antiques license'},
@@ -265,21 +281,24 @@ const CHAPTERS=[
   {id:'2-3',name:'Alpha',nameEn:'Alpha',planet:'p7j989',goal:'Chain-Dial-Verteidigung',goalEn:'Chain-dial defense',map:'sgc',type:'defense',enemies:{jaffa:4,veteran:4,elite:2},timer:28,reward:{ore:20,tech:10},text:'+1 Dial-Kapazität',textEn:'+1 dial capacity'},
   {id:'2-4',name:'Das Auge',nameEn:'The Eye',planet:'mobius',goal:'Lens-Grundstation zerstören',goalEn:'Destroy the Lens base station',map:'jungle',theme:'jungle',type:'assault',enemies:{veteran:10,elite:4},timer:28,reward:{tech:20},recruit:10,text:'Gate-Netzwerk I',textEn:'Gate Network I'},
   {id:'2-5',name:'Das besteuerte Reich',nameEn:'The Taxed Empire',planet:'newground',goal:'Zwei-Schicht-Army vernichten',goalEn:'Destroy the two-shift army',map:'city',theme:'city',type:'assault',enemies:{jaffa:14,veteran:6,elite:2},timer:32,reward:{food:20,ore:15},recruit:8,text:'Bündnis New Ground',textEn:'New Ground alliance'},
-  {id:'2-6',name:'Der erste Gott',nameEn:'The First God',planet:'p5c353',goal:'Khepra besiegen',goalEn:'Defeat Khepra',map:'hatak',theme:'hatak',type:'assault',enemies:{veteran:8,elite:10,goauld:1},timer:22,reward:{tech:25,ore:20},text:'Khepra tot',textEn:'Khepra dead'},
+     {id:'2-7',name:'Der Wissensspeicher',nameEn:'The Ancient Repository',planet:'p3r272',goal:'Antiker-Speicher untersuchen und Exfil',goalEn:'Investigate Ancient repository and exfiltrate',map:'desert',theme:'asgard',type:'assault',enemies:{veteran:6,elite:4},timer:28,reward:{tech:50},text:'Antiker-Datenfragment',textEn:'Ancient data fragment'},
+   {id:'2-6',name:'Der erste Gott',nameEn:'The First God',planet:'p5c353',goal:'Khepra besiegen',goalEn:'Defeat Khepra',map:'hatak',theme:'hatak',type:'assault',enemies:{veteran:8,elite:10,goauld:1},timer:22,reward:{tech:25,ore:20},text:'Khepra tot',textEn:'Khepra dead'},
  ]},
  {title:'Kapitel 3 – Bedrohungen',titleEn:'Chapter 3 – Threats',sub:'Jetzt hat jeder die Telefonnummer.',subEn:'Now everyone has the phone number.',missions:[
   {id:'3-1',name:'Gärten des Pharao',nameEn:'Gardens of the Pharaoh',planet:'p5u666',goal:'Kalender beschaffen',goalEn:'Obtain the calendar',map:'city',type:'assault',enemies:{veteran:10,elite:4},timer:28,reward:{tech:20},recruit:7,text:'Asgard-Karte',textEn:'Asgard map'},
   {id:'3-2',name:'Sohn des Pharao',nameEn:'Son of the Pharaoh',planet:'ennui',goal:'Prinz Kaelo befreien',goalEn:'Free Prince Kaelo',map:'jungle',type:'defense',enemies:{veteran:8,elite:6},timer:30,reward:{ore:25,medicine:5},text:'Kaelo als Reservist',textEn:'Kaelo as a reservist'},
   {id:'3-3',name:'Die Schlange',nameEn:'The Snake',planet:'kern',goal:'Symbiont fassen',goalEn:'Capture the symbiote',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:12,veteran:2},timer:28,reward:{tech:25},text:'2 Gate-Adressen',textEn:'2 gate addresses'},
   {id:'3-4',name:'Überfall',nameEn:'Ambush',planet:'sgc',goal:'Doppelt-Gate-Verteidigung',goalEn:'Double gate defense',map:'sgc',type:'defense',enemies:{veteran:8,elite:8},timer:28,reward:{ore:30,tech:15},text:'Gate-Verteidigung',textEn:'Gate defense'},
-  {id:'3-5',name:'Apophis',nameEn:'Apophis',planet:'flag',goal:'Apophis besiegen',goalEn:'Defeat Apophis',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:8,veteran:12,goauld:1},timer:32,reward:{tech:30,ore:25},text:'Apophis tot',textEn:'Apophis dead'},
+     {id:'3-6',name:'Die Helden von P3X-666',nameEn:'The Heroes of P3X-666',planet:'p3x666',goal:'Bedrängtes SG-13 Team evakuieren',goalEn:'Evacuate pinned-down SG-13 team',map:'jungle',theme:'jungle',type:'defense',enemies:{jaffa:8,veteran:6,elite:4},timer:30,reward:{medicine:45,tech:35},text:'SG-13 gerettet',textEn:'SG-13 saved'},
+   {id:'3-5',name:'Apophis',nameEn:'Apophis',planet:'flag',goal:'Apophis besiegen',goalEn:'Defeat Apophis',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:8,veteran:12,goauld:1},timer:32,reward:{tech:30,ore:25},text:'Apophis tot',textEn:'Apophis dead'},
  ]},
  {title:'Kapitel 4 – Replikatoren',titleEn:'Chapter 4 – Replicators',sub:'Strand, Sand, Drohnen, das Geräusch.',subEn:'Beach, sand, drones, the sound.',missions:[
   {id:'4-1',name:'B-612',nameEn:'B-612',planet:'p5u666',goal:'Scan + Exfil',goalEn:'Scan + exfil',map:'desert',type:'assault',enemies:{drone:6,repl:4},timer:30,reward:{tech:15},text:'Replikat-Studie',textEn:'Replicate study'},
   {id:'4-2',name:'Die Wehr',nameEn:'The Militia',planet:'ennui',goal:'Dorf verteidigen',goalEn:'Defend the village',map:'jungle',type:'defense',enemies:{drone:10,repl:6},timer:28,reward:{ore:25,food:10},text:'Jaffa befreit',textEn:'Jaffa freed'},
   {id:'4-3',name:'Die Höhle',nameEn:'The Cave',planet:'kern',goal:'Mine sichern',goalEn:'Secure the mine',map:'city',type:'assault',enemies:{repl:4,drone:8},timer:28,reward:{tech:20},text:'Replikat-Kanone',textEn:'Replicate cannon'},
   {id:'4-4',name:'Der Stock',nameEn:'The Staff',planet:'p7j989',goal:'Knoten zerstören',goalEn:'Destroy the node',map:'desert',type:'assault',enemies:{repl:6,drone:8},timer:28,reward:{tech:25},text:'Stock-Knoten',textEn:'Staff node'},
-  {id:'4-5',name:'Die Königin',nameEn:'The Queen',planet:'nexus',goal:'Königin besiegen',goalEn:'Defeat the queen',map:'hatak',theme:'hatak',type:'assault',enemies:{repl:6,drone:8,queen:1},timer:32,reward:{tech:30,ore:25},text:'Königin tot',textEn:'Queen dead'},
+     {id:'4-6',name:'Der Klon des Anubis',nameEn:'Prototype of Anubis',planet:'p3x584',goal:'Genetisches Labor neutralisieren',goalEn:'Neutralize genetic laboratory',map:'city',type:'assault',enemies:{elite:8,drone:6,repl:4},timer:28,reward:{tech:45,ore:35},text:'Genetische Proben gesichert',textEn:'Genetic samples secured'},
+   {id:'4-5',name:'Die Königin',nameEn:'The Queen',planet:'nexus',goal:'Königin besiegen',goalEn:'Defeat the queen',map:'hatak',theme:'hatak',type:'assault',enemies:{repl:6,drone:8,queen:1},timer:32,reward:{tech:30,ore:25},text:'Königin tot',textEn:'Queen dead'},
  ]},
  {title:'Kapitel 5 – Das Ende',titleEn:'Chapter 5 – The End',sub:'Neue Götter mit Marketingplan.',subEn:'New gods with a marketing plan.',missions:[
   {id:'5-1',name:'Die Sitzung',nameEn:'The Board Meeting',planet:'ori',goal:'3 Lords besiegen',goalEn:'Defeat 3 Lords',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:8,goauld:3},timer:32,reward:{tech:30},text:'Lords besiegt',textEn:'Lords defeated'},
@@ -287,7 +306,8 @@ const CHAPTERS=[
   {id:'5-3',name:'Antiker Tor',nameEn:'Ancient Door',planet:'p5u666',goal:'Antike Tür öffnen',goalEn:'Open the ancient door',map:'jungle',theme:'jungle',type:'assault',enemies:{elite:8},timer:28,reward:{tech:30},text:'Antike Tür',textEn:'Ancient door'},
   {id:'5-4',name:'Galaxy-Mitte',nameEn:'Galaxy Center',planet:'kern',goal:'Amon besiegen',goalEn:'Defeat Amon',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:10,goauld:1},timer:32,reward:{tech:30,ore:25},text:'Amon tot',textEn:'Amon dead'},
   {id:'5-5',name:'Der Plan',nameEn:'The Plan',planet:'nexus',goal:'Super-Gate überlasten',goalEn:'Overload the super-gate',map:'hatak',theme:'hatak',type:'assault',enemies:{elite:12,goauld:2},timer:32,reward:{tech:35},text:'Super-Gate',textEn:'Super-Gate'},
-  {id:'5-6',name:'Home',nameEn:'Home',planet:'sgc',goal:'Zuhause',goalEn:'Home',map:'desert',type:'defense',enemies:{veteran:12},timer:30,reward:{},text:'Zuhause',textEn:'Home'},
+     {id:'5-7',name:'Das Supergate von Kallana',nameEn:'The Supergate of Kallana',planet:'kallana',goal:'Ori-Brückenkopf kollabieren lassen',goalEn:'Collapse the Ori bridgehead',map:'desert',type:'assault',enemies:{elite:10,goauld:2},timer:32,reward:{tech:60,ore:50},text:'Supergate zerstört',textEn:'Supergate destroyed'},
+   {id:'5-6',name:'Home',nameEn:'Home',planet:'sgc',goal:'Zuhause',goalEn:'Home',map:'desert',type:'defense',enemies:{veteran:12},timer:30,reward:{},text:'Zuhause',textEn:'Home'},
  ]},
 ];
 
@@ -338,7 +358,7 @@ const EVENTS_EN=[
 
 const BASE_COLS=8,BASE_LEVELS=28;
 const BASE_ROOM_LEVEL={
- gate:{level:28,x:3},generator:{level:9,x:0},lab:{level:19,x:2},
+ gate:{level:28,x:0},generator:{level:9,x:0},lab:{level:19,x:2},
  workshop:{level:16,x:2},barracks:{level:25,x:2},medbay:{level:21,x:2},
  training:{level:18,x:4},armory:{level:16,x:5},water:{level:4,x:2},
  storage:{level:4,x:4},canteen:{level:3,x:2},
@@ -346,7 +366,7 @@ const BASE_ROOM_LEVEL={
 
 // Raum-Typen (Shelter-Basis)
 const ROOMS={
- gate:{name:'Torraum & Gate',nameEn:'Gateroom & Gate',w:4,h:2,power:-10,staff:0,cost:{},icon:'◎',desc:'Torraum & Stargate (Level 28/27)',descEn:'Gateroom & Stargate (Level 28/27)'},
+ gate:{name:'Torraum & Gate',nameEn:'Gateroom & Gate',w:2,h:2,power:-10,staff:0,cost:{},icon:'◎',desc:'Torraum & Stargate (Level 28/27)',descEn:'Gateroom & Stargate (Level 28/27)'},
  generator:{name:'Generator',nameEn:'Generator',w:1,h:1,power:10,staff:1,cost:{ore:220},icon:'⚡',desc:'+10 Power',descEn:'+10 power'},
  lab:{name:'Labor',nameEn:'Lab',w:1,h:1,power:-2,staff:2,cost:{ore:350,tech:30},icon:'🔬',desc:'+10 RP/Staff',descEn:'+10 RP/staff'},
  workshop:{name:'Werkstatt',nameEn:'Workshop',w:1,h:1,power:-3,staff:2,cost:{ore:300,tech:30},icon:'🛠',desc:'+Erz/Staff',descEn:'+Ore/staff'},
@@ -561,12 +581,43 @@ function save(){
     localStorage.setItem('sgc_save_'+activeSlot,data);
   }catch(e){}
 }
+
+function ensureGateLayout(base){
+  if(!base||!base.rooms||!base.grid)return;
+  const gateRoom=Object.values(base.rooms).find(r=>r.type==='gate');
+  if(!gateRoom)return;
+  if(gateRoom.x!==0||gateRoom.y!==0||gateRoom.w!==2||gateRoom.h!==2){
+    for(let i=0;i<base.grid.length;i++){
+      if(base.grid[i]===gateRoom.id)base.grid[i]=null;
+    }
+    for(let dy=0;dy<2;dy++){
+      for(let dx=0;dx<2;dx++){
+        const occId=base.grid[(0+dy)*BASE_COLS+(0+dx)];
+        if(occId&&occId!==gateRoom.id){
+          const displaced=base.rooms[occId];
+          if(displaced&&displaced.type!=='gate'){
+            displaced.x=BASE_COLS-1;
+          }
+          base.grid[(0+dy)*BASE_COLS+(0+dx)]=null;
+        }
+      }
+    }
+    gateRoom.x=0;gateRoom.y=0;gateRoom.w=2;gateRoom.h=2;
+    for(let dy=0;dy<2;dy++){
+      for(let dx=0;dx<2;dx++){
+        base.grid[(0+dy)*BASE_COLS+(0+dx)]=gateRoom.id;
+      }
+    }
+  }
+}
+
 function load(){
   try{
     const s=JSON.parse(localStorage.getItem(SAVE_KEY));
     if(s&&s.v===4){
       S=s;
       migrateBaseLevels();
+      ensureGateLayout(S.base);
       if(!S.planets)S.planets={};
       for(const id in PLANETS)if(!S.planets[id])S.planets[id]={disc:PLANETS[id].ch<=(S.chapter||0)};
       if(S.pilotBriefingSeen===undefined)S.pilotBriefingSeen=false;
@@ -734,6 +785,28 @@ const SGC_SAVES = {
   },
 
   presets: {
+    sgc_defense: {
+      name: 'SGC Ebene 28: Infiltrationsalarm (Foothold)',
+      desc: 'Alarmstufe Rot im Cheyenne Mountain Complex! Feindliche Truppen dringen durch das Tor auf Ebene 28 ein. SG-1 verteidigt Torraum & Kontrollraum.',
+      create() {
+        newGame();
+        S.commander = 'hammond';
+        S.day = 12;
+        S.chapter = 1;
+        S.res = { ore: 950, tech: 220, medicine: 90, food: 100 };
+        [0, 1, 2, 3].forEach(id => {
+          if(S.roster[id]) {
+            S.roster[id].recruited = true;
+            S.roster[id].lvl = 3;
+            S.roster[id].maxHp = 55;
+            S.roster[id].hp = 55;
+            S.roster[id].armor = 'medium';
+          }
+        });
+        return JSON.stringify(S);
+      }
+    },
+
     fresh: {
       name: 'Frischer Start (Tag 1)',
       desc: 'General Hammond, unberührtes Tornetzwerk, Standard-Ressourcen.',
