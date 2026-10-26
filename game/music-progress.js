@@ -9,21 +9,33 @@
    ===================================================================== */
 (function () {
   'use strict';
-  var STARTER = ['sa_lets_talk', 'sa_curiosity_piano', 'sa_in_the_beginning', 'sa_909workout'];
+  var STARTER = [];
   var MP = {
     starter: STARTER,
-    /* Liefert {trackKey: planetId} für alle nicht-Starter-Songs */
+    /* Liefert {trackKey: planetId} für alle Codevault-Songs */
     planetMap: function () {
       var map = {}, tracks = Object.keys(typeof STRUDEL_TRACKS !== 'undefined' ? STRUDEL_TRACKS : {})
-        .filter(function (k) { return k.indexOf('sa_') === 0 && STARTER.indexOf(k) < 0; });
+        .filter(function (k) { return k.indexOf('sa_') === 0; });
       var planets = Object.keys(typeof PLANETS !== 'undefined' ? PLANETS : {}).filter(function (id) { return !PLANETS[id].sgc; });
       tracks.forEach(function (t, i) { if (planets.length) map[t] = planets[i % planets.length]; });
       return map;
     },
     isUnlocked: function (key) {
-      if (STARTER.indexOf(key) >= 0) return true;
-      var pid = MP.planetMap()[key];
-      try { return !!(pid && S && S.planets && S.planets[pid] && S.planets[pid].disc); } catch (e) { return true; }
+      if (typeof S !== 'undefined' && S && Array.isArray(S.unlockedTracks) && S.unlockedTracks.indexOf(key) >= 0) return true;
+      return false;
+    },
+    unlockForPlanet: function (planetId, silent) {
+      var map = MP.planetMap();
+      var unlockedAny = false;
+      Object.keys(map).forEach(function (tKey) {
+        if (map[tKey] === planetId && !MP.isUnlocked(tKey) && typeof unlockTrack === 'function') {
+          if (unlockTrack(tKey, !!silent)) unlockedAny = true;
+        }
+      });
+      if (!unlockedAny) {
+        var nextKey = Object.keys(map).find(function (tKey) { return !MP.isUnlocked(tKey); });
+        if (nextKey && typeof unlockTrack === 'function') unlockTrack(nextKey, !!silent);
+      }
     },
     filter: function (list) { return list.filter(MP.isUnlocked); },
     /* ---- Kampf-Dynamik ---- */

@@ -372,7 +372,7 @@ class StrudelVoice{
   rhpf(v){return this.hpf(v);}
   acidenv(v){const n=typeof v==='number'?v:0.5;this._lpf=Math.max(180,Math.min(4800,220+n*3200));this._decay=0.14;return this;}
   lpenv(){return this;}lps(){return this;}lpd(){return this;}lpq(){return this;}lpa(){return this;}lpattack(){return this;}lpr(){return this;}
-  gain(v){const n=typeof v==='number'?v:0.15;this._gain=Math.max(0.01,Math.min(0.6,n*0.22));return this;}
+  gain(v){const n=typeof v==='number'?v:0.35;this._gain=Math.max(0.02,Math.min(0.65,n*0.42));return this;}
   postgain(v){return this;}
   velocity(){return this;}
   attack(v){const n=typeof v==='number'?v:0.01;this._attack=Math.max(0.002,Math.min(1.5,n));return this;}
@@ -411,89 +411,132 @@ class StrudelVoice{
   play(){STRUDEL.registerVoice(this);return this;}
 }
 
-// ===================== 6 SGC Core Tracks + 20 Switch Angel Tracks =====================
+// ===================== 9 SGC Core Tracks + 20 Switch Angel Tracks =====================
 const STRUDEL_TRACKS={
   base:{
     name:'SGC Basis – Cheyenne Mountain Telemetry',
     artist:'SGC Core',
     role:'base',
+    bpm:100,
+    style:'Cheyenne Synth',
     code:`// SGC Basis – Cheyenne Mountain Telemetry (Strudel Pattern)
 setcps(0.42)
 stack(
-  note("<d2 d2 bb1 a1> [~ d2] <f2 g2 a1>").s("sawtooth").lpf(420).decay(0.28).sustain(0.2).gain(0.18),
-  note("<d4 f4 a4 c5> <a4 f4 e4 d4> [f4 a4] <c5 e5>").s("triangle").lpf(1600).decay(0.16).sustain(0.08).delay(0.25).room(0.35).gain(0.13),
-  s("white*8").lpf(3200).decay(0.025).sustain(0).gain(0.03)
+  note("<d2 d2 bb1 a1> [~ d2] <f2 g2 a1>").s("sawtooth").lpf(620).decay(0.32).sustain(0.35).gain(0.78),
+  note("<d4 f4 a4 c5> <a4 f4 e4 d4> [f4 a4] <c5 e5>").s("triangle").lpf(2200).decay(0.22).sustain(0.18).delay(0.28).room(0.4).gain(0.66),
+  s("white*8").lpf(3800).decay(0.035).sustain(0).gain(0.26)
 )`
   },
   map:{
     name:'Sternenkarte – Deep Space Cartography',
     artist:'SGC Core',
     role:'map',
+    bpm:82,
+    style:'Deep Space Ambient',
     code:`// Sternenkarte – Deep Space Cartography (Strudel Pattern)
 setcps(0.34)
 stack(
-  note("<c2 g2 f2 g2>").s("sine").attack(0.12).decay(0.6).sustain(0.4).gain(0.2),
-  note("[c4 e4 g4 b4] <d4 f4 a4 c5> [e4 g4 b4 d5] <g4 b4 d5 f5>").s("triangle").lpf(2100).decay(0.24).delay(0.45).room(0.55).gain(0.12),
-  note("<g5 ~ e5 ~> <~ a5 ~ d5>").s("sine").attack(0.04).decay(0.35).delay(0.5).gain(0.08)
+  note("<c2 g2 f2 g2>").s("sine").attack(0.08).decay(0.65).sustain(0.55).gain(0.82),
+  note("[c4 e4 g4 b4] <d4 f4 a4 c5> [e4 g4 b4 d5] <g4 b4 d5 f5>").s("triangle").lpf(2600).decay(0.28).delay(0.45).room(0.55).gain(0.64),
+  note("<g5 ~ e5 ~> <~ a5 ~ d5>").s("sine").attack(0.03).decay(0.42).delay(0.5).gain(0.52)
 )`
   },
   planet:{
     name:'Offworld Kolonie – Planetary Survey',
     artist:'SGC Core',
     role:'planet',
+    bpm:96,
+    style:'Offworld Groove',
     code:`// Offworld Kolonie – Planetary Survey (Strudel Pattern)
 setcps(0.40)
 stack(
-  note("<e2 e2 g2 a2> [~ e2] <b1 c2 d2>").s("triangle").lpf(620).decay(0.26).sustain(0.22).gain(0.18),
-  note("[e4 g4 b4] <d4 f#4 a4> [g4 b4 d5] <a4 c5 e5>").s("sine").lpf(1900).decay(0.20).delay(0.35).room(0.45).gain(0.13),
-  s("pink*8").lpf(2600).decay(0.03).gain(0.03)
+  note("<e2 e2 g2 a2> [~ e2] <b1 c2 d2>").s("triangle").lpf(840).decay(0.30).sustain(0.35).gain(0.78),
+  note("[e4 g4 b4] <d4 f#4 a4> [g4 b4 d5] <a4 c5 e5>").s("sine").lpf(2400).decay(0.24).delay(0.35).room(0.45).gain(0.66),
+  s("pink*8").lpf(3200).decay(0.035).gain(0.24)
 )`
   },
   gate:{
     name:'Stargate – Wormhole Event Horizon',
     artist:'SGC Core',
     role:'gate',
+    bpm:132,
+    style:'Wormhole Arpeggio',
     code:`// Stargate – Wormhole Event Horizon (Strudel Pattern)
 setcps(0.55)
 stack(
-  note("<e2 b1 c2 a1>*2").s("sawtooth").lpf(680).decay(0.2).sustain(0.25).gain(0.2),
-  note("[e4 g4 b4 e5]*2 <[d4 f#4 a4 d5] [c4 e4 g4 c5]>").s("sine").lpf(2800).decay(0.14).delay(0.4).room(0.6).gain(0.14),
-  s("pink*16").lpf(2400).decay(0.02).gain(0.04)
+  note("<e2 b1 c2 a1>*2").s("sawtooth").lpf(880).decay(0.24).sustain(0.35).gain(0.80),
+  note("[e4 g4 b4 e5]*2 <[d4 f#4 a4 d5] [c4 e4 g4 c5]>").s("sine").lpf(3200).decay(0.18).delay(0.4).room(0.6).gain(0.68),
+  s("pink*16").lpf(3000).decay(0.025).gain(0.28)
 )`
   },
   combat:{
     name:'Gefecht – Jaffa Tactical Assault',
     artist:'SGC Core',
     role:'combat',
+    bpm:125,
+    style:'Tactical Industrial',
     code:`// Gefecht – Jaffa Tactical Assault (Strudel Pattern)
 setcps(0.52)
 stack(
-  note("[d2 d2 ~ d2] [f2 d2 g2 gs2]").s("sawtooth").lpf(720).decay(0.14).sustain(0.15).gain(0.24),
-  note("<[d4 f4 a4] [d4 eb4 a4]> [~ f4 e4 d4] <[bb3 d4 f4] [a3 cs4 g4]>").s("square").lpf(1450).decay(0.12).sustain(0.08).delay(0.2).gain(0.14),
-  s("white*8 [white*4 ~]").lpf(3800).decay(0.035).sustain(0).gain(0.06)
+  note("[d2 d2 ~ d2] [f2 d2 g2 gs2]").s("sawtooth").lpf(920).decay(0.18).sustain(0.28).gain(0.84),
+  note("<[d4 f4 a4] [d4 eb4 a4]> [~ f4 e4 d4] <[bb3 d4 f4] [a3 cs4 g4]>").s("square").lpf(1850).decay(0.16).sustain(0.15).delay(0.22).gain(0.68),
+  s("white*8 [white*4 ~]").lpf(4200).decay(0.04).sustain(0).gain(0.32)
 )`
   },
   peaceful:{
     name:'Erstkontakt – Abydos & Nox Harmony',
     artist:'SGC Core',
     role:'peaceful',
+    bpm:78,
+    style:'Harmonic Pad',
     code:`// Friedlicher Erstkontakt – Abydos & Nox Harmony (Strudel Pattern)
 setcps(0.32)
 stack(
-  note("<f2 c3 bb2 c3>").s("sine").attack(0.15).decay(0.7).sustain(0.5).gain(0.18),
-  note("<[f4 a4 c5] [g4 bb4 d5] [a4 c5 e5] [g4 c5 e5]>").s("triangle").lpf(1900).attack(0.04).decay(0.35).delay(0.45).room(0.5).gain(0.12)
+  note("<f2 c3 bb2 c3>").s("sine").attack(0.10).decay(0.75).sustain(0.60).gain(0.80),
+  note("<[f4 a4 c5] [g4 bb4 d5] [a4 c5 e5] [g4 c5 e5]>").s("triangle").lpf(2400).attack(0.03).decay(0.42).delay(0.45).room(0.55).gain(0.66),
+  note("<c5 ~ a4 ~> <~ g4 ~ f4>").s("sine").attack(0.04).decay(0.45).delay(0.4).gain(0.50)
 )`
   },
   boss:{
     name:"Systemlord – Ha'tak Command Bridge",
     artist:'SGC Core',
     role:'boss',
+    bpm:144,
+    style:'Goa\'uld Boss Assault',
     code:`// Boss-Gefecht – Systemlord Ha'tak Command (Strudel Pattern)
 setcps(0.60)
 stack(
-  note("[c2 c2 db2 c2] [c2 g1 ab1 g1]").s("sawtooth").lpf(900).decay(0.15).sustain(0.25).gain(0.26),
-  note("[c4 db4 g4 ab4]*2 <[eb4db4 c4 b3] [f4 eb4 db4 c4]>").s("square").lpf(1850).decay(0.11).delay(0.25).gain(0.16),
-  s("white*16").lpf(4400).decay(0.03).gain(0.07)
+  note("[c2 c2 db2 c2] [c2 g1 ab1 g1]").s("sawtooth").lpf(1100).decay(0.18).sustain(0.34).gain(0.88),
+  note("[c4 db4 g4 ab4]*2 <[eb4 db4 c4 b3] [f4 eb4 db4 c4]>").s("square").lpf(2200).decay(0.15).delay(0.25).gain(0.70),
+  s("white*16").lpf(4800).decay(0.035).gain(0.34)
+)`
+  },
+  armory:{
+    name:'Ebene 16 – Naquadah-Schmiede & Arsenal',
+    artist:'SGC Core',
+    role:'base',
+    bpm:115,
+    style:'Quartermaster Synth',
+    code:`// Ebene 16 – Naquadah-Schmiede & Arsenal (Strudel Pattern)
+setcps(0.48)
+stack(
+  note("[a1 a1 e2 a1] [g1 a1 c2 d2]").s("sawtooth").lpf(780).decay(0.22).sustain(0.30).gain(0.82),
+  note("<[a3 c4 e4 a4] [g3 b3 d4 g4]> [e4 d4 c4 a3] <[f3 a3 c4 f4] [e3 gs3 b3 e4]>").s("square").lpf(1950).decay(0.18).delay(0.25).room(0.35).gain(0.66),
+  s("white*8 [~ white*2]").lpf(3900).decay(0.035).sustain(0).gain(0.28)
+)`
+  },
+  cheyenne:{
+    name:'Cheyenne Mountain – Deep Bunker Groove',
+    artist:'SGC Core',
+    role:'base',
+    bpm:110,
+    style:'NORAD Bunker Electro',
+    code:`// Cheyenne Mountain – Deep Bunker Groove (Strudel Pattern)
+setcps(0.46)
+stack(
+  note("<e2 e2 c2 d2> [e2 g2 a2 b1]").s("sawtooth").lpf(720).decay(0.26).sustain(0.32).gain(0.82),
+  note("[e4 b4 g4 e4] <d4 a4 f#4 d4> [c4 g4 e4 c4] <b3 f#4 d4 b3>").s("triangle").lpf(2400).decay(0.20).delay(0.32).room(0.45).gain(0.68),
+  s("pink*8 [white*4 ~]").lpf(3600).decay(0.03).sustain(0).gain(0.26)
 )`
   }
 };
@@ -599,14 +642,21 @@ const STRUDEL={
         const st=window.strudel;
         const strudelNote=(typeof window!=='undefined'&&window.note)||(st&&st.note);
 
-        // Protect window.note so game log notes and Strudel pattern calls can coexist
+        // Protect window.note so game log notes and Strudel pattern calls can coexist without mini-notation parse errors
         if(typeof window!=='undefined'){
           window.note=function(arg,...rest){
-            if(typeof arg==='string'&&(/[✔💀⚠🩹🎁🤝🪐🏗⬆🔫🎖🖥🏆★＋🔬⚡💥⏱·’üäöß]/.test(arg)||/^[A-Z][a-z]{3,}/.test(arg))){
-              if(typeof gameNote==='function')return gameNote(arg);
-              if(typeof prevNote==='function')return prevNote(arg);
+            if(typeof arg==='string'){
+              // Any non-ASCII char (emoji, umlaut), sentence punctuation, or word with letters h-z is a game log message
+              if(/[^\x00-\x7F]/.test(arg)||/[!?;()]|:\s/.test(arg)||/[h-zH-Z]{2,}/.test(arg)){
+                if(typeof gameNote==='function')return gameNote(arg);
+                if(typeof prevNote==='function')return prevNote(arg);
+              }
             }
-            if(typeof strudelNote==='function')return strudelNote(arg,...rest);
+            if(typeof strudelNote==='function'){
+              try{return strudelNote(arg,...rest);}catch(e){
+                if(typeof gameNote==='function')return gameNote(arg);
+              }
+            }
             if(typeof gameNote==='function')return gameNote(arg);
           };
           if(st&&typeof st.evalScope==='function'&&typeof strudelNote==='function'){
@@ -1296,16 +1346,20 @@ const SFX={
   },
 
   prevTrack(){
-    const keys=Object.keys(STRUDEL_TRACKS);
-    const idx=keys.indexOf(STRUDEL.currentTrack);
-    const prev=keys[(idx-1+keys.length)%keys.length];
+    const allKeys=Object.keys(STRUDEL_TRACKS);
+    const keys=(typeof isTrackUnlocked==='function')?allKeys.filter(isTrackUnlocked):allKeys;
+    const list=keys.length?keys:allKeys;
+    const idx=list.indexOf(STRUDEL.currentTrack);
+    const prev=list[(idx-1+list.length)%list.length];
     this.playTrack(prev);
   },
 
   nextTrack(){
-    const keys=Object.keys(STRUDEL_TRACKS);
-    const idx=keys.indexOf(STRUDEL.currentTrack);
-    const next=keys[(idx+1)%keys.length];
+    const allKeys=Object.keys(STRUDEL_TRACKS);
+    const keys=(typeof isTrackUnlocked==='function')?allKeys.filter(isTrackUnlocked):allKeys;
+    const list=keys.length?keys:allKeys;
+    const idx=list.indexOf(STRUDEL.currentTrack);
+    const next=list[(idx+1)%list.length];
     this.playTrack(next);
   },
 
@@ -1369,18 +1423,24 @@ const SFX={
       const roleMap={
         base:['theme_remix_0'], // Basis: Anthem (Patreon Codevault Blend 1)
         map:['theme_remix_2'],  // Sternenkarte: Goa'uld Assault (Patreon Codevault Blend 3)
-        planet:['theme_atlantis','sa_canyonhopper','sa_openup','sa_mutek4am','sa_sentimental_dnb'],
-        gate:['sa_in_the_beginning','theme_fanfare'],
-        combat:['theme_remix_cnc','sa_autotomatone','sa_extra_slippy','sa_909workout','sa_hotroller','sa_generative_jungle','sa_amen_infinity'],
-        peaceful:['theme_asgard','theme_funeral','theme_remix_lofi','theme_remix_melancholy','sa_curiosity_piano'],
-        boss:['theme_remix_cnc','sa_did_i_make_this','sa_whoneedsa303','sa_dubstepacid'],
+        planet:['theme_atlantis','planet','theme_remix_atlantis_dnb','sa_canyonhopper','sa_openup','sa_mutek4am','sa_sentimental_dnb'],
+        gate:['theme_fanfare','gate','theme_midi','sa_in_the_beginning'],
+        combat:['theme_remix_cnc','combat','theme_remix_foothold','theme_remix_1','theme_remix_3','sa_autotomatone','sa_extra_slippy','sa_909workout','sa_hotroller','sa_generative_jungle','sa_amen_infinity'],
+        peaceful:['theme_asgard','peaceful','theme_funeral','theme_remix_lofi','theme_remix_melancholy','sa_curiosity_piano'],
+        boss:['theme_remix_cnc','boss','theme_remix_apophis','sa_did_i_make_this','sa_whoneedsa303','sa_dubstepacid'],
         victory:['theme_outro','theme_promotion']
       };
-      const pool=roleMap[contextKey];
-      if(pool&&pool.length){
+      const rawPool=roleMap[contextKey]||[];
+      const pool=rawPool.filter(k=>!String(k).startsWith('sa_')||(typeof isTrackUnlocked==='function'&&isTrackUnlocked(k)));
+      const effectivePool=pool.length?pool:rawPool.filter(k=>!String(k).startsWith('sa_'));
+      if(effectivePool.length){
         const daySeed=(typeof S!=='undefined'&&S&&S.day)||1;
-        target=pool[(daySeed-1)%pool.length];
+        target=effectivePool[(daySeed-1)%effectivePool.length];
       }
+    }
+    if(typeof unlockTrack==='function'){
+      if(STRUDEL_TRACKS[contextKey]&&!String(contextKey).startsWith('sa_'))unlockTrack(contextKey);
+      if(STRUDEL_TRACKS[target]&&!String(target).startsWith('sa_'))unlockTrack(target);
     }
     if(STRUDEL.currentTrack!==target||!STRUDEL.playing){
       this.playTrack(target);
