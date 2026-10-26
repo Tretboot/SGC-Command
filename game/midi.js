@@ -788,7 +788,80 @@ $MARCH_BASS: note("<[c2 ~ g1 ~] [c2 ~ g1 ~] [f1 ~ c2 ~] [g1 ~ c2 cr]>")
   .gain(0.88)
   .o(4)
 `;
-  }
+  },
+  footholdCode(){
+    return `//@title SGC Ebene 28: Foothold Infiltration @by SGC Tactical Synthwave
+// 140 BPM Driving Dark Synthwave: Urgent Red Alert, Roland TR-808 Kick & Snare, Acid Bassline
+setCpm(140/4)
+setScale("d:phrygian")
+const volume = slider(0.960)
+all(x => x.mul(postgain(volume)))
+
+$ALARM_LEAD: note("<[d4 ~ f4 ~] [eb4 ~ d4 ~] [bb3 ~ a3 ~] [d4 ~ eb4 ~]>")
+  .s("sawtooth")
+  .detune(0.24)
+  .lpf(sine.slow(4).range(1200, 3800))
+  .decay(0.18).sustain(0.12)
+  .room(0.7).roomsize(3)
+  .delay(0.25)
+  .gain(0.92)
+  .o(4)
+
+$ACID_BASS: note("<[d2 d2 ~ d2] [eb2 d2 bb1 a1] [d2 ~ d2 d2] [g2 f2 eb2 cs2]>")
+  .s("square")
+  .sub(12)
+  .acidenv(0.85)
+  .lpf(sine.slow(8).range(400, 2400))
+  .gain(0.95)
+  .o(4)
+
+$TR808_BEAT: s("[sbd ~ ~ sbd] [sd ~ sbd ~] [sbd sbd ~ sbd] [sd ~ ~ [sd*2]]").gain(0.9).o(2)
+$HIHAT_ROLL: s("ch*16").gain(0.45).o(2)
+`;
+  },
+  apophisCode(){
+    return `//@title Apophis' Ha'tak Flotte @by Goa'uld Heavy Electro
+// 130 BPM Dark Pharaoh Techno: Menacing Low Drone, Staccato Horns & Heavy Sub-Bass
+setCpm(130/4)
+setScale("e:phrygian")
+const volume = slider(0.950)
+all(x => x.mul(postgain(volume)))
+
+$GOAULD_BRASS: note("<[e3 ~ ~ ~] [f3 ~ e3 ~] [c3 ~ ~ ~] [b2 ~ ~ ~]>")
+  .s("supersaw")
+  .detune(0.3)
+  .lpf(1800)
+  .room(0.85).roomsize(5)
+  .delay(0.35)
+  .gain(0.95)
+  .o(4)
+
+$SUB_PULSE: note("<e1*4 [e1 e1 f1 e1] c1*4 b0*4>").s("sawtooth").lpf(280).gain(1.0).o(4)
+$CYBER_SNARE: s("[~ sd ~ sd] [~ sd ~ [sd*2]]").gain(0.85).room(0.6).o(2)
+$DESERT_PERC: s("[~ ~ ch ~] [~ ch ~ ch]").gain(0.5).o(2)
+`;
+  },
+  atlantisDnbCode(){
+    return `//@title Stargate Atlantis × Liquid D&B @by Pegasus Jump Unit
+// 168 BPM Rolling Liquid Drum & Bass: Soaring Pegasus Choir, Warm 808 Sub & Fast Breakbeat
+setCpm(168/4)
+setScale("f:major")
+const volume = slider(0.940)
+all(x => x.mul(postgain(volume)))
+
+$PEGASUS_CHOIR: note("<[f4 ~ a4 ~] [c5 ~ d5 ~] [bb4 ~ a4 ~] [g4 ~ ~ ~]>")
+  .s("sine")
+  .attack(0.08).decay(0.35).sustain(0.4)
+  .room(0.9).roomsize(6)
+  .delay(0.45)
+  .gain(0.85)
+  .o(5)
+
+$LIQUID_SUB: note("<f1*2 c2*2 bb1*2 c2*2>").s("triangle").lpf(320).gain(0.95).o(4)
+$DNB_BREAK: s("[sbd ~ ~ ~] [~ ~ sd ~] [~ sbd ~ ~] [~ ~ sd ~]").gain(0.9).o(2)
+$DNB_SHUFFLE: s("ch*16").decay(0.03).gain(0.4).o(2)
+`;
+  },
 };
 
 function registerThemeTracks(){
@@ -819,6 +892,9 @@ function registerThemeTracks(){
   STRUDEL_TRACKS.theme_remix_melancholy={name:'🌌 Stargate × Melancholic Ambient Phaser',artist:'SGC Deep Space Lab',role:'peaceful',code:THEME_MIDI.melancholyCode()};
   STRUDEL_TRACKS.theme_outro={name:'🎖 Stargate SG-1 Outro & End Credits (Original)',artist:'Joel Goldsmith · SGC Orchestral',role:'base',code:THEME_MIDI.outroCode()};
   STRUDEL_TRACKS.theme_outro_ambient={name:'🌌 Stargate Outro × Deep Space Ambient',artist:'SGC Cosmic Lab',role:'peaceful',code:THEME_MIDI.outroAmbientCode()};
+    STRUDEL_TRACKS.theme_remix_foothold={name:'🚨 SGC Ebene 28: Foothold Alien Infiltration',artist:'SGC Tactical Synthwave',role:'combat',code:THEME_MIDI.footholdCode()};
+  STRUDEL_TRACKS.theme_remix_apophis={name:"🐍 Apophis' Ha'tak Flotte (Dark Pharaoh Electro)",artist:'Goa\'uld Heavy Electro',role:'boss',code:THEME_MIDI.apophisCode()};
+  STRUDEL_TRACKS.theme_remix_atlantis_dnb={name:'🌊 Stargate Atlantis × Liquid Drum & Bass',artist:'Pegasus Jump Unit',role:'map',code:THEME_MIDI.atlantisDnbCode()};
   if(typeof STRUDEL!=='undefined'&&STRUDEL.patterns){
     Object.keys(STRUDEL_TRACKS).forEach(k=>{STRUDEL.patterns[k]=STRUDEL_TRACKS[k].code;});
   }

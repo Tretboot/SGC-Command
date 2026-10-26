@@ -1319,6 +1319,10 @@ const SFX={
     return this.muted;
   },
 
+  toggleMute(){
+    return this.toggle();
+  },
+
   toggleMusic(){
     this.musicEnabled=!this.musicEnabled;
     if(this.musicGain)this.musicGain.gain.value=this.musicEnabled?0.48:0;
