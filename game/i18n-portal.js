@@ -13,8 +13,8 @@
   if (typeof I18N === 'undefined') throw new Error('i18n-portal.js benötigt i18n.js');
   /* ---------- A: Kopfzeile, Branding, Navigation, Sprach-Toggle ---------- */
   I18N.add('de', {
-    'portal.title': 'SGC Command – Stargate Command 0.37 ("Die 808 drückt jetzt")',
-    'portal.brand.sub': 'Stargate Command · 0.37 · "Die 808 drückt jetzt"',
+    'portal.title': 'SGC Command – Stargate Command 0.37 ("Chevron 8: Die dritte Dimension")',
+    'portal.brand.sub': 'Stargate Command · 0.37 · "Chevron 8: Die dritte Dimension"',
     'portal.nav.game': 'Spiel',
     'portal.nav.wiki': 'Datenbank & Lore',
     'portal.nav.about': 'Über & Labor',
@@ -22,8 +22,8 @@
     'portal.lang.title': 'Sprache wechseln (Switch to English)'
   });
   I18N.add('en', {
-    'portal.title': 'SGC Command – Stargate Command 0.37 ("The 808 Hits Hard Now")',
-    'portal.brand.sub': 'Stargate Command · 0.37 · "The 808 Hits Hard Now"',
+    'portal.title': 'SGC Command – Stargate Command 0.37 ("Chevron 8: The Third Dimension")',
+    'portal.brand.sub': 'Stargate Command · 0.37 · "Chevron 8: The Third Dimension"',
     'portal.nav.game': 'Game',
     'portal.nav.wiki': 'Database & Lore',
     'portal.nav.about': 'About & Lab',
@@ -515,11 +515,11 @@
 
   /* ---------- R: Footer ---------- */
   I18N.add('de', {
-    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.37 · "Die 808 drückt jetzt"',
+    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.37 · "Chevron 8: Die dritte Dimension"',
     'portal.footer.2': 'Entwickelt im autonomen Multi-Agenten-Pair-Programming (Gemini 4 Argon · Claude Opus 5.5 · Gemini 3.8 Flash · Qwen 3.8 / 3.5) · Lizenziert unter AGPL-3.0-or-later'
   });
   I18N.add('en', {
-    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.37 · "The 808 Hits Hard Now"',
+    'portal.footer.1': '◎ STARGATE COMMAND · SGC COMMAND 0.37 · "Chevron 8: The Third Dimension"',
     'portal.footer.2': 'Developed via autonomous multi-agent pair programming (Gemini 4 Argon · Claude Opus 5.5 · Gemini 3.8 Flash · Qwen 3.8 / 3.5) · Licensed under AGPL-3.0-or-later'
   });
 

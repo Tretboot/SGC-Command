@@ -27,7 +27,7 @@
     lang: 'de',
     defaultLang: 'de',
     storageKey: 'sgc_lang',
-    tables: { de: {}, en: {} },
+    tables: { de: {}, en: {}, es: {}, zh: {}, ja: {}, ru: {}, fr: {}, pt: {}, ar: {} },
     _listeners: []
   };
 
@@ -47,6 +47,8 @@
     var v;
     if (Object.prototype.hasOwnProperty.call(t, key)) {
       v = t[key];
+    } else if (I18N.lang !== 'en' && I18N.lang !== 'de' && Object.prototype.hasOwnProperty.call(I18N.tables.en, key)) {
+      v = I18N.tables.en[key];
     } else if (I18N.lang !== 'de' && Object.prototype.hasOwnProperty.call(I18N.tables.de, key)) {
       v = I18N.tables.de[key]; // Fallback auf Deutsch
     } else {
